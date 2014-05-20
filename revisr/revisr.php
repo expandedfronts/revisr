@@ -221,11 +221,11 @@ class Revisr
 	</table>
 	<?php
 		if ($current_page != "1"){
-			echo "<a href='" . get_admin_url() . "admin.php?page=revisr&pagenum=" . ($current_page - 1) . "'><- Previous</a>";
+			echo "<a href='" . get_admin_url() . "post-new.php?post_type=revisr_commits&pagenum=" . ($current_page - 1) . "'><- Previous</a>";
 		}
 		echo " Page {$current_page} of {$last_page} "; 
 		if ($current_page != $last_page){
-			echo "<a href='" . get_admin_url() . "admin.php?page=revisr&pagenum=" . ($current_page + 1) . "'>Next -></a>";
+			echo "<a href='" . get_admin_url() . "post-new.php?post_type=revisr_commits&pagenum=" . ($current_page + 1) . "'>Next -></a>";
 		}
 	}
 
