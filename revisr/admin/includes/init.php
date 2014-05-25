@@ -13,13 +13,16 @@
 
 class revisr_init
 {
-	global $wpdb;
+	
 
 	private $dir;
-	private $table_name
+	private $table_name;
 
 	public function __construct()
 	{
+		global $wpdb;
+
+		$this->wpdb = $wpdb;
 
 		$this->table_name = $wpdb->prefix . "revisr";
 		$this->dir = plugin_dir_path( __FILE__ );

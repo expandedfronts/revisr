@@ -46,6 +46,9 @@ class Revisr
 		add_action( 'wp_ajax_pending_files', array($this, 'pending_files') );
 		add_action( 'admin_footer', array($this, 'pending_files_js') );
 		add_action( 'admin_post_revert', array($this, 'revert') );
+		add_action( 'admin_post_branch', array($this, 'branch') );
+		add_action( 'admin_post_push', array($this, 'push') );
+		add_action( 'admin_post_pull', array($this, 'pull') );
 
 	}
 
@@ -57,7 +60,8 @@ class Revisr
 		$this->git("push origin {$this->current_branch}");
 		add_post_meta( get_the_ID(), 'commit_hash', $commit_hash );
 		$author = the_author();
-		$this->log("{$author} committed {$commit_hash[0]} to the repository.", "commit");
+		$view_link = get_admin_url() . "post.php?post=" . get_the_ID() . "&action=edit";
+		$this->log("Committed <a href='{$view_link}'>#{$commit_hash[0]}</a> to the repository.", "commit");
 		return $commit_hash;
 	}
 
@@ -70,9 +74,34 @@ class Revisr
 		$this->git("add -A");
 		$commit_hash = $this->git("push origin {$this->current_branch}");
 		$this->git("commit -am 'Reverted to commit: #" . $commit_hash . "'");
-		$this->log("{get_the_author()} reverted to commit #{$commit_hash}.", "revert");
+		$this->log("Reverted to commit #{$commit_hash}.", "revert");
 		wp_redirect(get_admin_url() . "edit.php?post_type=revisr_commits");
 		exit;
+	}
+
+	public function branch()
+	{
+		$branch = $_REQUEST['branch'];
+		$this->git("reset --hard HEAD");
+		$this->git("checkout {$branch}");
+		wp_redirect(get_admin_url() . "admin.php?page=revisr&branch=success");
+
+	}
+
+	public function push()
+	{
+		$this->git("reset --hard HEAD");
+		$this->git("push origin HEAD");
+		$this->log("Pushed changes to the remote repository.", "push");
+		wp_redirect(get_admin_url() . "admin.php?page=revisr&push=success");
+	}
+
+	public function pull()
+	{
+		$this->git("reset --hard HEAD");
+		$this->git("pull origin");
+		$this->log("Pulled changes from the remote repository", "pull");
+		wp_redirect(get_admin_url() . "admin.php?page=revisr&pull=success");
 	}
 
 	public function git($args)
