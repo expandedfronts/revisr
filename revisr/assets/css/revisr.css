@@ -1,0 +1,15 @@
+.revisr-alert {
+	width:99%;
+	padding:15px;
+	color: #fff;
+	font-size: 18px;
+	background-color: #2c3e50;
+	border-radius: 5px;
+}
+
+#hash {
+	width: 70px !important;
+}
+td.hash.column-hash {
+	width:70px !important;
+}
