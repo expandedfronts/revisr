@@ -24,11 +24,19 @@ include_once 'admin/includes/functions.php';
 
 class Revisr
 {
+
+	public $wpdb;
+	public $time;
+	public $table_name;
 	private $current_dir;
 	private $current_branch;
 
 	public function __construct()
 	{
+		global $wpdb;
+		$this->wpdb = $wpdb;
+		$this->table_name = $wpdb->prefix . "revisr";
+		$this->time = current_time( 'mysql' );
 		$init = new revisr_init;
 		$this->current_dir = getcwd();
 		$this->current_branch = exec("git rev-parse --abbrev-ref HEAD");
@@ -48,6 +56,8 @@ class Revisr
 		$commit_hash = $this->git("log --pretty=format:'%h' -n 1");
 		$this->git("push origin {$this->current_branch}");
 		add_post_meta( get_the_ID(), 'commit_hash', $commit_hash );
+		$author = the_author();
+		$this->log("{$author} committed {$commit_hash[0]} to the repository.", "commit");
 		return $commit_hash;
 	}
 
@@ -60,6 +70,7 @@ class Revisr
 		$this->git("add -A");
 		$commit_hash = $this->git("push origin {$this->current_branch}");
 		$this->git("commit -am 'Reverted to commit: #" . $commit_hash . "'");
+		$this->log("{get_the_author()} reverted to commit #{$commit_hash}.", "revert");
 		wp_redirect(get_admin_url() . "edit.php?post_type=revisr_commits");
 		exit;
 	}
@@ -335,6 +346,23 @@ class Revisr
 			}
 			exit();
 
+	}
+
+	private function log($message, $event)
+	{
+		$this->wpdb->insert(
+			"$this->table_name",
+			array(
+				"time" => $this->time,
+				"message" => $message,
+				"event" => $event
+			),
+			array(
+				'%s',
+				'%s',
+				'%s'
+			)
+		);
 	}	
 }
 

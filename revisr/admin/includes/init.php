@@ -13,13 +13,17 @@
 
 class revisr_init
 {
+	global $wpdb;
 
 	private $dir;
+	private $table_name
 
 	public function __construct()
 	{
 
+		$this->table_name = $wpdb->prefix . "revisr";
 		$this->dir = plugin_dir_path( __FILE__ );
+		register_activation_hook( __FILE__, 'revisr_install' );
 
 		if ( is_admin() ) {
 			add_action( 'init', array($this, 'post_types') );
@@ -36,6 +40,22 @@ class revisr_init
 			add_filter( 'custom_menu_order', array($this, 'revisr_commits_submenu_order') );
 		}
 	}
+
+	public function revisr_install()
+	{
+		
+		$sql = "CREATE TABLE IF NOT EXISTS $this->table_name (
+			id mediumint(9) NOT NULL AUTO_INCREMENT,
+			time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+			message TEXT,
+			event VARCHAR(42) NOT NULL,
+			UNIQUE KEY id (id)
+			);";
+		
+	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	   	dbDelta( $sql );
+	   	add_option( "revisr_db_version", $revisr_db_version );
+	}	
 
 	public function post_types()
 	{
