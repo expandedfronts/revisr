@@ -23,3 +23,33 @@
 td.hash.column-hash {
 	width:70px !important;
 }
+
+.quick-action-btn {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 4px !important;
+}
+
+#commit-btn {
+	background-color: #5cb85c;
+	border-color: #4cae4c;
+	color: #fff;
+}
+
+#commit-btn:hover {
+	background-color: #4cae4c;
+	border-color: #4cae4c;
+	color: #fff;
+}
+
+#revert-btn {
+	background-color: #d9534f;
+	border-color: #d43f3a;
+	color: #fff;
+}
+
+#revert-btn:hover {
+	background-color: #d43f3a;
+	border-color: #d43f3a;
+	color: #fff;
+}

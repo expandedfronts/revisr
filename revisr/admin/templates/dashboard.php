@@ -35,10 +35,10 @@ include_once $dir . '../includes/functions.php';
 								$pending = count_pending();
 								if ( $pending != 0 ){
 									if ( $pending == 1 ){
-										$text = "There is currently 1 file pending.";
+										$text = "There is currently 1 pending file.";
 									}
 									else {
-										$text = "There are currently {$pending} files pending.";
+										$text = "There are currently {$pending} pending files.";
 									}
 									echo "<div class='updated'><p>{$text}</p></div>";
 								}
@@ -79,8 +79,10 @@ include_once $dir . '../includes/functions.php';
 					
 						<h3><span>Quick Actions</span></h3>
 						<div class="inside">
-							<a href="<?php echo get_admin_url(); ?>admin-post.php?action=pull" class="button button-primary">Pull Changes</a>
-							<a href="<?php echo get_admin_url(); ?>admin-post.php?action=push" class="button button-primary">Push Changes</a>
+							<a href="<?php echo get_admin_url(); ?>post-new.php?post_type=revisr_commits" id="commit-btn" class="button button-primary quick-action-btn">Commit Changes</a>
+							<a href="<?php echo get_admin_url(); ?>post-new.php?post_type=revisr_commits" id="revert-btn" class="button button-primary quick-action-btn">Discard Changes</a>
+							<a href="<?php echo get_admin_url(); ?>admin-post.php?action=pull" class="button button-primary quick-action-btn">Pull Changes</a>
+							<a href="<?php echo get_admin_url(); ?>admin-post.php?action=push" class="button button-primary quick-action-btn">Push Changes</a>
 						</div> <!-- .inside -->
 						
 					</div> <!-- .postbox -->
@@ -103,7 +105,7 @@ include_once $dir . '../includes/functions.php';
 											$branch = "<strong>" . substr($value, 2) . " (current branch)</strong>";
 											$disabled = " disabled";
 										}
-										echo "<tr><td>$branch</td><td width='70'>Checkout</td></tr>";
+										echo "<tr><td>$branch</td><td width='70'><a href='" . get_admin_url() . "admin-post.php?action=checkout&branch={$branch}'>Checkout</a></td></tr>";
 									}
 								?>
 							</table>

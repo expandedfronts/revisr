@@ -14,5 +14,12 @@
 <div class="wrap">
 	<h2>Revisr Settings</h2>
 	<hr>
-	
+	<form method="post" action="options.php">
+	<?php
+                // This prints out all hidden setting fields
+                settings_fields( 'revisr_option_group' );   
+                do_settings_sections( 'revisr_settings' );
+                submit_button(); 
+    ?>
+	</form>
 </div>

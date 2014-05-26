@@ -16,6 +16,7 @@ class revisr_init
 	
 
 	private $dir;
+	private $options;
 	private $table_name;
 
 	public function __construct()
@@ -23,6 +24,7 @@ class revisr_init
 		global $wpdb;
 
 		$this->wpdb = $wpdb;
+		$this->options = get_option('revisr_settings');
 
 		$this->table_name = $wpdb->prefix . "revisr";
 		$this->dir = plugin_dir_path( __FILE__ );
@@ -30,6 +32,7 @@ class revisr_init
 
 		if ( is_admin() ) {
 			add_action( 'init', array($this, 'post_types') );
+			add_action( 'admin_init', array($this, 'settings_init'));
 			add_action( 'load-post.php', array($this, 'meta') );
 			add_action( 'load-post-new.php', array($this, 'meta') );
 			add_action( 'views_edit-revisr_commits', array($this, 'custom_views') );
@@ -120,9 +123,10 @@ class revisr_init
 
 	public function menus()
 	{
-		$menu = add_menu_page( 'Dashboard', 'Revisr', 'manage_options', 'revisr', array($this, 'revisr_dashboard'), plugins_url( 'revisr/img/revisrlogo_small-white.png' ) );
+		$menu = add_menu_page( 'Dashboard', 'Revisr', 'manage_options', 'revisr', array($this, 'revisr_dashboard'), plugins_url( 'revisr/assets/img/white_18x20.png' ) );
 		add_submenu_page( 'revisr', 'Revisr - Dashboard', 'Dashboard', 'manage_options', 'revisr', array($this, 'revisr_dashboard') );
-		add_submenu_page( 'revisr', 'Revisr - Settings', 'Settings', 'manage_options', 'revisr_settings', array($this, 'revisr_settings') );
+		$settings_hook = add_submenu_page( 'revisr', 'Revisr - Settings', 'Settings', 'manage_options', 'revisr_settings', array($this, 'revisr_settings') );
+		add_action( 'load-'.$settings_hook, array($this, 'update_settings') );
 		add_action( 'admin_print_styles-' . $menu, array($this, 'styles') );
 		add_action( 'admin_print_scripts-' . $menu, array($this, 'scripts') );
 	}
@@ -145,9 +149,121 @@ class revisr_init
 		include_once $this->dir . "../templates/dashboard.php";
 	}
 
+	public function settings_init()
+	{
+		register_setting(
+			'revisr_option_group',
+			'revisr_settings',
+			array($this, 'sanitize')
+		);
+
+        add_settings_section(
+            'revisr_general_config', // ID
+            'General Configuration', // Title
+            array( $this, 'general_config_callback' ), // Callback
+            'revisr_settings' // Page
+        );  
+
+        add_settings_field(
+            'username', // ID
+            'Username', // Title 
+            array( $this, 'username_callback' ), // Callback
+            'revisr_settings', // Page
+            'revisr_general_config' // Section           
+        );      
+
+        add_settings_field(
+            'email', 
+            'Email', 
+            array( $this, 'email_callback' ), 
+            'revisr_settings', 
+            'revisr_general_config'
+        );
+
+        add_settings_field(
+        	'gitignore',
+        	'Files / Directories to add to .gitignore',
+        	array( $this, 'gitignore_callback'),
+        	'revisr_settings',
+        	'revisr_general_config'
+    	);
+
+    	add_settings_field(
+    		'notifications',
+    		'Enable email notifications?',
+    		array($this, 'notifications_callback'),
+    		'revisr_settings',
+    		'revisr_general_config'
+		);
+
+	}
+
+	public function general_config_callback()
+	{
+		print "Enter your settings below:";
+	}
+
+	public function username_callback()
+	{
+		printf(
+            '<input type="text" id="username" name="revisr_settings[username]" value="%s" class="regular-text" />
+            <br><span class="description">Username to commit with in git.</span>',
+            isset( $this->options['username'] ) ? esc_attr( $this->options['username']) : ''
+        );
+	}
+
+	public function email_callback()
+	{
+		printf(
+            '<input type="text" id="email" name="revisr_settings[email]" value="%s" class="regular-text" />
+            <br><span class="description">Used for notifications and git.</span>',
+            isset( $this->options['email'] ) ? esc_attr( $this->options['email']) : ''
+        );
+	}
+
+	public function gitignore_callback()
+	{
+		printf(
+            '<textarea id="gitignore" name="revisr_settings[gitignore]" rows="6" />%s</textarea>
+            <br><span class="description">Add files or directories to be ignored here, one per line.</span>',
+            isset( $this->options['gitignore'] ) ? esc_attr( $this->options['gitignore']) : ''
+		);
+	}
+
+	public function notifications_callback()
+	{
+		printf(
+			'<input type="checkbox" id="notifications" name="revisr_settings[notifications]" %s />',
+			isset( $this->options['notifications'] ) ? "checked" : ''
+		);
+	}
+
+	public function sanitize($input)
+	{
+		return $input;
+	}
+
 	public function revisr_settings()
 	{
 		include_once $this->dir . "../templates/settings.php";
+	}
+
+	public function update_settings()
+	{
+		if(isset($_GET['settings-updated']) && $_GET['settings-updated'])
+	   {
+
+	   	  chdir(ABSPATH);
+	      file_put_contents(".gitignore", $this->options['gitignore']);
+	      $options = get_option('revisr_settings');
+	      if ($options['username'] != "") {
+	      	exec('git config user.name "' . $options['username'] . '"');
+	      }
+	      if ($options['email'] != "") {
+	      	exec('git config user.email "' . $options['email'] . '"');
+	      }
+	      chdir($this->dir);
+	   }
 	}
 
 	public function custom_actions()

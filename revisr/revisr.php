@@ -46,7 +46,7 @@ class Revisr
 		add_action( 'wp_ajax_pending_files', array($this, 'pending_files') );
 		add_action( 'admin_footer', array($this, 'pending_files_js') );
 		add_action( 'admin_post_revert', array($this, 'revert') );
-		add_action( 'admin_post_branch', array($this, 'branch') );
+		add_action( 'admin_post_checkout', array($this, 'checkout') );
 		add_action( 'admin_post_push', array($this, 'push') );
 		add_action( 'admin_post_pull', array($this, 'pull') );
 
@@ -54,6 +54,7 @@ class Revisr
 
 	public function commit()
 	{
+		$title = $_REQUEST['post_title'];
 		$this->git("add -A");
 		$this->git("commit -am '" . get_the_title() . "'");
 		$commit_hash = $this->git("log --pretty=format:'%h' -n 1");
@@ -62,6 +63,7 @@ class Revisr
 		$author = the_author();
 		$view_link = get_admin_url() . "post.php?post=" . get_the_ID() . "&action=edit";
 		$this->log("Committed <a href='{$view_link}'>#{$commit_hash[0]}</a> to the repository.", "commit");
+		$this->notify(get_bloginfo() . " - New Commit", "A new commit was made to the repository:<br> #{$commit_hash[0]} - {$title}");
 		return $commit_hash;
 	}
 
@@ -75,15 +77,18 @@ class Revisr
 		$commit_hash = $this->git("push origin {$this->current_branch}");
 		$this->git("commit -am 'Reverted to commit: #" . $commit_hash . "'");
 		$this->log("Reverted to commit #{$commit_hash}.", "revert");
+		$this->notify(get_bloginfo() . " - Commit Reverted", get_bloginfo() . "was reverted to commit #{commit}.");
 		wp_redirect(get_admin_url() . "edit.php?post_type=revisr_commits");
 		exit;
 	}
 
-	public function branch()
+	public function checkout()
 	{
 		$branch = $_REQUEST['branch'];
 		$this->git("reset --hard HEAD");
 		$this->git("checkout {$branch}");
+		$this->log("Reverted to commit #{$commit_hash}.", "revert");
+		$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . "was switched to the branch {$branch}.");
 		wp_redirect(get_admin_url() . "admin.php?page=revisr&branch=success");
 
 	}
@@ -93,6 +98,7 @@ class Revisr
 		$this->git("reset --hard HEAD");
 		$this->git("push origin HEAD");
 		$this->log("Pushed changes to the remote repository.", "push");
+		$this->notify(get_bloginfo() . " - Changes Pushed", "Changes were pushed to the remote repository for " . get_bloginfo());
 		wp_redirect(get_admin_url() . "admin.php?page=revisr&push=success");
 	}
 
@@ -101,6 +107,7 @@ class Revisr
 		$this->git("reset --hard HEAD");
 		$this->git("pull origin");
 		$this->log("Pulled changes from the remote repository", "pull");
+		$this->notify(get_bloginfo() . " - Changes Pulled", "Changes were pulled from the remote repository for " . get_bloginfo());
 		wp_redirect(get_admin_url() . "admin.php?page=revisr&pull=success");
 	}
 
@@ -392,6 +399,18 @@ class Revisr
 				'%s'
 			)
 		);
+	}
+
+	private function notify($subject, $message)
+	{
+		$options = get_option('revisr_settings');
+		$url = get_admin_url() . "admin.php?page=revisr";
+		if ($options['notifications'] == "on") {
+			$email = $options['email'];
+			$message .= "<br><br><a href='{$url}'>Click here</a> for more details.";
+			$headers = "Content-Type: text/html; charset=ISO-8859-1\r\n";
+			wp_mail($email, $subject, $message, $headers);
+		}
 	}	
 }
 
