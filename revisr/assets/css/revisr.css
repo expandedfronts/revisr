@@ -42,7 +42,7 @@ td.hash.column-hash {
 	color: #fff;
 }
 
-#revert-btn {
+#discard-btn {
 	background-color: #d9534f;
 	border-color: #d43f3a;
 	color: #fff;
@@ -52,4 +52,8 @@ td.hash.column-hash {
 	background-color: #d43f3a;
 	border-color: #d43f3a;
 	color: #fff;
+}
+
+#loader {
+	float: right;
 }

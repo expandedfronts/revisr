@@ -41,6 +41,7 @@ class revisr_init
 			add_action( 'manage_edit-revisr_commits_columns', array($this, 'columns') );
 			add_action( 'manage_revisr_commits_posts_custom_column', array($this, 'custom_columns') );
 			add_action( 'admin_enqueue_scripts', array($this, 'styles') );
+			add_action( 'admin_enqueue_scripts', array($this, 'scripts') );
 			add_filter( 'post_updated_messages', array($this, 'revisr_commits_custom_messages') );
 			add_filter( 'bulk_post_updated_messages', array($this, 'revisr_commits_bulk_messages'), 10, 2 );
 			add_filter( 'custom_menu_order', array($this, 'revisr_commits_submenu_order') );
@@ -49,7 +50,6 @@ class revisr_init
 
 	public function revisr_install()
 	{
-		
 		$sql = "CREATE TABLE IF NOT EXISTS $this->table_name (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -60,7 +60,7 @@ class revisr_init
 		
 	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	   	dbDelta( $sql );
-	   	add_option( "revisr_db_version", $revisr_db_version );
+	   	add_option( "revisr_db_version", "1.0" );
 	}	
 
 	public function post_types()
@@ -113,9 +113,12 @@ class revisr_init
 
 	public function meta()
 	{
-		if ($_GET['action'] == 'edit') {
-			add_meta_box( 'revisr_committed_files', 'Committed Files', array($this, 'committed_files_meta'), 'revisr_commits' );
+		if (isset($_GET['action'])) {
+			if ($_GET['action'] == 'edit') {
+				add_meta_box( 'revisr_committed_files', 'Committed Files', array($this, 'committed_files_meta'), 'revisr_commits' );
+			}			
 		}
+		
 		else {
 			add_meta_box( 'revisr_pending_files', 'Pending Files', array($this, 'pending_files_meta'), 'revisr_commits' );
 		}
@@ -270,22 +273,26 @@ class revisr_init
 	{
 		if (get_post_type() == 'revisr_commits')
 			{
-				unset( $actions['edit'] );
-		        unset( $actions['view'] );
-		        unset( $actions['trash'] );
-		        unset( $actions['inline hide-if-no-js'] );
-		        $actions['view'] = "<a href='#'>View</a>";
-		        $commit_meta = get_post_custom_values('commit_hash', get_the_ID());
-		        $commit_hash = unserialize($commit_meta[0]);
-		        $actions['revert'] = "<a href='" . get_admin_url() . "admin-post.php?action=revert&commit_hash={$commit_hash[0]}'>Revert</a>";
-		    	return $actions;
+				if (isset($actions)) {
+					unset( $actions['edit'] );
+			        unset( $actions['view'] );
+			        unset( $actions['trash'] );
+			        unset( $actions['inline hide-if-no-js'] );
+			        $actions['view'] = "<a href='#'>View</a>";
+			        $commit_meta = get_post_custom_values('commit_hash', get_the_ID());
+			        $commit_hash = unserialize($commit_meta[0]);
+			        $actions['revert'] = "<a href='" . get_admin_url() . "admin-post.php?action=revert&commit_hash={$commit_hash[0]}'>Revert</a>";
+			    	return $actions;
+				}
 			}
 	}
 
 	public function custom_views()
 	{
 		unset($views);
-		return $views;
+		if (isset($views)) {
+			return $views;
+		}
 	}
 
 	public function styles()
@@ -293,9 +300,22 @@ class revisr_init
 		wp_enqueue_style( 'revisr_css', plugins_url() . '/revisr/assets/css/revisr.css' );
 	}
 
-	public function scripts()
+	public function scripts($hook)
 	{
+		
+		wp_enqueue_script('alerts', plugins_url() . '/revisr/assets/js/dashboard.js');
 
+		if ($hook == 'post-new.php') {
+			wp_enqueue_script('pending_files', plugins_url() . '/revisr/assets/js/pending_files.js');
+		}
+		if ($hook == 'post.php') {
+			wp_enqueue_script('committed_files', plugins_url() . '/revisr/assets/js/committed_files.js');
+			if (isset($_GET['post'])) {
+				wp_localize_script('committed_files', 'committed_vars', array(
+					'post_id' => $_GET['post'])
+				);			
+			}
+		}
 	}
 
 	public function committed_files_meta()
@@ -331,13 +351,18 @@ class revisr_init
 		switch ($column) {
 			case "hash": 
 				$commit_meta = get_post_meta($post_id, "commit_hash");
-				$commit_hash = $commit_meta[0];
+				
+				if (isset($commit_meta[0])) {
+					$commit_hash = $commit_meta[0];
+				}
+
 				if (empty($commit_hash)) {
 					echo __("Unknown");
 				}
 				else {
 					echo $commit_hash[0];
 				}
+			break;
 		}
 
 	}

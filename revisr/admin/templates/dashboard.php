@@ -10,6 +10,8 @@
  */
 
 $dir = plugin_dir_path( __FILE__ );
+$loader_url = plugins_url( '../../assets/img/loader.gif' , __FILE__ );
+
 include_once $dir . '../includes/functions.php';
 
 ?>
@@ -18,8 +20,24 @@ include_once $dir . '../includes/functions.php';
 	<div id="icon-options-general" class="icon32"></div>
 	<h2>Revisr Dashboard</h2>
 	
+	<?php 
+		$pending = count_pending();
+		if ( $pending != 0 ){
+			if ( $pending == 1 ){
+				$text = "<p>There is currently 1 pending file.</p>";
+			}
+			else {
+				$text = "<p>There are currently {$pending} pending files.</p>";
+			}
+		}
+		else {
+			$text = "<p>There are currently no pending files.</p>";
+		}
+		echo "<div id='revisr_alert' class='updated'>{$text}</div>";
+	?>
+
 	<div id="poststuff">
-	
+	<div id="revisr_alert"></div>
 		<div id="post-body" class="metabox-holder columns-2">
 		
 			<!-- main content -->
@@ -31,35 +49,16 @@ include_once $dir . '../includes/functions.php';
 					
 						<h3><span>Recent Activity</span></h3>
 						<div class="inside">
-							<?php 
-								$pending = count_pending();
-								if ( $pending != 0 ){
-									if ( $pending == 1 ){
-										$text = "There is currently 1 pending file.";
-									}
-									else {
-										$text = "There are currently {$pending} pending files.";
-									}
-									echo "<div class='updated'><p>{$text}</p></div>";
-								}
-							?>
-							<table id="revisr-activity" class="widefat">
+							
+							<table class="widefat">
 								<thead>
 								    <tr>
 								        <th>Event</th>
 								        <th>Time</th>
 								    </tr>
 								</thead>
-								<tbody>
-								<?php
-									global $wpdb;
-									$revisr_events = $wpdb->get_results('SELECT * FROM ef_revisr ORDER BY id DESC LIMIT 10', ARRAY_A);
+								<tbody id="revisr_activity">
 
-									foreach ($revisr_events as $revisr_event) {
-										echo "<tr><td>{$revisr_event['message']}</td><td>{$revisr_event['time']}</td></tr>";
-									}
-
-								?>
 								</tbody>
 							</table>
 						</div> <!-- .inside -->
@@ -77,12 +76,12 @@ include_once $dir . '../includes/functions.php';
 					
 					<div class="postbox">
 					
-						<h3><span>Quick Actions</span></h3>
+						<h3><span>Quick Actions</span> <div id='loader'><img src="<?php echo $loader_url; ?>"/></div></h3>
 						<div class="inside">
-							<a href="<?php echo get_admin_url(); ?>post-new.php?post_type=revisr_commits" id="commit-btn" class="button button-primary quick-action-btn">Commit Changes</a>
-							<a href="<?php echo get_admin_url(); ?>post-new.php?post_type=revisr_commits" id="revert-btn" class="button button-primary quick-action-btn">Discard Changes</a>
-							<a href="<?php echo get_admin_url(); ?>admin-post.php?action=pull" class="button button-primary quick-action-btn">Pull Changes</a>
-							<a href="<?php echo get_admin_url(); ?>admin-post.php?action=push" class="button button-primary quick-action-btn">Push Changes</a>
+							<button id="commit-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;">Commit Changes</button>
+							<button id="discard-btn" class="button button-primary quick-action-btn">Discard Changes</button>
+							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;">Pull Changes</button>
+							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;">Push Changes</button>
 						</div> <!-- .inside -->
 						
 					</div> <!-- .postbox -->
@@ -101,10 +100,7 @@ include_once $dir . '../includes/functions.php';
 									foreach ($output as $key => $value){
 										$branch = substr($value, 2);
 										$disabled = "";
-										if ($branch == $_SESSION['branch']){
-											$branch = "<strong>" . substr($value, 2) . " (current branch)</strong>";
-											$disabled = " disabled";
-										}
+
 										echo "<tr><td>$branch</td><td width='70'><a href='" . get_admin_url() . "admin-post.php?action=checkout&branch={$branch}'>Checkout</a></td></tr>";
 									}
 								?>

@@ -21,4 +21,35 @@ function count_pending()
 	return count($output);
 }
 
+//Returns the status of a file. 
+function get_status($status)
+{
+	if (strpos($status, "M") !== false){
+		$status = "Modified";
+	}
+	elseif (strpos($status, "D") !== false){
+		$status = "Deleted";
+	}
+	elseif (strpos($status, "A") !== false){
+		$status = "Added";
+	}
+	elseif (strpos($status, "R") !== false){
+		$status = "Renamed";
+	}
+	elseif (strpos($status, "U") !== false){
+		$status = "Updated";
+	}
+	elseif (strpos($status, "C") !== false){
+		$status = "Copied";
+	}
+	elseif (strpos($status, "??") !== false){
+		$status = "Untracked";
+	}
+	else {
+		$status = $status;
+	}
+
+	return $status;
+}
+
 ?>
