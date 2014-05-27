@@ -28,7 +28,6 @@ class revisr_init
 
 		$this->table_name = $wpdb->prefix . "revisr";
 		$this->dir = plugin_dir_path( __FILE__ );
-		register_activation_hook( __FILE__, 'revisr_install' );
 
 		if ( is_admin() ) {
 			add_action( 'init', array($this, 'post_types') );
@@ -47,21 +46,6 @@ class revisr_init
 			add_filter( 'custom_menu_order', array($this, 'revisr_commits_submenu_order') );
 		}
 	}
-
-	public function revisr_install()
-	{
-		$sql = "CREATE TABLE IF NOT EXISTS $this->table_name (
-			id mediumint(9) NOT NULL AUTO_INCREMENT,
-			time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-			message TEXT,
-			event VARCHAR(42) NOT NULL,
-			UNIQUE KEY id (id)
-			);";
-		
-	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-	   	dbDelta( $sql );
-	   	add_option( "revisr_db_version", "1.0" );
-	}	
 
 	public function post_types()
 	{
@@ -115,12 +99,12 @@ class revisr_init
 	{
 		if (isset($_GET['action'])) {
 			if ($_GET['action'] == 'edit') {
-				add_meta_box( 'revisr_committed_files', 'Committed Files', array($this, 'committed_files_meta'), 'revisr_commits' );
+				add_meta_box( 'revisr_committed_files', 'Committed Files', array($this, 'committed_files_meta'), 'revisr_commits', 'normal', 'high' );
 			}			
 		}
 		
 		else {
-			add_meta_box( 'revisr_pending_files', 'Pending Files', array($this, 'pending_files_meta'), 'revisr_commits' );
+			add_meta_box( 'revisr_pending_files', 'Pending Files', array($this, 'pending_files_meta'), 'revisr_commits', 'normal', 'high' );
 		}
 	}
 
@@ -129,6 +113,7 @@ class revisr_init
 		$menu = add_menu_page( 'Dashboard', 'Revisr', 'manage_options', 'revisr', array($this, 'revisr_dashboard'), plugins_url( 'revisr/assets/img/white_18x20.png' ) );
 		add_submenu_page( 'revisr', 'Revisr - Dashboard', 'Dashboard', 'manage_options', 'revisr', array($this, 'revisr_dashboard') );
 		$settings_hook = add_submenu_page( 'revisr', 'Revisr - Settings', 'Settings', 'manage_options', 'revisr_settings', array($this, 'revisr_settings') );
+		add_submenu_page( NULL,'View Diff','View Diff','manage_options','view_diff', array($this, 'view_diff') );
 		add_action( 'load-'.$settings_hook, array($this, 'update_settings') );
 		add_action( 'admin_print_styles-' . $menu, array($this, 'styles') );
 		add_action( 'admin_print_scripts-' . $menu, array($this, 'scripts') );
@@ -150,6 +135,11 @@ class revisr_init
 	public function revisr_dashboard()
 	{
 		include_once $this->dir . "../templates/dashboard.php";
+	}
+
+	public function view_diff()
+	{
+		include_once $this->dir . "../templates/view_diff.php";
 	}
 
 	public function settings_init()
@@ -179,6 +169,14 @@ class revisr_init
             'email', 
             'Email', 
             array( $this, 'email_callback' ), 
+            'revisr_settings', 
+            'revisr_general_config'
+        );
+
+        add_settings_field(
+            'remote_url', 
+            'Remote URL', 
+            array( $this, 'remote_url_callback' ), 
             'revisr_settings', 
             'revisr_general_config'
         );
@@ -224,6 +222,15 @@ class revisr_init
         );
 	}
 
+	public function remote_url_callback()
+	{
+		printf(
+			'<input type="text" id="remote_url" name="revisr_settings[remote_url]" value="%s" class="regular-text" placeholder="https://user:pass@host.com/user/example.git" />
+			<br><span class="description">Optional. Useful if you need to authenticate over "https://" instead of SSH, or if the remote has not been set.</span>',
+			isset( $this->options['remote_url'] ) ? esc_attr( $this->options['remote_url']) : ''
+			);
+	}
+
 	public function gitignore_callback()
 	{
 		printf(
@@ -264,6 +271,9 @@ class revisr_init
 	      }
 	      if ($options['email'] != "") {
 	      	exec('git config user.email "' . $options['email'] . '"');
+	      }
+	      if ($options['remote_url'] != "") {
+	      	exec('git config remote.origin.url ' . $options['remote_url']);
 	      }
 	      chdir($this->dir);
 	   }

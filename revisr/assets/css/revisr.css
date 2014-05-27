@@ -57,3 +57,14 @@ td.hash.column-hash {
 #loader {
 	float: right;
 }
+
+#new_branch {
+	font-size: 12px;
+}
+
+.diff_added {
+	background-color: #cfc;
+}
+.diff_removed {
+	background-color: #fdd;
+}

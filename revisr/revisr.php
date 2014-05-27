@@ -45,6 +45,7 @@ class Revisr
 		//Git functions
 		add_action( 'publish_revisr_commits', array($this, 'commit') );
 		add_action( 'admin_post_revert', array($this, 'revert') );
+		add_action( 'admin_post_view_diff', array($this, 'view_diff') );
 		add_action( 'wp_ajax_new_commit', array($this, 'new_commit') );
 		add_action( 'wp_ajax_discard', array($this, 'discard') );
 		add_action( 'wp_ajax_checkout', array($this, 'checkout') );
@@ -57,13 +58,16 @@ class Revisr
 
 		//Recent activity
 		add_action( 'wp_ajax_recent_activity', array($this, 'recent_activity') );
+
+		//Install
+		register_activation_hook( __FILE__, array($this, 'revisr_install'));
 	}
 
 	public function commit()
 	{
 		$title = $_REQUEST['post_title'];
 		$this->git("add -A");
-		$this->git("commit -am '" . get_the_title() . "'");
+		$this->git("commit -am '" . $title . "'");
 		$commit_hash = $this->git("log --pretty=format:'%h' -n 1");
 		$this->git("push origin {$this->current_branch}");
 		add_post_meta( get_the_ID(), 'commit_hash', $commit_hash );
@@ -109,7 +113,7 @@ class Revisr
 		$branch = $_REQUEST['branch'];
 		$this->git("reset --hard HEAD");
 		$this->git("checkout {$branch}");
-		$this->log("Reverted to commit #{$commit_hash}.", "revert");
+		$this->log("Checked out branch: {$branch}.", "branch");
 		$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . "was switched to the branch {$branch}.");
 		echo "<p>Successfully switched to branch {$branch}</p>";
 		exit;
@@ -242,7 +246,13 @@ class Revisr
 					$short_status = substr($result, 0, 3);
 					$file = substr($result, 3);
 					$status = get_status($short_status);
-					echo "<tr><td>{$file}</td><td>{$status}</td></td>";
+
+					if ($status != "Untracked") {
+						echo "<tr><td><a href='" . get_admin_url() . "admin.php?page=view_diff&file={$file}' target='_blank'>{$file}</a></td><td>{$status}</td></td>";
+					}
+					else {
+						echo "<tr><td>{$file}</td><td>{$status}</td></td>";
+					}
 				}
 			?>
 			</tbody>
@@ -259,6 +269,7 @@ class Revisr
 
 	}
 
+	//Displays on the plugin dashboard via AJAX.
 	public function recent_activity()
 	{
 		global $wpdb;
@@ -299,7 +310,22 @@ class Revisr
 			$headers = "Content-Type: text/html; charset=ISO-8859-1\r\n";
 			wp_mail($email, $subject, $message, $headers);
 		}
-	}	
+	}
+
+	public function revisr_install()
+	{
+		$sql = "CREATE TABLE IF NOT EXISTS $this->table_name (
+			id mediumint(9) NOT NULL AUTO_INCREMENT,
+			time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+			message TEXT,
+			event VARCHAR(42) NOT NULL,
+			UNIQUE KEY id (id)
+			);";
+		
+	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	   	dbDelta( $sql );
+	   	add_option( "revisr_db_version", "1.0" );
+	}		
 }
 
 $revisr = new Revisr;

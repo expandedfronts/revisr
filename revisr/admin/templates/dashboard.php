@@ -88,7 +88,7 @@ include_once $dir . '../includes/functions.php';
 
 					<div class="postbox">
 					
-						<h3><span>Branches</span></h3>
+						<h3><span>Branches <a id="new_branch" href="#">(Create Branch)</a> </span></h3>
 						<div class="inside">
 							<table class="widefat">
 								<?php
@@ -105,6 +105,7 @@ include_once $dir . '../includes/functions.php';
 									}
 								?>
 							</table>
+
 						</div> <!-- .inside -->
 						
 					</div> <!-- .postbox -->
