@@ -338,8 +338,11 @@ class revisr_init
 		$current_dir = getcwd();
 		chdir(ABSPATH);
 		exec("git status --short", $output);
+		exec("git rev-parse --abbrev-ref HEAD", $branch);
 		chdir($current_dir);
 		add_post_meta( get_the_ID(), 'committed_files', $output );
+		add_post_meta( get_the_ID(), 'files_changed', count($output) );
+		add_post_meta( get_the_ID(), 'branch', $branch );
 		echo "<div id='pending_files_result'></div>";
 	}
 
@@ -349,6 +352,8 @@ class revisr_init
 			'cb' => '<input type="checkbox" />',
 			'hash' => __('ID'),
 			'title' => __('Commit'),
+			'branch' => __('Branch'),			
+			'files_changed' => __('Files Changed'),
 			'date' => __('Date'));
 		return $columns;
 	}
@@ -360,7 +365,7 @@ class revisr_init
 		$post_id = get_the_ID();
 		switch ($column) {
 			case "hash": 
-				$commit_meta = get_post_meta($post_id, "commit_hash");
+				$commit_meta = get_post_meta( $post_id, "commit_hash" );
 				
 				if (isset($commit_meta[0])) {
 					$commit_hash = $commit_meta[0];
@@ -371,6 +376,18 @@ class revisr_init
 				}
 				else {
 					echo $commit_hash[0];
+				}
+			break;
+			case "branch":
+				$branch_meta = get_post_meta( $post_id, "branch" );
+				if ( isset($branch_meta[0]) ) {
+					echo $branch_meta[0][0];
+				}
+			break;			
+			case "files_changed":
+				$files_meta = get_post_meta( $post_id, "files_changed" );
+				if ( isset($files_meta[0]) ) {
+					echo $files_meta[0];
 				}
 			break;
 		}
