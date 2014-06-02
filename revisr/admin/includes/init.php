@@ -34,6 +34,7 @@ class revisr_init
 			add_action( 'admin_init', array($this, 'settings_init'));
 			add_action( 'load-post.php', array($this, 'meta') );
 			add_action( 'load-post-new.php', array($this, 'meta') );
+			add_action( 'pre_get_posts', array($this, 'filters') );
 			add_action( 'views_edit-revisr_commits', array($this, 'custom_views') );
 			add_action( 'post_row_actions', array($this, 'custom_actions') );
 			add_action( 'admin_menu', array($this, 'menus'), 2 );
@@ -124,7 +125,7 @@ class revisr_init
 		global $submenu;
 
 	    $arr = array();
-	    $arr[] = $submenu['revisr'][0];     //my original order was 5,10,15,16,17,18
+	    $arr[] = $submenu['revisr'][0];
 	    $arr[] = $submenu['revisr'][2];
 	    $arr[] = $submenu['revisr'][1];
 	    $submenu['revisr'] = $arr;
@@ -279,7 +280,7 @@ class revisr_init
 	   }
 	}
 
-	public function custom_actions()
+	public function custom_actions($actions)
 	{
 		if (get_post_type() == 'revisr_commits')
 			{
@@ -297,9 +298,55 @@ class revisr_init
 			}
 	}
 
-	public function custom_views()
+	public function filters($commits)
 	{
-		unset($views);
+		if ( isset($_GET['branch']) ) {
+			$commits->set( 'meta_key', 'branch' );
+			$commits->set( 'meta_value', $_GET['branch'] );
+		}
+		$commits->set('post_type', 'revisr_commits');
+
+		return $commits;
+	}
+
+	public function count_commits($branch)
+	{
+		if ($branch == "all") {
+			$num_commits = $this->wpdb->get_results("SELECT * FROM " . $this->wpdb->prefix . "postmeta WHERE meta_key = 'branch'");
+		}
+		else {
+			$num_commits = $this->wpdb->get_results("SELECT * FROM " . $this->wpdb->prefix . "postmeta WHERE meta_key = 'branch' AND meta_value = '".$branch."'");
+		}
+		return count($num_commits);
+	}
+
+	public function custom_views($views)
+	{
+		$dir = getcwd();
+		chdir(ABSPATH);
+		exec("git branch", $output);
+		chdir($dir);
+
+		global $wp_query;
+
+		foreach ($output as $key => $value) {
+			$branch = substr($value, 2);
+    	    $class = ($wp_query->query_vars['meta_value'] == $branch) ? ' class="current"' : '';
+	    	$views["$branch"] = sprintf(__('<a href="%s"'. $class .'>' . ucwords($branch) . ' <span class="count">(%d)</span></a>'),
+	        admin_url('edit.php?post_type=revisr_commits&branch='.$branch),
+	        $this->count_commits($branch));
+		}
+		if (!isset($_GET['branch']) && !isset($_GET['post_status'])) {
+			$class = 'class="current"';
+		}
+		else {
+			$class = '';
+		}
+		$views['all'] = sprintf(__('<a href="%s"' . $class . '>All <span class="count">(%d)</span></a>' ),
+			admin_url('edit.php?post_type=revisr_commits'),
+			$this->count_commits("all"));
+		unset($views['publish']);
+		//unset($views['trash']);
 		if (isset($views)) {
 			return $views;
 		}
@@ -342,7 +389,7 @@ class revisr_init
 		chdir($current_dir);
 		add_post_meta( get_the_ID(), 'committed_files', $output );
 		add_post_meta( get_the_ID(), 'files_changed', count($output) );
-		add_post_meta( get_the_ID(), 'branch', $branch );
+		add_post_meta( get_the_ID(), 'branch', $branch[0] );
 		echo "<div id='pending_files_result'></div>";
 	}
 
@@ -381,7 +428,7 @@ class revisr_init
 			case "branch":
 				$branch_meta = get_post_meta( $post_id, "branch" );
 				if ( isset($branch_meta[0]) ) {
-					echo $branch_meta[0][0];
+					echo $branch_meta[0];
 				}
 			break;			
 			case "files_changed":
