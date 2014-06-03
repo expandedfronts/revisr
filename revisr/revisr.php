@@ -92,11 +92,11 @@ class Revisr
 		$this->git("reset --soft HEAD@{1}");
 		$this->git("add -A");
 		$commit_hash = $this->git("push origin {$this->current_branch}");
-		$this->git("commit -am 'Reverted to commit: #" . $commit_hash . "'");
-		$this->log("Reverted to commit #{$commit_hash}.", "revert");
-		$this->notify(get_bloginfo() . " - Commit Reverted", get_bloginfo() . "was reverted to commit #{commit}.");
-		echo "<p>Successfully reverted to commit #{$commit}</p>";
-		exit;
+		$this->git("commit -am 'Reverted to commit: #" . $commit . "'");
+		$this->log("Reverted to commit #{$commit}.", "revert");
+		$this->notify(get_bloginfo() . " - Commit Reverted", get_bloginfo() . " was reverted to commit #{$commit}.");
+		$url = get_admin_url() . "admin.php?page=revisr&revert=success&commit={$commit}";
+		wp_redirect($url);
 	}
 
 	public function discard()

@@ -25,6 +25,9 @@ include_once $dir . '../includes/functions.php';
 		if ( $_GET['checkout'] == "success" ){
 			$text = "<p>Successfully checked out branch <strong>{$_GET['branch']}</strong>.</p>";
 		}
+		else if ( $_GET['revert'] == "success"){
+			$text = "<p>Successfully reverted to commit <strong>#{$_GET['commit']}</strong>.</p>";
+		}
 		else if ( $pending != 0 ){
 			if ( $pending == 1 ){
 				$text = "<p>There is currently 1 pending file.</p>";
@@ -81,10 +84,10 @@ include_once $dir . '../includes/functions.php';
 					
 						<h3><span>Quick Actions</span> <div id='loader'><img src="<?php echo $loader_url; ?>"/></div></h3>
 						<div class="inside">
-							<button id="commit-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;">Commit Changes</button>
-							<button id="discard-btn" class="button button-primary quick-action-btn">Discard Changes</button>
-							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;">Pull Changes</button>
-							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;">Push Changes</button>
+							<button id="commit-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;">| Commit Changes</button>
+							<button id="discard-btn" class="button button-primary quick-action-btn">| Discard Changes</button>
+							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;">| Push Changes</button>
+							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;">| Pull Changes</button>
 						</div> <!-- .inside -->
 						
 					</div> <!-- .postbox -->

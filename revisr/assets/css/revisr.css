@@ -26,7 +26,7 @@ td.hash.column-hash {
 
 .quick-action-btn {
 	width: 100%;
-	text-align: center;
+	text-align: left !important;
 	margin-bottom: 4px !important;
 }
 
@@ -34,6 +34,15 @@ td.hash.column-hash {
 	background-color: #5cb85c;
 	border-color: #4cae4c;
 	color: #fff;
+}
+
+#commit-btn:before {
+	content: "\f132";
+	margin-top:5px;
+	display: inline-block;
+	color: #fff;
+	-webkit-font-smoothing: antialiased;
+	font: normal 20px/1 'dashicons';
 }
 
 #commit-btn:hover {
@@ -48,10 +57,37 @@ td.hash.column-hash {
 	color: #fff;
 }
 
-#revert-btn:hover {
+#discard-btn:before {
+	content: "\f158";
+	margin-top: 5px;
+	display: inline-block;
+	color: #fff;
+	-webkit-font-smoothing: antialiased;
+	font: normal 20px/1 'dashicons';
+}
+
+#discard-btn:hover {
 	background-color: #d43f3a;
 	border-color: #d43f3a;
 	color: #fff;
+}
+
+#push-btn:before {
+	content: "\f142";
+	margin-top: 5px;
+	display: inline-block;
+	color: #fff;
+	-webkit-font-smoothing: antialiased;
+	font: normal 20px/1 'dashicons';
+}
+
+#pull-btn:before {
+	content: "\f140";
+	margin-top: 5px;
+	display: inline-block;
+	color: #fff;
+	-webkit-font-smoothing: antialiased;
+	font: normal 20px/1 'dashicons';
 }
 
 #loader {
