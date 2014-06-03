@@ -11,6 +11,8 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+include "functions.php";
+
 class revisr_init
 {
 	
@@ -289,10 +291,13 @@ class revisr_init
 			        unset( $actions['view'] );
 			        unset( $actions['trash'] );
 			        unset( $actions['inline hide-if-no-js'] );
-			        $actions['view'] = "<a href='#'>View</a>";
+
+			        $url = get_admin_url() . "post.php?post=" . get_the_ID() . "&action=edit";
+
+			        $actions['view'] = "<a href='{$url}'>View</a>";
 			        $commit_meta = get_post_custom_values('commit_hash', get_the_ID());
 			        $commit_hash = unserialize($commit_meta[0]);
-			        $actions['revert'] = "<a href='" . get_admin_url() . "admin-post.php?action=revert&commit_hash={$commit_hash[0]}'>Revert</a>";
+			        $actions['revert'] = "<a href='" . get_admin_url() . "admin-post.php?action=revert&commit_hash={$commit_hash[0]}&post_id=" . get_the_ID() ."'>Revert</a>";
 			    	return $actions;
 				}
 			}

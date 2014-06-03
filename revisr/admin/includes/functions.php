@@ -52,4 +52,14 @@ function get_status($status)
 	return $status;
 }
 
+function current_branch()
+{
+	$branch = "git rev-parse --abbrev-ref HEAD";
+	$dir = getcwd();
+	chdir(ABSPATH);
+	exec($branch, $output);
+	chdir($dir);
+	return $output[0];
+}
+
 ?>

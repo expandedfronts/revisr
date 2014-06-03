@@ -93,10 +93,11 @@ class Revisr
 		$this->git("add -A");
 		$commit_hash = $this->git("push origin {$this->current_branch}");
 		$this->git("commit -am 'Reverted to commit: #" . $commit . "'");
-		$this->log("Reverted to commit #{$commit}.", "revert");
+		$post_url = get_admin_url() . "post.php?post=" . $_GET['post_id'] . "&action=edit";
+		$this->log("Reverted to commit <a href='{$post_url}'>#{$commit}</a>.", "revert");
 		$this->notify(get_bloginfo() . " - Commit Reverted", get_bloginfo() . " was reverted to commit #{$commit}.");
-		$url = get_admin_url() . "admin.php?page=revisr&revert=success&commit={$commit}";
-		wp_redirect($url);
+		$redirect = get_admin_url() . "admin.php?page=revisr&revert=success&commit={$commit}&id=" . $_GET['post_id'];
+		wp_redirect($redirect);
 	}
 
 	public function discard()
@@ -155,7 +156,7 @@ class Revisr
 		    $output = unserialize($file);
 		}
 
-		echo "<br><strong>" . count($output) . "</strong> files were included in this commit. (<a href='" . get_admin_url() . "admin.php?page=revisr'>view all</a>).<br><br>";
+		echo "<br><strong>" . count($output) . "</strong> files were included in this commit.<br><br>";
 
 		if (isset($_POST['pagenum'])) {
 			$current_page = $_POST['pagenum'];
@@ -213,7 +214,7 @@ class Revisr
 	{
 		$output = $this->git("status --short");
 
-		echo "<br>There are <strong>" . count($output) . "</strong> pending files that will be added to this commit. (<a href='" . get_admin_url() . "admin.php?page=revisr'>view all</a>).<br><br>";
+		echo "<br>There are <strong>" . count($output) . "</strong> pending files that will be added to this commit on branch <strong>" . current_branch() . "</strong>.<br><br>";
 
 		$current_page = $_POST['pagenum'];
 		$num_rows = count($output);

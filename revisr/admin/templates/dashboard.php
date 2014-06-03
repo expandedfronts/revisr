@@ -26,14 +26,15 @@ include_once $dir . '../includes/functions.php';
 			$text = "<p>Successfully checked out branch <strong>{$_GET['branch']}</strong>.</p>";
 		}
 		else if ( $_GET['revert'] == "success"){
-			$text = "<p>Successfully reverted to commit <strong>#{$_GET['commit']}</strong>.</p>";
+			$url = get_admin_url() . "post.php?post={$_GET['id']}&action=edit";
+			$text = "<p>Successfully reverted to commit <a href='{$url}'><strong>#{$_GET['commit']}</strong></a>.</p>";
 		}
 		else if ( $pending != 0 ){
 			if ( $pending == 1 ){
-				$text = "<p>There is currently 1 pending file.</p>";
+				$text = "<p>There is currently 1 pending file on branch <strong>" . current_branch() . "</strong>.</p>";
 			}
 			else {
-				$text = "<p>There are currently {$pending} pending files.</p>";
+				$text = "<p>There are currently {$pending} pending files on branch <strong>" . current_branch() . "</strong>.</p>";
 			}
 		}
 		else {
