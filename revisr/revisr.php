@@ -45,10 +45,10 @@ class Revisr
 		//Git functions
 		add_action( 'publish_revisr_commits', array($this, 'commit') );
 		add_action( 'admin_post_revert', array($this, 'revert') );
+		add_action( 'admin_post_checkout', array($this, 'checkout') );
 		add_action( 'admin_post_view_diff', array($this, 'view_diff') );
 		add_action( 'wp_ajax_new_commit', array($this, 'new_commit') );
 		add_action( 'wp_ajax_discard', array($this, 'discard') );
-		add_action( 'wp_ajax_checkout', array($this, 'checkout') );
 		add_action( 'wp_ajax_push', array($this, 'push') );
 		add_action( 'wp_ajax_pull', array($this, 'pull') );
 
@@ -114,10 +114,9 @@ class Revisr
 		$this->git("reset --hard HEAD");
 		$this->git("checkout {$branch}");
 		$this->log("Checked out branch: {$branch}.", "branch");
-		$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . "was switched to the branch {$branch}.");
-		echo "<p>Successfully switched to branch {$branch}</p>";
-		exit;
-
+		$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the branch {$branch}.");
+		$url = get_admin_url() . "admin.php?page=revisr&branch={$branch}&checkout=success";
+		wp_redirect($url);
 	}
 
 	public function push()

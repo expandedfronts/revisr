@@ -22,7 +22,10 @@ include_once $dir . '../includes/functions.php';
 	
 	<?php 
 		$pending = count_pending();
-		if ( $pending != 0 ){
+		if ( $_GET['checkout'] == "success" ){
+			$text = "<p>Successfully checked out branch <strong>{$_GET['branch']}</strong>.</p>";
+		}
+		else if ( $pending != 0 ){
 			if ( $pending == 1 ){
 				$text = "<p>There is currently 1 pending file.</p>";
 			}
@@ -99,9 +102,13 @@ include_once $dir . '../includes/functions.php';
 
 									foreach ($output as $key => $value){
 										$branch = substr($value, 2);
-										$disabled = "";
-
-										echo "<tr><td>$branch</td><td width='70'><a href='" . get_admin_url() . "admin-post.php?action=checkout&branch={$branch}'>Checkout</a></td></tr>";
+										
+										if (substr( $value, 0, 1 ) === "*"){
+											echo "<tr><td><strong>$branch</strong></td><td width='70'><a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Checked Out</a></td></tr>";
+										}
+										else {
+											echo "<tr><td>$branch</td><td width='70'><a class='button branch-btn' href='" . get_admin_url() . "admin-post.php?action=checkout&branch={$branch}'>Checkout</a></td></tr>";
+										}
 									}
 								?>
 							</table>
