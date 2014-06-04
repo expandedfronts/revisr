@@ -56,6 +56,9 @@ class Revisr
 		add_action( 'wp_ajax_pending_files', array($this, 'pending_files') );
 		add_action( 'wp_ajax_committed_files', array($this, 'committed_files') );
 
+		//For viewing diffs and other modals
+		add_thickbox();
+
 		//Recent activity
 		add_action( 'wp_ajax_recent_activity', array($this, 'recent_activity') );
 
@@ -98,6 +101,34 @@ class Revisr
 		$this->notify(get_bloginfo() . " - Commit Reverted", get_bloginfo() . " was reverted to commit #{$commit}.");
 		$redirect = get_admin_url() . "admin.php?page=revisr&revert=success&commit={$commit}&id=" . $_GET['post_id'];
 		wp_redirect($redirect);
+	}
+
+	public function view_diff()
+	{
+		?>
+		<html>
+		<head><title>View Diff</title>
+		</head>
+		<body>
+		<?php
+		$file = $_GET['file'];
+		$diff = $this->git("diff {$file}");
+
+		foreach ($diff as $line) {
+			if (substr( $line, 0, 1 ) === "+") {
+				echo "<span class='diff_added' style='background-color:#cfc;'>" . htmlspecialchars($line) . "</span><br>";
+			}
+			else if (substr( $line, 0, 1 ) === "-") {
+				echo "<span class='diff_removed' style='background-color:#fdd;'>" . htmlspecialchars($line) . "</span><br>";
+			}
+			else {
+				echo htmlspecialchars($line) . "<br>";
+			}	
+		}
+		?>
+		</body>
+		</html>
+		<?
 	}
 
 	public function discard()
@@ -246,9 +277,8 @@ class Revisr
 					$short_status = substr($result, 0, 3);
 					$file = substr($result, 3);
 					$status = get_status($short_status);
-
 					if ($status != "Untracked") {
-						echo "<tr><td><a href='" . get_admin_url() . "admin.php?page=view_diff&file={$file}' target='_blank'>{$file}</a></td><td>{$status}</td></td>";
+						echo "<tr><td><a href='" . get_admin_url() . "admin-post.php?action=view_diff&file={$file}&TB_iframe=true&width=600&height=550' title='View Diff' class='thickbox'>{$file}</a></td><td>{$status}</td></td>";
 					}
 					else {
 						echo "<tr><td>{$file}</td><td>{$status}</td></td>";
