@@ -46,6 +46,7 @@ class Revisr
 		add_action( 'publish_revisr_commits', array($this, 'commit') );
 		add_action( 'admin_post_revert', array($this, 'revert') );
 		add_action( 'admin_post_checkout', array($this, 'checkout') );
+		add_action( 'admin_post_create_branch', array($this, 'create_branch') );
 		add_action( 'admin_post_view_diff', array($this, 'view_diff') );
 		add_action( 'wp_ajax_new_commit', array($this, 'new_commit') );
 		add_action( 'wp_ajax_discard', array($this, 'discard') );
@@ -144,11 +145,48 @@ class Revisr
 	{
 		$branch = $_REQUEST['branch'];
 		$this->git("reset --hard HEAD");
-		$this->git("checkout {$branch}");
-		$this->log("Checked out branch: {$branch}.", "branch");
-		$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the branch {$branch}.");
-		$url = get_admin_url() . "admin.php?page=revisr&branch={$branch}&checkout=success";
-		wp_redirect($url);
+		if ($_REQUEST['new_branch'] == "true"){
+			$this->git("checkout -b {$branch}");
+			$this->log("Checked out new branch: {$branch}.", "branch");
+			$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the new branch {$branch}.");
+			echo "<script>
+					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr&checkout=success&branch={$branch}'
+				</script>";
+			exit;
+		}
+		else {
+			$this->git("checkout {$branch}");
+			$this->log("Checked out branch: {$branch}.", "branch");
+			$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the branch {$branch}.");
+			$url = get_admin_url() . "admin.php?page=revisr&branch={$branch}&checkout=success";
+			wp_redirect($url);
+		}
+
+	}
+
+	public function create_branch()
+	{
+		$styles_url = get_admin_url() . "load-styles.php?c=0&dir=ltr&load=dashicons,admin-bar,wp-admin,buttons,wp-auth-check&ver=3.9.1";
+		?>
+		<link href="<?php echo $styles_url; ?>" rel="stylesheet" type="text/css">
+		<div class="container" style="padding:10px">
+			
+			<form action="<?php echo get_admin_url(); ?>admin-post.php?action=checkout" method="post">
+			<label for="branch_name"><strong>Branch Name:</strong></label>
+			<input id="branch_name" type="text" name="branch" style="width:100%" />
+			<input type="hidden" name="new_branch" value="true" class="regular-text"/>
+			<button class="button button-primary" style="
+				background-color: #5cb85c;
+				height: 30px;
+				width: 100%;
+				margin-top:5px;
+				border-radius: 4px;
+				border: 1px #4cae4c solid;
+				color: #fff;">Create Branch</button>
+			</form>
+			<p style="font-style:italic;color:#BBB;text-align:center;">New branch will be checked out.</p>
+		</div>
+		<?
 	}
 
 	public function push()

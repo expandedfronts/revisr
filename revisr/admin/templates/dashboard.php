@@ -95,7 +95,7 @@ include_once $dir . '../includes/functions.php';
 
 					<div class="postbox">
 					
-						<h3><span>Branches <a id="new_branch" href="#">(Create Branch)</a> </span></h3>
+						<h3><span>Branches <a id="new_branch" href="<?php echo get_admin_url(); ?>admin-post.php?action=create_branch&TB_iframe=true&width=250&height=150" title="Create Branch" class="thickbox">(Create Branch)</a> </span></h3>
 						<div class="inside">
 							<table class="widefat">
 								<?php
