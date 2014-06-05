@@ -6,17 +6,15 @@
  * Integrates several key git functions into the WordPress admin.
  *
  * @package   Revisr
- * @author    Matt Shaw <matt@expandedfronts.com>
- * @license   GPL-2.0+
+ * @license   GPLv3
  * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts, LLC
+ * @copyright 2014 Expanded Fronts
  *
  * Plugin Name:       Revisr
  * Plugin URI:        https://revisr.io/
  * Description:       A plugin that allows developers to manage WordPress websites with Git repositories.
  * Version:           1.0.0
- * Author:            Expanded Fronts, LLC
- * Author URI:        http://expandedfronts.com/
+ * Author:            Expanded Fronts
  */
 
 include_once 'admin/includes/init.php';

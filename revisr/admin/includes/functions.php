@@ -5,10 +5,9 @@
  * Common functions used throughout the plugin.
  *
  * @package   Revisr
- * @author    Matt Shaw <matt@expandedfronts.com>
- * @license   GPL-2.0+
+ * @license   GPLv3
  * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts, LLC
+ * @copyright 2014 Expanded Fronts
  */
 
 //Main git function used throughout the plugin.

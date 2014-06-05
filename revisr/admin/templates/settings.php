@@ -3,10 +3,9 @@
  * Displays the settings page.
  *
  * @package   Revisr
- * @author    Matt Shaw <matt@expandedfronts.com>
- * @license   GPL-2.0+
+ * @license   GPLv3
  * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts, LLC
+ * @copyright 2014 Expanded Fronts
  */
 
 ?>
