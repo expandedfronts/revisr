@@ -21,10 +21,10 @@ include_once $dir . '../includes/functions.php';
 	
 	<?php 
 		$pending = count_pending();
-		if ( $_GET['checkout'] == "success" ){
+		if ( isset($_GET['checkout']) && $_GET['checkout'] == "success" ){
 			$text = "<p>Successfully checked out branch <strong>{$_GET['branch']}</strong>.</p>";
 		}
-		else if ( $_GET['revert'] == "success"){
+		else if ( isset($_GET['revert']) && $_GET['revert'] == "success"){
 			$url = get_admin_url() . "post.php?post={$_GET['id']}&action=edit";
 			$text = "<p>Successfully reverted to commit <a href='{$url}'><strong>#{$_GET['commit']}</strong></a>.</p>";
 		}

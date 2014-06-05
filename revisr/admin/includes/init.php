@@ -357,12 +357,14 @@ class revisr_init
 	public function styles()
 	{
 		wp_enqueue_style( 'revisr_css', plugins_url() . '/revisr/assets/css/revisr.css' );
+		wp_enqueue_style('thickbox');
 	}
 
 	public function scripts($hook)
 	{
 		
 		wp_enqueue_script('alerts', plugins_url() . '/revisr/assets/js/dashboard.js');
+		wp_enqueue_script('thickbox');
 
 		if ($hook == 'post-new.php') {
 			wp_enqueue_script('pending_files', plugins_url() . '/revisr/assets/js/pending_files.js');
@@ -385,10 +387,8 @@ class revisr_init
 	public function pending_files_meta()
 	{
 		$output = git("status --short");
-		$branch = git("rev-parse --abbrev-ref HEAD");
 		add_post_meta( get_the_ID(), 'committed_files', $output );
 		add_post_meta( get_the_ID(), 'files_changed', count($output) );
-		add_post_meta( get_the_ID(), 'branch', $branch[0] );
 		echo "<div id='pending_files_result'></div>";
 	}
 

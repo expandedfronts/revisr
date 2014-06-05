@@ -13,7 +13,7 @@
 <div class="wrap">
 	<h2>Revisr Settings</h2>
 	<?php
-		if ($_GET['settings-updated'] == "true") {
+		if (isset($_GET['settings-updated']) && $_GET['settings-updated'] == "true") {
 			echo "<div id='revisr_alert' class='updated'><p>Settings updated successfully.</p></div>";
 		}
 	?>

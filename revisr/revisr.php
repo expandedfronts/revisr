@@ -62,7 +62,7 @@ class Revisr
 		//Declarations
 		global $wpdb;
 		$this->wpdb = $wpdb;
-		$this->table_name = $wpdb->prefix . "revisr";
+		$this->table_name = $this->wpdb->prefix . "revisr";
 		$this->time = current_time( 'mysql' );
 		$init = new revisr_init;
 		$this->current_dir = getcwd();
@@ -83,9 +83,6 @@ class Revisr
 		add_action( 'wp_ajax_pending_files', array($this, 'pending_files') );
 		add_action( 'wp_ajax_committed_files', array($this, 'committed_files') );
 
-		//For viewing diffs and other modals
-		add_thickbox();
-
 		//Recent activity
 		add_action( 'wp_ajax_recent_activity', array($this, 'recent_activity') );
 
@@ -105,6 +102,8 @@ class Revisr
 		$commit_hash = git("log --pretty=format:'%h' -n 1");
 		git("push origin {$this->current_branch}");
 		add_post_meta( get_the_ID(), 'commit_hash', $commit_hash );
+		$branch = git("rev-parse --abbrev-ref HEAD");
+		add_post_meta( get_the_ID(), 'branch', $branch[0] );
 		$author = the_author();
 		$view_link = get_admin_url() . "post.php?post=" . get_the_ID() . "&action=edit";
 		$this->log("Committed <a href='{$view_link}'>#{$commit_hash[0]}</a> to the repository.", "commit");
@@ -194,7 +193,7 @@ class Revisr
 	{
 		$branch = $_REQUEST['branch'];
 		git("reset --hard HEAD");
-		if ($_REQUEST['new_branch'] == "true"){
+		if (isset($_REQUEST['new_branch']) && $_REQUEST['new_branch'] == "true"){
 			git("checkout -b {$branch}");
 			$this->log("Checked out new branch: {$branch}.", "branch");
 			$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the new branch {$branch}.");
@@ -404,7 +403,7 @@ class Revisr
 	public function recent_activity()
 	{
 		global $wpdb;
-		$revisr_events = $wpdb->get_results('SELECT * FROM ef_revisr ORDER BY id DESC LIMIT 10', ARRAY_A);
+		$revisr_events = $wpdb->get_results("SELECT * FROM $this->table_name ORDER BY id DESC LIMIT 10", ARRAY_A);
 
 		foreach ($revisr_events as $revisr_event) {
 			echo "<tr><td>{$revisr_event['message']}</td><td>{$revisr_event['time']}</td></tr>";
