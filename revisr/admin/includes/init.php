@@ -155,7 +155,7 @@ class revisr_init
 
         add_settings_section(
             'revisr_general_config', // ID
-            'General Configuration', // Title
+            '', // Title
             array( $this, 'general_config_callback' ), // Callback
             'revisr_settings' // Page
         );  
@@ -204,7 +204,7 @@ class revisr_init
 
 	public function general_config_callback()
 	{
-		print "Enter your settings below:";
+		//print "Enter your settings below:";
 	}
 
 	public function username_callback()
@@ -270,13 +270,13 @@ class revisr_init
 	      file_put_contents(".gitignore", $this->options['gitignore']);
 	      $options = get_option('revisr_settings');
 	      if ($options['username'] != "") {
-	      	exec('git config user.name "' . $options['username'] . '"');
+	      	git('config user.name "' . $options['username'] . '"');
 	      }
 	      if ($options['email'] != "") {
-	      	exec('git config user.email "' . $options['email'] . '"');
+	      	git('config user.email "' . $options['email'] . '"');
 	      }
 	      if ($options['remote_url'] != "") {
-	      	exec('git config remote.origin.url ' . $options['remote_url']);
+	      	git('config remote.origin.url ' . $options['remote_url']);
 	      }
 	      chdir($this->dir);
 	   }
@@ -327,10 +327,8 @@ class revisr_init
 
 	public function custom_views($views)
 	{
-		$dir = getcwd();
-		chdir(ABSPATH);
-		exec("git branch", $output);
-		chdir($dir);
+
+		$output = git("branch");
 
 		global $wp_query;
 
@@ -387,11 +385,8 @@ class revisr_init
 
 	public function pending_files_meta()
 	{
-		$current_dir = getcwd();
-		chdir(ABSPATH);
-		exec("git status --short", $output);
-		exec("git rev-parse --abbrev-ref HEAD", $branch);
-		chdir($current_dir);
+		$output = git("status --short");
+		$branch = git("rev-parse --abbrev-ref HEAD");
 		add_post_meta( get_the_ID(), 'committed_files', $output );
 		add_post_meta( get_the_ID(), 'files_changed', count($output) );
 		add_post_meta( get_the_ID(), 'branch', $branch[0] );

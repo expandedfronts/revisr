@@ -2,7 +2,7 @@
 /**
  * functions.php
  *
- * Common functions used in the plugin.
+ * Common functions used throughout the plugin.
  *
  * @package   Revisr
  * @author    Matt Shaw <matt@expandedfronts.com>
@@ -11,14 +11,29 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+//Main git function used throughout the plugin.
+function git($args)
+{
+	$current_dir = getcwd();
+	$cmd = "git $args";
+	chdir(ABSPATH);
+	exec($cmd, $output);
+	chdir($current_dir);
+	return $output;	
+}
+
+//Returns the current branch.
+function current_branch()
+{
+	$output = git("rev-parse --abbrev-ref HEAD");
+	return $output[0];
+}
+
 //Returns the number of pending files.
 function count_pending()
 {
-	$current_dir = getcwd();
-	chdir(ABSPATH);
-	exec("git status --short", $output);
-	chdir($current_dir);
-	return count($output);
+	$pending = git("status --short");
+	return count($pending);
 }
 
 //Returns the status of a file. 
@@ -51,15 +66,3 @@ function get_status($status)
 
 	return $status;
 }
-
-function current_branch()
-{
-	$branch = "git rev-parse --abbrev-ref HEAD";
-	$dir = getcwd();
-	chdir(ABSPATH);
-	exec($branch, $output);
-	chdir($dir);
-	return $output[0];
-}
-
-?>

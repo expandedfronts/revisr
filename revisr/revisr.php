@@ -24,13 +24,41 @@ include_once 'admin/includes/functions.php';
 
 class Revisr
 {
-
+  /**
+   * Stores the database connection.
+   * @var string
+   */
 	public $wpdb;
+
+   /**
+    * The current time.
+    * @var string
+    */
 	public $time;
+
+   /**
+    * The name of the custom table.
+    * @var string
+    */
 	public $table_name;
+
+   /**
+    * The current working directory.
+    * @var string
+    */
 	private $current_dir;
+
+   /**
+    * The current branch in git.
+    * @var string
+    */	
 	private $current_branch;
 
+
+	/**
+	* Initializes database connection and properties.
+	* @access public
+	*/
 	public function __construct()
 	{
 		//Declarations
@@ -67,13 +95,17 @@ class Revisr
 		register_activation_hook( __FILE__, array($this, 'revisr_install'));
 	}
 
+	/**
+	* Creates a new commit, automatically adds all files.
+	* @access public
+	*/
 	public function commit()
 	{
 		$title = $_REQUEST['post_title'];
-		$this->git("add -A");
-		$this->git("commit -am '" . $title . "'");
-		$commit_hash = $this->git("log --pretty=format:'%h' -n 1");
-		$this->git("push origin {$this->current_branch}");
+		git("add -A");
+		git("commit -am '" . $title . "'");
+		$commit_hash = git("log --pretty=format:'%h' -n 1");
+		git("push origin {$this->current_branch}");
 		add_post_meta( get_the_ID(), 'commit_hash', $commit_hash );
 		$author = the_author();
 		$view_link = get_admin_url() . "post.php?post=" . get_the_ID() . "&action=edit";
@@ -82,21 +114,28 @@ class Revisr
 		return $commit_hash;
 	}
 
+	/**
+	* Handles the "Add Commit" button on the dashboard.
+	* @access public
+	*/
 	public function new_commit()
 	{
 		$url = get_admin_url() . "post-new.php?post_type=revisr_commits";
 		wp_redirect($url);
 	}
 
-	//Reverts to a specified commit.
+	/**
+	* Reverts to a specified commit.
+	* @access public
+	*/
 	public function revert()
 	{
 		$commit = $_GET['commit_hash'];
-		$this->git("reset --hard {$commit}");
-		$this->git("reset --soft HEAD@{1}");
-		$this->git("add -A");
-		$commit_hash = $this->git("push origin {$this->current_branch}");
-		$this->git("commit -am 'Reverted to commit: #" . $commit . "'");
+		git("reset --hard {$commit}");
+		git("reset --soft HEAD@{1}");
+		git("add -A");
+		$commit_hash = git("push origin {$this->current_branch}");
+		git("commit -am 'Reverted to commit: #" . $commit . "'");
 		$post_url = get_admin_url() . "post.php?post=" . $_GET['post_id'] . "&action=edit";
 		$this->log("Reverted to commit <a href='{$post_url}'>#{$commit}</a>.", "revert");
 		$this->notify(get_bloginfo() . " - Commit Reverted", get_bloginfo() . " was reverted to commit #{$commit}.");
@@ -104,6 +143,10 @@ class Revisr
 		wp_redirect($redirect);
 	}
 
+	/**
+	* Displays the differences between a pending and current file.
+	* @access public
+	*/
 	public function view_diff()
 	{
 		?>
@@ -113,7 +156,7 @@ class Revisr
 		<body>
 		<?php
 		$file = $_GET['file'];
-		$diff = $this->git("diff {$file}");
+		$diff = git("diff {$file}");
 
 		foreach ($diff as $line) {
 			if (substr( $line, 0, 1 ) === "+") {
@@ -132,21 +175,29 @@ class Revisr
 		<?
 	}
 
+	/**
+	* Discards all changes to the working directory.
+	* @access public
+	*/
 	public function discard()
 	{
-		$this->git("reset --hard HEAD");
+		git("reset --hard HEAD");
 		$this->log("Discarded all changes to the working directory.", "discard");
 		$this->notify(get_bloginfo() . " - Changes Discarded", "All changes were discarded on " . get_bloginfo() . "." );
 		echo "<p>Successfully discarded uncommitted changes.</p>";
 		exit;
 	}
 
+	/**
+	* Checks out a new or existing branch.
+	* @access public
+	*/
 	public function checkout()
 	{
 		$branch = $_REQUEST['branch'];
-		$this->git("reset --hard HEAD");
+		git("reset --hard HEAD");
 		if ($_REQUEST['new_branch'] == "true"){
-			$this->git("checkout -b {$branch}");
+			git("checkout -b {$branch}");
 			$this->log("Checked out new branch: {$branch}.", "branch");
 			$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the new branch {$branch}.");
 			echo "<script>
@@ -155,7 +206,7 @@ class Revisr
 			exit;
 		}
 		else {
-			$this->git("checkout {$branch}");
+			git("checkout {$branch}");
 			$this->log("Checked out branch: {$branch}.", "branch");
 			$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the branch {$branch}.");
 			$url = get_admin_url() . "admin.php?page=revisr&branch={$branch}&checkout=success";
@@ -164,6 +215,10 @@ class Revisr
 
 	}
 
+	/**
+	* Displays the form for a new branch.
+	* @access public
+	*/
 	public function create_branch()
 	{
 		$styles_url = get_admin_url() . "load-styles.php?c=0&dir=ltr&load=dashicons,admin-bar,wp-admin,buttons,wp-auth-check&ver=3.9.1";
@@ -189,35 +244,38 @@ class Revisr
 		<?
 	}
 
+	/**
+	* Pushes changes to the remote repository defined in git. The remote can be updated in the settings.
+	* @access public
+	*/
 	public function push()
 	{
-		$this->git("reset --hard HEAD");
-		$this->git("push origin HEAD");
+		git("reset --hard HEAD");
+		git("push origin HEAD");
 		$this->log("Pushed changes to the remote repository.", "push");
 		$this->notify(get_bloginfo() . " - Changes Pushed", "Changes were pushed to the remote repository for " . get_bloginfo());
 		echo "<p>Successfully pushed to the remote.</p>";
 		exit;
 	}
 
+	/**
+	* Pushes changes to the remote repository defined in git. The remote can be updated in the settings.
+	* @access public
+	*/
 	public function pull()
 	{
-		$this->git("reset --hard HEAD");
-		$this->git("pull origin");
+		git("reset --hard HEAD");
+		git("pull origin");
 		$this->log("Pulled changes from the remote repository", "pull");
 		$this->notify(get_bloginfo() . " - Changes Pulled", "Changes were pulled from the remote repository for " . get_bloginfo());
 		echo "<p>Successfully pulled from the remote.</p>";
 		exit;
 	}
 
-	public function git($args)
-	{
-		$cmd = "git $args";
-		chdir(ABSPATH);
-		exec($cmd, $output);
-		chdir($this->current_dir);
-		return $output;
-	}
-
+	/**
+	* Shows the files that were added in the given commit.
+	* @access public
+	*/
 	public static function committed_files()
 	{
 		$files = get_post_custom_values( 'committed_files', $_POST['id'] );
@@ -278,10 +336,14 @@ class Revisr
 			}
 			exit();
 	}
-
+	
+	/**
+	* Shows a list of the pending files on the current branch. Clicking a modified file shows the diff.
+	* @access public
+	*/
 	public function pending_files()
 	{
-		$output = $this->git("status --short");
+		$output = git("status --short");
 
 		echo "<br>There are <strong>" . count($output) . "</strong> pending files that will be added to this commit on branch <strong>" . current_branch() . "</strong>.<br><br>";
 
@@ -337,7 +399,10 @@ class Revisr
 
 	}
 
-	//Displays on the plugin dashboard via AJAX.
+	/**
+	* Displays on plugin dashboard.
+	* @access public
+	*/
 	public function recent_activity()
 	{
 		global $wpdb;
@@ -349,6 +414,10 @@ class Revisr
 		exit;
 	}
 
+	/**
+	* Logs an action to the database.
+	* @access private
+	*/
 	private function log($message, $event)
 	{
 		$this->wpdb->insert(
@@ -366,6 +435,10 @@ class Revisr
 		);
 	}
 
+	/**
+	* Notifies the user of an action only if notifications are enabled.
+	* @access private
+	*/
 	private function notify($subject, $message)
 	{
 		$options = get_option('revisr_settings');
@@ -380,6 +453,10 @@ class Revisr
 		}
 	}
 
+	/**
+	* Creates the table necessary for logging.
+	* @access public
+	*/
 	public function revisr_install()
 	{
 		$sql = "CREATE TABLE IF NOT EXISTS $this->table_name (
