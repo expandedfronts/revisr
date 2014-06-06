@@ -404,11 +404,27 @@ class Revisr
 	{
 		global $wpdb;
 		$revisr_events = $wpdb->get_results("SELECT * FROM $this->table_name ORDER BY id DESC LIMIT 10", ARRAY_A);
-
-		foreach ($revisr_events as $revisr_event) {
-			echo "<tr><td>{$revisr_event['message']}</td><td>{$revisr_event['time']}</td></tr>";
+		if ($revisr_events) {
+			echo '<table class="widefat">
+					<thead>
+					    <tr>
+					        <th>Event</th>
+					        <th>Time</th>
+					    </tr>
+					</thead>
+					<tbody id="activity_content">';
+					foreach ($revisr_events as $revisr_event) {
+						echo "<tr><td>{$revisr_event['message']}</td><td>{$revisr_event['time']}</td></tr>";
+					}
+			echo '</tbody>
+				</table>';
+						
+		}
+		else {
+			echo "<p>Your recent activity will show up here.</p>";
 		}
 		exit;
+
 	}
 
 	/**

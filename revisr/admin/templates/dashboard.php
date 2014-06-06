@@ -54,19 +54,11 @@ include_once $dir . '../includes/functions.php';
 					<div class="postbox">
 					
 						<h3><span>Recent Activity</span></h3>
-						<div class="inside">
+						<div class="inside" id="revisr_activity">
 							
-							<table class="widefat">
-								<thead>
-								    <tr>
-								        <th>Event</th>
-								        <th>Time</th>
-								    </tr>
-								</thead>
-								<tbody id="revisr_activity">
+							
 
-								</tbody>
-							</table>
+
 						</div> <!-- .inside -->
 					
 					</div> <!-- .postbox -->
