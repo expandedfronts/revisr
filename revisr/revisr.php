@@ -374,7 +374,7 @@ class Revisr
 					$short_status = substr($result, 0, 3);
 					$file = substr($result, 3);
 					$status = get_status($short_status);
-					if ($status != "Untracked") {
+					if ($status != "Untracked" && $status != "Deleted") {
 						echo "<tr><td><a href='" . get_admin_url() . "admin-post.php?action=view_diff&file={$file}&TB_iframe=true&width=600&height=550' title='View Diff' class='thickbox'>{$file}</a></td><td>{$status}</td></td>";
 					}
 					else {
