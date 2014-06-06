@@ -118,7 +118,7 @@ include_once $dir . '../includes/functions.php';
 						<div class="inside">
 							Please read more about this plugin at <a href="https://revisr.io/">revisr.io</a>.
 							<br><br>
-							&copy; 2014 Expanded Fronts, LLC.
+							&copy; 2014 Expanded Fronts
 						</div> <!-- .inside -->
 						
 					</div> <!-- .postbox -->
