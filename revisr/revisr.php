@@ -193,14 +193,17 @@ class Revisr
 	{
 		$branch = $_REQUEST['branch'];
 		git("reset --hard HEAD");
-		if (isset($_REQUEST['new_branch']) && $_REQUEST['new_branch'] == "true"){
-			git("checkout -b {$branch}");
-			$this->log("Checked out new branch: {$branch}.", "branch");
-			$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the new branch {$branch}.");
-			echo "<script>
-					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr&checkout=success&branch={$branch}'
-				</script>";
-			exit;
+		if (isset($_REQUEST['new_branch'])){
+			if ($_REQUEST['new_branch'] == "true") {
+				git("checkout -b {$branch}");
+				$this->log("Checked out new branch: {$branch}.", "branch");
+				$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the new branch {$branch}.");
+				echo "<script>
+						window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr&checkout=success&branch={$branch}'
+					</script>";
+				exit;				
+			}
+
 		}
 		else {
 			git("checkout {$branch}");
