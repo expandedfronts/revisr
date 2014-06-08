@@ -13,7 +13,7 @@
  * Plugin Name:       Revisr
  * Plugin URI:        https://revisr.io/
  * Description:       A plugin that allows developers to manage WordPress websites with Git repositories.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            Expanded Fronts
  */
 
@@ -362,16 +362,18 @@ class Revisr
 		$offset = $rows_per_page * ($current_page - 1);
 
 		$results = array_slice($output, $offset, $rows_per_page);
-		?>
-		<table class="widefat">
-			<thead>
-			    <tr>
-			        <th>File</th>
-			        <th>Status</th>
-			    </tr>
-			</thead>
-			<tbody>
-			<?php
+
+
+		if ($num_rows != 0) {
+			echo '		
+			<table class="widefat">
+				<thead>
+				    <tr>
+				        <th>File</th>
+				        <th>Status</th>
+				    </tr>
+				</thead>
+				<tbody>';
 				//Clean up output from git status and echo the results.
 				foreach ($results as $result) {
 					$short_status = substr($result, 0, 3);
@@ -384,10 +386,11 @@ class Revisr
 						echo "<tr><td>{$file}</td><td>{$status}</td></td>";
 					}
 				}
-			?>
-			</tbody>
-		</table>
-		<?php
+
+			echo '</tbody>
+			</table>
+			<div id="revisr-pagination">';
+
 			if ($current_page != "1"){
 				echo "<a href='#' onclick='prev();return false;'><- Previous</a>";
 			}
@@ -395,8 +398,13 @@ class Revisr
 			if ($current_page != $last_page){
 				echo "<a href='#' onclick='next();return false;'>Next -></a>";
 			}
-			exit();
+			echo "</div>";	
+		}
 
+		else {
+			echo "<p>There are no files to add to this commit.</p>";
+		}			
+		exit();
 	}
 
 	/**

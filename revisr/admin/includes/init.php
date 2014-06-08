@@ -35,7 +35,7 @@ class revisr_init
 			add_action( 'admin_init', array($this, 'settings_init'));
 			add_action( 'load-post.php', array($this, 'meta') );
 			add_action( 'load-post-new.php', array($this, 'meta') );
-			add_action( 'pre_get_posts', array($this, 'filters') );
+			add_action( 'pre_get_revisr_commits', array($this, 'filters') );
 			add_action( 'views_edit-revisr_commits', array($this, 'custom_views') );
 			add_action( 'post_row_actions', array($this, 'custom_actions') );
 			add_action( 'admin_menu', array($this, 'menus'), 2 );
@@ -119,6 +119,7 @@ class revisr_init
 		add_action( 'load-'.$settings_hook, array($this, 'update_settings') );
 		add_action( 'admin_print_styles-' . $menu, array($this, 'styles') );
 		add_action( 'admin_print_scripts-' . $menu, array($this, 'scripts') );
+		remove_meta_box('authordiv', 'revisr_commits', 'normal');
 	}
 
 	public function revisr_commits_submenu_order($menu_ord)
@@ -283,7 +284,7 @@ class revisr_init
 
 	public function custom_actions($actions)
 	{
-		if (get_post_type() == 'revisr_commits')
+		if ($_GET['post_type'] == 'revisr_commits')
 			{
 				if (isset($actions)) {
 					unset( $actions['edit'] );
@@ -297,9 +298,10 @@ class revisr_init
 			        $commit_meta = get_post_custom_values('commit_hash', get_the_ID());
 			        $commit_hash = unserialize($commit_meta[0]);
 			        $actions['revert'] = "<a href='" . get_admin_url() . "admin-post.php?action=revert&commit_hash={$commit_hash[0]}&post_id=" . get_the_ID() ."'>Revert</a>";
-			    	return $actions;
+			    	
 				}
 			}
+		return $actions;
 	}
 
 	public function filters($commits)

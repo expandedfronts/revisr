@@ -104,3 +104,11 @@ td.hash.column-hash {
 .diff_removed {
 	background-color: #fdd;
 }
+
+#gitignore {
+	width: 350px;
+}
+
+#revisr-pagination {
+	text-align: center;
+}

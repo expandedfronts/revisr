@@ -23,6 +23,8 @@ Revisr allows you to synchronize your WordPress website with a git repository. W
 
 A must have plugin for WordPress development.
 
+*Git Logo by Jason Long is licensed under the Creative Commons Attribution 3.0 Unported License.*
+
 == Installation ==
 
 Revisr requires that git be installed on the server, and the repository is in the root directory of the WordPress installation. Revisr also requires php exec to be enabled on the server (this can be configured in your php.ini).
@@ -40,11 +42,15 @@ Absolutely. Care should be taken when dealing with upgrades that depend on the d
 == Screenshots ==
 
 1. The main dashboard of revisr.
-2. The commit history.
-3. Git settings and options.
-4. Easily view changes in files.
+2. Easily view changes in files.
+3. The commit history.
+4. Git settings and options.
+
 
 == Changelog ==
+
+= 1.0.2 =
+* Minor bugfixes
 
 = 1.0.1 =
 * Updated readme.txt
