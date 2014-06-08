@@ -1,7 +1,6 @@
 === Revisr ===
-
 Contributors: ExpandedFronts
-Tags: git, revisr, revision, version control, commit, wordpress
+Tags: revisr, git, git management, revision tracking, revision, backup, deploy, commit, bitbucket, github
 Requires at least: 3.9.1
 Tested up to: 3.9.1
 Stable tag: trunk
@@ -11,6 +10,7 @@ License URI: http://www.gnu.org/licenses/gpl.html
 A simple plugin that integrates your git repository with WordPress.
 
 == Description ==
+
 Revisr allows you to synchronize your WordPress website with a git repository. With Revisr, you can:
 
 * Track changes to the files of your WordPress installation
@@ -38,6 +38,7 @@ This is likely an authentication issue. You can fix this by configuring your SSH
 Absolutely. Care should be taken when dealing with upgrades that depend on the database. For example, upgrading to the next major version of WordPress and later reverting could cause issues if there are significant changes to the database.
 
 == Screenshots ==
+
 1. The main dashboard of revisr.
 2. The commit history.
 3. Git settings and options.
@@ -45,4 +46,8 @@ Absolutely. Care should be taken when dealing with upgrades that depend on the d
 
 == Changelog ==
 
-v1.0 - Initial release.
+= 1.0.1 =
+* Updated readme.txt
+
+= 1.0 =
+* Initial commit
