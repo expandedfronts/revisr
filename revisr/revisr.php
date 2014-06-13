@@ -13,7 +13,7 @@
  * Plugin Name:       Revisr
  * Plugin URI:        https://revisr.io/
  * Description:       A plugin that allows developers to manage WordPress websites with Git repositories.
- * Version:           1.0.2
+ * Version:           1.1
  * Author:            Expanded Fronts
  */
 
@@ -66,7 +66,6 @@ class Revisr
 		$this->time = current_time( 'mysql' );
 		$init = new revisr_init;
 		$this->current_dir = getcwd();
-		$this->current_branch = git("rev-parse --abbrev-ref HEAD");
 
 		//Git functions
 		add_action( 'publish_revisr_commits', array($this, 'commit') );
@@ -104,13 +103,14 @@ class Revisr
 			exit();
 		}
 
+		$branch = current_branch();
+
 		git("add -A");
 		git("commit -am '" . $title . "'");
 		$commit_hash = git("log --pretty=format:'%h' -n 1");
-		git("push origin {$this->current_branch}");
+		git("push origin {$branch}");
 		add_post_meta( get_the_ID(), 'commit_hash', $commit_hash );
-		$branch = git("rev-parse --abbrev-ref HEAD");
-		add_post_meta( get_the_ID(), 'branch', $branch[0] );
+		add_post_meta( get_the_ID(), 'branch', $branch );
 		$author = the_author();
 		$view_link = get_admin_url() . "post.php?post=" . get_the_ID() . "&action=edit";
 		$this->log("Committed <a href='{$view_link}'>#{$commit_hash[0]}</a> to the repository.", "commit");
@@ -134,11 +134,12 @@ class Revisr
 	*/
 	public function revert()
 	{
+		$branch = current_branch();
 		$commit = $_GET['commit_hash'];
 		git("reset --hard {$commit}");
 		git("reset --soft HEAD@{1}");
 		git("add -A");
-		$commit_hash = git("push origin {$this->current_branch}");
+		$commit_hash = git("push origin {$branch}");
 		git("commit -am 'Reverted to commit: #" . $commit . "'");
 		$post_url = get_admin_url() . "post.php?post=" . $_GET['post_id'] . "&action=edit";
 		$this->log("Reverted to commit <a href='{$post_url}'>#{$commit}</a>.", "revert");

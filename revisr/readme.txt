@@ -11,17 +11,17 @@ A simple plugin that integrates your git repository with WordPress.
 
 == Description ==
 
-Revisr allows you to synchronize your WordPress website with a git repository. With Revisr, you can:
+Revisr allows you to manage your WordPress website with a git repository. With Revisr, you can:
 
 * Track changes to the files of your WordPress installation
 * Commit and push changes to a remote repository (including Bitbucket and Github)
 * Pull changes down from a remote repository
-* Easily toggle between unlimited branch
+* Easily toggle between branches
 * Revert to an earlier commit
 * Discard any unwanted changes
 * Manage .gitignore to prevent unwanted files/directories from being tracked
 
-A must have plugin for WordPress development.
+A must have plugin for deploying WordPress using git repositories.
 
 *Git Logo by Jason Long is licensed under the Creative Commons Attribution 3.0 Unported License.*
 
@@ -48,6 +48,10 @@ Absolutely. Care should be taken when dealing with upgrades that depend on the d
 
 
 == Changelog ==
+
+= 1.1 =
+* Bugfixes and improvements
+* Added ability to view changes in files from a previous commit
 
 = 1.0.2 =
 * Minor bugfixes
