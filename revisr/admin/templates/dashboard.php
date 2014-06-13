@@ -37,7 +37,7 @@ include_once $dir . '../includes/functions.php';
 			}
 		}
 		else {
-			$text = "<p>There are currently no pending files.</p>";
+			$text = "<p>There are currently no pending files on branch <strong>" . current_branch() . "</strong>.</p>";
 		}
 		echo "<div id='revisr_alert' class='updated'>{$text}</div>";
 	?>

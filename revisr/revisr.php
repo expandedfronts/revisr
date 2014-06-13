@@ -66,7 +66,7 @@ class Revisr
 		$this->time = current_time( 'mysql' );
 		$init = new revisr_init;
 		$this->current_dir = getcwd();
-		$this->current_branch = exec("git rev-parse --abbrev-ref HEAD");
+		$this->current_branch = git("rev-parse --abbrev-ref HEAD");
 
 		//Git functions
 		add_action( 'publish_revisr_commits', array($this, 'commit') );
@@ -97,6 +97,13 @@ class Revisr
 	public function commit()
 	{
 		$title = $_REQUEST['post_title'];
+
+		if ($title == "Auto Draft" || $title == "") {
+			$url = get_admin_url() . "post-new.php?post_type=revisr_commits&message=42";
+			wp_redirect($url);
+			exit();
+		}
+
 		git("add -A");
 		git("commit -am '" . $title . "'");
 		$commit_hash = git("log --pretty=format:'%h' -n 1");
@@ -153,7 +160,14 @@ class Revisr
 		<body>
 		<?php
 		$file = $_GET['file'];
-		$diff = git("diff {$file}");
+
+		if (isset($_GET['commit'])) {
+			$commit = $_GET['commit'];
+			$diff = git("diff {$commit}^! {$file}");
+		}
+		else {
+			$diff = git("diff {$file}");
+		}
 
 		foreach ($diff as $line) {
 			if (substr( $line, 0, 1 ) === "+") {
@@ -228,7 +242,7 @@ class Revisr
 			
 			<form action="<?php echo get_admin_url(); ?>admin-post.php?action=checkout" method="post">
 			<label for="branch_name"><strong>Branch Name:</strong></label>
-			<input id="branch_name" type="text" name="branch" style="width:100%" />
+			<input id="branch_name" type="text" name="branch" style="width:100%" autofocus />
 			<input type="hidden" name="new_branch" value="true" class="regular-text"/>
 			<button class="button button-primary" style="
 				background-color: #5cb85c;
@@ -278,6 +292,7 @@ class Revisr
 	*/
 	public static function committed_files()
 	{
+		$commit = get_post_meta( $_POST['id'], 'commit_hash', true );
 		$files = get_post_custom_values( 'committed_files', $_POST['id'] );
 		foreach ( $files as $file ) {
 		    $output = unserialize($file);
@@ -321,7 +336,12 @@ class Revisr
 					$short_status = substr($result, 0, 3);
 					$file = substr($result, 3);
 					$status = get_status($short_status);
-					echo "<tr><td>{$file}</td><td>{$status}</td></td>";
+					if ($status != "Untracked" && $status != "Deleted") {
+						echo "<tr><td><a href='" . get_admin_url() . "admin-post.php?action=view_diff&file={$file}&commit={$commit[0]}&TB_iframe=true&width=600&height=550' title='View Diff' class='thickbox'>{$file}</a></td><td>{$status}</td></td>";
+					}
+					else {
+						echo "<tr><td>{$file}</td><td>{$status}</td></td>";
+					}					
 				}
 			?>
 			</tbody>

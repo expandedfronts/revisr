@@ -36,4 +36,12 @@ jQuery(document).ready(function($) {
 	$.post(ajaxurl, data, function(response) {
 		document.getElementById('pending_files_result').innerHTML = response;
 	});
+
+	var url = document.URL;
+	var index = url.indexOf("message=42");
+
+	if (index != "-1") {
+		document.getElementById('message').innerHTML = "<div class='error'><p>Please enter a message for your commit.</p></div>";
+	}
+
 });

@@ -43,6 +43,7 @@ class revisr_init
 			add_action( 'manage_revisr_commits_posts_custom_column', array($this, 'custom_columns') );
 			add_action( 'admin_enqueue_scripts', array($this, 'styles') );
 			add_action( 'admin_enqueue_scripts', array($this, 'scripts') );
+			add_action( 'admin_enqueue_scripts', array($this, 'disable_autodraft') );
 			add_filter( 'post_updated_messages', array($this, 'revisr_commits_custom_messages') );
 			add_filter( 'bulk_post_updated_messages', array($this, 'revisr_commits_bulk_messages'), 10, 2 );
 			add_filter( 'custom_menu_order', array($this, 'revisr_commits_submenu_order') );
@@ -115,7 +116,6 @@ class revisr_init
 		$menu = add_menu_page( 'Dashboard', 'Revisr', 'manage_options', 'revisr', array($this, 'revisr_dashboard'), plugins_url( 'revisr/assets/img/white_18x20.png' ) );
 		add_submenu_page( 'revisr', 'Revisr - Dashboard', 'Dashboard', 'manage_options', 'revisr', array($this, 'revisr_dashboard') );
 		$settings_hook = add_submenu_page( 'revisr', 'Revisr - Settings', 'Settings', 'manage_options', 'revisr_settings', array($this, 'revisr_settings') );
-		add_submenu_page( NULL,'View Diff','View Diff','manage_options','view_diff', array($this, 'view_diff') );
 		add_action( 'load-'.$settings_hook, array($this, 'update_settings') );
 		add_action( 'admin_print_styles-' . $menu, array($this, 'styles') );
 		add_action( 'admin_print_scripts-' . $menu, array($this, 'scripts') );
@@ -381,6 +381,13 @@ class revisr_init
 		}
 	}
 
+	public function disable_autodraft()
+	{
+		if ("revisr_commits" == get_post_type()) {
+			wp_dequeue_script( 'autosave' );
+		}
+	}
+
 	public function committed_files_meta()
 	{
 		echo "<div id='committed_files_result'></div>";
@@ -391,7 +398,8 @@ class revisr_init
 		$output = git("status --short");
 		add_post_meta( get_the_ID(), 'committed_files', $output );
 		add_post_meta( get_the_ID(), 'files_changed', count($output) );
-		echo "<div id='pending_files_result'></div>";
+		echo "<div id='message'></div>
+		<div id='pending_files_result'></div>";
 	}
 
 	public function columns()
@@ -446,40 +454,25 @@ class revisr_init
 	{
 		$post             = get_post();
 		$post_type        = get_post_type( $post );
-		$post_type_object = get_post_type_object( $post_type );
 
 		$messages['revisr_commits'] = array(
-			0  => '', // Unused. Messages start at index 1.
-			1  => __( 'Commit updated.', 'revisr_commits' ),
-			2  => __( 'Custom field updated.', 'revisr_commits' ),
-			3  => __( 'Custom field deleted.', 'revisr_commits' ),
-			4  => __( 'Commit updated.', 'revisr_commits' ),
-			/* translators: %s: date and time of the revision */
-			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Commit restored to revision from %s', 'revisr_commits' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => __( 'Commit published.', 'revisr_commits' ),
-			7  => __( 'Commit saved.', 'revisr_commits' ),
-			8  => __( 'Commit submitted.', 'revisr_commits' ),
-			9  => sprintf(
-				__( 'Commit scheduled for: <strong>%1$s</strong>.', 'revisr_commits' ),
-				// translators: Publish box date format, see http://php.net/date
-				date_i18n( __( 'M j, Y @ G:i', 'revisr_commits' ), strtotime( $post->post_date ) )
-			),
-			10 => __( 'Commit draft updated.', 'revisr_commits' ),
+		0  => '', // Unused. Messages start at index 1.
+		1  => __( 'Commit updated.', 'revisr_commits' ),
+		2  => __( 'Custom field updated.', 'revisr_commits' ),
+		3  => __( 'Custom field deleted.', 'revisr_commits' ),
+		4  => __( 'Commit updated.', 'revisr_commits' ),
+		/* translators: %s: date and time of the revision */
+		5  => isset( $_GET['revision'] ) ? sprintf( __( 'Commit restored to revision from %s', 'revisr_commits' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+		6  => __( 'Committed files on branch <strong>' . current_branch() . '</strong>.', 'revisr_commits' ),
+		7  => __( 'Commit saved.', 'revisr_commits' ),
+		8  => __( 'Commit submitted.', 'revisr_commits' ),
+		9  => sprintf(
+			__( 'Commit scheduled for: <strong>%1$s</strong>.', 'revisr_commits' ),
+			// translators: Publish box date format, see http://php.net/date
+			date_i18n( __( 'M j, Y @ G:i', 'revisr_commits' ), strtotime( $post->post_date ) )
+		),
+		10 => __( 'Commit draft updated.', 'revisr_commits' ),
 		);
-
-		if ( $post_type_object->publicly_queryable ) {
-			$permalink = get_permalink( $post->ID );
-
-			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View Commit', 'revisr_commits' ) );
-			$messages[ $post_type ][1] .= $view_link;
-			$messages[ $post_type ][6] .= $view_link;
-			$messages[ $post_type ][9] .= $view_link;
-
-			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
-			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview Commit', 'revisr_commits' ) );
-			$messages[ $post_type ][8]  .= $preview_link;
-			$messages[ $post_type ][10] .= $preview_link;
-		}
 
 		return $messages;
 	}
