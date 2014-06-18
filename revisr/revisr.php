@@ -11,10 +11,11 @@
  * @copyright 2014 Expanded Fronts
  *
  * Plugin Name:       Revisr
- * Plugin URI:        https://revisr.io/
+ * Plugin URI:        http://revisr.io/
  * Description:       A plugin that allows developers to manage WordPress websites with Git repositories.
- * Version:           1.1
+ * Version:           1.1.1
  * Author:            Expanded Fronts
+ * Author URI: http://revisr.io/
  */
 
 include_once 'admin/includes/init.php';
@@ -421,10 +422,7 @@ class Revisr
 			}
 			echo "</div>";	
 		}
-
-		else {
-			echo "<p>There are no files to add to this commit.</p>";
-		}			
+			
 		exit();
 	}
 

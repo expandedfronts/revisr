@@ -49,6 +49,10 @@ Absolutely. Care should be taken when dealing with upgrades that depend on the d
 
 == Changelog ==
 
+= 1.2 =
+* Added ability to view the number of pending files in the admin bar
+* Small cleanup, updated wording
+
 = 1.1 =
 * Bugfixes and improvements
 * Added ability to view changes in files from a previous commit

@@ -112,3 +112,7 @@ td.hash.column-hash {
 #revisr-pagination {
 	text-align: center;
 }
+
+#revisr_settings th {
+	width: 270px;
+}

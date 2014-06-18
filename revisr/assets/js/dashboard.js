@@ -16,7 +16,7 @@ jQuery(document).ready(function() {
 
 	jQuery("#discard-btn").click(function() { 
 
-	    if (confirm("Are you sure you want to discard your uncommitted changes") == true) {
+	    if (confirm("Are you sure you want to discard your uncommitted changes?") == true) {
 	    	jQuery('#loader').show();
 	   		var data = {
 				action: 'discard'

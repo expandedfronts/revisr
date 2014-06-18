@@ -43,6 +43,7 @@ class revisr_init
 			add_action( 'manage_revisr_commits_posts_custom_column', array($this, 'custom_columns') );
 			add_action( 'admin_enqueue_scripts', array($this, 'styles') );
 			add_action( 'admin_enqueue_scripts', array($this, 'scripts') );
+			add_action( 'admin_bar_menu', array($this, 'admin_bar'), 999 );
 			add_action( 'admin_enqueue_scripts', array($this, 'disable_autodraft') );
 			add_filter( 'post_updated_messages', array($this, 'revisr_commits_custom_messages') );
 			add_filter( 'bulk_post_updated_messages', array($this, 'revisr_commits_bulk_messages'), 10, 2 );
@@ -200,6 +201,14 @@ class revisr_init
     		'revisr_general_config'
 		);
 
+    	add_settings_field(
+    		'revisr_admin_bar',
+    		'Show pending files in admin bar?',
+    		array($this, 'admin_bar_callback'),
+    		'revisr_settings',
+    		'revisr_general_config'
+		);
+
 	}
 
 	public function general_config_callback()
@@ -251,6 +260,14 @@ class revisr_init
 		);
 	}
 
+	public function admin_bar_callback()
+	{
+		printf(
+			'<input type="checkbox" id="revisr_admin_bar" name="revisr_settings[revisr_admin_bar]" %s />',
+			isset( $this->options['revisr_admin_bar'] ) ? "checked" : ''
+		);
+	}
+
 	public function sanitize($input)
 	{
 		return $input;
@@ -284,23 +301,23 @@ class revisr_init
 
 	public function custom_actions($actions)
 	{
-		if ($_GET['post_type'] == 'revisr_commits')
-			{
-				if (isset($actions)) {
-					unset( $actions['edit'] );
-			        unset( $actions['view'] );
-			        unset( $actions['trash'] );
-			        unset( $actions['inline hide-if-no-js'] );
+		if (get_post_type() == 'revisr_commits')
+		{
+			if (isset($actions)) {
+				unset( $actions['edit'] );
+		        unset( $actions['view'] );
+		        unset( $actions['trash'] );
+		        unset( $actions['inline hide-if-no-js'] );
 
-			        $url = get_admin_url() . "post.php?post=" . get_the_ID() . "&action=edit";
+		        $url = get_admin_url() . "post.php?post=" . get_the_ID() . "&action=edit";
 
-			        $actions['view'] = "<a href='{$url}'>View</a>";
-			        $commit_meta = get_post_custom_values('commit_hash', get_the_ID());
-			        $commit_hash = unserialize($commit_meta[0]);
-			        $actions['revert'] = "<a href='" . get_admin_url() . "admin-post.php?action=revert&commit_hash={$commit_hash[0]}&post_id=" . get_the_ID() ."'>Revert</a>";
-			    	
-				}
+		        $actions['view'] = "<a href='{$url}'>View</a>";
+		        $commit_meta = get_post_custom_values('commit_hash', get_the_ID());
+		        $commit_hash = unserialize($commit_meta[0]);
+		        $actions['revert'] = "<a href='" . get_admin_url() . "admin-post.php?action=revert&commit_hash={$commit_hash[0]}&post_id=" . get_the_ID() ."'>Revert</a>";
+		    	
 			}
+		}
 		return $actions;
 	}
 
@@ -379,6 +396,30 @@ class revisr_init
 				);			
 			}
 		}
+	}
+
+	public function admin_bar($wp_admin_bar)
+	{
+
+		$options = get_option('revisr_settings');
+
+		if (isset($options['revisr_admin_bar'])) {
+
+			if (count_pending() == "1") {
+				$text = "1 Pending File";
+			}
+			else {
+				$text = count_pending() . " Pending Files";
+			}
+			$args = array(
+				'id'    => 'revisr',
+				'title' => $text,
+				'href'  => get_admin_url() . 'post-new.php?post_type=revisr_commits',
+				'meta'  => array( 'class' => 'revisr_commits' )
+			);
+			$wp_admin_bar->add_node( $args );
+		}
+
 	}
 
 	public function disable_autodraft()

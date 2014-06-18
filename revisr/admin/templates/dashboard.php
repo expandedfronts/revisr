@@ -30,10 +30,10 @@ include_once $dir . '../includes/functions.php';
 		}
 		else if ( $pending != 0 ){
 			if ( $pending == 1 ){
-				$text = "<p>There is currently 1 pending file on branch <strong>" . current_branch() . "</strong>.</p>";
+				$text = "<p>There is currently <strong>1</strong> pending file on branch <strong>" . current_branch() . "</strong>.</p>";
 			}
 			else {
-				$text = "<p>There are currently {$pending} pending files on branch <strong>" . current_branch() . "</strong>.</p>";
+				$text = "<p>There are currently <strong>{$pending}</strong> pending files on branch <strong>" . current_branch() . "</strong>.</p>";
 			}
 		}
 		else {
@@ -116,7 +116,7 @@ include_once $dir . '../includes/functions.php';
 					
 						<h3><span>About this plugin</span></h3>
 						<div class="inside">
-							Please read more about this plugin at <a href="https://revisr.io/">revisr.io</a>.
+							Please read more about this plugin at <a href="http://revisr.io/">revisr.io</a>.
 							<br><br>
 							&copy; 2014 Expanded Fronts
 						</div> <!-- .inside -->
