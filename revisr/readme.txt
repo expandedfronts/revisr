@@ -31,6 +31,8 @@ Revisr requires that git be installed on the server, and the repository is in th
 
 Unzip the plugin and upload the /revisr/ folder to your plugins directory. Once activated, Revisr will automatically use the repository in the WordPress directory. If remote repositories are configured in the local repository, Revisr will use those for pushes and pulls. A remote repository can also be configured on the plugin settings page.
 
+It is also adviseable to add Revisr to the gitignore file via the settings page to make sure that reverts don't rollback functionality. 
+
 == Frequently Asked Questions ==
 
 = Why are my commits timing out? =

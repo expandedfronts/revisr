@@ -35,7 +35,7 @@ class revisr_init
 			add_action( 'admin_init', array($this, 'settings_init'));
 			add_action( 'load-post.php', array($this, 'meta') );
 			add_action( 'load-post-new.php', array($this, 'meta') );
-			add_action( 'pre_get_revisr_commits', array($this, 'filters') );
+			add_action( 'pre_get_posts', array($this, 'filters') );
 			add_action( 'views_edit-revisr_commits', array($this, 'custom_views') );
 			add_action( 'post_row_actions', array($this, 'custom_actions') );
 			add_action( 'admin_menu', array($this, 'menus'), 2 );
@@ -323,11 +323,13 @@ class revisr_init
 
 	public function filters($commits)
 	{
-		if ( isset($_GET['branch']) ) {
-			$commits->set( 'meta_key', 'branch' );
-			$commits->set( 'meta_value', $_GET['branch'] );
+		if (isset($_GET['post_type']) && $_GET['post_type'] == "revisr_commits") {
+			if ( isset($_GET['branch']) ) {
+				$commits->set( 'meta_key', 'branch' );
+				$commits->set( 'meta_value', $_GET['branch'] );
+				$commits->set('post_type', 'revisr_commits');
+			}
 		}
-		$commits->set('post_type', 'revisr_commits');
 
 		return $commits;
 	}
