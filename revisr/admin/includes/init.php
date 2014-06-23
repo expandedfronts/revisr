@@ -19,6 +19,7 @@ class revisr_init
 	private $dir;
 	private $options;
 	private $table_name;
+	private $branch;
 
 	public function __construct()
 	{
@@ -28,11 +29,13 @@ class revisr_init
 		$this->options = get_option('revisr_settings');
 
 		$this->table_name = $wpdb->prefix . "revisr";
+		$this->branch = current_branch();
 		$this->dir = plugin_dir_path( __FILE__ );
 
 		if ( is_admin() ) {
 			add_action( 'init', array($this, 'post_types') );
-			add_action( 'admin_init', array($this, 'settings_init'));
+			add_action( 'admin_init', array($this, 'settings_init') );
+			add_action( 'load-edit.php', array($this, 'default_views') );
 			add_action( 'load-post.php', array($this, 'meta') );
 			add_action( 'load-post-new.php', array($this, 'meta') );
 			add_action( 'pre_get_posts', array($this, 'filters') );
@@ -209,6 +212,14 @@ class revisr_init
     		'revisr_general_config'
 		);
 
+    	add_settings_field(
+    		'reset_db',
+    		'Reset database when changing branches?',
+    		array($this, 'reset_db_callback'),
+    		'revisr_settings',
+    		'revisr_general_config'
+		);
+
 	}
 
 	public function general_config_callback()
@@ -268,6 +279,16 @@ class revisr_init
 		);
 	}
 
+	public function reset_db_callback()
+	{
+		printf(
+			'<input type="checkbox" id="reset_db" name="revisr_settings[reset_db]" %s />
+			<p class="description">When switching to a different branch, should Revisr automatically restore the latest database backup for that branch?<br>
+			If enabled, the database will be automatically backed up before switching branches.</p>',
+			isset( $this->options['reset_db'] ) ? "checked" : ''
+		);
+	}
+
 	public function sanitize($input)
 	{
 		return $input;
@@ -313,8 +334,14 @@ class revisr_init
 
 		        $actions['view'] = "<a href='{$url}'>View</a>";
 		        $commit_meta = get_post_custom_values('commit_hash', get_the_ID());
+		        $branch_meta = get_post_custom_values('branch', get_the_ID());
+		        $db_hash = get_post_custom_values('db_hash', get_the_ID());
 		        $commit_hash = unserialize($commit_meta[0]);
-		        $actions['revert'] = "<a href='" . get_admin_url() . "admin-post.php?action=revert&commit_hash={$commit_hash[0]}&post_id=" . get_the_ID() ."'>Revert</a>";
+		        $actions['revert'] = "<a href='" . get_admin_url() . "admin-post.php?action=revert&commit_hash={$commit_hash[0]}&branch={$branch_meta[0]}&post_id=" . get_the_ID() ."'>Revert Files</a>";
+	          	
+		        if ($db_hash[0] != '') {
+	          		$actions['revert_db'] = "<a href='" . get_admin_url() . "admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&post_id=" . get_the_ID() ."'>Revert Database</a>";
+		        }
 		    	
 			}
 		}
@@ -324,7 +351,7 @@ class revisr_init
 	public function filters($commits)
 	{
 		if (isset($_GET['post_type']) && $_GET['post_type'] == "revisr_commits") {
-			if ( isset($_GET['branch']) ) {
+			if ( isset($_GET['branch']) && $_GET['branch'] != "all" ) {
 				$commits->set( 'meta_key', 'branch' );
 				$commits->set( 'meta_value', $_GET['branch'] );
 				$commits->set('post_type', 'revisr_commits');
@@ -359,19 +386,26 @@ class revisr_init
 	        admin_url('edit.php?post_type=revisr_commits&branch='.$branch),
 	        $this->count_commits($branch));
 		}
-		if (!isset($_GET['branch']) && !isset($_GET['post_status'])) {
+		if ($_GET['branch'] == "all") {
 			$class = 'class="current"';
 		}
 		else {
 			$class = '';
 		}
-		$views['all'] = sprintf(__('<a href="%s"' . $class . '>All <span class="count">(%d)</span></a>' ),
-			admin_url('edit.php?post_type=revisr_commits'),
+		$views['all'] = sprintf(__('<a href="%s"' . $class . '>All Branches <span class="count">(%d)</span></a>' ),
+			admin_url('edit.php?post_type=revisr_commits&branch=all'),
 			$this->count_commits("all"));
 		unset($views['publish']);
 		//unset($views['trash']);
 		if (isset($views)) {
 			return $views;
+		}
+	}
+
+	public function default_views()
+	{
+		if(!isset($_GET['branch']) && isset($_GET['post_type']) && $_GET['post_type'] == "revisr_commits") {
+			$_GET['branch'] = current_branch();
 		}
 	}
 

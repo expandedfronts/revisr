@@ -1,7 +1,7 @@
 === Revisr ===
 Contributors: ExpandedFronts
-Tags: revisr, git, git management, revision tracking, revision, backup, deploy, commit, bitbucket, github
-Requires at least: 3.9.1
+Tags: revisr, git, git management, revision tracking, revision, backup, database, database backup, database plugin, deploy, commit, bitbucket, github
+Requires at least: 3.5.1
 Tested up to: 3.9.1
 Stable tag: trunk
 License: GPLv3
@@ -13,11 +13,12 @@ A simple plugin that integrates your git repository with WordPress.
 
 Revisr allows you to manage your WordPress website with a git repository. With Revisr, you can:
 
-* Track changes to the files of your WordPress installation
+* Track changes to the files and database of your WordPress installation
+* Optionally use different database versions for each branch
 * Commit and push changes to a remote repository (including Bitbucket and Github)
 * Pull changes down from a remote repository
 * Easily toggle between branches
-* Revert to an earlier commit
+* Revert your website files and/or database to an earlier commit
 * Discard any unwanted changes
 * Manage .gitignore to prevent unwanted files/directories from being tracked
 
@@ -27,19 +28,31 @@ A must have plugin for deploying WordPress using git repositories.
 
 == Installation ==
 
-Revisr requires that git be installed on the server, and the repository is in the root directory of the WordPress installation. Revisr also requires php exec to be enabled on the server (this can be configured in your php.ini).
+= Requirements = 
+* A WordPress installation in the root folder of a Git repository
+* Git must be installed on the server (most updated versions of cPanel have it preinstalled)
+* PHP exec (safe mode off, can be configured in your php.ini)
 
-Unzip the plugin and upload the /revisr/ folder to your plugins directory. Once activated, Revisr will automatically use the repository in the WordPress directory. If remote repositories are configured in the local repository, Revisr will use those for pushes and pulls. A remote repository can also be configured on the plugin settings page.
+= Instructions =
+* Unzip the plugin folder and upload it to the plugins directory of your WordPress installation.
+* Configure any remote repositories on the plugin settings page. Supports git through SSH or HTTPS. 
+* If the repository was cloned from a remote, Revisr will attempt to use the settings stored in Git.
 
-It is also adviseable to add Revisr to the gitignore file via the settings page to make sure that reverts don't rollback functionality. 
+= Notes =
+Please verify that database backups are working before attempting to revert the database.
+
+It is also adviseable to add Revisr to the gitignore file via the settings page to make sure that reverts don't rollback the plugins' functionality. 
 
 == Frequently Asked Questions ==
 
 = Why are my commits timing out? =
 This is likely an authentication issue. You can fix this by configuring your SSH keys or using the HTTPS authentication option on the settings page.
 
+= Why aren't my commits being pushed to the remote repository? =
+This is either an authentication issue or the remote branch is ahead of yours.
+
 = Can I damage my site with this plugin? =
-Absolutely. Care should be taken when dealing with upgrades that depend on the database. For example, upgrading to the next major version of WordPress and later reverting could cause issues if there are significant changes to the database.
+Care should be taken when dealing with upgrades that depend on the database. Backing up the database before and after major changes is always recommended.
 
 == Screenshots ==
 
@@ -50,6 +63,15 @@ Absolutely. Care should be taken when dealing with upgrades that depend on the d
 
 
 == Changelog ==
+
+= 1.3 =
+* Added ability to track/revert changes to the database
+* The commits listing now shows commits on the current branch by default
+* Added basic compatibility check
+* Added settings link to the plugin page
+
+= 1.2.1 =
+* Minor bugfixes
 
 = 1.2 =
 * Added ability to view the number of pending files in the admin bar

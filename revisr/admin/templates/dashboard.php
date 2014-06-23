@@ -40,6 +40,11 @@ include_once $dir . '../includes/functions.php';
 			$text = "<p>There are currently no pending files on branch <strong>" . current_branch() . "</strong>.</p>";
 		}
 		echo "<div id='revisr_alert' class='updated'>{$text}</div>";
+
+		$error = check_compatibility();
+		if ($error != "") {
+			echo "<div id='revisr_error' class='error'>{$error}</div>";
+		}
 	?>
 
 	<div id="poststuff">

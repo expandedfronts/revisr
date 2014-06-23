@@ -13,13 +13,14 @@
  * Plugin Name:       Revisr
  * Plugin URI:        http://revisr.io/
  * Description:       A plugin that allows developers to manage WordPress websites with Git repositories.
- * Version:           1.2.1
+ * Version:           1.3
  * Author:            Expanded Fronts
  * Author URI: http://revisr.io/
  */
 
 include_once 'admin/includes/init.php';
 include_once 'admin/includes/functions.php';
+include_once 'admin/includes/revisr_db.php';
 
 class Revisr
 {
@@ -42,16 +43,28 @@ class Revisr
 	public $table_name;
 
    /**
+    * User options & preferences.
+    * @var string
+    */
+	private $options;
+
+   /**
     * The current working directory.
     * @var string
     */
 	private $current_dir;
 
    /**
+    * The current upload directory.
+    * @var string
+    */
+	private $upload_dir;	
+
+   /**
     * The current branch in git.
     * @var string
     */	
-	private $current_branch;
+	private $branch;
 
 
 	/**
@@ -66,18 +79,25 @@ class Revisr
 		$this->table_name = $this->wpdb->prefix . "revisr";
 		$this->time = current_time( 'mysql' );
 		$init = new revisr_init;
+		$this->options = get_option('revisr_settings');
 		$this->current_dir = getcwd();
+		$this->upload_dir = wp_upload_dir();
+		$this->branch = current_branch();
+		$plugin = plugin_basename(__FILE__);
 
 		//Git functions
 		add_action( 'publish_revisr_commits', array($this, 'commit') );
 		add_action( 'admin_post_revert', array($this, 'revert') );
-		add_action( 'admin_post_checkout', array($this, 'checkout') );
+		add_action( 'admin_post_checkout', array($this, 'checkout'), 10, 1 );
 		add_action( 'admin_post_create_branch', array($this, 'create_branch') );
 		add_action( 'admin_post_view_diff', array($this, 'view_diff') );
 		add_action( 'wp_ajax_new_commit', array($this, 'new_commit') );
 		add_action( 'wp_ajax_discard', array($this, 'discard') );
 		add_action( 'wp_ajax_push', array($this, 'push') );
 		add_action( 'wp_ajax_pull', array($this, 'pull') );
+
+		//Database functions
+		add_action( 'admin_post_revert_db', array($this, 'revert_db') );
 
 		//Committed / pending files
 		add_action( 'wp_ajax_pending_files', array($this, 'pending_files') );
@@ -87,7 +107,8 @@ class Revisr
 		add_action( 'wp_ajax_recent_activity', array($this, 'recent_activity') );
 
 		//Install
-		register_activation_hook( __FILE__, array($this, 'revisr_install'));
+		register_activation_hook( __FILE__, array($this, 'revisr_install') );
+		add_filter("plugin_action_links_$plugin", array($this, 'settings_link') );
 	}
 
 	/**
@@ -104,17 +125,23 @@ class Revisr
 			exit();
 		}
 
-		$branch = current_branch();
-
 		git("add -A");
 		git("commit -am '" . $title . "'");
 		$commit_hash = git("log --pretty=format:'%h' -n 1");
-		git("push origin {$branch}");
+		git("push origin {$this->branch}");
 		add_post_meta( get_the_ID(), 'commit_hash', $commit_hash );
-		add_post_meta( get_the_ID(), 'branch', $branch );
+		add_post_meta( get_the_ID(), 'branch', $this->branch );
+
 		$author = the_author();
 		$view_link = get_admin_url() . "post.php?post=" . get_the_ID() . "&action=edit";
 		$this->log("Committed <a href='{$view_link}'>#{$commit_hash[0]}</a> to the repository.", "commit");
+
+		if (isset($_REQUEST['backup_db']) && $_REQUEST['backup_db'] == "on") {
+			$this->backup_db();
+			$db_hash = git("log --pretty=format:'%h' -n 1");
+			add_post_meta( get_the_ID(), "db_hash", $db_hash[0] );
+		}
+
 		$this->notify(get_bloginfo() . " - New Commit", "A new commit was made to the repository:<br> #{$commit_hash[0]} - {$title}");
 		return $commit_hash;
 	}
@@ -135,17 +162,73 @@ class Revisr
 	*/
 	public function revert()
 	{
-		$branch = current_branch();
+		$branch = $_GET['branch'];
+		if ($branch != $this->branch) {
+			$this->checkout($branch);
+		}
 		$commit = $_GET['commit_hash'];
 		git("reset --hard {$commit}");
 		git("reset --soft HEAD@{1}");
 		git("add -A");
-		$commit_hash = git("push origin {$branch}");
+		$commit_hash = git("push origin {$this->branch}");
 		git("commit -am 'Reverted to commit: #" . $commit . "'");
 		$post_url = get_admin_url() . "post.php?post=" . $_GET['post_id'] . "&action=edit";
 		$this->log("Reverted to commit <a href='{$post_url}'>#{$commit}</a>.", "revert");
 		$this->notify(get_bloginfo() . " - Commit Reverted", get_bloginfo() . " was reverted to commit #{$commit}.");
 		$redirect = get_admin_url() . "admin.php?page=revisr&revert=success&commit={$commit}&id=" . $_GET['post_id'];
+		wp_redirect($redirect);
+	}
+
+	/**
+	* Backs up the database, and pushes it to the remote.
+	* @access public
+	*/
+	public function backup_db()
+	{
+		$db = new RevisrDB();
+		chdir($this->upload_dir['basedir']);
+		$backup = $db->backup();
+		git("add revisr_db_backup.sql");
+		git("commit -m 'Backed up the database with Revisr.' " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
+		git("push origin {$this->branch}");
+		chdir($this->current_dir);
+		$this->log("Backed up the database.", "backup");
+		$this->notify(get_bloginfo() . " - Database Backup", "The database for " . get_bloginfo() . " was successfully backed up.");
+		//echo "<p>Successfully backed up the database.</p>";
+		//exit;
+	}
+
+	/**
+	* Backs up the database, then restores it to an earlier commit.
+	* @access public
+	*/
+	public function revert_db()
+	{
+		$db = new RevisrDB();
+
+		$branch = $_GET['branch'];
+
+		if ($branch != $this->branch) {
+			$this->checkout($branch);
+		}
+
+		chdir($this->upload_dir['basedir']);
+		$db->backup();
+		git("add revisr_db_backup.sql");
+		git("commit -m 'Autobackup by Revisr.' " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
+		git("push origin {$this->branch}");
+
+		$commit = $_GET['db_hash'];
+		$current_commit = git("log --pretty=format:'%h' -n 1");
+		
+		git("checkout {$commit} " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
+		$db->drop_tables();
+		$db->restore();
+		git("checkout master " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
+		chdir($this->current_dir);
+		$undo_url = get_admin_url() . "admin-post.php?action=revert_db&db_hash={$current_commit[0]}";
+		$this->log("Reverted database to previous commit. <a href='{$undo_url}'>Undo</a>", "revert");
+		$redirect = get_admin_url() . "admin.php?page=revisr&revert_db=success&prev_commit={$current_commit[0]}";
 		wp_redirect($redirect);
 	}
 
@@ -205,9 +288,25 @@ class Revisr
 	* Checks out a new or existing branch.
 	* @access public
 	*/
-	public function checkout()
+	public function checkout($args)
 	{
-		$branch = $_REQUEST['branch'];
+		if (isset($this->options['reset_db'])) {
+			chdir($this->upload_dir['basedir']);
+			$db = new RevisrDB();
+			$db->backup();
+			git("add revisr_db_backup.sql");
+			git("commit -m 'Autobackup by Revisr.' " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
+			git("push origin {$this->branch}");
+		}
+
+		if ($args == "") {
+			$branch = $_REQUEST['branch'];
+		}
+		else {
+			$branch = $args;
+		}
+
+		
 		git("reset --hard HEAD");
 		if (isset($_REQUEST['new_branch'])){
 			if ($_REQUEST['new_branch'] == "true") {
@@ -223,6 +322,10 @@ class Revisr
 		}
 		else {
 			git("checkout {$branch}");
+			if (isset($this->options['reset_db'])) {
+				$db->restore();
+				chdir($this->current_dir);
+			}
 			$this->log("Checked out branch: {$branch}.", "branch");
 			$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the branch {$branch}.");
 			$url = get_admin_url() . "admin.php?page=revisr&branch={$branch}&checkout=success";
@@ -294,6 +397,9 @@ class Revisr
 	*/
 	public static function committed_files()
 	{
+		if (get_post_type($_POST['id']) != "revisr_commits") {
+			return;
+		}
 		$commit = get_post_meta( $_POST['id'], 'commit_hash', true );
 		$files = get_post_custom_values( 'committed_files', $_POST['id'] );
 		foreach ( $files as $file ) {
@@ -365,10 +471,12 @@ class Revisr
 	*/
 	public function pending_files()
 	{
+
 		$output = git("status --short");
 
 		echo "<br>There are <strong>" . count($output) . "</strong> pending files that will be added to this commit on branch <strong>" . current_branch() . "</strong>.<br><br>";
-
+		echo "<input id='backup_db_cb' type='checkbox' name='backup_db'><label for='backup_db_cb'>Backup database?</label><br><br>";
+		
 		$current_page = $_POST['pagenum'];
 		$num_rows = count($output);
 		$rows_per_page = 20;
@@ -513,7 +621,14 @@ class Revisr
 	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	   	dbDelta( $sql );
 	   	add_option( "revisr_db_version", "1.0" );
-	}		
+	}	
+
+	public function settings_link($links)
+	{
+		$settings_link = '<a href="admin.php?page=revisr_settings">Settings</a>'; 
+  		array_unshift($links, $settings_link); 
+  		return $links; 
+	}	
 }
 
 $revisr = new Revisr;

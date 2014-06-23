@@ -65,3 +65,13 @@ function get_status($status)
 
 	return $status;
 }
+
+function check_compatibility()
+{
+	$error = "";
+	if (!function_exists('exec') || !function_exists('system')) {
+		$error .= "<p><strong>WARNING:</strong> Your server does not appear to support php exec() and/or system(). <br> 
+		These functions are necessary for Revisr to work correctly. Contact your web host if you're not sure how to activate these functions.</p>";
+	}
+	echo $error;
+}
