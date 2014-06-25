@@ -22,7 +22,14 @@ jQuery(document).ready(function() {
 				action: 'discard'
 			};
 			jQuery.post(ajaxurl, data, function(response) {
-				document.getElementById("revisr_alert").innerHTML = response;
+				var error_div = document.getElementById("revisr_alert");
+				if (response.indexOf('error') !== -1) {
+					error_div.className = "error";
+				}
+				else {
+					error_div.className = "updated";
+				}
+				error_div.innerHTML = response;
 				jQuery('#loader').hide();
 				jQuery.post(ajaxurl, recent_data, function(response) {
 					document.getElementById("revisr_activity").innerHTML = response;
@@ -43,7 +50,14 @@ jQuery(document).ready(function() {
 				action: 'push'
 			};
 			jQuery.post(ajaxurl, data, function(response) {
-				document.getElementById("revisr_alert").innerHTML = response;
+				var error_div = document.getElementById("revisr_alert");
+				if (response.indexOf('error') !== -1) {
+					error_div.className = "error";
+				}
+				else {
+					error_div.className = "updated";
+				}
+				error_div.innerHTML = response;
 				jQuery('#loader').hide();
 				jQuery.post(ajaxurl, recent_data, function(response) {
 					document.getElementById("revisr_activity").innerHTML = response;
@@ -64,7 +78,14 @@ jQuery(document).ready(function() {
 			};
 			
 			jQuery.post(ajaxurl, data, function(response) {
-				document.getElementById("revisr_alert").innerHTML = response;
+				var error_div = document.getElementById("revisr_alert");
+				if (response.indexOf('error') !== -1) {
+					error_div.className = "error";
+				}
+				else {
+					error_div.className = "updated";
+				}
+				error_div.innerHTML = response;
 				jQuery('#loader').hide();
 				jQuery.post(ajaxurl, recent_data, function(response) {
 					document.getElementById("revisr_activity").innerHTML = response;

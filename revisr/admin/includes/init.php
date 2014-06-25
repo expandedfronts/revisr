@@ -197,12 +197,20 @@ class revisr_init
     	);
 
     	add_settings_field(
-    		'notifications',
-    		'Enable email notifications?',
-    		array($this, 'notifications_callback'),
+    		'reset_db',
+    		'Reset database when changing branches?',
+    		array($this, 'reset_db_callback'),
     		'revisr_settings',
     		'revisr_general_config'
 		);
+
+    	add_settings_field(
+    		'auto_push',
+    		'Automatically push new commits?',
+    		array($this, 'auto_push_callback'),
+    		'revisr_settings',
+    		'revisr_general_config'
+		);		
 
     	add_settings_field(
     		'revisr_admin_bar',
@@ -213,9 +221,9 @@ class revisr_init
 		);
 
     	add_settings_field(
-    		'reset_db',
-    		'Reset database when changing branches?',
-    		array($this, 'reset_db_callback'),
+    		'notifications',
+    		'Enable email notifications?',
+    		array($this, 'notifications_callback'),
     		'revisr_settings',
     		'revisr_general_config'
 		);
@@ -289,6 +297,15 @@ class revisr_init
 		);
 	}
 
+	public function auto_push_callback()
+	{
+		printf(
+			'<input type="checkbox" id="auto_push" name="revisr_settings[auto_push]" %s />
+			<p class="description">If checked, Revisr will automatically push commits and .gitignore updates to the remote repository.</p>',
+			isset( $this->options['auto_push'] ) ? "checked" : ''
+			);
+	}
+
 	public function sanitize($input)
 	{
 		return $input;
@@ -301,11 +318,15 @@ class revisr_init
 
 	public function update_settings()
 	{
-		if(isset($_GET['settings-updated']) && $_GET['settings-updated'])
+		if(isset($_GET['settings-updated']) && $_GET['settings-updated'] == "true")
 	   {
 
 	   	  chdir(ABSPATH);
 	      file_put_contents(".gitignore", $this->options['gitignore']);
+
+	      git("add .gitignore");
+	      git("commit -m 'Updated .gitignore'");
+
 	      $options = get_option('revisr_settings');
 	      if ($options['username'] != "") {
 	      	git('config user.name "' . $options['username'] . '"');
@@ -316,6 +337,13 @@ class revisr_init
 	      if ($options['remote_url'] != "") {
 	      	git('config remote.origin.url ' . $options['remote_url']);
 	      }
+		  if (isset($this->options['auto_push'])) {
+			$errors = git_passthru("push origin {$this->branch} --quiet");
+			if ($errors != "") {
+				wp_redirect(get_admin_url() . "admin.php?page=revisr_settings&error=push");
+			}
+
+		  }
 	      chdir($this->dir);
 	   }
 	}

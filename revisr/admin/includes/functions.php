@@ -21,6 +21,16 @@ function git($args)
 	return $output;	
 }
 
+function git_passthru($args)
+{
+	$current_dir = getcwd();
+	$cmd = "git $args";
+	chdir(ABSPATH);
+	passthru($cmd, $output);
+	chdir($current_dir);
+	return $output;	
+}
+
 //Returns the current branch.
 function current_branch()
 {
@@ -69,8 +79,8 @@ function get_status($status)
 function check_compatibility()
 {
 	$error = "";
-	if (!function_exists('exec') || !function_exists('system')) {
-		$error .= "<p><strong>WARNING:</strong> Your server does not appear to support php exec() and/or system(). <br> 
+	if (!function_exists('exec') || !function_exists('passthru')) {
+		$error .= "<p><strong>WARNING:</strong> Your server does not appear to support php exec() and/or passthru(). <br> 
 		These functions are necessary for Revisr to work correctly. Contact your web host if you're not sure how to activate these functions.</p>";
 	}
 	echo $error;

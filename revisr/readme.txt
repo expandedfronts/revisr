@@ -31,7 +31,7 @@ A must have plugin for deploying WordPress using git repositories.
 = Requirements = 
 * A WordPress installation in the root folder of a Git repository
 * Git must be installed on the server (most updated versions of cPanel have it preinstalled)
-* PHP exec (safe mode off, can be configured in your php.ini)
+* The PHP functions exec() and passthru() enabled
 
 = Instructions =
 * Unzip the plugin folder and upload it to the plugins directory of your WordPress installation.
@@ -63,6 +63,11 @@ Care should be taken when dealing with upgrades that depend on the database. Bac
 
 
 == Changelog ==
+
+= 1.3.1 =
+* Added error handling
+* Commits are no longer automatically pushed by default. This can be changed in the plugin settings page.
+* Fixed issue with .gitignore showing as a pending file
 
 = 1.3 =
 * Added ability to track/revert changes to the database

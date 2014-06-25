@@ -21,7 +21,10 @@ include_once $dir . '../includes/functions.php';
 	
 	<?php 
 		$pending = count_pending();
-		if ( isset($_GET['checkout']) && $_GET['checkout'] == "success" ){
+		if (isset($_GET['revert_db']) && $_GET['revert_db'] == "success"){
+			$text = "<p>Successfully reverted the database.</p>";
+		}
+		else if ( isset($_GET['checkout']) && $_GET['checkout'] == "success" ){
 			$text = "<p>Successfully checked out branch <strong>{$_GET['branch']}</strong>.</p>";
 		}
 		else if ( isset($_GET['revert']) && $_GET['revert'] == "success"){

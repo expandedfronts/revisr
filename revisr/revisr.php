@@ -13,7 +13,7 @@
  * Plugin Name:       Revisr
  * Plugin URI:        http://revisr.io/
  * Description:       A plugin that allows developers to manage WordPress websites with Git repositories.
- * Version:           1.3
+ * Version:           1.3.1
  * Author:            Expanded Fronts
  * Author URI: http://revisr.io/
  */
@@ -128,13 +128,23 @@ class Revisr
 		git("add -A");
 		git("commit -am '" . $title . "'");
 		$commit_hash = git("log --pretty=format:'%h' -n 1");
-		git("push origin {$this->branch}");
+		$view_link = get_admin_url() . "post.php?post=" . get_the_ID() . "&action=edit";
 		add_post_meta( get_the_ID(), 'commit_hash', $commit_hash );
 		add_post_meta( get_the_ID(), 'branch', $this->branch );
-
 		$author = the_author();
-		$view_link = get_admin_url() . "post.php?post=" . get_the_ID() . "&action=edit";
-		$this->log("Committed <a href='{$view_link}'>#{$commit_hash[0]}</a> to the repository.", "commit");
+		
+		if (isset($this->options['auto_push'])) {
+			$errors = git_passthru("push origin {$this->branch} --quiet");
+			if ($errors == "") {
+				$this->log("Committed <a href='{$view_link}'>#{$commit_hash[0]}</a> and pushed to the remote repository.", "commit");
+			}
+			else {
+				$this->log("Error pushing changes to the remote repository.", "error");
+			}
+		}
+		else {
+			$this->log("Committed <a href='{$view_link}'>#{$commit_hash[0]}</a> to the local repository.", "commit");
+		}
 
 		if (isset($_REQUEST['backup_db']) && $_REQUEST['backup_db'] == "on") {
 			$this->backup_db();
@@ -190,7 +200,9 @@ class Revisr
 		$backup = $db->backup();
 		git("add revisr_db_backup.sql");
 		git("commit -m 'Backed up the database with Revisr.' " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
-		git("push origin {$this->branch}");
+		if (isset($this->options['auto_push'])) {
+			git("push origin {$this->branch}");
+		}
 		chdir($this->current_dir);
 		$this->log("Backed up the database.", "backup");
 		$this->notify(get_bloginfo() . " - Database Backup", "The database for " . get_bloginfo() . " was successfully backed up.");
@@ -208,6 +220,10 @@ class Revisr
 
 		$branch = $_GET['branch'];
 
+		if (!function_exists('system')) {
+			die("It appears you don't have the PHP system() function enabled. Check with your hosting provider or enable this in your PHP configuration.");
+		}
+
 		if ($branch != $this->branch) {
 			$this->checkout($branch);
 		}
@@ -216,7 +232,10 @@ class Revisr
 		$db->backup();
 		git("add revisr_db_backup.sql");
 		git("commit -m 'Autobackup by Revisr.' " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
-		git("push origin {$this->branch}");
+		
+		if (isset($this->options['auto_push'])) {
+			git("push origin {$this->branch}");
+		}
 
 		$commit = $_GET['db_hash'];
 		$current_commit = git("log --pretty=format:'%h' -n 1");
@@ -370,10 +389,18 @@ class Revisr
 	public function push()
 	{
 		git("reset --hard HEAD");
-		git("push origin HEAD");
-		$this->log("Pushed changes to the remote repository.", "push");
-		$this->notify(get_bloginfo() . " - Changes Pushed", "Changes were pushed to the remote repository for " . get_bloginfo());
-		echo "<p>Successfully pushed to the remote.</p>";
+		$errors = git_passthru("push origin HEAD --quiet");
+		
+		if ($errors != "") {
+			$this->log("Error pushing changes to the remote repository.", "error");
+			echo "<p>There was an error while pushing to the remote repository. The remote may be ahead of this repository or you are not authenticated.</p>";
+		}
+		else {
+			$this->log("Pushed changes to the remote repository.", "push");
+			$this->notify(get_bloginfo() . " - Changes Pushed", "Changes were pushed to the remote repository for " . get_bloginfo());
+			echo "<p>Successfully pushed to the remote.</p>";
+		}
+
 		exit;
 	}
 
@@ -384,10 +411,18 @@ class Revisr
 	public function pull()
 	{
 		git("reset --hard HEAD");
-		git("pull origin");
-		$this->log("Pulled changes from the remote repository", "pull");
-		$this->notify(get_bloginfo() . " - Changes Pulled", "Changes were pulled from the remote repository for " . get_bloginfo());
-		echo "<p>Successfully pulled from the remote.</p>";
+		$errors = git("pull origin --quiet");
+
+		if ($errors != "" && $errors != "Already up-to-date.") {
+			$this->log("Error pulling changes from the remote repository.", "error");
+			echo "<p>There was an error while pulling from the remote repository. This repository could be ahead of the remote or you are not authenticated.</p>";
+		}
+		else {
+			$this->log("Pulled changes from the remote repository", "pull");
+			$this->notify(get_bloginfo() . " - Changes Pulled", "Changes were pulled from the remote repository for " . get_bloginfo());
+			echo "<p>Successfully pulled from the remote.</p>";
+		}
+
 		exit;
 	}
 
