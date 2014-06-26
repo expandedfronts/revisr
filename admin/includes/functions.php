@@ -36,7 +36,10 @@ function git_passthru($args)
 function current_branch()
 {
 	$output = git("rev-parse --abbrev-ref HEAD");
-	return $output[0];
+	
+	if (!empty($output)) {
+		return $output[0];		
+	}
 }
 
 //Returns the number of pending files.

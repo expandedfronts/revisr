@@ -207,8 +207,6 @@ class Revisr
 		chdir($this->current_dir);
 		$this->log("Backed up the database.", "backup");
 		$this->notify(get_bloginfo() . " - Database Backup", "The database for " . get_bloginfo() . " was successfully backed up.");
-		//echo "<p>Successfully backed up the database.</p>";
-		//exit;
 	}
 
 	/**
@@ -420,9 +418,9 @@ class Revisr
 	public function pull()
 	{
 		git("reset --hard HEAD");
-		$errors = git("pull origin --quiet");
+		$errors = git("pull origin HEAD --quiet");
 
-		if ($errors != "" && $errors[0] != "Already up-to-date.") {
+		if (!empty($errors) && $errors[0] != "Already up-to-date.") {
 			$this->log("Error pulling changes from the remote repository.", "error");
 			echo "<p>There was an error while pulling from the remote repository. This repository could be ahead of the remote or you are not authenticated.</p>";
 		}
