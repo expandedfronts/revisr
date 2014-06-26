@@ -21,6 +21,7 @@ function git($args)
 	return $output;	
 }
 
+//Used for pushes and pulls.
 function git_passthru($args)
 {
 	$current_dir = getcwd();
@@ -76,6 +77,7 @@ function get_status($status)
 	return $status;
 }
 
+//Makes sure we have the necessary functions.
 function check_compatibility()
 {
 	$error = "";

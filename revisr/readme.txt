@@ -64,6 +64,9 @@ Care should be taken when dealing with upgrades that depend on the database. Bac
 
 == Changelog ==
 
+= 1.3.2 =
+* Bugfixes
+
 = 1.3.1 =
 * Added error handling
 * Commits are no longer automatically pushed by default. This can be changed in the plugin settings page.
