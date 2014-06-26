@@ -20,8 +20,9 @@
  */
 
 include_once 'admin/includes/class.init.php';
-include_once 'admin/includes/functions.php';
 include_once 'admin/includes/class.revisr_db.php';
+include_once 'admin/includes/functions.php';
+
 
 class Revisr
 {
