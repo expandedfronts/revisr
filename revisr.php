@@ -13,7 +13,7 @@
  * Plugin Name:       Revisr
  * Plugin URI:        http://revisr.io/
  * Description:       A plugin that allows developers to manage WordPress websites with Git repositories.
- * Version:           1.3.2
+ * Version:           1.4
  * Text Domain:		  revisr-plugin
  * Author:            Expanded Fronts
  * Author URI: http://revisr.io/
@@ -93,6 +93,11 @@ class Revisr
 		add_action( 'admin_post_checkout', array($this, 'checkout'), 10, 1 );
 		add_action( 'admin_post_create_branch', array($this, 'create_branch') );
 		add_action( 'admin_post_view_diff', array($this, 'view_diff') );
+		
+		if (isset($this->options['auto_pull'])) {
+			add_action( 'admin_post_nopriv_revisr_update', array($this, 'revisr_update') );
+		}
+		
 		add_action( 'wp_ajax_new_commit', array($this, 'new_commit') );
 		add_action( 'wp_ajax_discard', array($this, 'discard') );
 		add_action( 'wp_ajax_push', array($this, 'push') );
@@ -128,24 +133,29 @@ class Revisr
 		}
 
 		git("add -A");
-		git("commit -am '" . $title . "'");
+		$commit_msg = escapeshellarg($title);
+		git("commit -am {$commit_msg}");
+		
+		$id = get_the_ID();
 		$commit_hash = git("log --pretty=format:'%h' -n 1");
-		$view_link = get_admin_url() . "post.php?post=" . get_the_ID() . "&action=edit";
-		add_post_meta( get_the_ID(), 'commit_hash', $commit_hash );
+		$clean_hash = trim($commit_hash[0], "'");
+
+		$view_link = get_admin_url() . "post.php?post={$id}&action=edit";
+		add_post_meta( get_the_ID(), 'commit_hash', $clean_hash );
 		add_post_meta( get_the_ID(), 'branch', $this->branch );
 		$author = the_author();
 		
 		if (isset($this->options['auto_push'])) {
 			$errors = git_passthru("push origin {$this->branch} --quiet");
 			if ($errors == "") {
-				$this->log("Committed <a href='{$view_link}'>#{$commit_hash[0]}</a> and pushed to the remote repository.", "commit");
+				$this->log("Committed <a href='{$view_link}'>#{$clean_hash}</a> and pushed to the remote repository.", "commit");
 			}
 			else {
 				$this->log("Error pushing changes to the remote repository.", "error");
 			}
 		}
 		else {
-			$this->log("Committed <a href='{$view_link}'>#{$commit_hash[0]}</a> to the local repository.", "commit");
+			$this->log("Committed <a href='{$view_link}'>#{$clean_hash}</a> to the local repository.", "commit");
 		}
 
 		if (isset($_REQUEST['backup_db']) && $_REQUEST['backup_db'] == "on") {
@@ -154,8 +164,8 @@ class Revisr
 			add_post_meta( get_the_ID(), "db_hash", $db_hash[0] );
 		}
 
-		$this->notify(get_bloginfo() . " - New Commit", "A new commit was made to the repository:<br> #{$commit_hash[0]} - {$title}");
-		return $commit_hash;
+		$this->notify(get_bloginfo() . " - New Commit", "A new commit was made to the repository:<br> #{$clean_hash} - {$title}");
+		return $clean_hash;
 	}
 
 	/**
@@ -178,12 +188,13 @@ class Revisr
 		if ($branch != $this->branch) {
 			$this->checkout($branch);
 		}
-		$commit = $_GET['commit_hash'];
+		$commit = escapeshellarg($_GET['commit_hash']);
+		$commit_msg = escapeshellarg("Reverted to commit: #{$commit}");
 		git("reset --hard {$commit}");
 		git("reset --soft HEAD@{1}");
 		git("add -A");
-		$commit_hash = git("push origin {$this->branch}");
-		git("commit -am 'Reverted to commit: #" . $commit . "'");
+		git("push origin {$this->branch}");
+		git("commit -am {$commit_msg}");
 		$post_url = get_admin_url() . "post.php?post=" . $_GET['post_id'] . "&action=edit";
 		$this->log("Reverted to commit <a href='{$post_url}'>#{$commit}</a>.", "revert");
 		$this->notify(get_bloginfo() . " - Commit Reverted", get_bloginfo() . " was reverted to commit #{$commit}.");
@@ -245,7 +256,7 @@ class Revisr
 			git("push origin {$this->branch}");
 		}
 
-		$commit = $_GET['db_hash'];
+		$commit = escapeshellarg($_GET['db_hash']);
 		$current_commit = git("log --pretty=format:'%h' -n 1");
 		
 		git("checkout {$commit} " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
@@ -273,9 +284,9 @@ class Revisr
 		<?php
 		$file = $_GET['file'];
 
-		if (isset($_GET['commit'])) {
+		if (isset($_GET['commit']) && $_GET['commit'] != "") {
 			$commit = $_GET['commit'];
-			$diff = git("diff {$commit}^! {$file}");
+			$diff = git("show {$commit} {$file}");
 		}
 		else {
 			$diff = git("diff {$file}");
@@ -295,7 +306,21 @@ class Revisr
 		?>
 		</body>
 		</html>
-		<?
+		<?php
+	}
+
+
+	/**
+	* Processes POST requests.
+	* @access public
+	*/
+	public function revisr_update()
+	{
+		git("reset --hard HEAD");
+		git("pull origin {$this->branch}");
+		$this->log("Automatically pulled changes from the remote.", "autopull");
+		$this->notify(get_bloginfo() . " - Changes Pulled", "Revisr automatically pulled changes from the remote repository.");
+		exit();
 	}
 
 	/**
@@ -305,8 +330,9 @@ class Revisr
 	public function discard()
 	{
 		git("reset --hard HEAD");
+		git("clean -f -d");
 		$this->log("Discarded all changes to the working directory.", "discard");
-		$this->notify(get_bloginfo() . " - Changes Discarded", "All changes were discarded on " . get_bloginfo() . "." );
+		$this->notify(get_bloginfo() . " - Changes Discarded", "All uncommitted changes were discarded on " . get_bloginfo() . "." );
 		echo "<p>Successfully discarded uncommitted changes.</p>";
 		exit;
 	}
@@ -327,7 +353,7 @@ class Revisr
 		}
 
 		if ($args == "") {
-			$branch = $_REQUEST['branch'];
+			$branch = escapeshellarg($_REQUEST['branch']);
 		}
 		else {
 			$branch = $args;
@@ -341,7 +367,7 @@ class Revisr
 				$this->log("Checked out new branch: {$branch}.", "branch");
 				$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the new branch {$branch}.");
 				echo "<script>
-						window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr&checkout=success&branch={$branch}'
+						window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr&checkout=success&branch={$_REQUEST['branch']}'
 					</script>";
 				exit;				
 			}
@@ -387,7 +413,7 @@ class Revisr
 			</form>
 			<p style="font-style:italic;color:#BBB;text-align:center;">New branch will be checked out.</p>
 		</div>
-		<?
+		<?php
 	}
 
 	/**
@@ -419,18 +445,10 @@ class Revisr
 	public function pull()
 	{
 		git("reset --hard HEAD");
-		$errors = git("pull origin HEAD --quiet");
-
-		if (!empty($errors) && $errors[0] != "Already up-to-date.") {
-			$this->log("Error pulling changes from the remote repository.", "error");
-			echo "<p>There was an error while pulling from the remote repository. This repository could be ahead of the remote or you are not authenticated.</p>";
-		}
-		else {
-			$this->log("Pulled changes from the remote repository", "pull");
-			$this->notify(get_bloginfo() . " - Changes Pulled", "Changes were pulled from the remote repository for " . get_bloginfo());
-			echo "<p>Successfully pulled from the remote.</p>";
-		}
-
+		git("pull origin HEAD");
+		$this->log("Pulled changes from the remote repository", "pull");
+		$this->notify(get_bloginfo() . " - Changes Pulled", "Changes were pulled from the remote repository for " . get_bloginfo());
+		echo "<p>Pulled changes from the remote.</p>";
 		exit;
 	}
 
@@ -438,18 +456,19 @@ class Revisr
 	* Shows the files that were added in the given commit.
 	* @access public
 	*/
-	public static function committed_files()
+	public function committed_files()
 	{
 		if (get_post_type($_POST['id']) != "revisr_commits") {
-			return;
+			exit();
 		}
-		$commit = get_post_meta( $_POST['id'], 'commit_hash', true );
+		$commit = get_hash($_POST['id']);
 		$files = get_post_custom_values( 'committed_files', $_POST['id'] );
 		foreach ( $files as $file ) {
 		    $output = unserialize($file);
 		}
 
 		echo "<br><strong>" . count($output) . "</strong> files were included in this commit.<br><br>";
+		
 
 		if (isset($_POST['pagenum'])) {
 			$current_page = $_POST['pagenum'];
@@ -488,7 +507,7 @@ class Revisr
 					$file = substr($result, 3);
 					$status = get_status($short_status);
 					if ($status != "Untracked" && $status != "Deleted") {
-						echo "<tr><td><a href='" . get_admin_url() . "admin-post.php?action=view_diff&file={$file}&commit={$commit[0]}&TB_iframe=true&width=600&height=550' title='View Diff' class='thickbox'>{$file}</a></td><td>{$status}</td></td>";
+						echo "<tr><td><a href='" . get_admin_url() . "admin-post.php?action=view_diff&file={$file}&commit={$commit}&TB_iframe=true&width=600&height=550' title='View Diff' class='thickbox'>{$file}</a></td><td>{$status}</td></td>";
 					}
 					else {
 						echo "<tr><td>{$file}</td><td>{$status}</td></td>";
@@ -584,7 +603,7 @@ class Revisr
 	public function recent_activity()
 	{
 		global $wpdb;
-		$revisr_events = $wpdb->get_results("SELECT * FROM $this->table_name ORDER BY id DESC LIMIT 10", ARRAY_A);
+		$revisr_events = $wpdb->get_results("SELECT id, time, message FROM $this->table_name ORDER BY id DESC LIMIT 10", ARRAY_A);
 		if ($revisr_events) {
 			echo '<table class="widefat">
 					<thead>

@@ -19,35 +19,40 @@ include_once $dir . '../includes/functions.php';
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Revisr Dashboard', 'revisr-plugin'); ?></h2>
 	
-	<?php 
-		$pending = count_pending();
-		if (isset($_GET['revert_db']) && $_GET['revert_db'] == "success"){
-			$text = "<p>" . __('Successfully reverted the database.', 'revisr-plugin') . "</p>";
-		}
-		else if ( isset($_GET['checkout']) && $_GET['checkout'] == "success" ){
-			$text = sprintf(__('<p>Successfully checked out branch <strong>%s</strong>.</p>', 'revisr-plugin'), $_GET['branch']);
-		}
-		else if ( isset($_GET['revert']) && $_GET['revert'] == "success"){
-			$url = get_admin_url() . "post.php?post={$_GET['id']}&action=edit";
-			$text = "<p>Successfully reverted to commit <a href='{$url}'><strong>#{$_GET['commit']}</strong></a>.</p>";
-		}
-		else if ( $pending != 0 ){
-			if ( $pending == 1 ){
-				$text = sprintf(__('<p>There is currently <strong>1</strong> pending file on branch <strong>%s</strong>.</p>', 'revisr-plugin'), current_branch());
-			}
-			else {
-				$text = sprintf(__('<p>There are currently <strong>%d</strong> pending files on branch <strong>%s</strong>.</p>', 'revisr-plugin'), $pending, current_branch());
-			}
-		}
-		else {
-			$text = sprintf(__('<p>There are currently no pending files on branch <strong>%s</strong>.</p>', 'revisr-plugin'), current_branch());
-		}
-		echo "<div id='revisr_alert' class='updated'>{$text}</div>";
-
+	<?php
+		
 		$error = check_compatibility();
+		
 		if ($error != "") {
 			echo "<div id='revisr_error' class='error'>{$error}</div>";
 		}
+		else {
+			$pending = count_pending();
+			if (isset($_GET['revert_db']) && $_GET['revert_db'] == "success"){
+				$text = "<p>" . __('Successfully reverted the database.', 'revisr-plugin') . "</p>";
+			}
+			else if ( isset($_GET['checkout']) && $_GET['checkout'] == "success" ){
+				$text = sprintf(__('<p>Successfully checked out branch <strong>%s</strong>.</p>', 'revisr-plugin'), $_GET['branch']);
+			}
+			else if ( isset($_GET['revert']) && $_GET['revert'] == "success"){
+				$url = get_admin_url() . "post.php?post={$_GET['id']}&action=edit";
+				$text = "<p>Successfully reverted to commit <a href='{$url}'><strong>#{$_GET['commit']}</strong></a>.</p>";
+			}
+			else if ( $pending != 0 ){
+				if ( $pending == 1 ){
+					$text = sprintf(__('<p>There is currently <strong>1</strong> pending file on branch <strong>%s</strong>.</p>', 'revisr-plugin'), current_branch());
+				}
+				else {
+					$text = sprintf(__('<p>There are currently <strong>%d</strong> pending files on branch <strong>%s</strong>.</p>', 'revisr-plugin'), $pending, current_branch());
+				}
+			}
+			else {
+				$text = sprintf(__('<p>There are currently no pending files on branch <strong>%s</strong>.</p>', 'revisr-plugin'), current_branch());
+			}
+			echo "<div id='revisr_alert' class='updated'>{$text}</div>";
+		}
+
+
 	?>
 
 	<div id="poststuff">

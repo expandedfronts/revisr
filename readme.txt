@@ -64,6 +64,15 @@ Care should be taken when dealing with upgrades that depend on the database. Bac
 
 == Changelog ==
 
+= 1.4 =
+* Added ability to automatically pull changes from Bitbucket or Github (enabled on the settings page)
+* Fixed bug causing call_user_func() error in some enviornments (including Windows)
+* Additional validation on Git commands
+* Additional error handling
+* Fixed bug with saving .gitignore
+* Fixed potential bug with viewing pending files
+* Minor cleanup
+
 = 1.3.2 =
 * Bugfixes
 

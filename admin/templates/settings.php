@@ -8,6 +8,36 @@
  * @copyright 2014 Expanded Fronts
  */
 
+if (isset($_GET['settings-updated']) && $_GET['settings-updated'] == "true") {
+	
+	$options = get_option('revisr_settings');
+	$dir = getcwd();
+	
+	chdir(ABSPATH);
+	file_put_contents(".gitignore", $options['gitignore']);
+	
+	if ($options['username'] != "") {
+		git('config user.name "' . $options['username'] . '"');
+	}
+	if ($options['email'] != "") {
+		git('config user.email "' . $options['email'] . '"');
+	}
+	if ($options['remote_url'] != "") {
+		git('config remote.origin.url ' . $options['remote_url']);
+	}
+	if (isset($options['auto_push'])) {
+		$errors = git_passthru("push origin {$this->branch} --quiet");
+		if ($errors != "") {
+			wp_redirect(get_admin_url() . "admin.php?page=revisr_settings&error=push");
+		}
+	}
+
+	git("add .gitignore");
+	git("commit -m 'Updated .gitignore'");
+
+	chdir($dir);
+}
+
 ?>
 
 <div class="wrap">

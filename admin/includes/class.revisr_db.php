@@ -25,7 +25,7 @@ class RevisrDB
 
 	public function backup()
 	{
-		exec("mysqldump -u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " >revisr_db_backup.sql");
+		exec("mysqldump -u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " > revisr_db_backup.sql");
 	}
 
 	public function restore()

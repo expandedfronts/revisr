@@ -13,8 +13,8 @@ class RevisrSettings
 	{
 		if ( is_admin() ){
 			add_action( 'admin_init',array($this, 'settings_init') );
-			add_action( 'load-revisr-settings', array($this, 'update_settings') );
 		}
+		
 		$this->options = get_option('revisr_settings');
 	}
 
@@ -79,7 +79,15 @@ class RevisrSettings
     		array($this, 'auto_push_callback'),
     		'revisr_settings',
     		'revisr_general_config'
-		);		
+		);
+
+		add_settings_field(
+			'auto_pull',
+			'Automatically pull new commits?',
+			array($this, 'auto_pull_callback'),
+			'revisr_settings',
+			'revisr_general_config'
+		);
 
     	add_settings_field(
     		'revisr_admin_bar',
@@ -143,7 +151,8 @@ class RevisrSettings
 	public function notifications_callback()
 	{
 		printf(
-			'<input type="checkbox" id="notifications" name="revisr_settings[notifications]" %s />',
+			'<input type="checkbox" id="notifications" name="revisr_settings[notifications]" %s />
+			<p class="description">Will be sent to the email address above.</p>',
 			isset( $this->options['notifications'] ) ? "checked" : ''
 		);
 	}
@@ -175,41 +184,19 @@ class RevisrSettings
 			);
 	}
 
+	public function auto_pull_callback()
+	{
+		printf(
+			'<input type="checkbox" id="auto_pull" name="revisr_settings[auto_pull]" %s />
+			<p class="description">Check to allow Revisr to automatically pull commits from Bitbucket or Github.<br>
+			You wil need to add the following POST hook to Bitbucket/Github:<br>
+			' . get_admin_url() . 'admin-post.php?action=revisr_update</p>',
+			isset( $this->options['auto_pull'] ) ? "checked" : ''
+			);
+	}
+
 	public function sanitize($input)
 	{
 		return $input;
 	}
-
-	public static function update_settings()
-	{
-		if(isset($_GET['settings-updated']) && $_GET['settings-updated'] == "true")
-	   {
-
-	   	  chdir(ABSPATH);
-	      file_put_contents(".gitignore", $RevisrSettings['gitignore']);
-
-	      git("add .gitignore");
-	      git("commit -m 'Updated .gitignore'");
-
-	      $options = get_option('revisr_settings');
-	      if ($options['username'] != "") {
-	      	git('config user.name "' . $options['username'] . '"');
-	      }
-	      if ($options['email'] != "") {
-	      	git('config user.email "' . $options['email'] . '"');
-	      }
-	      if ($options['remote_url'] != "") {
-	      	git('config remote.origin.url ' . $options['remote_url']);
-	      }
-		  if (isset($this->options['auto_push'])) {
-			$errors = git_passthru("push origin {$this->branch} --quiet");
-			if ($errors != "") {
-				wp_redirect(get_admin_url() . "admin.php?page=revisr_settings&error=push");
-			}
-
-		  }
-	      chdir($this->dir);
-	   }
-	}
 }
-

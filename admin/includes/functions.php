@@ -49,6 +49,33 @@ function count_pending()
 	return count($pending);
 }
 
+//Returns the commit hash for a specific commit
+function get_hash($post_id)
+{
+	$commit_meta = maybe_unserialize(get_post_meta( $post_id, "commit_hash" ));
+				
+	if (isset($commit_meta[0])) {
+		if (!is_array($commit_meta[0]) && strlen($commit_meta[0]) == "1") {
+			$commit_hash = $commit_meta;
+		}
+		else {
+			$commit_hash = $commit_meta[0];
+		}
+	}
+
+	if (empty($commit_hash)) {
+		return __("Unknown");
+	}
+	else {
+		if (is_array($commit_hash)) {
+			return $commit_hash[0];
+		}
+		else {
+			return $commit_hash;
+		}
+	}
+}
+
 //Returns the status of a file. 
 function get_status($status)
 {
@@ -88,5 +115,9 @@ function check_compatibility()
 		$error .= "<p><strong>WARNING:</strong> Your server does not appear to support php exec() and/or passthru(). <br> 
 		These functions are necessary for Revisr to work correctly. Contact your web host if you're not sure how to activate these functions.</p>";
 	}
-	echo $error;
+
+	if (current_branch() == '') {
+		$error .= "<p><strong>WARNING:</strong> No Git repository detected. Revisr requires that Git be installed on the server and the parent WordPress installation be in the root directory of a Git repository.</p>";
+	}
+	return $error;
 }
