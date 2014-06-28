@@ -536,7 +536,7 @@ class Revisr
 
 		$output = git("status --short");
 
-		echo "<br>There are <strong>" . count($output) . "</strong> pending files that will be added to this commit on branch <strong>" . current_branch() . "</strong>.<br><br>";
+		echo "<br>There are <strong>" . count($output) . "</strong> untracked files that will be added to this commit on branch <strong>" . current_branch() . "</strong>.<br><br>";
 		echo "<input id='backup_db_cb' type='checkbox' name='backup_db'><label for='backup_db_cb'>Backup database?</label><br><br>";
 		
 		$current_page = $_POST['pagenum'];

@@ -112,7 +112,7 @@ class RevisrInit
 		}
 		
 		else {
-			add_meta_box( 'revisr_pending_files', 'Pending Files', array($this, 'pending_files_meta'), 'revisr_commits', 'normal', 'high' );
+			add_meta_box( 'revisr_pending_files', 'Untracked Files', array($this, 'pending_files_meta'), 'revisr_commits', 'normal', 'high' );
 		}
 	}
 
@@ -276,10 +276,10 @@ class RevisrInit
 		if (isset($options['revisr_admin_bar'])) {
 
 			if (count_pending() == "1") {
-				$text = "1 Pending File";
+				$text = "1 Untracked File";
 			}
 			else {
-				$text = count_pending() . " Pending Files";
+				$text = count_pending() . " Untracked Files";
 			}
 			$args = array(
 				'id'    => 'revisr',
