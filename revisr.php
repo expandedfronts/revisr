@@ -445,7 +445,7 @@ class Revisr
 	public function pull()
 	{
 		git("reset --hard HEAD");
-		git("pull origin HEAD");
+		git("pull origin {$this->branch}");
 		$this->log("Pulled changes from the remote repository", "pull");
 		$this->notify(get_bloginfo() . " - Changes Pulled", "Changes were pulled from the remote repository for " . get_bloginfo());
 		echo "<p>Pulled changes from the remote.</p>";

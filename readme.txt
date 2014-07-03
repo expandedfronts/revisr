@@ -16,6 +16,7 @@ Revisr allows you to manage your WordPress website with a git repository. With R
 * Track changes to the files and database of your WordPress installation
 * Optionally use different database versions for each branch
 * Commit and push changes to a remote repository (including Bitbucket and Github)
+* Automatically pull new commits via POST hooks
 * Pull changes down from a remote repository
 * Easily toggle between branches
 * Revert your website files and/or database to an earlier commit
@@ -24,7 +25,6 @@ Revisr allows you to manage your WordPress website with a git repository. With R
 
 A must have plugin for deploying WordPress using git repositories.
 
-*Git Logo by Jason Long is licensed under the Creative Commons Attribution 3.0 Unported License.*
 
 == Installation ==
 
@@ -39,11 +39,18 @@ A must have plugin for deploying WordPress using git repositories.
 * If the repository was cloned from a remote, Revisr will attempt to use the settings stored in Git.
 
 = Notes =
-Please verify that database backups are working before attempting to revert the database.
+Please verify that database backups are working before attempting to revert the database, especially if attempting to do so on a production website. Backups use the mysqldump command, supported by most hosts/environments. If you're using Windows, you will need to add a path to the mysqldump command in your computer's settings.
 
 It is also adviseable to add Revisr to the gitignore file via the settings page to make sure that reverts don't rollback the plugins' functionality. 
 
 == Frequently Asked Questions ==
+
+= How do the database backups/restores work? =
+Every time you make a commit and check the box for "Backup database?", Revisr will take a mysqldump of the current database and commit it to the repository. Each backup overwrites the previous, since with Git we can revert to any previous version at any time. 
+
+If you have the "Reset Database when Switching Branches" option checked, a few things will happen. When you click the button to toggle to a different branch or create a new branch, Revisr will backup the database and commit it to the repository. 
+
+Then, Revisr switches branches and restores the last available database backup for that new branch. For example, you could create some posts on a branch called "dev", and switch back to the master branch. Once on master, you wouldn't see the posts on the dev branch because the database has essentially been kept seperate. Once you switch back to dev, you'll see your posts just how you left them. A more useful scenario would be testing out plugins or upgrades on a seperate branch without permanently affecting the database.
 
 = Why are my commits timing out? =
 This is likely an authentication issue. You can fix this by configuring your SSH keys or using the HTTPS authentication option on the settings page.
