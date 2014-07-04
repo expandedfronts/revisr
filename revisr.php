@@ -13,7 +13,7 @@
  * Plugin Name:       Revisr
  * Plugin URI:        http://revisr.io/
  * Description:       A plugin that allows developers to manage WordPress websites with Git repositories.
- * Version:           1.4
+ * Version:           1.4.1
  * Text Domain:		  revisr-plugin
  * Author:            Expanded Fronts
  * Author URI: http://revisr.io/
@@ -100,6 +100,7 @@ class Revisr
 		
 		add_action( 'wp_ajax_new_commit', array($this, 'new_commit') );
 		add_action( 'wp_ajax_discard', array($this, 'discard') );
+		add_action( 'wp_ajax_backup_db', array($this, 'backup_db') );
 		add_action( 'wp_ajax_push', array($this, 'push') );
 		add_action( 'wp_ajax_pull', array($this, 'pull') );
 
@@ -208,17 +209,40 @@ class Revisr
 	*/
 	public function backup_db()
 	{
+
 		$db = new RevisrDB();
 		chdir($this->upload_dir['basedir']);
 		$backup = $db->backup();
-		git("add revisr_db_backup.sql");
-		git("commit -m 'Backed up the database with Revisr.' " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
-		if (isset($this->options['auto_push'])) {
-			git("push origin {$this->branch}");
+		$file = $this->upload_dir['basedir'] . "/revisr_db_backup.sql";
+		
+		//Verify that the backup was successful. 
+		if (file_exists($file) && filesize($file) > 1000) {
+			
+			git("add revisr_db_backup.sql");
+			git("commit -m 'Backed up the database with Revisr.' " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
+			
+			if (isset($this->options['auto_push'])) {
+				git("push origin {$this->branch}");
+			}
+			
+			chdir($this->current_dir);
+			$this->log("Backed up the database.", "backup");
+			$this->notify(get_bloginfo() . " - Database Backup", "The database for " . get_bloginfo() . " was successfully backed up.");
+			
+			if (isset($_REQUEST['source']) && $_REQUEST['source'] == 'ajax_button') {
+				echo "<p>Successfully backed up the database.</p>";
+				exit;
+			}
+
 		}
-		chdir($this->current_dir);
-		$this->log("Backed up the database.", "backup");
-		$this->notify(get_bloginfo() . " - Database Backup", "The database for " . get_bloginfo() . " was successfully backed up.");
+		else {
+			$this->log("Error backing up the database.", "error");
+			
+			if (isset($_REQUEST['source']) && $_REQUEST['source'] == 'ajax_button') {
+				echo "<p>There may have been an error backing up the database. Check that the permissions on your '/uploads' directory are correct and try again.</p>";
+				exit;
+			}
+		}
 	}
 
 	/**
@@ -423,6 +447,7 @@ class Revisr
 	public function push()
 	{
 		git("reset --hard HEAD");
+		$num_commits = count_unpushed();
 		$errors = git_passthru("push origin HEAD --quiet");
 		
 		if ($errors != "") {
@@ -430,7 +455,13 @@ class Revisr
 			echo "<p>There was an error while pushing to the remote repository. The remote may be ahead of this repository or you are not authenticated.</p>";
 		}
 		else {
-			$this->log("Pushed changes to the remote repository.", "push");
+			
+			if ($num_commits == "1") {
+				$this->log("Pushed <strong>1</strong> commit to the remote repository.", "push");
+			}
+			else {
+				$this->log("Pushed <strong>{$num_commits}</strong> commits to the remote repository.", "push");
+			}
 			$this->notify(get_bloginfo() . " - Changes Pushed", "Changes were pushed to the remote repository for " . get_bloginfo());
 			echo "<p>Successfully pushed to the remote.</p>";
 		}
@@ -445,8 +476,14 @@ class Revisr
 	public function pull()
 	{
 		git("reset --hard HEAD");
+		$num_commits = count_unpulled();
 		git("pull origin {$this->branch}");
-		$this->log("Pulled changes from the remote repository", "pull");
+		if ($num_commits == "1") {
+			$this->log("Pulled <strong>1</strong> commit from the remote repository.", "pull");
+		}
+		else {
+			$this->log("Pulled <strong>{$num_commits}</strong> commits from the remote repository", "pull");
+		}
 		$this->notify(get_bloginfo() . " - Changes Pulled", "Changes were pulled from the remote repository for " . get_bloginfo());
 		echo "<p>Pulled changes from the remote.</p>";
 		exit;

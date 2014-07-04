@@ -49,6 +49,23 @@ function count_pending()
 	return count($pending);
 }
 
+//Returns the number of unpushed commits.
+function count_unpushed()
+{
+	$branch = current_branch();
+	$unpushed = git("log origin/{$branch}..{$branch} --pretty=oneline");
+	return count($unpushed);
+}
+
+//Returns the number of unpulled commits.
+function count_unpulled()
+{
+	$branch = current_branch();
+	git("fetch");
+	$unpulled = git("log {$branch}..origin/{$branch} --pretty=oneline");
+	return count($unpulled);	
+}
+
 //Returns the commit hash for a specific commit
 function get_hash($post_id)
 {

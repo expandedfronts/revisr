@@ -179,7 +179,7 @@ class RevisrSettings
 	{
 		printf(
 			'<input type="checkbox" id="auto_push" name="revisr_settings[auto_push]" %s />
-			<p class="description">If checked, Revisr will automatically push commits and .gitignore updates to the remote repository.</p>',
+			<p class="description">If checked, Revisr will automatically push new commits to the remote repository.</p>',
 			isset( $this->options['auto_push'] ) ? "checked" : ''
 			);
 	}

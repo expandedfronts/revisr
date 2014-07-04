@@ -91,8 +91,23 @@ include_once $dir . '../includes/functions.php';
 						<div class="inside">
 							<button id="commit-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;">| Commit Changes</button>
 							<button id="discard-btn" class="button button-primary quick-action-btn">| Discard Changes</button>
-							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;">| Push Changes</button>
-							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;">| Pull Changes</button>
+							<button id="backup-btn" class="button button-primary quick-action-btn">| Backup Database</button>
+							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;"><span id="push-text">| Push Changes
+							<?php 
+								$unpushed = count_unpushed();
+								if ($unpushed != "0") {
+									echo "({$unpushed})";
+								}
+							?>
+							</span></button>
+							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span id="pull-text">| Pull Changes
+							<?php 
+								$unpulled = count_unpulled();
+								if ($unpulled != "0") {
+									echo "({$unpulled})";
+								}
+							?>
+							</span></button>
 						</div> <!-- .inside -->
 						
 					</div> <!-- .postbox -->

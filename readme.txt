@@ -71,6 +71,11 @@ Care should be taken when dealing with upgrades that depend on the database. Bac
 
 == Changelog ==
 
+= 1.4.1 =
+* Added "Backup Database" button to the Quick Actions
+* Added number of unpulled/unpushed commits to the Quick Action buttons
+* Updated recent activity text
+
 = 1.4 =
 * Added ability to automatically pull changes from Bitbucket or Github (enabled on the settings page)
 * Fixed bug causing call_user_func() error in some enviornments (including Windows)

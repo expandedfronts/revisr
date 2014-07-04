@@ -72,6 +72,15 @@ td.hash.column-hash {
 	color: #fff;
 }
 
+#backup-btn:before {
+	content: "\f321";
+	margin-top: 5px;
+	display: inline-block;
+	color: #fff;
+	-webkit-font-smoothing: antialiased;
+	font: normal 20px/1 'dashicons';
+}
+
 #push-btn:before {
 	content: "\f142";
 	margin-top: 5px;
@@ -79,6 +88,7 @@ td.hash.column-hash {
 	color: #fff;
 	-webkit-font-smoothing: antialiased;
 	font: normal 20px/1 'dashicons';
+	float: left;
 }
 
 #pull-btn:before {
@@ -88,6 +98,15 @@ td.hash.column-hash {
 	color: #fff;
 	-webkit-font-smoothing: antialiased;
 	font: normal 20px/1 'dashicons';
+	float: left;
+}
+
+#push-text {
+	float: left;
+}
+
+#pull-text {
+	float: left;
 }
 
 #loader {
