@@ -12,33 +12,33 @@ class RevisrSettings
 	public function __construct()
 	{
 		if ( is_admin() ){
-			add_action( 'admin_init',array($this, 'settings_init') );
+			add_action( 'admin_init', array($this, 'general_settings') );
+			add_action( 'admin_init', array($this, 'remote_settings') );
+			add_action( 'admin_init', array($this, 'database_settings') );
 		}
 		
 		$this->options = get_option('revisr_settings');
 	}
 
-	public function settings_init()
-	{
-		register_setting(
-			'revisr_option_group',
-			'revisr_settings',
-			array($this, 'sanitize')
-		);
 
+   	/**
+    * Add the general settings section
+    */
+	public function general_settings()
+	{
         add_settings_section(
-            'revisr_general_config', // ID
-            '', // Title
-            array( $this, 'general_config_callback' ), // Callback
-            'revisr_settings' // Page
-        );  
+            'revisr_general_settings',
+            '',
+            array( $this, 'general_settings_callback' ),
+            'revisr_settings'
+        );
 
         add_settings_field(
-            'username', // ID
-            'Username', // Title 
-            array( $this, 'username_callback' ), // Callback
-            'revisr_settings', // Page
-            'revisr_general_config' // Section           
+            'username',
+            'Username',
+            array( $this, 'username_callback' ),
+            'revisr_settings',
+            'revisr_general_settings'          
         );      
 
         add_settings_field(
@@ -46,15 +46,7 @@ class RevisrSettings
             'Email', 
             array( $this, 'email_callback' ), 
             'revisr_settings', 
-            'revisr_general_config'
-        );
-
-        add_settings_field(
-            'remote_url', 
-            'Remote URL', 
-            array( $this, 'remote_url_callback' ), 
-            'revisr_settings', 
-            'revisr_general_config'
+            'revisr_general_settings'
         );
 
         add_settings_field(
@@ -62,39 +54,15 @@ class RevisrSettings
         	'Files / Directories to add to .gitignore',
         	array( $this, 'gitignore_callback'),
         	'revisr_settings',
-        	'revisr_general_config'
+        	'revisr_general_settings'
     	);
-
-    	add_settings_field(
-    		'reset_db',
-    		'Reset database when changing branches?',
-    		array($this, 'reset_db_callback'),
-    		'revisr_settings',
-    		'revisr_general_config'
-		);
-
-    	add_settings_field(
-    		'auto_push',
-    		'Automatically push new commits?',
-    		array($this, 'auto_push_callback'),
-    		'revisr_settings',
-    		'revisr_general_config'
-		);
-
-		add_settings_field(
-			'auto_pull',
-			'Automatically pull new commits?',
-			array($this, 'auto_pull_callback'),
-			'revisr_settings',
-			'revisr_general_config'
-		);
 
     	add_settings_field(
     		'revisr_admin_bar',
     		'Show pending files in admin bar?',
     		array($this, 'admin_bar_callback'),
     		'revisr_settings',
-    		'revisr_general_config'
+    		'revisr_general_settings'
 		);
 
     	add_settings_field(
@@ -102,14 +70,110 @@ class RevisrSettings
     		'Enable email notifications?',
     		array($this, 'notifications_callback'),
     		'revisr_settings',
-    		'revisr_general_config'
+    		'revisr_general_settings'
+		);
+
+		register_setting(
+			'revisr_option_group',
+			'revisr_settings'
 		);
 
 	}
 
-	public function general_config_callback()
+   	/**
+    * Add the remote settings section
+    */
+	public function remote_settings()
 	{
-		//print "Enter your settings below:";
+        add_settings_section(
+            'revisr_remote_settings',
+            '',
+            array( $this, 'remote_settings_callback' ),
+            'revisr_settings'
+        );
+
+        add_settings_field(
+            'remote_name', 
+            'Remote Name', 
+            array( $this, 'remote_name_callback' ), 
+            'revisr_settings', 
+            'revisr_remote_settings'
+        );
+
+        add_settings_field(
+            'remote_url', 
+            'Remote URL', 
+            array( $this, 'remote_url_callback' ), 
+            'revisr_settings', 
+            'revisr_remote_settings'
+        );
+
+    	add_settings_field(
+    		'auto_push',
+    		'Automatically push new commits?',
+    		array($this, 'auto_push_callback'),
+    		'revisr_settings',
+    		'revisr_remote_settings'
+		);
+
+		add_settings_field(
+			'auto_pull',
+			'Automatically pull new commits?',
+			array($this, 'auto_pull_callback'),
+			'revisr_settings',
+			'revisr_remote_settings'
+		);
+
+		register_setting(
+			'revisr_remote_settings',
+			'revisr_settings'
+		);
+	}
+
+   	/**
+    * Add the database settings section
+    */
+	public function database_settings()
+	{
+        add_settings_section(
+            'revisr_database_settings',
+            '',
+            array( $this, 'database_settings_callback' ),
+            'revisr_settings'
+        );
+
+        add_settings_field(
+        	'mysql_path',
+        	'Path to MySQL',
+        	array($this, 'mysql_path_callback'),
+        	'revisr_settings',
+        	'revisr_database_settings'
+    	);
+
+    	add_settings_field(
+    		'reset_db',
+    		'Reset database when changing branches?',
+    		array($this, 'reset_db_callback'),
+    		'revisr_settings',
+    		'revisr_database_settings'
+		);	
+
+		register_setting(
+			'revisr_database_settings',
+			'revisr_settings'
+		);	
+	}
+
+   	/**
+    * Add the settings callbacks
+    */
+	public function general_settings_callback()
+	{
+		?>
+		<hr>
+		<br>
+		<h3>General Settings</h3>
+		<?php
 	}
 
 	public function username_callback()
@@ -130,15 +194,6 @@ class RevisrSettings
         );
 	}
 
-	public function remote_url_callback()
-	{
-		printf(
-			'<input type="text" id="remote_url" name="revisr_settings[remote_url]" value="%s" class="regular-text" placeholder="https://user:pass@host.com/user/example.git" />
-			<br><span class="description">Optional. Useful if you need to authenticate over "https://" instead of SSH, or if the remote has not been set.</span>',
-			isset( $this->options['remote_url'] ) ? esc_attr( $this->options['remote_url']) : ''
-			);
-	}
-
 	public function gitignore_callback()
 	{
 		printf(
@@ -147,7 +202,15 @@ class RevisrSettings
             isset( $this->options['gitignore'] ) ? esc_attr( $this->options['gitignore']) : ''
 		);
 	}
-
+	
+	public function admin_bar_callback()
+	{
+		printf(
+			'<input type="checkbox" id="revisr_admin_bar" name="revisr_settings[revisr_admin_bar]" %s />',
+			isset( $this->options['revisr_admin_bar'] ) ? "checked" : ''
+		);
+	}
+	
 	public function notifications_callback()
 	{
 		printf(
@@ -156,23 +219,32 @@ class RevisrSettings
 			isset( $this->options['notifications'] ) ? "checked" : ''
 		);
 	}
-
-	public function admin_bar_callback()
+	
+	public function remote_settings_callback()
 	{
-		printf(
-			'<input type="checkbox" id="revisr_admin_bar" name="revisr_settings[revisr_admin_bar]" %s />',
-			isset( $this->options['revisr_admin_bar'] ) ? "checked" : ''
-		);
+		?>
+		<hr>
+		<br>
+		<h3>Remote Settings</h3>
+		<?php
 	}
 
-	public function reset_db_callback()
+	public function remote_name_callback()
 	{
 		printf(
-			'<input type="checkbox" id="reset_db" name="revisr_settings[reset_db]" %s />
-			<p class="description">When switching to a different branch, should Revisr automatically restore the latest database backup for that branch?<br>
-			If enabled, the database will be automatically backed up before switching branches.</p>',
-			isset( $this->options['reset_db'] ) ? "checked" : ''
-		);
+			'<input type="text" id="remote_name" name="revisr_settings[remote_name]" value="%s" class="regular-text" placeholder="origin" />
+			<br><span class="description">This is set to "origin" by default. Used for pushing to and pulling from remotes.</span>',
+			isset( $this->options['remote_name'] ) ? esc_attr( $this->options['remote_name']) : ''
+			);
+	}
+
+	public function remote_url_callback()
+	{
+		printf(
+			'<input type="text" id="remote_url" name="revisr_settings[remote_url]" value="%s" class="regular-text" placeholder="https://user:pass@host.com/user/example.git" />
+			<br><span class="description">Useful if you need to authenticate over "https://" instead of SSH, or if the remote has not already been set through Git.</span>',
+			isset( $this->options['remote_url'] ) ? esc_attr( $this->options['remote_url']) : ''
+			);
 	}
 
 	public function auto_push_callback()
@@ -195,8 +267,33 @@ class RevisrSettings
 			);
 	}
 
-	public function sanitize($input)
+	public function database_settings_callback()
 	{
-		return $input;
+		?>
+		<hr>
+		<br>
+		<h3>Database Settings</h3>
+		<?php
+	}
+
+	public function mysql_path_callback()
+	{
+		printf(
+			'<input type="text" id="mysql_path" name="revisr_settings[mysql_path]" value="%s" class="regular-text" placeholder="" />
+			<br><p class="description">Leave blank if the full path to MySQL has already been set on the server. Some possible settings include:
+			<br><br>For MAMP: /Applications/MAMP/Library/bin/
+			<br>For WAMP:</p>',
+			isset( $this->options['mysql_path'] ) ? esc_attr( $this->options['mysql_path']) : ''
+			);		
+	}
+
+	public function reset_db_callback()
+	{
+		printf(
+			'<input type="checkbox" id="reset_db" name="revisr_settings[reset_db]" %s />
+			<p class="description">When switching to a different branch, should Revisr automatically restore the latest database backup for that branch?<br>
+			If enabled, the database will be automatically backed up before switching branches.</p>',
+			isset( $this->options['reset_db'] ) ? "checked" : ''
+		);
 	}
 }

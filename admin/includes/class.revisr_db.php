@@ -13,32 +13,44 @@
 class RevisrDB
 {
 	public $wpdb;
-	public $current_dir;
-	public $upload_dir;
-	public $sql_file;
+	private $sql_file;
+	private $options;
 
 	public function __construct()
 	{
 		global $wpdb;
 		$this->wpdb = $wpdb;
+		$this->sql_file = "revisr_db_backup.sql";
+		$this->options = get_option('revisr_settings');
 	}
 
 	public function backup()
 	{
-		exec("mysqldump -u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " > revisr_db_backup.sql");
+		if (isset($this->options['mysql_path'])) {
+			$path = $this->options['mysql_path'];
+			exec("{$path}mysqldump -u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " > {$this->sql_file}");
+		}
+		else {
+			exec("mysqldump -u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " > {$this->sql_file}");
+		}
 	}
 
 	public function restore()
 	{
-		exec("mysql -u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " < revisr_db_backup.sql");
-	}
+		if (!file_exists($this->sql_file) || filesize($this->sql_file) < 1000) {
+			wp_die("<p>Failed to revert the database: The backup file does not exist or has been corrupted.</p>");
+		}
+		if (!function_exists('exec')) {
+			wp_die("<p>It appears you don't have the PHP exec() function enabled. This is required to revert the database. Check with your hosting provider or enable this in your PHP configuration.</p>");
+		}
+		clearstatcache();
 
-	public function drop_tables()
-	{
-		$tables = $this->wpdb->get_results('SHOW TABLES', ARRAY_A);
-		foreach ($tables as $table) {
-			$table_name = $table["Tables_in_" . DB_NAME];
-			$this->wpdb->query("DROP TABLE $table_name");
+		if (isset($this->options['mysql_path'])) {
+			$path = $this->options['mysql_path'];
+			exec("{$path}mysql -u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " < {$this->sql_file}");
+		}
+		else {
+			exec("mysql -u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " < {$this->sql_file}");
 		}
 	}
 }

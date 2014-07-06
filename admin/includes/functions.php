@@ -42,6 +42,14 @@ function current_branch()
 	}
 }
 
+//Returns the hash of the current commit. 
+function current_commit()
+{
+	$branch = current_branch();
+	$hash = git("rev-parse {$branch} --pretty=oneline");
+	return substr($hash[0], 0, 7);
+}
+
 //Returns the number of pending files.
 function count_pending()
 {
@@ -50,19 +58,19 @@ function count_pending()
 }
 
 //Returns the number of unpushed commits.
-function count_unpushed()
+function count_unpushed($remote)
 {
 	$branch = current_branch();
-	$unpushed = git("log origin/{$branch}..{$branch} --pretty=oneline");
+	$unpushed = git("log {$remote}/{$branch}..{$branch} --pretty=oneline");
 	return count($unpushed);
 }
 
 //Returns the number of unpulled commits.
-function count_unpulled()
+function count_unpulled($remote)
 {
 	$branch = current_branch();
 	git("fetch");
-	$unpulled = git("log {$branch}..origin/{$branch} --pretty=oneline");
+	$unpulled = git("log {$branch}..{$remote}/{$branch} --pretty=oneline");
 	return count($unpulled);	
 }
 

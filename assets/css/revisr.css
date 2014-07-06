@@ -1,41 +1,15 @@
-#revisr-activity {
-}
-
-#revisr-sidebar {
-	width: 30%;
-	float: left;
-	padding-left: 15px;
-	height: 100%;
-}
-
-.revisr-alert {
-	width:99%;
-	padding:10px;
-	color: #fff;
-	font-size: 16px;
-	background-color: #2c3e50;
-	border-radius: 5px;
-}
-
-#hash {
-	width: 70px !important;
-}
-td.hash.column-hash {
-	width:70px !important;
-}
+/* === QUICK ACTIONS === */
 
 .quick-action-btn {
 	width: 100%;
 	text-align: left !important;
 	margin-bottom: 4px !important;
 }
-
 #commit-btn {
 	background-color: #5cb85c;
 	border-color: #4cae4c;
 	color: #fff;
 }
-
 #commit-btn:before {
 	content: "\f132";
 	margin-top:5px;
@@ -43,20 +17,18 @@ td.hash.column-hash {
 	color: #fff;
 	-webkit-font-smoothing: antialiased;
 	font: normal 20px/1 'dashicons';
+	float: left;
 }
-
 #commit-btn:hover {
 	background-color: #4cae4c;
 	border-color: #4cae4c;
 	color: #fff;
 }
-
 #discard-btn {
 	background-color: #d9534f;
 	border-color: #d43f3a;
 	color: #fff;
 }
-
 #discard-btn:before {
 	content: "\f158";
 	margin-top: 5px;
@@ -64,14 +36,13 @@ td.hash.column-hash {
 	color: #fff;
 	-webkit-font-smoothing: antialiased;
 	font: normal 20px/1 'dashicons';
+	float: left;
 }
-
 #discard-btn:hover {
 	background-color: #d43f3a;
 	border-color: #d43f3a;
 	color: #fff;
 }
-
 #backup-btn:before {
 	content: "\f321";
 	margin-top: 5px;
@@ -79,8 +50,8 @@ td.hash.column-hash {
 	color: #fff;
 	-webkit-font-smoothing: antialiased;
 	font: normal 20px/1 'dashicons';
+	float: left;
 }
-
 #push-btn:before {
 	content: "\f142";
 	margin-top: 5px;
@@ -90,7 +61,6 @@ td.hash.column-hash {
 	font: normal 20px/1 'dashicons';
 	float: left;
 }
-
 #pull-btn:before {
 	content: "\f140";
 	margin-top: 5px;
@@ -100,38 +70,60 @@ td.hash.column-hash {
 	font: normal 20px/1 'dashicons';
 	float: left;
 }
-
-#push-text {
+.qb-text {
 	float: left;
 }
-
-#pull-text {
-	float: left;
-}
-
 #loader {
 	float: right;
 }
-
 #new_branch {
 	font-size: 12px;
 }
 
+/* === STAGING/COMMITTED === */
+
+.stage-container {
+	width: 100%;
+	display: inline-block;
+}
+#staged {
+	width: 80%;
+	float: left;
+	overflow-y: scroll;
+}
+#unstaged {
+	width: 80%;
+	float: left;
+	overflow-y: scroll;
+}
+.stage-nav {
+	float: left;
+	margin: 5px;
+}
+.stage-nav-button {
+	margin-top: 7px !important;
+}
 .diff_added {
 	background-color: #cfc;
 }
 .diff_removed {
 	background-color: #fdd;
 }
-
-#gitignore {
-	width: 350px;
-}
-
 #revisr-pagination {
 	text-align: center;
 }
 
+/* === MISC === */
+
+#hash {
+	width: 70px !important;
+}
+td.hash.column-hash {
+	width:70px !important;
+}
 #revisr_settings th {
 	width: 290px;
+}
+#gitignore {
+	width: 350px;
 }

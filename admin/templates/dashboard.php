@@ -13,6 +13,14 @@ $loader_url = plugins_url( '../../assets/img/loader.gif' , __FILE__ );
 
 include_once $dir . '../includes/functions.php';
 
+$settings = get_option('revisr_settings');
+if (isset($settings['remote_name'])) {
+	$remote = $settings['remote_name'];
+}
+else {
+	$remote = "origin";
+}
+
 ?>
 <div class="wrap">
 	
@@ -89,20 +97,20 @@ include_once $dir . '../includes/functions.php';
 					
 						<h3><span><?php _e('Quick Actions', 'revisr-plugin'); ?></span> <div id='loader'><img src="<?php echo $loader_url; ?>"/></div></h3>
 						<div class="inside">
-							<button id="commit-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;">| Commit Changes</button>
-							<button id="discard-btn" class="button button-primary quick-action-btn">| Discard Changes</button>
-							<button id="backup-btn" class="button button-primary quick-action-btn">| Backup Database</button>
-							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;"><span id="push-text">| Push Changes
+							<button id="commit-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span class="qb-text">| Commit Changes</span></button>
+							<button id="discard-btn" class="button button-primary quick-action-btn"><span class="qb-text">| Discard Changes</span></button>
+							<button id="backup-btn" class="button button-primary quick-action-btn"><span class="qb-text">| Backup Database</span></button>
+							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;"><span class="qb-text">| Push Changes
 							<?php 
-								$unpushed = count_unpushed();
+								$unpushed = count_unpushed($remote);
 								if ($unpushed != "0") {
 									echo "({$unpushed})";
 								}
 							?>
 							</span></button>
-							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span id="pull-text">| Pull Changes
+							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span class="qb-text">| Pull Changes
 							<?php 
-								$unpulled = count_unpulled();
+								$unpulled = count_unpulled($remote);
 								if ($unpulled != "0") {
 									echo "({$unpulled})";
 								}

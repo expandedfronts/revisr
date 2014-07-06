@@ -45,8 +45,7 @@ class RevisrInit
 			add_action( 'admin_menu', array($this, 'menus'), 2 );
 			add_action( 'manage_edit-revisr_commits_columns', array($this, 'columns') );
 			add_action( 'manage_revisr_commits_posts_custom_column', array($this, 'custom_columns') );
-			add_action( 'admin_enqueue_scripts', array($this, 'styles') );
-			add_action( 'admin_enqueue_scripts', array($this, 'scripts') );
+			add_action( 'admin_enqueue_scripts', array($this, 'revisr_scripts') );
 			add_action( 'admin_bar_menu', array($this, 'admin_bar'), 999 );
 			add_action( 'admin_enqueue_scripts', array($this, 'disable_autodraft') );
 			add_filter( 'post_updated_messages', array($this, 'revisr_commits_custom_messages') );
@@ -121,9 +120,64 @@ class RevisrInit
 		$menu = add_menu_page( 'Dashboard', 'Revisr', 'manage_options', 'revisr', array($this, 'revisr_dashboard'), plugins_url( 'revisr/assets/img/white_18x20.png' ) );
 		add_submenu_page( 'revisr', 'Revisr - Dashboard', 'Dashboard', 'manage_options', 'revisr', array($this, 'revisr_dashboard') );
 		$settings_hook = add_submenu_page( 'revisr', 'Revisr - Settings', 'Settings', 'manage_options', 'revisr_settings', array($this, 'revisr_settings') );
-		add_action( 'admin_print_styles-' . $menu, array($this, 'styles') );
-		add_action( 'admin_print_scripts-' . $menu, array($this, 'scripts') );
+		add_action( 'admin_print_scripts-' . $menu, array($this, 'revisr_scripts') );
 		remove_meta_box('authordiv', 'revisr_commits', 'normal');
+	}
+
+	public function revisr_scripts($hook)
+	{
+		//Register styles and scripts.
+		wp_register_style( 'revisr_css', plugins_url() . '/revisr/assets/css/revisr.css', array(), '07052014' );
+		wp_register_script( 'revisr_dashboard', plugins_url() . '/revisr/assets/js/dashboard.js', 'jquery',  '07052014', true );
+		wp_register_script( 'revisr_staging', plugins_url() . '/revisr/assets/js/staging.js', 'jquery', '07052014', false );
+		wp_register_script( 'revisr_committed', plugins_url() . '/revisr/assets/js/committed.js', 'jquery', '07052014', false );
+		
+		//Enqueue styles and scripts on the Revisr dashboard.
+		if (isset($_GET['page']) && $_GET['page'] == 'revisr') {
+			wp_enqueue_style( 'revisr_css' );
+			wp_enqueue_style( 'thickbox' );
+			wp_enqueue_script( 'thickbox' );
+			wp_enqueue_script( 'revisr_dashboard' );
+			wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
+				'ajax_nonce' => wp_create_nonce('dashboard_nonce')
+				)
+			);			
+		}
+
+		//Enqueue styles and scripts on the Revisr staging area.
+		if ($hook == 'post-new.php' && isset($_GET['post_type']) && $_GET['post_type'] == "revisr_commits") {
+			wp_enqueue_style( 'revisr_css' );
+			wp_enqueue_style( 'thickbox' );
+			wp_enqueue_script( 'thickbox' );
+			wp_enqueue_script( 'revisr_staging' );
+			wp_localize_script( 'revisr_staging', 'pending_vars', array(
+				'ajax_nonce' => wp_create_nonce('pending_nonce')
+				)
+			);
+		}
+		
+		//Enqueue styles and scripts for viewing a commit.
+		if ($hook == 'post.php') {
+			wp_enqueue_style( 'revisr_css' );
+			wp_enqueue_style( 'thickbox' );
+			wp_enqueue_script( 'thickbox' );
+			wp_enqueue_script( 'revisr_committed' );
+			wp_localize_script( 'revisr_committed', 'committed_vars', array(
+				'post_id' => $_GET['post'],
+				'ajax_nonce' => wp_create_nonce('committed_nonce')
+				)
+			);			
+		}
+
+		//Enqueue styles and scripts on the commits listing page.
+		if ($hook == 'edit.php' && isset($_GET['post_type']) && $_GET['post_type'] == "revisr_commits") {
+			wp_enqueue_style( 'revisr_css' );
+		}
+
+		//Enqueue styles and scripts on the settings page.
+		if (isset($_GET['page']) && $_GET['page'] == "revisr_settings") {
+			wp_enqueue_style( 'revisr_css' );
+		}
 	}
 
 	public function revisr_commits_submenu_order($menu_ord)
@@ -171,10 +225,12 @@ class RevisrInit
 		        $branch_meta = get_post_custom_values('branch', get_the_ID());
 		        $db_hash = get_post_custom_values('db_hash', get_the_ID());
 		        $commit_hash = get_hash($id);
-		        $actions['revert'] = "<a href='" . get_admin_url() . "admin-post.php?action=revert&commit_hash={$commit_hash}&branch={$branch_meta[0]}&post_id=" . get_the_ID() ."'>Revert Files</a>";
+		        $revert_nonce = wp_nonce_url( admin_url("admin-post.php?action=revert&commit_hash={$commit_hash}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert', 'revert_nonce' );
+		        $revert_db_nonce = wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert_db', 'revert_db_nonce' );
+		        $actions['revert'] = "<a href='" . $revert_nonce . "'>Revert Files</a>";
 	          	
 		        if ($db_hash[0] != '') {
-	          		$actions['revert_db'] = "<a href='" . get_admin_url() . "admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&post_id=" . get_the_ID() ."'>Revert Database</a>";
+	          		$actions['revert_db'] = "<a href='" . $revert_db_nonce ."'>Revert Database</a>";
 		        }
 		    	
 			}
@@ -230,7 +286,8 @@ class RevisrInit
 			admin_url('edit.php?post_type=revisr_commits&branch=all'),
 			$this->count_commits("all"));
 		unset($views['publish']);
-		//unset($views['trash']);
+		unset($views['draft']);
+		unset($views['trash']);
 		if (isset($views)) {
 			return $views;
 		}
@@ -240,31 +297,6 @@ class RevisrInit
 	{
 		if(!isset($_GET['branch']) && isset($_GET['post_type']) && $_GET['post_type'] == "revisr_commits") {
 			$_GET['branch'] = current_branch();
-		}
-	}
-
-	public function styles()
-	{
-		wp_enqueue_style( 'revisr_css', plugins_url() . '/revisr/assets/css/revisr.css' );
-		wp_enqueue_style('thickbox');
-	}
-
-	public function scripts($hook)
-	{
-		
-		wp_enqueue_script('alerts', plugins_url() . '/revisr/assets/js/dashboard.js');
-		wp_enqueue_script('thickbox');
-
-		if ($hook == 'post-new.php') {
-			wp_enqueue_script('pending_files', plugins_url() . '/revisr/assets/js/pending_files.js');
-		}
-		if ($hook == 'post.php') {
-			wp_enqueue_script('committed_files', plugins_url() . '/revisr/assets/js/committed_files.js');
-			if (isset($_GET['post'])) {
-				wp_localize_script('committed_files', 'committed_vars', array(
-					'post_id' => $_GET['post'])
-				);			
-			}
 		}
 	}
 
@@ -306,9 +338,6 @@ class RevisrInit
 
 	public function pending_files_meta()
 	{
-		$output = git("status --short");
-		add_post_meta( get_the_ID(), 'committed_files', $output );
-		add_post_meta( get_the_ID(), 'files_changed', count($output) );
 		echo "<div id='message'></div>
 		<div id='pending_files_result'></div>";
 	}

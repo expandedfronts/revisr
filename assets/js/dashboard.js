@@ -19,7 +19,8 @@ jQuery(document).ready(function() {
 	    if (confirm("Are you sure you want to discard your uncommitted changes?") == true) {
 	    	jQuery('#loader').show();
 	   		var data = {
-				action: 'discard'
+				action: 'discard',
+				security: dashboard_vars.ajax_nonce
 			};
 			jQuery.post(ajaxurl, data, function(response) {
 				var error_div = document.getElementById("revisr_alert");
@@ -97,12 +98,13 @@ jQuery(document).ready(function() {
 	    if (confirm("Are you sure you want to discard your uncommitted changes and pull from the remote?") == true) {
 	    	jQuery('#loader').show();
 	   		var data = {
-				action: 'pull'
+				action: 'pull',
+				security: dashboard_vars.ajax_nonce
 			};
 			
 			jQuery.post(ajaxurl, data, function(response) {
 				var error_div = document.getElementById("revisr_alert");
-				if (response.indexOf('error') !== -1) {
+				if (response.indexOf('revisr_error') !== -1) {
 					error_div.className = "error";
 				}
 				else {

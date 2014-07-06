@@ -71,6 +71,13 @@ Care should be taken when dealing with upgrades that depend on the database. Bac
 
 == Changelog ==
 
+= 1.5 =
+* Improved commit interface, added ability to stage individual files
+* Added ability to see and revert to changes pulled from a remote
+* Added ability to set the name of the remotes (defaults to origin)
+* Added ability to set the path to MySQL
+* Bugfixes and small tweaks
+
 = 1.4.1 =
 * Added "Backup Database" button to the Quick Actions
 * Added number of unpulled/unpushed commits to the Quick Action buttons
