@@ -48,11 +48,15 @@ jQuery(document).ready(function($) {
 	});
 
 	var url = document.URL;
-	var index = url.indexOf("message=42");
+	var empty_title = url.indexOf("message=42");
+    var empty_commit = url.indexOf("message=43");
 
-	if (index != "-1") {
+	if (empty_title != "-1") {
 		document.getElementById('message').innerHTML = "<div class='error'><p>Please enter a message for your commit.</p></div>";
 	}
+    if (empty_commit != "-1") {
+        document.getElementById('message').innerHTML = "<div class='error'><p>Nothing was added to the commit. Please use the section below to stage files or backup the database.</p></div>";
+    }
 
     $("#publish").click(function() {  
       $("#staged option").each(function() {

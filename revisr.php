@@ -142,23 +142,36 @@ class Revisr
 	*/
 	public function commit()
 	{
-		$id = get_the_ID();
-		$title = $_REQUEST['post_title'];
-		$staged_files = $_POST['staged_files'];
-		$nonce = $_REQUEST['_wpnonce'];
-		$referrer = $_REQUEST['_wp_http_referer'];
-		$post_new = get_admin_url() . "post-new.php?post_type=revisr_commits";
+		if (isset($_REQUEST['_wpnonce']) && isset($_REQUEST['_wp_http_referer'])) {
+			
+			$id = get_the_ID();
+			$title = $_REQUEST['post_title'];
+			$nonce = $_REQUEST['_wpnonce'];
+			$referrer = $_REQUEST['_wp_http_referer'];
+			$post_new = get_admin_url() . "post-new.php?post_type=revisr_commits";
 
-		if (isset($nonce) && isset($referrer)) {
 			if ($title == "Auto Draft" || $title == "") {
 				$url = get_admin_url() . "post-new.php?post_type=revisr_commits&message=42";
 				wp_redirect($url);
 				exit();
 			}
 
-			foreach ($staged_files as $result) {
-				$file = substr($result, 3);
-				git("add {$file}");
+			if (isset($_POST['staged_files'])) {
+
+				$staged_files = $_POST['staged_files'];
+
+				foreach ($staged_files as $result) {
+					$file = substr($result, 3);
+					git("add {$file}");
+				}
+			}
+			else {
+				if (!isset($_REQUEST['backup_db'])) {
+					$url = get_admin_url() . "post-new.php?post_type=revisr_commits&message=43";
+					wp_redirect($url);
+					exit();
+				}
+				$staged_files = array();
 			}
 
 			$commit_msg = escapeshellarg($title);
@@ -231,10 +244,10 @@ class Revisr
 		else {
 			
 			if ($num_commits == "1") {
-				$this->log("Pushed <strong>1</strong> commit to {$this->remote}/{$this->branch}.", "push");
+				$this->log("Pushed 1 commit to {$this->remote}/{$this->branch}.", "push");
 			}
 			else {
-				$this->log("Pushed <strong>{$num_commits}</strong> commits to {$this->remote}/{$this->branch}.", "push");
+				$this->log("Pushed {$num_commits} commits to {$this->remote}/{$this->branch}.", "push");
 			}
 			$this->notify(get_bloginfo() . " - Changes Pushed", "Changes were pushed to the remote repository for " . get_bloginfo());
 			echo "<p>Successfully pushed to <strong>{$this->remote}/{$this->branch}.</p>";
@@ -326,7 +339,7 @@ class Revisr
 		if (isset($_REQUEST['new_branch'])){
 			if ($_REQUEST['new_branch'] == "true") {
 				git("checkout -b {$branch}");
-				$this->log("Checked out new branch: {$branch}.", "branch");
+				$this->log("Checked out new branch: {$_REQUEST['branch']}.", "branch");
 				$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the new branch {$branch}.");
 				echo "<script>
 						window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr&checkout=success&branch={$_REQUEST['branch']}'
@@ -341,8 +354,8 @@ class Revisr
 				$db->restore();
 				chdir($this->current_dir);
 			}
-			$this->log("Checked out branch: {$branch}.", "branch");
-			$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the branch {$branch}.");
+			$this->log("Checked out branch: {$_REQUEST['branch']}.", "branch");
+			$this->notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to branch {$branch}.");
 			$url = get_admin_url() . "admin.php?page=revisr&branch={$branch}&checkout=success";
 			wp_redirect($url);
 		}

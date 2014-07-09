@@ -100,7 +100,7 @@ else {
 							<button id="commit-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span class="qb-text">| Commit Changes</span></button>
 							<button id="discard-btn" class="button button-primary quick-action-btn"><span class="qb-text">| Discard Changes</span></button>
 							<button id="backup-btn" class="button button-primary quick-action-btn"><span class="qb-text">| Backup Database</span></button>
-							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;"><span class="qb-text">| Push Changes
+							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;"><span id="push-text" class="qb-text">| Push Changes
 							<?php 
 								$unpushed = count_unpushed($remote);
 								if ($unpushed != "0") {
@@ -108,7 +108,7 @@ else {
 								}
 							?>
 							</span></button>
-							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span class="qb-text">| Pull Changes
+							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span id="pull-text" class="qb-text">| Pull Changes
 							<?php 
 								$unpulled = count_unpulled($remote);
 								if ($unpulled != "0") {
