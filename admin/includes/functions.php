@@ -69,7 +69,7 @@ function count_unpushed($remote)
 function count_unpulled($remote)
 {
 	$branch = current_branch();
-	git("fetch");
+	git("fetch  > /dev/null &");
 	$unpulled = git("log {$branch}..{$remote}/{$branch} --pretty=oneline");
 	return count($unpulled);	
 }
