@@ -352,7 +352,10 @@ class Revisr
 			$db->backup();
 			git("add revisr_db_backup.sql");
 			git('commit -m "Autobackup by Revisr." ' . $this->upload_dir['basedir'] . '/revisr_db_backup.sql');
-			git("push {$this->remote} {$this->branch}");
+
+			if (isset($this->options['auto_push'])) {
+				git("push {$this->remote} {$this->branch}");
+			}
 		}
 
 		if ($args == "") {
@@ -532,7 +535,7 @@ class Revisr
 			chdir($this->upload_dir['basedir']);
 			$db->backup();
 			git("add revisr_db_backup.sql");
-			git('commit -m "Autobackup by Revisr." {$file}');
+			git('commit -m "Autobackup by Revisr." ' . $this->upload_dir['basedir'] . '/revisr_db_backup.sql');
 			if (isset($this->options['auto_push'])) {
 				git("push {$this->remote} {$this->branch}");
 			}
