@@ -14,7 +14,7 @@ $loader_url = plugins_url( '../../assets/img/loader.gif' , __FILE__ );
 include_once $dir . '../includes/functions.php';
 
 $settings = get_option('revisr_settings');
-if (isset($settings['remote_name'])) {
+if (isset($settings['remote_name']) && $settings['remote_name'] != '') {
 	$remote = $settings['remote_name'];
 }
 else {
