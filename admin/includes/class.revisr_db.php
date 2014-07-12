@@ -45,12 +45,13 @@ class RevisrDB
 
 	public function restore()
 	{
-		if (!file_exists($this->sql_file) || filesize($this->sql_file) < 1000) {
-			wp_die("<p>Failed to revert the database: The backup file does not exist or has been corrupted.</p>");
-		}
 		if (!function_exists('exec')) {
 			wp_die("<p>It appears you don't have the PHP exec() function enabled. This is required to revert the database. Check with your hosting provider or enable this in your PHP configuration.</p>");
 		}
+		if (!file_exists($this->sql_file) || filesize($this->sql_file) < 1000) {
+			wp_die("<p>Failed to revert the database: The backup file does not exist or has been corrupted.</p>");
+		}
+
 		clearstatcache();
 
 		if (isset($this->options['mysql_path'])) {

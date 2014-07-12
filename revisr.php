@@ -89,7 +89,7 @@ class Revisr
 		$init = new RevisrInit();
 		$this->options = get_option('revisr_settings');
 
-		if (isset($this->options['remote_name'])) {
+		if (isset($this->options['remote_name']) && $this->options['remote_name'] != '') {
 			$this->remote = $this->options['remote_name'];
 		}
 		else {
@@ -306,9 +306,37 @@ class Revisr
 	public function revisr_update()
 	{
 		git("reset --hard HEAD");
+		$num_commits = count_unpulled($this->remote);
+		$branch = current_branch();
+		$commits_since = git("log {$branch}..{$this->remote}/{$branch} --pretty=oneline");
+
+		foreach ($commits_since as $commit) {
+			$commit_hash = substr($commit, 0, 7);
+			$commit_msg = substr($commit, 40);
+			$show_files = git("show --pretty='format:' --name-status {$commit_hash}");
+			$files_changed = array_filter($show_files);
+			
+			$post = array(
+				"post_title"	=> $commit_msg,
+				"post_content"	=> "",
+				"post_type"		=> "revisr_commits",
+				"post_status"	=> "publish"
+				);
+			$post_id = wp_insert_post($post);
+
+			add_post_meta( $post_id, "commit_hash", $commit_hash );
+			add_post_meta( $post_id, "branch", $this->branch );
+			add_post_meta( $post_id, "files_changed", count($files_changed) );
+			add_post_meta( $post_id, "committed_files", $files_changed );
+
+			$view_link = get_admin_url() . "post.php?post={$post_id}&action=edit";
+
+			$this->log("Pulled <a href='" . $view_link . "'>#{$commit_hash}</a> from {$this->remote}/{$this->branch}.", "pull");
+		}
+
 		git("pull {$this->remote} {$this->branch}");
-		$this->log("Automatically pulled changes from the remote.", "autopull");
-		$this->notify(get_bloginfo() . " - Changes Pulled", "Revisr automatically pulled changes from the remote repository.");
+
+		$this->notify(get_bloginfo() . " - Changes Pulled", "Revisr automatically pulled changes from the remote repository for " . get_bloginfo());
 		exit();
 	}
 
@@ -480,6 +508,7 @@ class Revisr
 				exit;
 			}
 		}
+		clearstatcache();
 	}
 
 	/**
