@@ -48,14 +48,14 @@ else {
 			}
 			else if ( $pending != 0 ){
 				if ( $pending == 1 ){
-					$text = sprintf(__('<p>There is currently <strong>1</strong> pending file on branch <strong>%s</strong>.</p>', 'revisr-plugin'), current_branch());
+					$text = sprintf(__('<p>There is currently <strong>1</strong> untracked file on branch <strong>%s</strong>.</p>', 'revisr-plugin'), current_branch());
 				}
 				else {
-					$text = sprintf(__('<p>There are currently <strong>%d</strong> pending files on branch <strong>%s</strong>.</p>', 'revisr-plugin'), $pending, current_branch());
+					$text = sprintf(__('<p>There are currently <strong>%d</strong> untracked files on branch <strong>%s</strong>.</p>', 'revisr-plugin'), $pending, current_branch());
 				}
 			}
 			else {
-				$text = sprintf(__('<p>There are currently no pending files on branch <strong>%s</strong>.</p>', 'revisr-plugin'), current_branch());
+				$text = sprintf(__('<p>There are currently no untracked files on branch <strong>%s</strong>.</p>', 'revisr-plugin'), current_branch());
 			}
 			echo "<div id='revisr_alert' class='updated'>{$text}</div>";
 		}

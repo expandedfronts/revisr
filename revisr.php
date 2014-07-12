@@ -351,7 +351,7 @@ class Revisr
 			$db = new RevisrDB();
 			$db->backup();
 			git("add revisr_db_backup.sql");
-			git("commit -m 'Autobackup by Revisr.' " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
+			git('commit -m "Autobackup by Revisr." ' . $this->upload_dir['basedir'] . '/revisr_db_backup.sql');
 			git("push {$this->remote} {$this->branch}");
 		}
 
