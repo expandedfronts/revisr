@@ -484,7 +484,7 @@ class Revisr
 		if (file_exists($file) && filesize($file) > 1000) {
 			
 			git("add revisr_db_backup.sql");
-			git("commit -m 'Backed up the database with Revisr.' " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
+			git('commit -m "Backed up the database with Revisr." ' . $file);
 			
 			if (isset($this->options['auto_push'])) {
 				git("push {$this->remote} {$this->branch}");
@@ -532,14 +532,14 @@ class Revisr
 			chdir($this->upload_dir['basedir']);
 			$db->backup();
 			git("add revisr_db_backup.sql");
-			git("commit -m 'Autobackup by Revisr.' {$file}");
+			git('commit -m "Autobackup by Revisr." {$file}');
 			if (isset($this->options['auto_push'])) {
 				git("push {$this->remote} {$this->branch}");
 			}
 
 			$commit = escapeshellarg($_GET['db_hash']);
-			$current_commit = git("log --pretty=format:'%h' -n 1");
-			
+			$current_temp = git("log --pretty=format:'%h' -n 1");
+
 			//Checkout the older version of the database.
 			git("checkout {$commit} " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
 
@@ -549,11 +549,17 @@ class Revisr
 			//Allow the user to undo the restore.
 			git("checkout {$branch} " . $this->upload_dir['basedir'] . "/revisr_db_backup.sql");
 			chdir($this->current_dir);
-			$undo_nonce = wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$current_commit[0]}&branch={$_GET['branch']}"), 'revert_db', 'revert_db_nonce' );
 			
-			$this->log("Reverted the database to a previous commit. <a href='{$undo_nonce}'>Undo</a>", "revert");
-			$redirect = get_admin_url() . "admin.php?page=revisr&revert_db=success&prev_commit={$current_commit[0]}";
-			wp_redirect($redirect);
+			if (is_array($current_temp)) {
+				$current_commit = str_replace("'", "", $current_temp);
+				$undo_nonce = wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$current_commit[0]}&branch={$_GET['branch']}"), 'revert_db', 'revert_db_nonce' );
+				$this->log("Reverted the database to a previous commit. <a href='{$undo_nonce}'>Undo</a>", "revert");
+				$redirect = get_admin_url() . "admin.php?page=revisr&revert_db=success&prev_commit={$current_commit[0]}";
+				wp_redirect($redirect);			
+			}
+			else {
+				wp_die("Something went wrong. Check your settings and try again.");
+			}
 		}
 		else {
 			wp_die("You are not authorized to access this page.");
