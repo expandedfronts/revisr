@@ -271,7 +271,7 @@ class Revisr
 		foreach ($commits_since as $commit) {
 			$commit_hash = substr($commit, 0, 7);
 			$commit_msg = substr($commit, 40);
-			$show_files = git("show --pretty='format:' --name-status {$commit_hash}");
+			$show_files = git('show --pretty="format:" --name-status ' . $commit_hash);
 			$files_changed = array_filter($show_files);
 			
 			$post = array(
