@@ -233,7 +233,7 @@ class RevisrSettings
 	{
 		printf(
 			'<input type="text" id="remote_name" name="revisr_settings[remote_name]" value="%s" class="regular-text" placeholder="origin" />
-			<br><span class="description">This is set to "origin" by default. Used for pushing to and pulling from remotes.</span>',
+			<br><span class="description">Set this to "origin" unless you have changed this previously in Git. Used for pushing to and pulling from remotes.</span>',
 			isset( $this->options['remote_name'] ) ? esc_attr( $this->options['remote_name']) : ''
 			);
 	}

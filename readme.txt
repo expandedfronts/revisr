@@ -64,9 +64,9 @@ Care should be taken when dealing with upgrades that depend on the database. Bac
 == Screenshots ==
 
 1. The main dashboard of revisr.
-2. Easily view changes in files.
-3. The commit history.
-4. Git settings and options.
+2. Simple staging area that lets you decide what gets committed.
+3. Easily view changes in files with Revisr's diffs. 
+4. The commit history, filtered by branch.
 
 
 == Changelog ==
@@ -76,7 +76,8 @@ Care should be taken when dealing with upgrades that depend on the database. Bac
 * Added ability to see and revert to changes pulled from a remote
 * Added ability to set the name of the remotes (defaults to origin)
 * Added ability to set the path to MySQL
-* Bugfixes and small tweaks
+* Improved compatibility for Mac and Windows
+* Bugfixes and general cleanup
 
 = 1.4.1 =
 * Added "Backup Database" button to the Quick Actions
