@@ -223,7 +223,8 @@ class RevisrInit
 
 		        $actions['view'] = "<a href='{$url}'>View</a>";
 		        $branch_meta = get_post_custom_values('branch', get_the_ID());
-		        $db_hash = get_post_custom_values('db_hash', get_the_ID());
+		        $db_hash_meta = get_post_custom_values('db_hash', get_the_ID());
+		        $db_hash = str_replace("'", "", $db_hash_meta[0]);
 		        $commit_hash = get_hash($id);
 		        $revert_nonce = wp_nonce_url( admin_url("admin-post.php?action=revert&commit_hash={$commit_hash}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert', 'revert_nonce' );
 		        $revert_db_nonce = wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert_db', 'revert_db_nonce' );

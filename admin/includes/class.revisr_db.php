@@ -34,19 +34,17 @@ class RevisrDB
 
 	public function backup()
 	{
-		$conn = $this->conn;
 		if (isset($this->options['mysql_path'])) {
 			$path = $this->options['mysql_path'];
-			exec("{$path}mysqldump {$conn} > {$this->sql_file}");
+			exec("{$path}mysqldump {$this->conn} > {$this->sql_file}");
 		}
 		else {
-			exec("mysqldump {$conn} > {$this->sql_file}");
+			exec("mysqldump {$this->conn} > {$this->sql_file}");
 		}
 	}
 
 	public function restore()
 	{
-		$conn = $this->conn;
 		if (!file_exists($this->sql_file) || filesize($this->sql_file) < 1000) {
 			wp_die("<p>Failed to revert the database: The backup file does not exist or has been corrupted.</p>");
 		}
@@ -57,10 +55,10 @@ class RevisrDB
 
 		if (isset($this->options['mysql_path'])) {
 			$path = $this->options['mysql_path'];
-			exec("{$path}mysql {$conn} < {$this->sql_file}");
+			exec("{$path}mysql {$this->conn} < {$this->sql_file}");
 		}
 		else {
-			exec("mysql {$conn} < {$this->sql_file}");
+			exec("mysql {$this->conn} < {$this->sql_file}");
 		}
 	}
 }
