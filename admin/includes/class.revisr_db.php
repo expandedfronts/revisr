@@ -22,21 +22,31 @@ class RevisrDB
 		$this->wpdb = $wpdb;
 		$this->sql_file = "revisr_db_backup.sql";
 		$this->options = get_option('revisr_settings');
+
+		if (DB_PASSWORD != '') {
+			$this->conn = "-u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME;
+		}
+		else {
+			$this->conn = "-u " . DB_USER . " " . DB_NAME;
+		}
+
 	}
 
 	public function backup()
 	{
+		$conn = $this->conn;
 		if (isset($this->options['mysql_path'])) {
 			$path = $this->options['mysql_path'];
-			exec("{$path}mysqldump -u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " > {$this->sql_file}");
+			exec("{$path}mysqldump {$conn} > {$this->sql_file}");
 		}
 		else {
-			exec("mysqldump -u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " > {$this->sql_file}");
+			exec("mysqldump {$conn} > {$this->sql_file}");
 		}
 	}
 
 	public function restore()
 	{
+		$conn = $this->conn;
 		if (!file_exists($this->sql_file) || filesize($this->sql_file) < 1000) {
 			wp_die("<p>Failed to revert the database: The backup file does not exist or has been corrupted.</p>");
 		}
@@ -47,10 +57,10 @@ class RevisrDB
 
 		if (isset($this->options['mysql_path'])) {
 			$path = $this->options['mysql_path'];
-			exec("{$path}mysql -u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " < {$this->sql_file}");
+			exec("{$path}mysql {$conn} < {$this->sql_file}");
 		}
 		else {
-			exec("mysql -u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " < {$this->sql_file}");
+			exec("mysql {$conn} < {$this->sql_file}");
 		}
 	}
 }
