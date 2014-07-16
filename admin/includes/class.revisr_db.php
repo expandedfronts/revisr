@@ -24,10 +24,10 @@ class RevisrDB
 		$this->options = get_option('revisr_settings');
 
 		if (DB_PASSWORD != '') {
-			$this->conn = "-u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME;
+			$this->conn = "-u " . DB_USER . " -p" . DB_PASSWORD . " " . DB_NAME . " --host " . DB_HOST;
 		}
 		else {
-			$this->conn = "-u " . DB_USER . " " . DB_NAME;
+			$this->conn = "-u " . DB_USER . " " . DB_NAME . " --host " . DB_HOST;
 		}
 
 	}
