@@ -261,7 +261,7 @@ class RevisrSettings
 		printf(
 			'<input type="checkbox" id="auto_pull" name="revisr_settings[auto_pull]" %s />
 			<p class="description">Check to allow Revisr to automatically pull commits from Bitbucket or Github.<br>
-			You wil need to add the following POST hook to Bitbucket/Github:<br>
+			You will need to add the following POST hook to Bitbucket/Github:<br>
 			' . get_admin_url() . 'admin-post.php?action=revisr_update</p>',
 			isset( $this->options['auto_pull'] ) ? "checked" : ''
 			);

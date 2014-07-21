@@ -36,7 +36,6 @@ A must have plugin for deploying WordPress using git repositories.
 = Instructions =
 * Unzip the plugin folder and upload it to the plugins directory of your WordPress installation.
 * Configure any remote repositories on the plugin settings page. Supports git through SSH or HTTPS. 
-* If the repository was cloned from a remote, Revisr will attempt to use the settings stored in Git.
 
 = Notes =
 Please verify that database backups are working before attempting to revert the database, especially if attempting to do so on a production website. Backups use the mysqldump command, supported by most hosts/environments. If you're using Windows, you will need to add a path to the mysqldump command in your computer's settings.
@@ -59,7 +58,7 @@ This is likely an authentication issue. You can fix this by configuring your SSH
 This is either an authentication issue or the remote branch is ahead of yours.
 
 = Can I damage my site with this plugin? =
-Care should be taken when dealing with upgrades that depend on the database. Backing up the database before and after major changes is always recommended.
+Care should be taken when dealing with upgrades that depend on the database. Taking verified backups before and after major changes is always recommended.
 
 == Screenshots ==
 
@@ -70,6 +69,10 @@ Care should be taken when dealing with upgrades that depend on the database. Bac
 
 
 == Changelog ==
+
+= 1.5.1 =
+* Added support for remote DB hosts
+* Fixed bug with deleting files
 
 = 1.5 =
 * Improved commit interface, added ability to stage individual files
