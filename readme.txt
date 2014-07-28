@@ -70,6 +70,10 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 == Changelog ==
 
+= 1.5.2 =
+* Fixed bug with adding certain files
+* Restricted access to super admins for multisite installations
+
 = 1.5.1 =
 * Added support for remote DB hosts
 * Fixed bug with deleting files
