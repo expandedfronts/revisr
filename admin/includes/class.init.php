@@ -34,6 +34,13 @@ class RevisrInit
 		$this->dir = plugin_dir_path( __FILE__ );
 
 		if ( is_admin() ) {
+			add_action( 'plugins_loaded', array($this, 'revisr_init') );
+		}
+	}
+
+	public function revisr_init()
+	{
+		if ( is_super_admin() ) {
 			add_action( 'init', array($this, 'post_types') );
 			$revisr_settings = new RevisrSettings();
 			add_action( 'load-edit.php', array($this, 'default_views') );
@@ -185,10 +192,13 @@ class RevisrInit
 		global $submenu;
 
 	    $arr = array();
-	    $arr[] = $submenu['revisr'][0];
-	    $arr[] = $submenu['revisr'][2];
-	    $arr[] = $submenu['revisr'][1];
-	    $submenu['revisr'] = $arr;
+
+		if (isset($submenu['revisr'])) {
+		    $arr[] = $submenu['revisr'][0];
+		    $arr[] = $submenu['revisr'][2];
+		    $arr[] = $submenu['revisr'][1];
+		    $submenu['revisr'] = $arr;
+		}
 
 	    return $menu_ord;
 	}

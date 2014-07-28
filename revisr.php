@@ -13,7 +13,7 @@
  * Plugin Name:       Revisr
  * Plugin URI:        http://revisr.io/
  * Description:       A plugin that allows developers to manage WordPress websites with Git repositories.
- * Version:           1.5.1
+ * Version:           1.5.2
  * Text Domain:		  revisr-plugin
  * Author:            Expanded Fronts
  * Author URI: http://revisr.io/
@@ -162,7 +162,7 @@ class Revisr
 
 				foreach ($staged_files as $result) {
 					$file = substr($result, 3);
-					$status = get_status($result);
+					$status = get_status(substr($result, 0, 2));
 
 					if ($status == "Deleted") {
 						git("rm {$file}");
@@ -260,7 +260,7 @@ class Revisr
 			echo "<p>Successfully pushed to <strong>{$this->remote}/{$this->branch}.</p>";
 		}
 
-		exit;
+		exit();
 	}
 
 	/**
@@ -303,7 +303,7 @@ class Revisr
 
 		$this->notify(get_bloginfo() . " - Changes Pulled", "Changes were pulled from the remote repository for " . get_bloginfo());
 		echo "<p>Successfully pulled changes from <strong>{$this->remote}/{$this->branch}.</p></strong>";
-		exit;
+		exit();
 	}
 
 	/**
@@ -382,7 +382,7 @@ class Revisr
 				echo "<script>
 						window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr&checkout=success&branch={$_REQUEST['branch']}'
 					</script>";
-				exit;				
+				exit();				
 			}
 
 		}
@@ -441,7 +441,7 @@ class Revisr
 		$this->log("Discarded all changes to the working directory.", "discard");
 		$this->notify(get_bloginfo() . " - Changes Discarded", "All uncommitted changes were discarded on " . get_bloginfo() . "." );
 		echo "<p>Successfully discarded uncommitted changes.</p>";
-		exit;
+		exit();
 	}
 
 	/**
@@ -506,7 +506,7 @@ class Revisr
 			
 			if (isset($_REQUEST['source']) && $_REQUEST['source'] == 'ajax_button') {
 				echo "<p>Successfully backed up the database.</p>";
-				exit;
+				exit();
 			}
 
 		}
@@ -515,7 +515,7 @@ class Revisr
 			
 			if (isset($_REQUEST['source']) && $_REQUEST['source'] == 'ajax_button') {
 				echo "<p>There may have been an error backing up the database. Check that the permissions on your '/uploads' directory are correct and try again.</p>";
-				exit;
+				exit();
 			}
 		}
 		clearstatcache();
@@ -786,7 +786,7 @@ class Revisr
 		else {
 			echo "<p>Your recent activity will show up here.</p>";
 		}
-		exit;
+		exit();
 
 	}
 
