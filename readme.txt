@@ -2,7 +2,7 @@
 Contributors: ExpandedFronts
 Tags: revisr, git, git management, revision tracking, revision, backup, database, database backup, database plugin, deploy, commit, bitbucket, github
 Requires at least: 3.5.1
-Tested up to: 3.9.1
+Tested up to: 3.9.2
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -35,10 +35,26 @@ A must have plugin for deploying WordPress using git repositories.
 
 = Instructions =
 * Unzip the plugin folder and upload it to the plugins directory of your WordPress installation.
-* Configure any remote repositories on the plugin settings page. Supports git through SSH or HTTPS. 
+* Configure any remote repositories on the plugin settings page. Supports git through SSH or HTTPS.
+* If authenticating with a remote repository via HTTPS with a password, be sure to password protect the .git directory via .htaccess or NGINX equivalent.
 
 = Notes =
-Please verify that database backups are working before attempting to revert the database, especially if attempting to do so on a production website. Backups use the mysqldump command, supported by most hosts/environments. If you're using Windows, you will need to add a path to the mysqldump command in your computer's settings.
+Please verify that database backups are working before attempting to revert the database, especially if attempting to do so on a production website. Backups use the mysqldump command, supported by most hosts/environments.
+
+If you're using the HTTPS method to connect to the remote repository, the password for the remote repository will be stored in the '.git/config' file. You should take steps to prevent this from being publicly accessible. The following code added to a '.htaccess' file in the '.git/' directory will prevent public access:
+
+`
+content: Deny from all
+`
+
+If you're using NGINX, you'll have to update your configuration file with something similar to the following:
+`
+location ~ path/to/your-repo/.git {
+        deny  all;
+}
+`
+
+This issue can be avoided entirely by using SSH to authenticate, which is recommended in most cases. If using SSH, you will need to generate a SSH key on the server and add it to the remote repository (Bitbucket and Github both support SSH).
 
 It is also adviseable to add Revisr to the gitignore file via the settings page to make sure that reverts don't rollback the plugins' functionality. 
 
@@ -69,6 +85,13 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 
 == Changelog ==
+
+= 1.6 =
+* Internationalized plugin
+* Switched to human-friendly time diffs for Recent Activity
+* Improved error handling
+* Removed passthru() functions
+* Code cleanup
 
 = 1.5.2 =
 * Fixed bug with adding certain files
