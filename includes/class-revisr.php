@@ -107,6 +107,8 @@ class Revisr
 			add_action( 'admin_post_nopriv_revisr_update', array( $git, 'pull' ) );
 		}
 
+		add_action( 'wp_ajax_count_unpulled', array( $git, 'count_unpulled' ) );
+		add_action( 'wp_ajax_count_unpushed', array( $git, 'count_unpushed' ) );
 		add_action( 'wp_ajax_new_commit', array( $git, 'new_commit' ) );
 		add_action( 'wp_ajax_discard', array( $git, 'discard' ) );
 		add_action( 'wp_ajax_push', array( $git, 'push' ) );

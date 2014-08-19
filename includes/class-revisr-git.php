@@ -234,7 +234,7 @@ class Revisr_Git
 	 */
 	public function push() {
 		Revisr_Git::run( 'reset --hard HEAD' );
-		$num_commits = Revisr_Git::count_unpushed( $this->remote );
+		$num_commits = $this->count_unpushed();
 		$push = Revisr_Git::run( "push {$this->remote} HEAD --quiet" );
 		
 		if  ( $push === false ) {
@@ -314,10 +314,10 @@ class Revisr_Git
 			$msg = sprintf( __( 'Successfully pulled changes from <strong>%s/%s</strong>', 'revisr' ), $this->remote, $this->branch );
 		}
 
-		if ( $from_dash === true ) {
+		if ( isset( $_REQUEST['from_dash'] ) && $_REQUEST['from_dash'] == 'true' ) {
 			echo '<p>' . $msg . '</p>';
+			exit();
 		}
-		exit();
 	}
 
 	/**
@@ -550,28 +550,44 @@ class Revisr_Git
 	/**
 	 * Returns the number of commits that haven't been pushed.
 	 * @access public
-	 * @param string $remote The remote to compare.
 	 */
-	public static function count_unpushed( $remote ) {
-		$branch = Revisr_Git::current_branch();
-		$unpushed = Revisr_Git::run("log {$remote}/{$branch}..{$branch} --pretty=oneline");
-		return count($unpushed);
+	public function count_unpushed() {
+		$unpushed = Revisr_Git::run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline");
+		$num_unpushed = count( $unpushed );
+		if ( $num_unpushed !== 0 ) {
+			if ( isset( $_REQUEST['should_exit'] ) && $_REQUEST['should_exit'] == 'true' ) {
+				echo '(' . $num_unpushed . ')';
+			}
+			else {
+				return $num_unpushed;
+			}
+		}
+
+		//Exit cleanly if being returned via AJAX.
+		if ( isset( $_REQUEST['should_exit'] ) && $_REQUEST['should_exit'] == 'true' ) {
+			exit();
+		}		
 	}
 
 	/**
 	 * Returns the number of unpulled commits.
 	 * @access public
-	 * @param string $remote The remote to fetch.
 	 */
-	public static function count_unpulled( $remote ) {
-		$branch = Revisr_Git::current_branch();
+	public function count_unpulled() {
 		Revisr_Git::run( 'fetch' );
-		$unpulled = Revisr_Git::run( "log $branch..$remote/$branch --pretty=oneline" );
-		
-		if ( $unpulled !== false ) {
-			return count( $unpulled );			
-		} else {
-			return 0;
+		$unpulled = Revisr_Git::run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline" );
+		$num_unpulled = count( $unpulled );
+		if ( $num_unpulled !== 0 ) {
+			if ( isset( $_REQUEST['should_exit'] ) && $_REQUEST['should_exit'] == 'true' ) {
+				echo '(' . $num_unpulled . ')';
+			} else {
+				return $num_unpulled;
+			}
+		}
+
+		//Exit cleanly if being returned via AJAX.
+		if ( isset( $_REQUEST['should_exit'] ) && $_REQUEST['should_exit'] == 'true' ) {
+			exit();
 		}
 	}
 

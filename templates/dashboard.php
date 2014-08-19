@@ -11,14 +11,6 @@
 $dir = plugin_dir_path( __FILE__ );
 $loader_url = plugins_url( '../assets/img/loader.gif' , __FILE__ );
 
-$settings = get_option('revisr_settings');
-if ( isset( $settings['remote_name'] ) && $settings['remote_name'] != '' ) {
-	$remote = $settings['remote_name'];
-}
-else {
-	$remote = 'origin';
-}
-
 ?>
 <div class="wrap">
 	
@@ -61,7 +53,6 @@ else {
 	<div id="poststuff">
 	<div id="revisr_alert"></div>
 		<div id="post-body" class="metabox-holder columns-2">
-		
 			<!-- main content -->
 			<div id="post-body-content">
 				
@@ -95,22 +86,8 @@ else {
 							<button id="commit-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span class="qb-text">| <?php _e( 'Commit Changes', 'revisr' ); ?></span></button>
 							<button id="discard-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Discard Changes', 'revisr' ); ?></span></button>
 							<button id="backup-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Backup Database', 'revisr' ); ?></span></button>
-							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;"><span id="push-text" class="qb-text">| <?php _e( 'Push Changes', 'revisr' ); ?>
-							<?php 
-								$unpushed = Revisr_Git::count_unpushed($remote);
-								if ($unpushed != "0") {
-									echo "({$unpushed})";
-								}
-							?>
-							</span></button>
-							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span id="pull-text" class="qb-text">| <?php _e( 'Pull Changes', 'revisr' ); ?>
-							<?php 
-								$unpulled = Revisr_Git::count_unpulled($remote);
-								if ($unpulled != "0") {
-									echo "({$unpulled})";
-								}
-							?>
-							</span></button>
+							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;"><span id="push-text" class="qb-text">| <?php _e( 'Push Changes ', 'revisr' ); ?> <span id="unpushed"></span></span></button>
+							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span id="pull-text" class="qb-text">| <?php _e( 'Pull Changes', 'revisr' ); ?>  <span id="unpulled"></span></span></button>
 						</div> <!-- .inside -->
 						
 					</div> <!-- .postbox -->

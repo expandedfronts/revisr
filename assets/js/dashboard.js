@@ -8,6 +8,24 @@ jQuery(document).ready(function() {
 		document.getElementById("revisr_activity").innerHTML = response;
 	});	
 
+	var unpushed = {
+		action: 'count_unpushed',
+		should_exit: 'true'
+	};
+
+	jQuery.post(ajaxurl, unpushed, function(response) {
+		document.getElementById("unpushed").innerHTML = response;
+	});
+
+	var unpulled = {
+		action: 'count_unpulled',
+		should_exit: 'true'
+	};
+
+	jQuery.post(ajaxurl, unpulled, function(response) {
+		document.getElementById("unpulled").innerHTML = response;
+	});
+
 	jQuery('#loader').hide();
 
 	jQuery("#commit-btn").click(function() { 
@@ -84,7 +102,9 @@ jQuery(document).ready(function() {
 				jQuery('#loader').hide();
 				jQuery.post(ajaxurl, recent_data, function(response) {
 					document.getElementById("revisr_activity").innerHTML = response;
-					document.getElementById("push-text").innerHTML = "| Push Changes";
+						jQuery.post(ajaxurl, unpushed, function(response) {
+							document.getElementById("unpushed").innerHTML = response;
+						});
 				});	
 			});
 	    } 
@@ -99,6 +119,7 @@ jQuery(document).ready(function() {
 	    	jQuery('#loader').show();
 	   		var data = {
 				action: 'pull',
+				from_dash: 'true',
 				security: dashboard_vars.ajax_nonce
 			};
 			
@@ -114,7 +135,9 @@ jQuery(document).ready(function() {
 				jQuery('#loader').hide();
 				jQuery.post(ajaxurl, recent_data, function(response) {
 					document.getElementById("revisr_activity").innerHTML = response;
-					document.getElementById("pull-text").innerHTML = "| Pull Changes";
+						jQuery.post(ajaxurl, unpulled, function(response) {
+							document.getElementById("unpulled").innerHTML = response;
+						});
 				});
 			});
 	    } 
