@@ -21,18 +21,16 @@ class Revisr_Settings
 
 	public function __construct() {
 		if ( is_admin() ) {
-			add_action( 'admin_init', array( $this, 'general_settings' ) );
-			add_action( 'admin_init', array( $this, 'remote_settings' ) );
-			add_action( 'admin_init', array( $this, 'database_settings' ) );
+			add_action( 'admin_init', array( $this, 'init_settings' ) );
 		}
 		$this->options = get_option( 'revisr_settings' );
 	}
 	
 	/**
-	 * Adds the general settings section.
+	 * Initializes the settings sections.
 	 * @access public
 	 */
-	public function general_settings() {
+	public function init_settings() {
         add_settings_section(
             'revisr_general_settings',
             '',
@@ -65,14 +63,6 @@ class Revisr_Settings
     	);
 
     	add_settings_field(
-    		'revisr_admin_bar',
-    		'Show pending files in admin bar?',
-    		array($this, 'admin_bar_callback'),
-    		'revisr_settings',
-    		'revisr_general_settings'
-		);
-
-    	add_settings_field(
     		'notifications',
     		'Enable email notifications?',
     		array($this, 'notifications_callback'),
@@ -85,13 +75,6 @@ class Revisr_Settings
 			'revisr_settings'
 		);
 
-	}
-
-	/**
-	 * Adds the remote settings section.
-	 * @access public
-	 */
-	public function remote_settings() {
         add_settings_section(
             'revisr_remote_settings',
             '',
@@ -135,13 +118,7 @@ class Revisr_Settings
 			'revisr_remote_settings',
 			'revisr_settings'
 		);
-	}
 
-	/**
-	 * Add the database settings section.
-	 * @access public
-	 */
-	public function database_settings() {
         add_settings_section(
             'revisr_database_settings',
             '',
@@ -168,7 +145,7 @@ class Revisr_Settings
 		register_setting(
 			'revisr_database_settings',
 			'revisr_settings'
-		);	
+		);			
 	}
 
    	/**
@@ -204,13 +181,6 @@ class Revisr_Settings
             '<textarea id="gitignore" name="revisr_settings[gitignore]" rows="6" />%s</textarea>
             <br><span class="description">Add files or directories to be ignored here, one per line.</span>',
             isset( $this->options['gitignore'] ) ? esc_attr( $this->options['gitignore']) : ''
-		);
-	}
-	
-	public function admin_bar_callback() {
-		printf(
-			'<input type="checkbox" id="revisr_admin_bar" name="revisr_settings[revisr_admin_bar]" %s />',
-			isset( $this->options['revisr_admin_bar'] ) ? "checked" : ''
 		);
 	}
 	

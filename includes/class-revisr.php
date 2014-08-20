@@ -70,6 +70,7 @@ class Revisr
 		if ( is_admin() ) {
 			$plugin = $this->plugin;
 			add_action( 'init', array( $admin, 'revisr_post_types' ) );
+			add_action( 'admin_notices', array( $admin, 'site5_notice' ) );
 			add_action( 'load-edit.php', array( $admin, 'default_views' ) );
 			add_action( 'load-post.php', array( $admin, 'meta' ) );
 			add_action( 'load-post-new.php', array( $admin, 'meta' ) );
@@ -130,7 +131,7 @@ class Revisr
 
 	/**
 	 * Installs the database table.
-	 * @access private
+	 * @access public
 	 */
 	public function revisr_install() {
 		$sql = "CREATE TABLE IF NOT EXISTS {$this->table_name} (
@@ -144,7 +145,18 @@ class Revisr
 	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	   	dbDelta( $sql );
 	   	add_option( "revisr_db_version", "1.0" );
-	}	
+	}
+
+	/**
+	 * Displays the link to the settings on the WordPress plugin page.
+	 * @access public
+	 * @param array $links The links assigned to Revisr.
+	 */
+	public function revisr_settings_link( $links ) {
+		$settings_link = '<a href="admin.php?page=revisr_settings">' . __( 'Settings', 'revisr') . '</a>'; 
+  		array_unshift($links, $settings_link); 
+  		return $links; 
+	}
 
 	/**
 	 * Checks to make sure that exec is enabled and Git is installed correctly on the server.

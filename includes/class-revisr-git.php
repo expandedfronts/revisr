@@ -30,7 +30,7 @@ class Revisr_Git
 	/**
 	 * User options.
 	 */
-	private $options;
+	public $options;
 
 	/**
 	 * Declare properties.
@@ -96,8 +96,7 @@ class Revisr_Git
 			if ( isset( $_POST['staged_files'] ) ) {
 				$this->stage_files( $_POST['staged_files'] );
 				$staged_files = $_POST['staged_files'];
-			}
-			else {
+			} else {
 				if ( ! isset( $_REQUEST['backup_db'] ) ) {
 					$url = $post_new . '&message=43';
 					wp_redirect( $url );
@@ -120,21 +119,11 @@ class Revisr_Git
 			add_post_meta( get_the_ID(), 'committed_files', $staged_files );
 			add_post_meta( get_the_ID(), 'files_changed', count( $staged_files ) );
 
-			//Push if necessary
-			if ( isset( $this->options['auto_push'] ) ) {
-				$push = Revisr_Git::run( "push {$this->remote} {$this->branch} --quiet" );
-				if ( $push != false ) {
-					$msg = sprintf( __( 'Committed <a href="%s">#%s</a> and pushed to the remote repository.', 'revisr' ), $view_link, $clean_hash );
-					Revisr_Admin::log( $msg, 'commit' );
-				}
-				else {
-					Revisr_Admin::log( __( 'Error pushing changes to the remote repository.', 'revisr' ), 'error' );
-				}
-			}
-			else {
-				$msg = sprintf( __( 'Committed <a href="%s">#%s</a> to the local repository.', 'revisr' ), $view_link, $clean_hash );
-				Revisr_Admin::log( $msg, 'commit' );
-			}
+			//Log the commit
+			$msg = sprintf( __( 'Committed <a href="%s">#%s</a> to the local repository.', 'revisr' ), $view_link, $clean_hash );
+			Revisr_Admin::log( $msg, 'commit' );
+
+			$this->auto_push();
 
 			//Backup the database if necessary
 			if ( isset( $_REQUEST['backup_db'] ) && $_REQUEST['backup_db'] == 'on' ) {
@@ -231,29 +220,28 @@ class Revisr_Git
 	/**
 	 * Push changes to a remote repository.
 	 * @access public
+	 * @param boolean $is_auto_push True if coming from an autopush.
 	 */
-	public function push() {
+	public function push( $is_auto_push = false ) {
 		Revisr_Git::run( 'reset --hard HEAD' );
 		$num_commits = $this->count_unpushed();
 		$push = Revisr_Git::run( "push {$this->remote} HEAD --quiet" );
 		
 		if  ( $push === false ) {
 			Revisr_Admin::log( __( 'Error pushing changes to the remote repository.', 'revisr' ), "error" );
-			echo "<p>" . __( 'There was an error while pushing to the remote repository. The remote may be ahead of this repository or you are not authenticated.', 'revisr' ) . "</p>";
+			$result = "<p>" . __( 'There was an error while pushing to the remote repository. The remote may be ahead of this repository or you are not authenticated.', 'revisr' ) . "</p>";
 		} else {
-			if ( $num_commits == "1" ) { 
-				$msg = sprintf( __( 'Pushed 1 commit to %s/%s.', 'revisr' ), $this->remote, $this->branch );
-				Revisr_Admin::log( $msg, 'push' );
-			} else {
-				$msg = sprintf( __( 'Pushed %s commits to %s/%s.', 'revisr' ), $num_commits, $this->remote, $this->branch );
-				Revisr_Admin::log( $msg, 'push' );
-			}
+			$msg = sprintf( _n( 'Pushed %s commit to %s/%s.', 'Pushed %s commits to %s/%s.', $num_commits, 'revisr' ), $num_commits, $this->remote, $this->branch );
+			Revisr_Admin::log( $msg, 'push' );
 			$email_msg = sprintf( __( 'Changes were pushed to the remote repository for %s', 'revisr' ), get_bloginfo() ); 
 			Revisr_Admin::notify( get_bloginfo() . __( ' - Changes Pushed', 'revisr' ), $email_msg );
 			$result = sprintf( __( '<p>Successfully pushed to <strong>%s/%s.</p>', 'revisr' ), $this->remote, $this->branch );
-			echo $result;
 		}
-		exit();		
+
+		if ( $is_auto_push != true ) {
+				echo $result;
+				exit();	
+		}	
 	}
 
 	/**
@@ -264,7 +252,7 @@ class Revisr_Git
 
 		//Determine whether this is a request from the dashboard or a POST request.
 		$from_dash = check_ajax_referer( 'dashboard_nonce', 'security', false );
-		if ( $from_dash === false ) {
+		if ( $from_dash == false ) {
 			if ( ! isset( $this->options['auto_pull'] ) || ! isset( $_REQUEST['revisr_update'] ) ) {
 				wp_die( __( 'You are not authorized to perform this action.', 'revisr' ) );
 			}
@@ -308,13 +296,13 @@ class Revisr_Git
 		if ( Revisr_Git::run( "pull {$this->remote} {$this->branch}" ) === false ) {
 			$error_msg = __( 'Error pulling changes from the remote repository.', 'revisr' );
 			Revisr_Admin::log( $error_msg, 'error' );
-			$msg = __( 'There was an error pulling from the remote repository.', 'revisr' );
+			$msg = __( 'There was an error pulling from the remote repository. The local repository could be ahead of the remote, or the remote settings may be incorrect.', 'revisr' );
 		} else {
 			Revisr_Admin::notify(get_bloginfo() . __( ' - Changes Pulled', 'revisr' ), __( 'Changes were pulled from the remote repository for ', 'revisr' ) . get_bloginfo());
-			$msg = sprintf( __( 'Successfully pulled changes from <strong>%s/%s</strong>', 'revisr' ), $this->remote, $this->branch );
+			$msg = sprintf( __( 'Successfully pulled any changes from <strong>%s/%s</strong>', 'revisr' ), $this->remote, $this->branch );
 		}
 
-		if ( isset( $_REQUEST['from_dash'] ) && $_REQUEST['from_dash'] == 'true' ) {
+		if ( $from_dash == true ) {
 			echo '<p>' . $msg . '</p>';
 			exit();
 		}
@@ -388,8 +376,7 @@ class Revisr_Git
 	 * Shows the files that were added in the given commit.
 	 * @access public
 	 */
-	public function committed_files()
-	{
+	public function committed_files() {
 		check_ajax_referer('committed_nonce', 'security');
 		if (get_post_type($_POST['id']) != "revisr_commits") {
 			exit();
@@ -511,7 +498,7 @@ class Revisr_Git
 	 */
 	public function auto_push() {
 		if ( isset( $this->options['auto_push'] ) ) {
-			$this->push();
+			$this->push( true );
 		}
 	}
 
@@ -553,20 +540,23 @@ class Revisr_Git
 	 */
 	public function count_unpushed() {
 		$unpushed = Revisr_Git::run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline");
-		$num_unpushed = count( $unpushed );
-		if ( $num_unpushed !== 0 ) {
-			if ( isset( $_REQUEST['should_exit'] ) && $_REQUEST['should_exit'] == 'true' ) {
-				echo '(' . $num_unpushed . ')';
-			}
-			else {
-				return $num_unpushed;
+		
+		if ( $unpushed !== false ) {
+			$num_unpushed = count( $unpushed );
+			if ( $num_unpushed !== 0 ) {
+				if ( isset( $_REQUEST['should_exit'] ) && $_REQUEST['should_exit'] == 'true' ) {
+					echo '(' . $num_unpushed . ')';
+				}
+				else {
+					return $num_unpushed;
+				}
 			}
 		}
 
 		//Exit cleanly if being returned via AJAX.
 		if ( isset( $_REQUEST['should_exit'] ) && $_REQUEST['should_exit'] == 'true' ) {
 			exit();
-		}		
+		}
 	}
 
 	/**
@@ -576,12 +566,15 @@ class Revisr_Git
 	public function count_unpulled() {
 		Revisr_Git::run( 'fetch' );
 		$unpulled = Revisr_Git::run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline" );
-		$num_unpulled = count( $unpulled );
-		if ( $num_unpulled !== 0 ) {
-			if ( isset( $_REQUEST['should_exit'] ) && $_REQUEST['should_exit'] == 'true' ) {
-				echo '(' . $num_unpulled . ')';
-			} else {
-				return $num_unpulled;
+		
+		if ( $unpulled !== false ) {
+			$num_unpulled = count( $unpulled );
+			if ( $num_unpulled !== 0 ) {
+				if ( isset( $_REQUEST['should_exit'] ) && $_REQUEST['should_exit'] == 'true' ) {
+					echo '(' . $num_unpulled . ')';
+				} else {
+					return $num_unpulled;
+				}
 			}
 		}
 

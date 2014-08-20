@@ -41,14 +41,17 @@ class Revisr_Admin
 	 * @param string $hook The page to enqueue the styles/scripts.
 	 */
 	public function revisr_scripts( $hook ) {
-		wp_register_style( 'revisr_css', plugins_url() . '/revisr/assets/css/revisr.css', array(), '07052014' );
+		wp_register_style( 'revisr_dashboard_css', plugins_url() . '/revisr/assets/css/dashboard.css', array(), '07052014' );
+		wp_register_style( 'revisr_commits_css', plugins_url() . '/revisr/assets/css/commits.css', array(), '08202014' );
 		wp_register_script( 'revisr_dashboard', plugins_url() . '/revisr/assets/js/dashboard.js', 'jquery',  '07052014', true );
 		wp_register_script( 'revisr_staging', plugins_url() . '/revisr/assets/js/staging.js', 'jquery', '07052014', false );
 		wp_register_script( 'revisr_committed', plugins_url() . '/revisr/assets/js/committed.js', 'jquery', '07052014', false );
+
+		$allowed_pages = array( 'revisr', 'revisr_settings' );
 		
 		//Enqueue styles and scripts on the Revisr dashboard.
-		if ( isset( $_GET['page'] ) && $_GET['page'] == 'revisr' ) {
-			wp_enqueue_style( 'revisr_css' );
+		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
+			wp_enqueue_style( 'revisr_dashboard_css' );
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
 			wp_enqueue_script( 'revisr_dashboard' );
@@ -60,9 +63,6 @@ class Revisr_Admin
 
 		//Enqueue styles and scripts on the Revisr staging area.
 		if ( $hook == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == "revisr_commits" ) {
-			wp_enqueue_style( 'revisr_css' );
-			wp_enqueue_style( 'thickbox' );
-			wp_enqueue_script( 'thickbox' );
 			wp_enqueue_script( 'revisr_staging' );
 			wp_localize_script( 'revisr_staging', 'pending_vars', array(
 				'ajax_nonce' => wp_create_nonce( 'pending_nonce' ),
@@ -72,9 +72,6 @@ class Revisr_Admin
 		
 		//Enqueue styles and scripts for viewing a commit.
 		if ( $hook == 'post.php' ) {
-			wp_enqueue_style( 'revisr_css' );
-			wp_enqueue_style( 'thickbox' );
-			wp_enqueue_script( 'thickbox' );
 			wp_enqueue_script( 'revisr_committed' );
 			wp_localize_script( 'revisr_committed', 'committed_vars', array(
 				'post_id' => $_GET['post'],
@@ -83,9 +80,11 @@ class Revisr_Admin
 			);			
 		}
 
-		//Enqueue styles and scripts for the settings page.
-		if ( isset( $_GET['page'] ) && $_GET['page'] == 'revisr_settings' ) {
-			wp_enqueue_style( 'revisr_css' );
+		//Add styles and scripts to commits pages.
+		if ( get_post_type() == 'revisr_commits' || isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
+			wp_enqueue_style( 'revisr_commits_css' );
+			wp_enqueue_style( 'thickbox' );
+			wp_enqueue_script( 'thickbox' );
 		}
 	}
 
@@ -153,7 +152,7 @@ class Revisr_Admin
 			add_meta_box( 'revisr_pending_files', __( 'Untracked Files', 'revisr' ), array( $this, 'pending_files_meta' ), 'revisr_commits', 'normal', 'high' );
 		}
 	}
-
+	
 	/**
 	 * Registers the menus used by Revisr.
 	 * @access public
@@ -316,16 +315,9 @@ class Revisr_Admin
 	 * @access public
 	 */
 	public function admin_bar( $wp_admin_bar ) {
-
-		$options = get_option( 'revisr_settings' );
-
-		if ( isset( $options['revisr_admin_bar'] ) ) {
-
-			if ( Revisr_Git::count_pending() == "1" ) {
-				$text = __( '1 Untracked File', 'revisr' );
-			} else {
-				$text = Revisr_Git::count_pending() . " " . __( 'Untracked Files', 'revisr' );
-			}
+		if ( Revisr_Git::count_pending() != 0 ) {
+			$untracked = Revisr_Git::count_pending();
+			$text = sprintf( _n( '%s Untracked File', '%s Untracked Files', $untracked, 'revisr' ), $untracked );
 			$args = array(
 				'id'    => 'revisr',
 				'title' => $text,
@@ -333,8 +325,7 @@ class Revisr_Admin
 				'meta'  => array( 'class' => 'revisr_commits' ),
 			);
 			$wp_admin_bar->add_node( $args );
-		}
-
+		} 
 	}
 
 	/**
@@ -356,7 +347,7 @@ class Revisr_Admin
 	}
 
 	/**
-	 * Displays the staging area.
+	 * The container for the staging area.
 	 * @access public
 	 */
 	public function pending_files_meta() {
@@ -558,16 +549,28 @@ class Revisr_Admin
 			$headers = "Content-Type: text/html; charset=ISO-8859-1\r\n";
 			wp_mail( $email, $subject, $message, $headers );
 		}
-	}	
+	}
 
 	/**
-	 * Displays the link to the settings on the WordPress plugin page.
+	 * Displays the "Sponsored by Site5" logo.
 	 * @access public
-	 * @param array $links The links assigned to Revisr.
 	 */
-	public function settings_link( $links ) {
-		$settings_link = '<a href="admin.php?page=revisr_settings">' . __( 'Settings', 'revisr') . '</a>'; 
-  		array_unshift($links, $settings_link); 
-  		return $links; 
+	public function site5_notice() {
+		$allowed_on = array( 'revisr', 'revisr_settings', 'revisr_commits', 'revisr_settings' );
+		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_on ) ) {
+			$output = true;
+		} else if ( isset( $_GET['post_type'] ) && in_array( $_GET['post_type'], $allowed_on ) || get_post_type() == 'revisr_commits' ) {
+			$output = true;
+		} else {
+			$output = false;
+		}
+		if ( $output === true ) {
+			?>
+			<div id="site5_wrapper">
+				<?php _e( 'Sponsored by', 'revisr' ); ?>
+				<a href="http://www.site5.com/" target="_blank"><img id="site5_logo" src="<?php echo plugins_url( 'revisr/assets/img/site5.png' ); ?>" width="80" /></a>
+			</div>
+			<?php
+		}
 	}
 }

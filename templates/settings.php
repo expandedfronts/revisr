@@ -9,33 +9,28 @@
  */
 
 if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" ) {
+
+	$git = new Revisr_Git;
 	
 	$options = get_option('revisr_settings');
-	$dir = getcwd();
 	
 	chdir(ABSPATH);
 	file_put_contents(".gitignore", $options['gitignore']);
 	
-	if ( $options['username'] != "" ) {
+	if ( $git->options['username'] != "" ) {
 		Revisr_Git::run('config user.name "' . $options['username'] . '"');
 	}
-	if ( $options['email'] != "" ) {
+	if ( $git->options['email'] != "" ) {
 		Revisr_Git::run('config user.email "' . $options['email'] . '"');
 	}
-	if ( $options['remote_url'] != "" ) {
+	if ( $git->options['remote_url'] != "" ) {
 		Revisr_Git::run('config remote.origin.url ' . $options['remote_url']);
-	}
-	if ( isset( $options['auto_push'] ) ) {
-		$auto_push = Revisr_Git::run("push origin {$this->branch} --quiet");
-		if ( $auto_push === false ) {
-			wp_redirect( get_admin_url() . "admin.php?page=revisr_settings&error=push" );
-		}
 	}
 
 	Revisr_Git::run("add .gitignore");
 	Revisr_Git::run("commit -m 'Updated .gitignore'");
 
-	chdir( $dir );
+	chdir( $git->dir );
 }
 
 ?>

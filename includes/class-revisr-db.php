@@ -114,8 +114,8 @@ class Revisr_DB
 
 	/**
 	 * Restores the database to an earlier version if it exists.
-	 * @param boolean $restore_branch True if restoring the databsae from another branch.
 	 * @access public
+	 * @param boolean $restore_branch True if restoring the database from another branch.
 	 */
 	public function restore( $restore_branch = false ) {
 		if ( isset($_GET['revert_db_nonce']) && wp_verify_nonce( $_GET['revert_db_nonce'], 'revert_db' ) ) {
@@ -165,10 +165,10 @@ class Revisr_DB
 
 	/**
 	 * Commits the database to the repository and pushes if needed.
-	 * @access public
+	 * @access private
 	 * @param string $commit_msg The message to use for the commit.
 	 */
-	public function commit_db( $commit_msg ) {
+	private function commit_db( $commit_msg ) {
 		$file 	= $this->upload_dir['basedir'] . '/' . $this->sql_file;
 		$add 	= Revisr_Git::run( "add {$file}" );
 		$commit = Revisr_Git::run( "commit -m'" . $commit_msg . "'" );
@@ -183,10 +183,10 @@ class Revisr_DB
 
 	/**
 	 * Echoes the result if necessary.
-	 * @access public
+	 * @access private
 	 * @param string $status The string to output.
 	 */
-	public function maybe_return( $status ) {
+	private function maybe_return( $status ) {
 		if ( isset( $_REQUEST['source'] ) && $_REQUEST['source'] == 'ajax_button' ) {
 			echo '<p>' . $status . '</p>';
 			exit();
@@ -195,9 +195,9 @@ class Revisr_DB
 
 	/**
 	 * Verifies that a backup file is valid.
-	 * @access public
+	 * @access private
 	 */
-	public function verify_backup() {
+	private function verify_backup() {
 		if ( ! file_exists( $this->sql_file ) || filesize( $this->sql_file ) < 1000 ) {
 			return false;
 		} else {
@@ -207,9 +207,9 @@ class Revisr_DB
 
 	/**
 	 * Makes sure exec is enabled, as it is necessary.
-	 * @access public
+	 * @access private
 	 */
-	public function check_exec() {
+	private function check_exec() {
 		if ( ! function_exists( 'exec' ) ) {
 			wp_die( __('It appears you don\'t have the PHP exec() function enabled. This is required to revert the database. Check with your hosting provider or enable this in your PHP configuration.', 'revisr' ) );
 		}
