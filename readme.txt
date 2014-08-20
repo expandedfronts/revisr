@@ -89,6 +89,7 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 = 1.6 =
 * Internationalized plugin
 * Switched to human-friendly time diffs for Recent Activity
+* Fixed bug causing dashboard to freeze in some environments
 * Improved error handling
 * Removed passthru() functions
 * Code cleanup
