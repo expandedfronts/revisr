@@ -1,0 +1,64 @@
+
+/* === STAGING/COMMITTED === */
+
+.stage-container {
+	width: 100%;
+	display: inline-block;
+}
+#staged {
+	width: 80%;
+	float: left;
+	overflow-y: scroll;
+}
+#unstaged {
+	width: 80%;
+	float: left;
+	overflow-y: scroll;
+}
+.stage-nav {
+	float: left;
+	margin: 5px;
+}
+.stage-nav-button {
+	margin-top: 7px !important;
+}
+.diff_added {
+	background-color: #cfc;
+}
+.diff_removed {
+	background-color: #fdd;
+}
+#revisr-pagination {
+	text-align: center;
+}
+
+/* === COMMIT LISTING === */
+#hash {
+	width: 70px !important;
+}
+td.hash.column-hash {
+	width:70px !important;
+}
+#revisr_settings th {
+	width: 290px;
+}
+
+/* === Site5 === */
+#site5_wrapper {
+	width: 80px;
+	text-align: center;
+	font-size: 11px;
+	float: right;
+	margin: 0px 10px 10px 10px;
+	padding-left: 5px;
+	padding-right: 5px;
+	background-color: #fff;
+	border: 1px solid #ddd;
+}
+#site5_logo {
+	width: 80px;
+	margin-top: -5px;
+}
+.wrap {
+	margin-top: 17px !important;
+}
