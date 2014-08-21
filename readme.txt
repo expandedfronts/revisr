@@ -31,7 +31,7 @@ A must have plugin for deploying WordPress using git repositories.
 = Requirements = 
 * A WordPress installation in the root folder of a Git repository
 * Git must be installed on the server (most updated versions of cPanel have it preinstalled)
-* The PHP functions exec() and passthru() enabled
+* The PHP exec() function enabled
 
 = Instructions =
 * Unzip the plugin folder and upload it to the plugins directory of your WordPress installation.
@@ -55,6 +55,20 @@ location ~ path/to/your-repo/.git {
 `
 
 This issue can be avoided entirely by using SSH to authenticate, which is recommended in most cases. If using SSH, you will need to generate a SSH key on the server and add it to the remote repository (Bitbucket and Github both support SSH).
+
+You should also make sure that the .sql backup files aren't publicly accessible. You can do this in Apache by adding the folling to your .htaccess file in the document root:
+
+`
+<FilesMatch "\.sql">
+    Order allow,deny
+    Deny from all
+    Satisfy All
+</FilesMatch>
+`
+If you're using NGINX, something similar to the below should work:
+`
+location ~ \.sql { deny all; }
+`
 
 It is also adviseable to add Revisr to the gitignore file via the settings page to make sure that reverts don't rollback the plugins' functionality. 
 
