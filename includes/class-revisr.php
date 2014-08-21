@@ -66,9 +66,9 @@ class Revisr
 
 	/**
 	 * Loads hooks for rendering the WordPress admin.
-	 * @access private
+	 * @access public
 	 */
-	private function admin_hooks() {
+	public function admin_hooks() {
 		$admin = new Revisr_Admin();
 		if ( is_super_admin() ) {
 			$plugin = $this->plugin;
