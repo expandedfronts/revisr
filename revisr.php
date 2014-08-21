@@ -16,6 +16,7 @@
  * Version:           1.6
  * Text Domain:		  revisr
  * Domain Path:		  /languages/
+ * Network:			  true
  * Author:            Expanded Fronts
  * Author URI: 		  http://revisr.io/
  */
