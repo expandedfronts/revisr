@@ -247,7 +247,7 @@ class Revisr_Settings
 			'<input type="text" id="mysql_path" name="revisr_settings[mysql_path]" value="%s" class="regular-text" placeholder="" />
 			<br><p class="description">Leave blank if the full path to MySQL has already been set on the server. Some possible settings include:
 			<br><br>For MAMP: /Applications/MAMP/Library/bin/
-			<br>For WAMP: D:\wamp\bin\mysql\mysql5.6.12\bin\</p>',
+			<br>For WAMP: C:\wamp\bin\mysql\mysql5.6.12\bin\</p>',
 			isset( $this->options['mysql_path'] ) ? esc_attr( $this->options['mysql_path']) : ''
 			);		
 	}

@@ -253,7 +253,7 @@ class Revisr_Git
 		//Determine whether this is a request from the dashboard or a POST request.
 		$from_dash = check_ajax_referer( 'dashboard_nonce', 'security', false );
 		if ( $from_dash == false ) {
-			if ( ! isset( $this->options['auto_pull'] ) || ! isset( $_REQUEST['revisr_update'] ) ) {
+			if ( ! isset( $this->options['auto_pull'] ) ) {
 				wp_die( __( 'You are not authorized to perform this action.', 'revisr' ) );
 			}
 		}
@@ -261,6 +261,7 @@ class Revisr_Git
 		Revisr_Git::run( 'reset --hard HEAD' );
 
 		//Calculate the commits to pull.
+		Revisr_Git::run( 'fetch' );
 		$commits_since  = Revisr_Git::run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline" );
 
 		if ( is_array( $commits_since ) ) {

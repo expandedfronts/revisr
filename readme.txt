@@ -87,7 +87,7 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 == Changelog ==
 
 = 1.6 =
-* Internationalized plugin
+* Added internationalization support
 * Switched to human-friendly time diffs for Recent Activity
 * Fixed bug causing dashboard to freeze in some environments
 * Improved error handling

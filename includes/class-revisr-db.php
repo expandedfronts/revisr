@@ -73,10 +73,9 @@ class Revisr_DB
 		}
 
 		if ( DB_PASSWORD != '' ) {
-			$this->conn = "-u '" . DB_USER . "' -p'" . DB_PASSWORD . "' '" . DB_NAME . "' --host '" . DB_HOST . "'";
-		}
-		else {
-			$this->conn = "-u '" . DB_USER . "' '" . DB_NAME . "' --host '" . DB_HOST . "'";
+			$this->conn = "-u '" . DB_USER . "' -p'" . DB_PASSWORD . "' " . DB_NAME . " --host " . DB_HOST;
+		} else {
+			$this->conn = "-u '" . DB_USER . "' " . DB_NAME . " --host " . DB_HOST;
 		}
 		chdir( $this->upload_dir['basedir'] );
 	}
@@ -98,9 +97,7 @@ class Revisr_DB
 		exec( "{$this->path}mysqldump {$this->conn} > {$this->sql_file}" );
 
 		if ( $this->verify_backup() != false ) {
-			
-			$commit_msg = __( 'Backed up the database with Revisr.', 'revisr' );
-			$this->commit_db( $commit_msg );
+			$this->commit_db();
 
 			$msg = __( 'Successfully backed up the database.', 'revisr' );
 			Revisr_Admin::log( $msg, 'backup' );
@@ -168,12 +165,13 @@ class Revisr_DB
 	 * @access private
 	 * @param string $commit_msg The message to use for the commit.
 	 */
-	private function commit_db( $commit_msg ) {
+	private function commit_db() {
+		$commit_msg = __( 'Backed up the database with Revisr.', 'revisr' );
 		$file 	= $this->upload_dir['basedir'] . '/' . $this->sql_file;
 		$add 	= Revisr_Git::run( "add {$file}" );
-		$commit = Revisr_Git::run( "commit -m'" . $commit_msg . "'" );
+		$commit = Revisr_Git::run( 'commit -m "' . $commit_msg . '"' );
 
-		if ( $add === false  || $commit === false ) {
+		if ( $add === false || $commit === false ) {
 			$error = __( 'There was an error committing the database.', 'revisr' );
 			$this->maybe_return( $error );
 			exit();
