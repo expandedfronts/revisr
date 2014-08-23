@@ -45,9 +45,11 @@ class Revisr
 
 		//Load dependancies and WordPress hooks.
 		$this->load_dependancies();
-		$this->admin_hooks();
 		$this->git_hooks();
 		$this->db_hooks();
+		if ( is_admin() ) {
+			add_action('plugins_loaded', array( $this, 'admin_hooks' ) );
+		}
 	}
 
 	/**
@@ -63,11 +65,11 @@ class Revisr
 
 	/**
 	 * Loads hooks for rendering the WordPress admin.
-	 * @access private
+	 * @access public
 	 */
-	private function admin_hooks() {
+	public function admin_hooks() {
 		$admin = new Revisr_Admin();
-		if ( is_admin() ) {
+		if ( is_super_admin() ) {
 			$plugin = $this->plugin;
 			add_action( 'init', array( $admin, 'revisr_post_types' ) );
 			add_action( 'admin_notices', array( $admin, 'site5_notice' ) );

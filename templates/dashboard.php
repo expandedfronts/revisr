@@ -11,6 +11,12 @@
 $dir = plugin_dir_path( __FILE__ );
 $loader_url = plugins_url( '../assets/img/loader.gif' , __FILE__ );
 
+wp_enqueue_script( 'revisr_dashboard' );
+wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
+	'ajax_nonce' => wp_create_nonce( 'dashboard_nonce' ),
+	)
+);
+
 ?>
 <div class="wrap">
 	
@@ -95,8 +101,8 @@ $loader_url = plugins_url( '../assets/img/loader.gif' , __FILE__ );
 					<div class="postbox">
 					
 						<h3><span><?php _e('Branches', 'revisr'); ?> <a id="new_branch" href="<?php echo get_admin_url(); ?>admin-post.php?action=create_branch&TB_iframe=true&width=250&height=150" title="Create Branch" class="thickbox"><?php _e('(Create Branch)', 'revisr'); ?></a> </span></h3>
-						<div class="inside">
-							<table class="widefat">
+						<div id="branches_box" class="inside">
+							<table id="branches_table" class="widefat">
 								<?php
 
 									$output = Revisr_Git::run( 'branch' );

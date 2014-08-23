@@ -53,12 +53,7 @@ class Revisr_Admin
 		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
 			wp_enqueue_style( 'revisr_dashboard_css' );
 			wp_enqueue_style( 'thickbox' );
-			wp_enqueue_script( 'thickbox' );
-			wp_enqueue_script( 'revisr_dashboard' );
-			wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
-				'ajax_nonce' => wp_create_nonce( 'dashboard_nonce' ),
-				)
-			);			
+			wp_enqueue_script( 'thickbox' );		
 		}
 
 		//Enqueue styles and scripts on the Revisr staging area.
@@ -71,7 +66,7 @@ class Revisr_Admin
 		}
 		
 		//Enqueue styles and scripts for viewing a commit.
-		if ( $hook == 'post.php' ) {
+		if ( $hook == 'post.php' && get_post_type() == 'revisr_commits' ) {
 			wp_enqueue_script( 'revisr_committed' );
 			wp_localize_script( 'revisr_committed', 'committed_vars', array(
 				'post_id' => $_GET['post'],
@@ -452,16 +447,10 @@ class Revisr_Admin
 	 */
 	public function recent_activity() {
 		global $wpdb;
-		$revisr_events = $wpdb->get_results( "SELECT id, time, message FROM $this->table_name ORDER BY id DESC LIMIT 10", ARRAY_A );
+		$revisr_events = $wpdb->get_results( "SELECT id, time, message FROM $this->table_name ORDER BY id DESC LIMIT 15", ARRAY_A );
 		if ( $revisr_events ) {
 			?>
 			<table class="widefat">
-				<thead>
-				    <tr>
-				        <th><?php _e( 'Event', 'revisr' ); ?></th>
-				        <th><?php _e( 'Time', 'revisr' ); ?></th>
-				    </tr>
-				</thead>
 				<tbody id="activity_content">
 				<?php
 					foreach ($revisr_events as $revisr_event) {

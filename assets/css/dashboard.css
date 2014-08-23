@@ -80,6 +80,30 @@
 	font-size: 12px;
 }
 
+/* === Recent Activity === */
+#revisr_activity {
+	padding: 0;
+	margin-top: 0px !important;
+}
+#revisr_activity table {
+	border: 0px;
+}
+#revisr_activity tr:nth-child(odd) {
+	background-color: #f9f9f9;
+}
+
+/* === Branches === */
+#branches_box {
+	margin:0px !important;
+	padding: 0px;
+}
+#branches_table {
+	border: none;
+}
+#branches_table tr:nth-child(odd) {
+	background-color: #f9f9f9;
+}
+
 /* === Site5 === */
 #site5_wrapper {
 	width: 80px;
