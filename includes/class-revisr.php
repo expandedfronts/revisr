@@ -81,7 +81,7 @@ class Revisr
 			add_action( 'views_edit-revisr_commits', array( $admin, 'custom_views' ) );
 			add_action( 'post_row_actions', array( $admin, 'custom_actions' ) );
 			add_action( 'admin_menu', array( $admin, 'menus' ), 2 );
-			add_action( 'admin_post_create_branch', array( $admin, 'create_branch' ) );
+			add_action( 'admin_post_delete_branch_form', array( $admin, 'delete_branch_form' ) );
 			add_action( 'manage_edit-revisr_commits_columns', array( $admin, 'columns' ) );
 			add_action( 'manage_revisr_commits_posts_custom_column', array( $admin, 'custom_columns' ) );
 			add_action( 'admin_enqueue_scripts', array( $admin, 'revisr_scripts' ) );
@@ -104,6 +104,8 @@ class Revisr
 		$git = new Revisr_Git();
 		add_action( 'publish_revisr_commits', array( $git, 'commit' ) );
 		add_action( 'admin_post_checkout', array( $git, 'checkout' ) );
+		add_action( 'admin_post_create_branch', array( $git, 'create_branch' ) );
+		add_action( 'admin_post_delete_branch', array( $git, 'delete_branch' ) );
 		add_action( 'admin_post_revert', array( $git, 'revert' ) );
 		add_action( 'admin_post_view_diff', array( $git, 'view_diff' ) );
 

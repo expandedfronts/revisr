@@ -165,7 +165,7 @@ class Revisr_Git
 	}
 
 	/**
-	* Checks out a new or existing branch.
+	* Checks out an existing branch.
 	* @access public
 	*/
 	public function checkout( $args ) {
@@ -181,27 +181,61 @@ class Revisr_Git
 			$branch = $args;
 		}
 		
-		//Checkout the new or existing branch.
 		Revisr_Git::run( 'reset --hard HEAD' );
-		if ( isset( $_REQUEST['new_branch'] ) && $_REQUEST['new_branch'] == 'true' ) {
-			Revisr_Git::run("checkout -b {$_REQUEST['branch']}");
-			Revisr_Admin::log("Checked out new branch: {$_REQUEST['branch']}.", "branch");
-			Revisr_Admin::notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to the new branch {$branch}.");
-			echo "<script>
-					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr&checkout=success&branch={$_REQUEST['branch']}'
-				</script>";
-			exit();
-		} else {
-			Revisr_Git::run("checkout {$branch}");
-			if ( isset( $this->options['reset_db'] ) ) {
-				$db->restore( true );
-			}
-			Revisr_Admin::log( "Checked out branch: {$_REQUEST['branch']}.", "branch" );
-			Revisr_Admin::notify(get_bloginfo() . " - Branch Changed", get_bloginfo() . " was switched to branch {$branch}.");
-			$url = get_admin_url() . "admin.php?page=revisr&branch={$branch}&checkout=success";
-			wp_redirect( $url );
+		Revisr_Git::run("checkout {$branch}");
+		
+		if ( isset( $this->options['reset_db'] ) ) {
+			$db->restore( true );
 		}
-	}	
+		$msg = sprintf( __( 'Checked out branch: %s.', 'revisr' ), $branch );
+		$email_msg = sprintf( __( '%s was switched to branch %s.', 'revisr' ), get_bloginfo(), $branch );
+		Revisr_Admin::log( $msg, "branch" );
+		Revisr_Admin::notify(get_bloginfo() . __( ' - Branch Changed', 'revisr'), $email_msg );
+		$url = get_admin_url() . "admin.php?page=revisr&branch={$branch}&checkout=success";
+		wp_redirect( $url );
+	}
+
+	/**
+	 * Creates a new branch.
+	 * @access public
+	 */
+	public function create_branch() {
+		if ( isset( $_REQUEST['branch_name'] ) && $_REQUEST['branch_name'] != '' ) {
+			$branch = $_REQUEST['branch_name'];
+			Revisr_Git::run( "branch {$branch}" );
+			$msg = sprintf( __( 'Created new branch: %s.', 'revisr' ), $branch );
+			Revisr_Admin::log( $msg, 'branch' );
+
+			if ( isset( $_REQUEST['checkout_new_branch'] ) ) {
+				$this->checkout( $branch );
+			}
+			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&create=success');
+		}
+	}
+
+	/**
+	 * Deletes an existing branch.
+	 * @access public
+	 */
+	public function delete_branch() {
+		if ( isset( $_POST['branch'] ) && $_POST['branch'] != $this->branch ) {
+			$branch = $_POST['branch'];
+			$delete = Revisr_Git::run( "branch -D {$branch}" );
+			$msg = sprintf( __( 'Deleted branch %s.', 'revisr'), $branch );
+
+			if ( isset( $_POST['delete_remote_branch'] ) ) {
+				Revisr_Git::run( "push {$this->remote} --delete {$branch}" );
+			}
+			
+			Revisr_Admin::log( $msg, 'branch' );
+			Revisr_Admin::notify( get_bloginfo() . __( 'Branch Deleted', 'revisr' ), $msg );
+		}
+		echo "
+			<script>
+					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&new_branch=success&branch={$branch}'
+			</script>";
+		exit();
+	}
 
 	/**
 	 * Discards the changes to the current working directory.
