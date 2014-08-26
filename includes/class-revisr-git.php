@@ -476,7 +476,9 @@ class Revisr_Git
 			?>
 			</tbody>
 		</table>
+		
 		<?php
+			echo '<p id="revisr-pagination">';
 			if ( $current_page != "1" ){
 				echo '<a href="#" onclick="prev();return false;">' . __( '<- Previous', 'revisr' ) .  '</a>';
 			}
@@ -484,6 +486,7 @@ class Revisr_Git
 			if ( $current_page != $last_page ){
 				echo '<a href="#" onclick="next();return false;">' . __( 'Next ->', 'revisr' ) . '</a>';
 			}
+			echo '</p>';
 			exit();
 	}
 

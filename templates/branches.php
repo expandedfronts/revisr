@@ -18,20 +18,25 @@
 				<thead>
 					<tr>
 						<th><?php _e( 'Branch', 'revisr' ); ?></th>
-						<th><?php _e( 'Actions', 'revisr' ); ?></th>
+						<th class="center-td"><?php _e( 'Commits', 'revisr' ); ?></th>
+						<th class="center-td"><?php _e( 'Actions', 'revisr' ); ?></th>
 					</tr>
 				</thead>
 					<?php
-
+						$admin  = new Revisr_Admin;
 						$output = Revisr_Git::run( 'branch' );
+
 						if ( is_array( $output ) ) {
 							foreach ($output as $key => $value){
-								$branch = substr($value, 2);
+								
+								$branch 		= substr($value, 2);
+								$num_commits 	= $admin->count_commits( $branch );
 								
 								if (substr( $value, 0, 1 ) === "*"){
 									echo "<tr>
 									<td><strong>$branch (current branch)</strong></td>
-									<td style='text-align:center;'>
+									<td class='center-td'>$num_commits</td>
+									<td class='center-td'>
 										<a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Checkout</a>
 										<a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Delete</a>
 									</td></tr>";
@@ -41,7 +46,8 @@
 									?>
 									<tr>
 									<td><?php echo $branch; ?></td>
-									<td style='text-align:center;'>
+									<td class="center-td"><?php echo $num_commits; ?></td>
+									<td class="center-td">
 										<a class='button branch-btn' href='<?php echo $checkout_url; ?>'><?php _e( 'Checkout', 'revisr' ); ?></a>
 										<a class='button branch-btn delete-branch-btn thickbox' href='<?php echo $delete_url; ?>' title='<?php _e( 'Delete Branch', 'revisr' ); ?>'><?php _e( 'Delete', 'revisr' ); ?></a>
 									</td></tr>
@@ -65,9 +71,9 @@
 					</div>
 					<div class="form-field">
 						<input id="checkout-new-branch" type="checkbox" name="checkout_new_branch" style="width: 17px;">
-						<label  id="checkout-label" for="checkout"><?php _e('Checkout new branch?'); ?></label>
+						<label  id="checkout-label" for="checkout-new-branch"><?php _e('Checkout new branch?'); ?></label>
 						<input type="hidden" name="action" value="create_branch">
-						<p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e( 'Create Branch', 'revisr' ); ?>"></p>
+						<p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e( 'Create Branch', 'revisr' ); ?>" style="width:150px;"></p>
 					</div>
 				</form>
 			</div>

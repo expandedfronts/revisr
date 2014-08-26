@@ -76,7 +76,7 @@
 #loader {
 	float: right;
 }
-#new_branch {
+#manage_branches {
 	font-size: 12px;
 }
 
@@ -114,6 +114,9 @@
 }
 #branches_table tr:nth-child(odd) {
 	background-color: #f9f9f9;
+}
+.center-td {
+	text-align: center !important;
 }
 
 /* === Site5 === */
