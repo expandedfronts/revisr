@@ -463,73 +463,73 @@ class Revisr_Git
 
 		if ( isset( $output ) ) {
 			printf( __('<br><strong>%s</strong> files were included in this commit.<br><br>', 'revisr' ), count( $output ) );
+			
+			if (isset($_POST['pagenum'])) {
+						$current_page = $_POST['pagenum'];
+					}
+					else {
+						$current_page = 1;
+					}
+					
+					$num_rows = count( $output );
+					$rows_per_page = 20;
+					$last_page = ceil( $num_rows/$rows_per_page );
+
+					if ( $current_page < 1){
+					    $current_page = 1;
+					}
+					if ( $current_page > $last_page){
+					    $current_page = $last_page;
+					}
+					
+					$offset = $rows_per_page * ($current_page - 1);
+
+					if ( ! is_array( $output ) ) {
+						_e( 'There was an error processing your request. Please try again.', 'revisr' );
+						exit();
+					}
+
+					$results = array_slice($output, $offset, $rows_per_page);
+					?>
+					<table class="widefat">
+						<thead>
+						    <tr>
+						        <th><?php _e( 'File', 'revisr'); ?></th>
+						        <th><?php _e( 'Status', 'revisr'); ?></th>
+						    </tr>
+						</thead>
+						<tbody>
+						<?php
+							//Clean up output from git status and echo the results.
+							foreach ($results as $result) {
+								$short_status = substr($result, 0, 3);
+								$file = substr($result, 2);
+								$status = Revisr_Git::get_status($short_status);
+								if ($status != "Untracked" && $status != "Deleted") {
+									echo "<tr><td><a href='" . get_admin_url() . "admin-post.php?action=view_diff&file={$file}&commit={$commit}&TB_iframe=true&width=600&height=550' title='View Diff' class='thickbox'>{$file}</a></td><td>{$status}</td></td>";
+								}
+								else {
+									echo "<tr><td>$file</td><td>$status</td></td>";
+								}					
+							}
+						?>
+						</tbody>
+					</table>
+					
+					<?php
+						echo '<p id="revisr-pagination">';
+						if ( $current_page != "1" ){
+							echo '<a href="#" onclick="prev();return false;">' . __( '<- Previous', 'revisr' ) .  '</a>';
+						}
+						printf( __( 'Page %s of %s', 'revisr' ), $current_page, $last_page ); 
+						if ( $current_page != $last_page ){
+							echo '<a href="#" onclick="next();return false;">' . __( 'Next ->', 'revisr' ) . '</a>';
+						}
+						echo '</p>';
+						exit();		
 		} else {
 			_e( '<br>No files were included in this commit.', 'revisr' );
 		}
-
-		if (isset($_POST['pagenum'])) {
-			$current_page = $_POST['pagenum'];
-		}
-		else {
-			$current_page = 1;
-		}
-		
-		$num_rows = count( $output );
-		$rows_per_page = 20;
-		$last_page = ceil( $num_rows/$rows_per_page );
-
-		if ( $current_page < 1){
-		    $current_page = 1;
-		}
-		if ( $current_page > $last_page){
-		    $current_page = $last_page;
-		}
-		
-		$offset = $rows_per_page * ($current_page - 1);
-
-		if ( ! is_array( $output ) ) {
-			_e( 'There was an error processing your request. Please try again.', 'revisr' );
-			exit();
-		}
-
-		$results = array_slice($output, $offset, $rows_per_page);
-		?>
-		<table class="widefat">
-			<thead>
-			    <tr>
-			        <th><?php _e( 'File', 'revisr'); ?></th>
-			        <th><?php _e( 'Status', 'revisr'); ?></th>
-			    </tr>
-			</thead>
-			<tbody>
-			<?php
-				//Clean up output from git status and echo the results.
-				foreach ($results as $result) {
-					$short_status = substr($result, 0, 3);
-					$file = substr($result, 2);
-					$status = Revisr_Git::get_status($short_status);
-					if ($status != "Untracked" && $status != "Deleted") {
-						echo "<tr><td><a href='" . get_admin_url() . "admin-post.php?action=view_diff&file={$file}&commit={$commit}&TB_iframe=true&width=600&height=550' title='View Diff' class='thickbox'>{$file}</a></td><td>{$status}</td></td>";
-					}
-					else {
-						echo "<tr><td>$file</td><td>$status</td></td>";
-					}					
-				}
-			?>
-			</tbody>
-		</table>
-		
-		<?php
-			echo '<p id="revisr-pagination">';
-			if ( $current_page != "1" ){
-				echo '<a href="#" onclick="prev();return false;">' . __( '<- Previous', 'revisr' ) .  '</a>';
-			}
-			printf( __( 'Page %s of %s', 'revisr' ), $current_page, $last_page ); 
-			if ( $current_page != $last_page ){
-				echo '<a href="#" onclick="next();return false;">' . __( 'Next ->', 'revisr' ) . '</a>';
-			}
-			echo '</p>';
-			exit();
 	}
 
 	/**
