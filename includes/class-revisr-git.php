@@ -220,7 +220,7 @@ class Revisr_Git
 	public function delete_branch() {
 		if ( isset( $_POST['branch'] ) && $_POST['branch'] != $this->branch ) {
 			$branch = $_POST['branch'];
-			$delete = Revisr_Git::run( "branch -D {$branch}" );
+			Revisr_Git::run( "branch -D {$branch}" );
 			$msg = sprintf( __( 'Deleted branch %s.', 'revisr'), $branch );
 
 			if ( isset( $_POST['delete_remote_branch'] ) ) {
@@ -459,9 +459,12 @@ class Revisr_Git
 			foreach ( $files as $file ) {
 			    $output = unserialize( $file );
 			}
+		}
+
+		if ( isset( $output ) ) {
 			printf( __('<br><strong>%s</strong> files were included in this commit.<br><br>', 'revisr' ), count( $output ) );
 		} else {
-			_e( '<br>No files will be included in this commit.', 'revisr' );
+			_e( '<br>No files were included in this commit.', 'revisr' );
 		}
 
 		if (isset($_POST['pagenum'])) {
