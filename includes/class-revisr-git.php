@@ -229,11 +229,10 @@ class Revisr_Git
 			
 			Revisr_Admin::log( $msg, 'branch' );
 			Revisr_Admin::notify( get_bloginfo() . __( 'Branch Deleted', 'revisr' ), $msg );
-		}
-		echo "
-			<script>
+			echo "<script>
 					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&new_branch=success&branch={$branch}'
 			</script>";
+		}
 		exit();
 	}
 
@@ -460,12 +459,10 @@ class Revisr_Git
 			foreach ( $files as $file ) {
 			    $output = unserialize( $file );
 			}
+			printf( __('<br><strong>%s</strong> files were included in this commit.<br><br>', 'revisr' ), count( $output ) );
 		} else {
-			$output = 0;
+			_e( '<br>No files will be included in this commit.', 'revisr' );
 		}
-
-		printf( __('<br><strong>%s</strong> files were included in this commit.<br><br>', 'revisr' ), count( $output ) );
-		
 
 		if (isset($_POST['pagenum'])) {
 			$current_page = $_POST['pagenum'];
