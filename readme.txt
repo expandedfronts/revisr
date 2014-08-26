@@ -100,6 +100,17 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 == Changelog ==
 
+= 1.6.2 =
+* Added dedicated page for managing branches
+* Improvements to settings page
+* Small UI improvements
+
+= 1.6.1 =
+* Small UI improvements
+* Changed Recent Activity to show 15 items
+* Fixed bug with multi-site installations
+* Fixed bug with reverting files
+
 = 1.6 =
 * Added internationalization support
 * Switched to human-friendly time diffs for Recent Activity

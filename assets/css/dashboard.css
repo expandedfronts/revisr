@@ -105,6 +105,12 @@
 #checkout-label {
 	display: inline;
 }
+#revisr_activity_no_results {
+	text-align: center;
+	padding-bottom: 10px;
+}
+
+/* === Branches === */
 #branches_box {
 	margin:0px !important;
 	padding: 0px;

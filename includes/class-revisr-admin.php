@@ -53,7 +53,7 @@ class Revisr_Admin
 		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
 			wp_enqueue_style( 'revisr_dashboard_css' );
 			wp_enqueue_style( 'thickbox' );
-			wp_enqueue_script( 'thickbox' );			
+			wp_enqueue_script( 'thickbox' );
 		}
 
 		//Enqueue styles and scripts on the Revisr staging area.
@@ -457,7 +457,8 @@ class Revisr_Admin
 	 */
 	public function recent_activity() {
 		global $wpdb;
-		$revisr_events = $wpdb->get_results( "SELECT id, time, message FROM $this->table_name ORDER BY id DESC LIMIT 20", ARRAY_A );
+		$revisr_events = $wpdb->get_results( "SELECT id, time, message FROM $this->table_name ORDER BY id DESC LIMIT 15", ARRAY_A );
+
 		if ( $revisr_events ) {
 			?>
 			<table class="widefat">
@@ -473,7 +474,7 @@ class Revisr_Admin
 			</table>
 			<?php		
 		} else {
-			_e( '<p>Your recent activity will show up here.</p>', 'revisr' );
+			_e( '<p id="revisr_activity_no_results">Your recent activity will show up here.</p>', 'revisr' );
 		}
 		exit();
 	}
@@ -506,6 +507,31 @@ class Revisr_Admin
 			</form>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Gets user options and preferences in a single array.
+	 * @access public
+	 */
+	public static function options() {
+		$old	 	= get_option( 'revisr_settings' );
+		if ( ! $old ) {
+			$old = array();
+		}
+		$general 	= get_option( 'revisr_general_settings' );
+		if ( ! $general ) {
+			$general = array();
+		}
+		$remote 	= get_option( 'revisr_remote_settings' );
+		if ( ! $remote ) {
+			$remote = array();
+		}
+		$database 	= get_option( 'revisr_database_settings' );
+		if ( ! $database ) {
+			$database = array();
+		}
+		$final = array_merge( $old, $general, $remote, $database );
+		return $final;
 	}
 
 	/**

@@ -99,7 +99,6 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 					</div> <!-- .postbox -->
 
 					<div class="postbox">
-					
 						<h3><?php _e('Branches', 'revisr'); ?><span id="manage_branches"> (<a href="<?php echo get_admin_url(); ?>admin.php?page=revisr_branches" title="Manage Branches"><?php _e( 'Manage', 'revisr' ); ?></a>)</span></h3>
 						<div id="branches_box" class="inside">
 							<table id="branches_table" class="widefat">

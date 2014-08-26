@@ -62,7 +62,7 @@ class Revisr_DB
 		$this->dir 			= getcwd();
 		$this->git 			= new Revisr_Git;
 		$this->sql_file 	= 'revisr_db_backup.sql';
-		$this->options 		= get_option( 'revisr_settings' );
+		$this->options 		= Revisr_Admin::options();
 		$this->upload_dir 	= wp_upload_dir();
 		$this->check_exec();
 
