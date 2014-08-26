@@ -40,7 +40,7 @@ class Revisr_Git
 		
 		$this->branch 	= Revisr_Git::current_branch();
 		$this->dir 		= getcwd();
-		$this->options  = get_option( 'revisr_settings' );
+		$this->options  = Revisr_Admin::options();
 
 		if ( isset( $this->options['remote_name']) && $this->options['remote_name'] != '' ) {
 			$this->remote = $this->options['remote_name'];

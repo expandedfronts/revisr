@@ -463,7 +463,7 @@ class Revisr_Admin
 			</table>
 			<?php		
 		} else {
-			_e( '<p>Your recent activity will show up here.</p>', 'revisr' );
+			_e( '<p id="revisr_activity_no_results">Your recent activity will show up here.</p>', 'revisr' );
 		}
 		exit();
 	}
@@ -494,6 +494,31 @@ class Revisr_Admin
 			<p style="font-style:italic;color:#BBB;text-align:center;"><?php _e( 'New branch will be checked out.', 'revisr' ); ?></p>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Gets user options and preferences in a single array.
+	 * @access public
+	 */
+	public static function options() {
+		$old	 	= get_option( 'revisr_settings' );
+		if ( ! $old ) {
+			$old = array();
+		}
+		$general 	= get_option( 'revisr_general_settings' );
+		if ( ! $general ) {
+			$general = array();
+		}
+		$remote 	= get_option( 'revisr_remote_settings' );
+		if ( ! $remote ) {
+			$remote = array();
+		}
+		$database 	= get_option( 'revisr_database_settings' );
+		if ( ! $database ) {
+			$database = array();
+		}
+		$final = array_merge( $old, $general, $remote, $database );
+		return $final;
 	}
 
 	/**

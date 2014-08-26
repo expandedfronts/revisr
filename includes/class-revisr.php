@@ -39,7 +39,6 @@ class Revisr
 	public function __construct() {
 		global $wpdb;
 		$this->wpdb = $wpdb;
-		$this->options 		= get_option( 'revisr_settings' );
 		$this->plugin 		= plugin_basename( __FILE__ );
 		$this->table_name 	= $this->wpdb->prefix . 'revisr';
 
@@ -70,7 +69,8 @@ class Revisr
 	public function admin_hooks() {
 		$admin = new Revisr_Admin();
 		if ( is_super_admin() ) {
-			$plugin = $this->plugin;
+			$plugin 		= $this->plugin;
+			$this->options 	= Revisr_Admin::options();
 			add_action( 'init', array( $admin, 'revisr_post_types' ) );
 			add_action( 'admin_notices', array( $admin, 'site5_notice' ) );
 			add_action( 'load-edit.php', array( $admin, 'default_views' ) );

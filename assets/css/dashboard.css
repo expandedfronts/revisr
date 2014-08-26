@@ -91,6 +91,10 @@
 #revisr_activity tr:nth-child(odd) {
 	background-color: #f9f9f9;
 }
+#revisr_activity_no_results {
+	text-align: center;
+	padding-bottom: 10px;
+}
 
 /* === Branches === */
 #branches_box {
