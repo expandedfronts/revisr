@@ -102,6 +102,7 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 = 1.6.2 =
 * Added dedicated page for managing branches
+* Database backups from the dashboard now automatically create new commits
 * Improvements to settings page
 * Small UI improvements
 

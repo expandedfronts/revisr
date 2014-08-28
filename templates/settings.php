@@ -17,6 +17,7 @@ if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" )
 	chdir(ABSPATH);
 	file_put_contents(".gitignore", $options['gitignore']);
 	
+	$error = '';
 	if ( isset( $options['username'] ) && $options['username'] != "" ) {
 		Revisr_Git::run('config user.name "' . $options['username'] . '"');
 	}
@@ -37,24 +38,19 @@ if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" )
 
 <div class="wrap">
 	<div id="revisr_settings">
-		<h2><?php _e( 'Revisr Settings', 'revisr' ); ?></h2>
+		<h2><?php _e( 'Revisr - Settings', 'revisr' ); ?></h2>
 		<?php
-			if ( isset( $_GET['error'] ) && $_GET['error'] == "push" && $_GET['settings-updated'] != "true") {
-				_e( '<div id="revisr_alert" class="error"><p>There was an error updating the .gitignore on the remote repository.<br>
-				The remote may be ahead, or the connection settings below may be incorrect.</p></div>', 'revisr' );
-			}
+			$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general_settings';
 			if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" ) {
 				_e( '<div id="revisr_alert" class="updated"><p>Settings updated successfully.</p></div>', 'revisr' );
 			}
-
-			$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general_settings';
 		?>
 		<h2 class="nav-tab-wrapper">
 		    <a href="?page=revisr_settings&tab=general_settings" class="nav-tab <?php echo $active_tab == 'general_settings' ? 'nav-tab-active' : ''; ?>">General</a>
-		    <a href="?page=revisr_settings&tab=remote_settings" class="nav-tab <?php echo $active_tab == 'remote_settings' ? 'nav-tab-active' : ''; ?>">Remotes</a>
+		    <a href="?page=revisr_settings&tab=remote_settings" class="nav-tab <?php echo $active_tab == 'remote_settings' ? 'nav-tab-active' : ''; ?>">Remote Repository</a>
 		    <a href="?page=revisr_settings&tab=database_settings" class="nav-tab <?php echo $active_tab == 'database_settings' ? 'nav-tab-active' : ''; ?>">Database</a>
 		</h2>
-		<form method="post" action="options.php">
+		<form class="settings-form" method="post" action="options.php">
 			<?php
 
 				//Decides which settings to display.

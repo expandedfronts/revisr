@@ -122,7 +122,8 @@ class Revisr
 		add_action( 'wp_ajax_pull', array( $git, 'pull' ) );
 		add_action( 'wp_ajax_view_diff', array( $git, 'view_diff' ) );
 		add_action( 'wp_ajax_pending_files', array( $git, 'pending_files' ) );
-		add_action( 'wp_ajax_committed_files', array( $git, 'committed_files' ) );	
+		add_action( 'wp_ajax_committed_files', array( $git, 'committed_files' ) );
+		add_action( 'wp_ajax_verify_remote', array( $git, 'verify_remote' ) );
 	}
 	
 	/**
@@ -173,10 +174,19 @@ class Revisr
 		if ( ! function_exists( 'exec' ) ) {
 			$error .= __( '<p><strong>WARNING:</strong> Your server does not appear to support php exec() and/or passthru(). <br> 
 			These functions are necessary for Revisr to work correctly. Contact your web host if you\'re not sure how to activate these functions.</p>', 'revisr' );
+			return $error;
 		}
+
 		if ( Revisr_Git::run( 'version' ) === false || Revisr_Git::run( 'status' ) === false ) {
 			$error .= __( '<p><strong>WARNING:</strong> No Git repository detected. Revisr requires that Git be installed on the server and the parent WordPress installation be in the root directory of a Git repository.</p>', 'revisr' );
+			return $error;
 		}
-		return $error;
+
+		$top_level = Revisr_Git::run( 'rev-parse --show-toplevel' );
+		$git_dir 	= $top_level[0] . '/.git/';
+		if ( ! is_writable( $git_dir ) ) {
+			$error .= __( '<p><strong>WARNING:</strong> Revisr cannot write to the ".git/" directory.<br>Please make sure that write permissions are set for this directory. The recommended settings are 755 for directories, and 644 for files.');
+			return $error;
+		}		
 	}
 }

@@ -21,7 +21,7 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 <div class="wrap">
 	
 	<div id="icon-options-general" class="icon32"></div>
-	<h2><?php _e( 'Revisr Dashboard', 'revisr' ); ?></h2>
+	<h2><?php _e( 'Revisr - Dashboard', 'revisr' ); ?></h2>
 	
 	<?php
 		$error = Revisr::check_compatibility();

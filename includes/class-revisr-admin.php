@@ -46,14 +46,16 @@ class Revisr_Admin
 		wp_register_script( 'revisr_dashboard', plugins_url() . '/revisr/assets/js/dashboard.js', 'jquery',  '07052014', true );
 		wp_register_script( 'revisr_staging', plugins_url() . '/revisr/assets/js/staging.js', 'jquery', '07052014', false );
 		wp_register_script( 'revisr_committed', plugins_url() . '/revisr/assets/js/committed.js', 'jquery', '07052014', false );
+		wp_register_script( 'revisr_settings', plugins_url() . '/revisr/assets/js/settings.js', 'jquery', '08272014', true );
 
 		$allowed_pages = array( 'revisr', 'revisr_settings', 'revisr_branches' );
 		
-		//Enqueue styles and scripts on the Revisr dashboard.
+		//Enqueue common styles and scripts.
 		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
 			wp_enqueue_style( 'revisr_dashboard_css' );
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
+			wp_enqueue_script( 'revisr_settings' );
 		}
 
 		//Enqueue styles and scripts on the Revisr staging area.
@@ -484,7 +486,7 @@ class Revisr_Admin
 	 * @access public
 	 */
 	public function delete_branch_form() {
-		$styles_url = get_admin_url() . "load-styles.php?c=0&dir=ltr&load=dashicons,admin-bar,wp-admin,buttons,wp-auth-check&ver=3.9.1";
+		$styles_url = get_admin_url() . "load-styles.php?c=0&dir=ltr&load=dashicons,admin-bar,wp-admin,buttons,wp-auth-check";
 		?>
 		<link href="<?php echo $styles_url; ?>" rel="stylesheet" type="text/css">
 		<div class="container" style="padding:10px">
@@ -495,15 +497,9 @@ class Revisr_Admin
 				<label for="delete_remote_branch"><?php _e( 'Also delete this branch from the remote repository.', 'revisr' ); ?></label>
 				<input type="hidden" name="action" value="delete_branch">
 				<input type="hidden" name="branch" value="<?php echo $_GET['branch']; ?>">
-				<button class="button button-primary" style="
-					background-color: #EB5A35;
-					height: 30px;
-					width: 45%;
-					margin-top:15px;
-					border-radius: 4px;
-					border: 1px #972121 solid;
-					color: #fff;"><?php _e( 'Delete Branch', 'revisr' ); ?>
-				</button>
+				<p id="delete-branch-submit" style="margin:0;padding:0;text-align:center;">
+					<button id="confirm-delete-branch-btn" class="button button-primary" style="background-color:#EB5A35;height:30px;width:45%;margin-top:15px;border-radius:4px;border:1px #972121 solid;color:#fff;"><?php _e( 'Delete Branch', 'revisr' ); ?></button>
+				</p>
 			</form>
 		</div>
 		<?php
@@ -542,7 +538,7 @@ class Revisr_Admin
 	 */
 	public static function log( $message, $event ) {
 		global $wpdb;
-		$time = current_time( 'mysql' );
+		$time = current_time( 'mysql', 1 );
 		$table = $wpdb->prefix . 'revisr';
 		$wpdb->insert(
 			"$table",

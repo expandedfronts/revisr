@@ -665,6 +665,21 @@ class Revisr_Git
 	}
 
 	/**
+	 * Checks to see if the provided URL for a remote repository is valid.
+	 * @access public
+	 */
+	public function verify_remote() {
+		//"Ping" the remote repository to verify that it exists.
+		$ping = Revisr_Git::run( "ls-remote " . $_REQUEST['remote'] . " HEAD" );
+		if ( $ping === false ) {
+			_e( 'Remote not found...', 'revisr' );
+		} else {
+			_e( 'Success!', 'revisr' );
+		}
+		exit();
+	}
+	
+	/**
 	 * Returns the commit hash for a specific commit.
 	 * @access public
 	 * @param int $post_id The ID of the associated post.

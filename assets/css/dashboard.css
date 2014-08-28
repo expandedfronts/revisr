@@ -124,7 +124,44 @@
 .center-td {
 	text-align: center !important;
 }
-
+#add-branch-box {
+	max-width: 280px;
+}
+#add-branch-title {
+	font-size: 14px;
+	padding: 8px 12px;
+	margin: 0;
+	line-height: 1.4;
+}
+#add-branch-submit {
+	text-align: center;
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+/* === Settings === */
+.settings-form {
+	margin-left: 15px;
+}
+#verify-remote {
+	margin-left: 10px;
+	font-size: 11px;
+}
+.verify-remote-success {
+	background-color: #5cb85c;
+	padding: 4px;
+	border-radius: 4px;
+	color: #fff;
+	font-size: 10px;
+	margin-left: 10px;
+}
+.verify-remote-error {
+	background-color: #AFAFAF;
+	padding: 4px;
+	border-radius: 4px;
+	color: #fff;
+	font-size: 10px;
+	margin-left: 10px;
+}
 /* === Site5 === */
 #site5_wrapper {
 	width: 80px;
@@ -142,6 +179,9 @@
 	margin-top: -5px;
 }
 #revisr_alert {
+	margin-top: 20px;
+}
+#revisr_error {
 	margin-top: 20px;
 }
 #poststuff {

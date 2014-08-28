@@ -53,7 +53,7 @@ class Revisr_Settings
 
 		add_settings_section(
 			'revisr_remote_settings',
-			'Remote Settings',
+			'Remote Repository Settings',
 			array( $this, 'revisr_remote_settings_callback' ),
 			'revisr_remote_settings'
 		);
@@ -186,7 +186,7 @@ class Revisr_Settings
 	public function username_callback() {
 		printf(
             '<input type="text" id="username" name="revisr_general_settings[username]" value="%s" class="regular-text" />
-            <br><span class="description">Username to commit with in git.</span>',
+            <br><span class="description">Username to commit with in Git.</span>',
             isset( $this->options['username'] ) ? esc_attr( $this->options['username']) : ''
         );
 	}
@@ -194,7 +194,7 @@ class Revisr_Settings
 	public function email_callback() {
 		printf(
             '<input type="text" id="email" name="revisr_general_settings[email]" value="%s" class="regular-text" />
-            <br><span class="description">Used for notifications and git.</span>',
+            <br><span class="description">Used for notifications and Git.</span>',
             isset( $this->options['email'] ) ? esc_attr( $this->options['email']) : ''
         );
 	}
@@ -202,7 +202,7 @@ class Revisr_Settings
 	public function gitignore_callback() {
 		printf(
             '<textarea id="gitignore" name="revisr_general_settings[gitignore]" rows="6" />%s</textarea>
-            <br><span class="description">Add files or directories to be ignored here, one per line.</span>',
+            <br><span class="description">Add files or directories to be ignored here, one per line. <br>This will update the ".gitignore" file in the root directory of the repository.</span>',
             isset( $this->options['gitignore'] ) ? esc_attr( $this->options['gitignore']) : ''
 		);
 	}
@@ -224,11 +224,20 @@ class Revisr_Settings
 	}
 
 	public function remote_url_callback() {
+		
+		$check_remote = Revisr_Git::run( 'config --get remote.origin.url' );
+
+		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != '' ) {
+			$remote_url = esc_attr( $this->options['remote_url'] );
+		} elseif ( $check_remote != false ) {
+			$remote_url = $check_remote[0];
+		} else {
+			$remote_url = '';
+		}
 		printf(
-			'<input type="text" id="remote_url" name="revisr_remote_settings[remote_url]" value="%s" class="regular-text" placeholder="https://user:pass@host.com/user/example.git" />
+			'<input type="text" id="remote_url" name="revisr_remote_settings[remote_url]" value="%s" class="regular-text" placeholder="https://user:pass@host.com/user/example.git" /><span id="verify-remote"></span>
 			<br><span class="description">Useful if you need to authenticate over "https://" instead of SSH, or if the remote has not already been set through Git.</span>',
-			isset( $this->options['remote_url'] ) ? esc_attr( $this->options['remote_url']) : ''
-			);
+			$remote_url );
 	}
 
 	public function auto_push_callback() {

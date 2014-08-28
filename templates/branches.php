@@ -10,7 +10,7 @@
 ?>
 
 <div class="wrap">
-	<h2><?php _e( 'Branches', 'revisr' ); ?></h2>
+	<h2><?php _e( 'Revisr - Branches', 'revisr' ); ?></h2>
 	<div id="col-container" class="revisr_col_container">
 		<div id="col-right">
 			<form id="revisr_branch_form">
@@ -57,25 +57,34 @@
 						}
 
 					?>
+					<tfoot>
+						<tr>
+							<th><?php _e( 'Branch', 'revisr' ); ?></th>
+							<th class="center-td"><?php _e( 'Commits', 'revisr' ); ?></th>
+							<th class="center-td"><?php _e( 'Actions', 'revisr' ); ?></th>
+						</tr>
+					</tfoot>
 				</table>
 			</form>
 		</div><!-- /#col-right -->
 		<div id="col-left">
-			<div class="form-wrap">
-				<h3><?php _e( 'Add New Branch', 'revisr' ); ?>
-				<form id="add_branch" method="post" action="<?php echo get_admin_url() . 'admin-post.php'; ?>">
-					<div class="form-field form-required">
-						<label for="tag-name"><?php _e( 'Name', 'revisr' ); ?></label>
-						<input name="branch_name" id="branch-name" type="text" value="" size="40" aria-required="true">
-						<p><?php _e( 'The name of the new branch.', 'revisr' ); ?></p>
-					</div>
-					<div class="form-field">
-						<input id="checkout-new-branch" type="checkbox" name="checkout_new_branch" style="width: 17px;">
-						<label  id="checkout-label" for="checkout-new-branch"><?php _e('Checkout new branch?'); ?></label>
-						<input type="hidden" name="action" value="create_branch">
-						<p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e( 'Create Branch', 'revisr' ); ?>" style="width:150px;"></p>
-					</div>
-				</form>
+			<div id="add-branch-box" class="postbox">
+				<h3 id="add-branch-title"><?php _e( 'Add New Branch', 'revisr' ); ?></h3>
+				<div class="inside">
+					<form id="add_branch" method="post" action="<?php echo get_admin_url() . 'admin-post.php'; ?>">
+						<div class="form-field form-required">
+							<label for="tag-name"><strong><?php _e( 'Name', 'revisr' ); ?></strong></label>
+							<input name="branch_name" id="branch-name" type="text" value="" size="40" aria-required="true">
+							<p class="description"><?php _e( 'The name of the new branch.', 'revisr' ); ?></p><br>
+						</div>
+						<div class="form-field">
+							<input id="checkout-new-branch" type="checkbox" name="checkout_new_branch" style="width: 17px;">
+							<label  id="checkout-label" for="checkout-new-branch"><?php _e('Checkout new branch?'); ?></label>
+							<input type="hidden" name="action" value="create_branch">
+							<p id="add-branch-submit" class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e( 'Create Branch', 'revisr' ); ?>" style="width:150px;"></p>
+						</div>
+					</form>
+				</div>
 			</div>
 
 		</div><!-- /#col-left-->
