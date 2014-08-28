@@ -167,8 +167,10 @@ class Revisr_Git
 	/**
 	* Checks out an existing branch.
 	* @access public
+	* @param string  $args 			The branch to checkout.
+	* @param boolean $new_branch 	Whether the branch being checked out is a new branch.
 	*/
-	public function checkout( $args ) {
+	public function checkout( $args, $new_branch = false ) {
 		if ( isset( $this->options['reset_db'] ) ) {
 			$db = new Revisr_DB();
 			$db->backup();
@@ -184,7 +186,7 @@ class Revisr_Git
 		Revisr_Git::run( 'reset --hard HEAD' );
 		Revisr_Git::run("checkout {$branch}");
 		
-		if ( isset( $this->options['reset_db'] ) ) {
+		if ( isset( $this->options['reset_db'] ) && $new_branch === false ) {
 			$db->restore( true );
 		}
 		$msg = sprintf( __( 'Checked out branch: %s.', 'revisr' ), $branch );
@@ -207,9 +209,9 @@ class Revisr_Git
 			Revisr_Admin::log( $msg, 'branch' );
 
 			if ( isset( $_REQUEST['checkout_new_branch'] ) ) {
-				$this->checkout( $branch );
+				$this->checkout( $branch, true );
 			}
-			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&create=success');
+			wp_redirect( get_admin_url() . "admin.php?page=revisr_branches&status=create_success&branch={$branch}" );
 		}
 	}
 
@@ -230,7 +232,7 @@ class Revisr_Git
 			Revisr_Admin::log( $msg, 'branch' );
 			Revisr_Admin::notify( get_bloginfo() . __( 'Branch Deleted', 'revisr' ), $msg );
 			echo "<script>
-					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&new_branch=success&branch={$branch}'
+					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_success&branch={$branch}'
 			</script>";
 		}
 		exit();

@@ -11,6 +11,22 @@
 
 <div class="wrap">
 	<h2><?php _e( 'Revisr - Branches', 'revisr' ); ?></h2>
+	<?php 
+		if ( isset( $_GET['status'] ) && isset( $_GET['branch'] ) ) {
+			switch ( $_GET['status'] ) {
+				case "create_success":
+					$msg = sprintf( __( 'Successfully created branch: %s.', 'revisr' ), $_GET['branch'] );
+					echo '<div id="revisr-alert" class="updated"><p>' . $msg . '</p></div>';
+					break;
+				case "delete_success":
+					$msg = sprintf( __( 'Successfully deleted branch: %s.', 'revisr' ), $_GET['branch'] );
+					echo '<div id="revisr-error" class="error"><p>' . $msg . '</p></div>';
+					break;
+				default:
+					//Do nothing.
+			}
+		}
+	?>
 	<div id="col-container" class="revisr_col_container">
 		<div id="col-right">
 			<form id="revisr_branch_form">

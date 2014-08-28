@@ -167,19 +167,20 @@ class Revisr_DB
 
 	/**
 	 * Commits the database to the repository and pushes if needed.
-	 * @access private
+	 * @access public
 	 * @param boolean $insert_post Whether to insert a new commit custom_post_type.
 	 */
-	private function commit_db( $insert_post = false ) {
-		$commit_msg = __( 'Backed up the database with Revisr.', 'revisr' );
+	public function commit_db( $insert_post = false ) {
+		$commit_msg = escapeshellarg( __( 'Backed up the database with Revisr.', 'revisr' ) );
 		$file 	= $this->upload_dir['basedir'] . '/' . $this->sql_file;
 		$add 	= Revisr_Git::run( "add {$file}" );
-		$commit = Revisr_Git::run( 'commit -m "' . $commit_msg . '"' );
+		$commit = Revisr_Git::run( "commit -m $commit_msg" );
 
 		if ( $add === false || $commit === false ) {
+			echo "Error !";
+			exit();
 			$error = __( 'There was an error committing the database.', 'revisr' );
 			$this->maybe_return( $error );
-			exit();
 		}
 
 		//Insert the corresponding post if necessary.

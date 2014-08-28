@@ -28,7 +28,10 @@ if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" )
 	}
 
 	Revisr_Git::run("add .gitignore");
-	Revisr_Git::run("commit -m 'Updated .gitignore'");
+	$commit_msg = __( 'Updated .gitignore.', 'revisr' );
+	Revisr_Git::run("commit -m \"$commit_msg\"");
+
+	$git->auto_push();
 
 	chdir( $git->dir );
 }
