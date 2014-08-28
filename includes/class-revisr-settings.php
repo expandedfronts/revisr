@@ -200,10 +200,19 @@ class Revisr_Settings
 	}
 
 	public function gitignore_callback() {
+		chdir( ABSPATH );
+		if ( isset( $this->options['gitignore'] ) ) {
+			$gitignore = $this->options['gitignore'];
+		} elseif ( file_exists( '.gitignore' ) ) {
+			$gitignore = file_get_contents( '.gitignore' );
+		} else {
+			$gitignore = '';
+		}
+
 		printf(
             '<textarea id="gitignore" name="revisr_general_settings[gitignore]" rows="6" />%s</textarea>
             <br><span class="description">Add files or directories to be ignored here, one per line. <br>This will update the ".gitignore" file in the root directory of the repository.</span>',
-            isset( $this->options['gitignore'] ) ? esc_attr( $this->options['gitignore']) : ''
+            $gitignore
 		);
 	}
 	

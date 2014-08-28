@@ -57,8 +57,8 @@ class Revisr_Git
 	 * @return Returns an array of output if successful, or false on failure.
 	 */
 	public static function run( $args, $return_error = false ) {
-		$dir = getcwd();
 		$cmd = "git $args";
+		$dir = getcwd();
 		chdir( ABSPATH );
 		exec( $cmd, $output, $return );
 		chdir( $dir );

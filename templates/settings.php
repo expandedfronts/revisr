@@ -11,13 +11,12 @@
 if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" ) {
 
 	$git = new Revisr_Git;
-	
 	$options = Revisr_Admin::options();
 	
-	chdir(ABSPATH);
-	file_put_contents(".gitignore", $options['gitignore']);
-	
-	$error = '';
+	if ( isset( $options['gitignore'] ) ) {
+		chdir( ABSPATH );
+		file_put_contents( ".gitignore", $options['gitignore'] );
+	}
 	if ( isset( $options['username'] ) && $options['username'] != "" ) {
 		Revisr_Git::run('config user.name "' . $options['username'] . '"');
 	}

@@ -91,7 +91,6 @@ class Revisr_DB
 	/**
 	 * Backs up the database.
 	 * @access public
-	 * @param boolean $insert_post Whether to insert a new post.
 	 */
 	public function backup() {
 		
@@ -184,7 +183,7 @@ class Revisr_DB
 		}
 
 		//Insert the corresponding post if necessary.
-		if ( $insert_post = true ) {
+		if ( $insert_post === true ) {
 			$post = array(
 				'post_title' 	=> $commit_msg,
 				'post_content' 	=> '',
