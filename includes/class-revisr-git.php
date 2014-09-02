@@ -446,92 +446,40 @@ class Revisr_Git
 	}
 
 	/**
-	 * Shows the files that were added in the given commit.
+	 * Shows the files that were added in a given commit.
 	 * @access public
 	 */
 	public function committed_files() {
-		check_ajax_referer('committed_nonce', 'security');
-		if (get_post_type($_POST['id']) != "revisr_commits") {
+		if ( get_post_type( $_POST['id'] ) != 'revisr_commits' ) {
 			exit();
 		}
-		$commit = Revisr_Git::get_hash($_POST['id']);
-		$files = get_post_custom_values( 'committed_files', $_POST['id'] );
+		check_ajax_referer( 'committed_nonce', 'security' );
 
-		if ( is_array( $files ) ) {
-			foreach ( $files as $file ) {
-			    $output = unserialize( $file );
+		$committed_files = get_post_custom_values( 'committed_files', $_POST['id'] );
+		if ( is_array( $committed_files ) ) {
+			foreach ( $committed_files as $file ) {
+				$output = unserialize( $file );
 			}
 		}
 
 		if ( isset( $output ) ) {
-			printf( __('<br><strong>%s</strong> files were included in this commit.<br><br>', 'revisr' ), count( $output ) );
-			
-			if (isset($_POST['pagenum'])) {
-						$current_page = $_POST['pagenum'];
-					}
-					else {
-						$current_page = 1;
-					}
-					
-					$num_rows = count( $output );
-					$rows_per_page = 20;
-					$last_page = ceil( $num_rows/$rows_per_page );
+			printf( __('<br><strong>%s</strong> files were included in this commit. Double-click files marked as "Modified" to view the changes in a diff.', 'revisr' ), count( $output ) );
 
-					if ( $current_page < 1){
-					    $current_page = 1;
-					}
-					if ( $current_page > $last_page){
-					    $current_page = $last_page;
-					}
+			echo '<br><br><select id="committed" multiple="multiple" size="6">';
+				foreach ( $output as $result ) {
+					$short_status = substr( $result, 0, 3 );
+					$file = substr($result, 2);
+					$status = Revisr_Git::get_status( $short_status );
 					
-					$offset = $rows_per_page * ($current_page - 1);
+					printf( '<option class="committed" value="%s">%s [%s]</option>', $result, $file, $status );	
 
-					if ( ! is_array( $output ) ) {
-						_e( 'There was an error processing your request. Please try again.', 'revisr' );
-						exit();
-					}
-
-					$results = array_slice($output, $offset, $rows_per_page);
-					?>
-					<table class="widefat">
-						<thead>
-						    <tr>
-						        <th><?php _e( 'File', 'revisr'); ?></th>
-						        <th><?php _e( 'Status', 'revisr'); ?></th>
-						    </tr>
-						</thead>
-						<tbody>
-						<?php
-							//Clean up output from git status and echo the results.
-							foreach ($results as $result) {
-								$short_status = substr($result, 0, 3);
-								$file = substr($result, 2);
-								$status = Revisr_Git::get_status($short_status);
-								if ($status != "Untracked" && $status != "Deleted") {
-									echo "<tr><td><a href='" . get_admin_url() . "admin-post.php?action=view_diff&file={$file}&commit={$commit}&TB_iframe=true&width=600&height=550' title='View Diff' class='thickbox'>{$file}</a></td><td>{$status}</td></td>";
-								}
-								else {
-									echo "<tr><td>$file</td><td>$status</td></td>";
-								}					
-							}
-						?>
-						</tbody>
-					</table>
-					
-					<?php
-						echo '<p id="revisr-pagination">';
-						if ( $current_page != "1" ){
-							echo '<a href="#" onclick="prev();return false;">' . __( '<- Previous', 'revisr' ) .  '</a>';
-						}
-						printf( __( 'Page %s of %s', 'revisr' ), $current_page, $last_page ); 
-						if ( $current_page != $last_page ){
-							echo '<a href="#" onclick="next();return false;">' . __( 'Next ->', 'revisr' ) . '</a>';
-						}
-						echo '</p>';
-						exit();		
+				}
+			echo '</select>';
 		} else {
-			_e( '<br>No files were included in this commit.', 'revisr' );
+			_e( 'No files were included in this commit.', 'revisr' );
 		}
+
+		exit();
 	}
 
 	/**

@@ -1,39 +1,7 @@
-var page = 1;
-
-function next()
-{
-	var next_page = ++page;
-
-	var data = {
-		action: 'committed_files',
-		pagenum: next_page,
-		id: committed_vars.post_id,
-		security: committed_vars.ajax_nonce
-	};	
-	jQuery.post(ajaxurl, data, function(response) {
-		document.getElementById('committed_files_result').innerHTML = response;
-	});		
-}
-
-function prev()
-{
-	var prev_page = --page;
-	var data = {
-		action: 'committed_files',
-		pagenum: prev_page,
-		id: committed_vars.post_id,
-		security: committed_vars.ajax_nonce
-	};
-	jQuery.post(ajaxurl, data, function(response) {
-		document.getElementById('committed_files_result').innerHTML = response;
-	});				
-}
-
 jQuery(document).ready(function($) {
 
 	var data = {
 		action: 'committed_files',
-		page: 1,
 		id: committed_vars.post_id,
 		security: committed_vars.ajax_nonce
 	};
@@ -42,4 +10,13 @@ jQuery(document).ready(function($) {
 	$.post(ajaxurl, data, function(response) {
 		document.getElementById('committed_files_result').innerHTML = response;
 	});
+});
+
+jQuery(document).on("dblclick", ".committed", function () {
+    var pending = event.target.value;
+    var status = pending.substr(0, 3);
+    if (status === " M ") {
+        var file = ajaxurl + "?action=view_diff&file=" + pending.substr(3);
+        tb_show("View Diff", file);
+    }
 });
