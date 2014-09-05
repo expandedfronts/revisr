@@ -177,8 +177,6 @@ class Revisr_DB
 		$commit = Revisr_Git::run( "commit -m $commit_msg" );
 
 		if ( $add === false || $commit === false ) {
-			echo "Error !";
-			exit();
 			$error = __( 'There was an error committing the database.', 'revisr' );
 			$this->maybe_return( $error );
 		}

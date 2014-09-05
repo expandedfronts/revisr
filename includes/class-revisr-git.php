@@ -321,7 +321,7 @@ class Revisr_Git
 					add_post_meta( $post_id, 'files_changed', count( $files_changed ) );
 					add_post_meta( $post_id, 'committed_files', $files_changed );
 
-					$view_link = get_admin_url() . "post.php?post=$post_id}&action=edit";
+					$view_link = get_admin_url() . "post.php?post=$post_id&action=edit";
 					$msg = sprintf( __( 'Pulled <a href="%s">#%s</a> from %s/%s.', 'revisr' ), $view_link, $commit_hash, $this->remote, $this->branch );
 					Revisr_Admin::log( $msg, 'pull' );
 				}
