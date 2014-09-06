@@ -14,9 +14,10 @@ jQuery(document).ready(function($) {
 
 jQuery(document).on("dblclick", ".committed", function () {
     var pending = event.target.value;
+    var commit = document.getElementById('commit_hash').value;
     var status = pending.substr(0, 3);
     if (status === " M ") {
-        var file = ajaxurl + "?action=view_diff&file=" + pending.substr(3);
+        var file = ajaxurl + "?action=view_diff&file=" + pending.substr(3) + "&commit=" + commit;
         tb_show("View Diff", file);
     }
 });

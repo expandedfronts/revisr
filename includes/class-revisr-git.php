@@ -456,6 +456,7 @@ class Revisr_Git
 		check_ajax_referer( 'committed_nonce', 'security' );
 
 		$committed_files = get_post_custom_values( 'committed_files', $_POST['id'] );
+		$commit_hash = get_post_custom_values( 'commit_hash', $_POST['id'] );
 		if ( is_array( $committed_files ) ) {
 			foreach ( $committed_files as $file ) {
 				$output = unserialize( $file );
@@ -465,6 +466,7 @@ class Revisr_Git
 		if ( isset( $output ) ) {
 			printf( __('<br><strong>%s</strong> files were included in this commit. Double-click files marked as "Modified" to view the changes in a diff.', 'revisr' ), count( $output ) );
 
+			echo "<input id='commit_hash' name='commit_hash' value='{$commit_hash[0]}' type='hidden' />";
 			echo '<br><br><select id="committed" multiple="multiple" size="6">';
 				foreach ( $output as $result ) {
 					$short_status = substr( $result, 0, 3 );

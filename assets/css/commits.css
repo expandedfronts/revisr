@@ -22,6 +22,9 @@
 .stage-nav-button {
 	margin-top: 7px !important;
 }
+#committed {
+	width: 90%;
+}
 .diff_added {
 	background-color: #cfc;
 }
