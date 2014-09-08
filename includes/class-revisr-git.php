@@ -379,7 +379,23 @@ class Revisr_Git
 		else {
 			wp_die( __( 'You are not authorized to access this page.', 'revisr' ) );
 		}
-	}	
+	}
+
+	/**
+	 * Initializes a new Git repository.
+	 * @access public
+	 */
+	public function repo_init() {
+		$init = Revisr_Git::run( 'init .' );
+		if ( $init !== false ) {
+			Revisr_Admin::log( __( 'Successfully initialized a new repository.', 'revisr' ), 'init' );
+			$url = get_admin_url() . 'admin.php?page=revisr&init=success';
+		} else {
+			Revisr_Admin::log( __( 'There was an error creating the repository. Make sure that Git is installed on the server and that Git is defined in your environment path.', 'revisr' ), 'error' );
+			$url = get_admin_url() . 'admin.php?page=revisr&init=error';
+		}
+		wp_redirect( $url );
+	}
 
 	/**
 	 * Shows a list of the pending files on the current branch. Clicking a modified file shows the diff.

@@ -109,11 +109,10 @@ class Revisr
 		add_action( 'admin_post_delete_branch', array( $git, 'delete_branch' ) );
 		add_action( 'admin_post_revert', array( $git, 'revert' ) );
 		add_action( 'admin_post_view_diff', array( $git, 'view_diff' ) );
-
+		add_action( 'admin_post_repo_init', array( $git, 'repo_init' ) );
 		if ( isset( $this->options['auto_pull'] ) ) {
 			add_action( 'admin_post_nopriv_revisr_update', array( $git, 'pull' ) );
 		}
-
 		add_action( 'wp_ajax_count_unpulled', array( $git, 'count_unpulled' ) );
 		add_action( 'wp_ajax_count_unpushed', array( $git, 'count_unpushed' ) );
 		add_action( 'wp_ajax_new_commit', array( $git, 'new_commit' ) );
@@ -177,8 +176,13 @@ class Revisr
 			return $error;
 		}
 
-		if ( Revisr_Git::run( 'version' ) === false || Revisr_Git::run( 'status' ) === false ) {
-			$error .= __( '<p><strong>WARNING:</strong> No Git repository detected. Revisr requires that Git be installed on the server and the parent WordPress installation be in the root directory of a Git repository.</p>', 'revisr' );
+		if ( Revisr_Git::run( 'version' ) === false ) {
+			$error .= __( '<p><strong>WARNING:</strong> Git was not deteced on the server. Please make sure that Git has been installed and the path to Git has been defined in the environment.</p>', 'revisr' );
+			return $error;
+		}
+		if ( Revisr_Git::run( 'status' ) === false ) {
+			$link = get_admin_url() . 'admin-post.php?action=repo_init';
+			$error .= sprintf( __( '<p><strong>WARNING:</strong> Revisr is unable to detect a Git repository. <a href="%s">Click here</a> to create one using the current WordPress installation.', 'revisr' ), $link );
 			return $error;
 		}
 

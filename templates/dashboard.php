@@ -31,25 +31,23 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 		}
 		else {
 			$pending = Revisr_Git::count_pending();
-			if ( isset( $_GET['revert_db'] ) && $_GET['revert_db'] == 'success' ){
+			if ( isset( $_GET['revert_db'] ) && $_GET['revert_db'] == 'success' ) {
 				$text = "<p>" . __('Successfully reverted the database.', 'revisr') . "</p>";
-			}
-			else if ( isset($_GET['checkout']) && $_GET['checkout'] == 'success' ){
+			} else if ( isset($_GET['checkout']) && $_GET['checkout'] == 'success' ) {
 				$text = sprintf(__('<p>Successfully checked out branch <strong>%s</strong>.</p>', 'revisr'), $_GET['branch']);
-			}
-			else if ( isset($_GET['revert']) && $_GET['revert'] == 'success' ){
+			} else if ( isset($_GET['revert']) && $_GET['revert'] == 'success' ) {
 				$url = get_admin_url() . "post.php?post={$_GET['id']}&action=edit";
 				$text = "<p>Successfully reverted to commit <a href='{$url}'><strong>#{$_GET['commit']}</strong></a>.</p>";
-			}
-			else if ( $pending != 0 ){
+			} else if ( isset( $_GET['init'] ) && $_GET['init'] == 'success' ) {
+				$url = get_admin_url() . 'admin.php?page=revisr_settings';
+				$text = '<p>' . sprintf( __( 'Successfully initialized a new repository. Be sure to configure your <a href="%s">repository settings</a> and click "Commit Changes" to create your first commit.', 'revisr' ), $url ) . '</p>';
+			} else if ( $pending != 0 ){
 				if ( $pending == 1 ){
 					$text = sprintf(__('<p>There is currently <strong>1</strong> untracked file on branch <strong>%s</strong>.</p>', 'revisr'), Revisr_Git::current_branch());
-				}
-				else {
+				} else {
 					$text = sprintf(__('<p>There are currently <strong>%d</strong> untracked files on branch <strong>%s</strong>.</p>', 'revisr'), $pending, Revisr_Git::current_branch());
 				}
-			}
-			else {
+			} else {
 				$text = sprintf(__('<p>There are currently no untracked files on branch <strong>%s</strong>.</p>', 'revisr'), Revisr_Git::current_branch());
 			}
 			echo "<div id='revisr_alert' class='updated'>{$text}</div>";
