@@ -1,12 +1,26 @@
 jQuery(document).ready(function() {
 
+	var alert_data = {
+		action: 'render_alert'
+	};
+
+	jQuery.post(ajaxurl, alert_data, function(response) {
+		document.getElementById("revisr-alert-container").innerHTML = response;
+	});
+
+	setInterval(function(){
+		jQuery.post(ajaxurl, alert_data, function(response) {
+			document.getElementById("revisr-alert-container").innerHTML = response;
+		});
+	}, 3000 );
+
 	var recent_data = {
 		action: 'recent_activity'
 	};
 
 	jQuery.post(ajaxurl, recent_data, function(response) {
 		document.getElementById("revisr_activity").innerHTML = response;
-	});	
+	});
 
 	var unpushed = {
 		action: 'count_unpushed',

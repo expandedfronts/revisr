@@ -21,12 +21,11 @@ class Revisr_Settings
 	 * Initialize the class.
 	 * @access public
 	 */
-	public function __construct() {
+	public function __construct( $options ) {
 		if ( is_admin() ) {
 			add_action( 'admin_init', array( $this, 'init_settings' ) );
 		}
-		
-		$this->options = Revisr_Admin::options();
+		$this->options = $options;
 	}
 
 	/**

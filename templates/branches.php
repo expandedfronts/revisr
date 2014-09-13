@@ -39,7 +39,6 @@
 					</tr>
 				</thead>
 					<?php
-						$admin  = new Revisr_Admin;
 						$output = Revisr_Git::run( 'branch' );
 
 						if ( is_array( $output ) ) {
