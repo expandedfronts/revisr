@@ -289,7 +289,7 @@ class Revisr_Setup
 	 */
 	public function custom_views( $views ) {
 
-		$output = $this->git->run( 'branch', __FUNCTION__ );
+		$output = $this->git->run( 'branch' );
 
 		global $wp_query;
 

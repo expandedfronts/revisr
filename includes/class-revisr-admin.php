@@ -54,24 +54,42 @@ class Revisr_Admin
 	 */
 	public static function alert( $message, $is_error = false ) {
 		if ( $is_error == true ) {
-			$class = 'error';
+			set_transient( 'revisr_error', $message, 10 );
 		} else {
-			$class = 'updated';
+			set_transient( 'revisr_alert', $message, 5 );
 		}
-		$alert = array( 
-			'class' 	=> $class, 
-			'message' 	=> $message
-		);
-		set_transient( 'revisr_alert', $alert, 5 );
+	}
+
+	/**
+	 * Returns the data for the AJAX buttons.
+	 * @access public
+	 */
+	public function ajax_button_count() {
+		if ( $_REQUEST['data'] == 'unpulled' ) {
+			$this->git->count_unpulled();
+		} else {
+			$this->git->count_unpushed();
+		}
+		exit();
+	}
+
+	/**
+	 * Pushes any committed changes if "Automatically push new commits" is checked.
+	 * @access public
+	 */
+	public function auto_push() {
+		if ( isset( $this->options['auto_push'] ) ) {
+			$this->git->push();
+		}
 	}
 
 	/**
 	 * Logs an event to the database.
-	 * @access private
+	 * @access public
 	 * @param string $message The message to show in the Recent Activity. 
 	 * @param string $event   Will be used for filtering later. 
 	 */
-	private function log( $message, $event ) {
+	public static function log( $message, $event ) {
 		global $wpdb;
 		$time = current_time( 'mysql', 1 );
 		$table = $wpdb->prefix . 'revisr';
@@ -114,8 +132,25 @@ class Revisr_Admin
 	 * @access public
 	 * @param string $branch The name of the branch to checkout.
 	 */
-	public function process_checkout() {
+	public function process_checkout( $args = '', $new_branch = false ) {
+		if ( isset( $this->options['reset_db'] ) ) {
+			$db = new Revisr_DB();
+			$db->backup();
+		}
+
+		if ( $args == '' ) {
+			$branch = escapeshellarg( $_REQUEST['branch'] );
+		} else {
+			$branch = $args;
+		}
 		
+		$this->git->reset();
+		$this->git->checkout( $branch );
+		if ( isset( $this->options['reset_db'] ) && $new_branch === false ) {
+			$db->restore( true );
+		}
+		$url = get_admin_url() . 'admin.php?page=revisr';
+		wp_redirect( $url );
 	}
 
 	/**
@@ -138,7 +173,7 @@ class Revisr_Admin
 
 			//Stage any necessary files.
 			if ( isset( $_POST['staged_files'] ) ) {
-				$this->stage_files( $_POST['staged_files'] );
+				$this->git->stage_files( $_POST['staged_files'] );
 				$staged_files = $_POST['staged_files'];
 			} else {
 				if ( ! isset( $_REQUEST['backup_db'] ) ) {
@@ -159,7 +194,7 @@ class Revisr_Admin
 			
 			//Add post meta
 			add_post_meta( get_the_ID(), 'commit_hash', $clean_hash );
-			add_post_meta( get_the_ID(), 'branch', $this->branch );
+			add_post_meta( get_the_ID(), 'branch', $this->git->branch );
 			add_post_meta( get_the_ID(), 'committed_files', $staged_files );
 			add_post_meta( get_the_ID(), 'files_changed', count( $staged_files ) );
 
@@ -187,21 +222,28 @@ class Revisr_Admin
 	/**
 	 * Processes the creation of a new branch.
 	 * @access public
-	 * @param string 	$branch 	The name of the new branch.
-	 * @param boolean 	$checkout 	Whether to checkout the new branch immediately.
+	 * @param string $branch The name of the new branch.
 	 */
-	public function process_create_branch( $branch, $checkout = false ) {
-
+	public function process_create_branch( $branch ) {
+		$this->git->create_branch( $branch );
+		if ( isset( $_REQUEST['checkout'] ) ) {
+			$this->git->checkout( $branch );
+		}
 	}
 
 	/**
 	 * Processes the deletion of an existing branch.
 	 * @access public
-	 * @param string 	$branch 		The name of the branch to delete.
-	 * @param boolean 	$delete_remote 	Whether to delete the remote branch as well.
 	 */
-	public function process_delete_branch( $branch, $delete_remote = false ) {
-
+	public function process_delete_branch() {
+		if ( isset( $_POST['branch'] ) && $_POST['branch'] != $this->git->branch ) {
+			$branch = $_POST['branch'];
+			$this->git->delete_branch( $branch );
+			if ( isset( $_POST['delete_remote_branch'] ) ) {
+				$this->git->run( "push {$this->remote} --delete {$branch}" );
+			}
+		}
+		exit();
 	}
 
 	/**
@@ -209,7 +251,7 @@ class Revisr_Admin
 	 * @access public
 	 */
 	public function process_init() {
-
+		$this->git->init();
 	}
 
 	/**
@@ -245,9 +287,13 @@ class Revisr_Admin
 	 * @access public
 	 */
 	public function render_alert() {
-		$alert = get_transient('revisr_alert');
-		if ( $alert ) {
-			echo "<div id='revisr_alert' class='" . $alert['class'] . "'>" . wpautop($alert['message']) . "</div>";
+		$alert = get_transient( 'revisr_alert' );
+		$error = get_transient( 'revisr_error' );
+
+		if ( $error ) {
+			echo "<div id='revisr_alert' class='error'>" . wpautop( $error ) . "</div>";
+		} else if ( $alert ) {
+			echo "<div id='revisr_alert' class='updated'>" . wpautop( $alert ) . "</div>";
 			delete_transient('revisr_alert');
 		} else {
 			$untracked = $this->git->count_untracked();

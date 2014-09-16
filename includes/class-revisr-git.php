@@ -68,7 +68,7 @@ class Revisr_Git
 	 * @param string $branch The branch to checkout.
 	 */
 	public function checkout( $branch ) {
-		$this->run( "checkout $branch" );
+		$this->run( "checkout $branch", __FUNCTION__ );
 	}
 
 	/**
@@ -158,11 +158,11 @@ class Revisr_Git
 	/**
 	 * Deletes a branch.
 	 * @access public
-	 * @param string 	$branch 		The branch to delete.
-	 * @param boolean 	$delete_remote 	Whether to delete the branch from the remote.
+	 * @param string $branch The branch to delete.
 	 */
-	public function delete_branch() {
-
+	public function delete_branch( $branch, $delete_remote = false ) {
+		$deletion = $this->git->run( "branch -D $branch", __FUNCTION__ );
+		return $deletion;
 	}
 
 	/**
@@ -329,16 +329,21 @@ class Revisr_Git
 		chdir( $this->dir );
 		exec( $cmd, $output, $error );
 		chdir( $dir );
-		if ( !$error ) {
+		if ( $callback != '' ) {
+			$response = new Revisr_Git_Callback;
+			$success_callback = 'success_' . $callback;
+			$failure_callback = 'null_' . $callback;
+			if ( $error ) {
+				return $response->$failure_callback( $error );
+			} else {
+				return $response->$success_callback( $output );
+			}
+		}
+		if ( ! $error ) {
 			return $output;
+		} else {
+			return false;
 		}
-		/*$response = new Revisr_Git_Callback;
-		$success_callback = 'success_' . $callback;
-		$failure_callback = 'null_' . $callback;
-		if ( $error && $return_error == true ) {
-			return $response->$failure_callback( $error );
-		}
-		return $response->$success_callback( $output ); */
 	}
 
 	/**
@@ -389,9 +394,9 @@ class Revisr_Git
 	 * Returns the number of unpulled commits.
 	 * @access public
 	 */
-	public function unpulled() {
+	public function count_unpulled() {
 		$this->fetch();
-		$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline" );
+		$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline", 'count_ajax_button' );
 		return count( $unpulled );
 	}
 
@@ -399,8 +404,8 @@ class Revisr_Git
 	 * Returns the number of unpushed commits.
 	 * @access public
 	 */
-	public function unpushed() {
-		$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline" );
+	public function count_unpushed() {
+		$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline", 'count_ajax_button' );
 		return count( $unpushed );
 	}
 
@@ -432,3 +437,106 @@ class Revisr_Git
 		return $version;
 	}
 }
+
+/**
+ * Processes Git responses and errors.
+ * @package   Revisr
+ * @license   GPLv3
+ * @link      https://revisr.io
+ * @copyright 2014 Expanded Fronts, LLC
+ */
+class Revisr_Git_Callback extends Revisr_Git
+{
+
+	/**
+	 * Callback for a successful checkout.
+	 * @access public
+	 * @param array $output An array of output from the checkout.
+	 */
+	public function success_checkout( $output ) {
+		$msg = sprintf( __( 'Checked out branch: %s.', 'revisr' ), $branch );
+		$email_msg = sprintf( __( '%s was switched to branch %s.', 'revisr' ), get_bloginfo(), $branch );
+		Revisr_Admin::alert( $msg );
+		Revisr_Admin::log( $msg, "branch" );
+		Revisr_Admin::notify(get_bloginfo() . __( ' - Branch Changed', 'revisr'), $email_msg );
+	}
+
+	/**
+	 * Callback for a failed checkout.
+	 * @access public
+	 * @param int $error The error code that was thrown.
+	 */
+	public function null_checkout( $error ) {
+		$msg = __( 'There was an error checking out the branch. Check your configuration and try again.', 'revisr' );
+		Revisr_Admin::alert( $msg, true );
+		Revisr_Admin::log( $msg );
+	}
+
+	/**
+	 * Callback for a successful commit.
+	 * @access public
+	 * @param array $output An array of output from the commit.
+	 */
+	public function success_commit( $output ) {
+		$commit_hash = $this->current_commit();
+		$msg = sprintf( __( 'Successfully commmitted %s to the local repository.', 'revisr' ) );
+		Revisr_Admin::log( $msg, 'commit' );
+	}
+
+	/**
+	 * Callback for a failed commit.
+	 * @access public
+	 * @param int $error The error that was thrown.
+	 */
+	public function null_commit( $error ) {
+		$msg = __( 'There was an error committing the changes to the local repository.', 'revisr' );
+		Revisr_Admin::log( $msg, 'error' );
+	}
+
+	/**
+	 * Callback for successful branch deletion.
+	 * @access public
+	 * @param array $output An array of output from the deletion.
+	 */
+	public function success_delete_branch( $output ) {
+		$msg = sprintf( __( 'Deleted branch %s.', 'revisr'), $branch );
+		Revisr_Admin::log( $msg, 'branch' );
+		Revisr_Admin::notify( get_bloginfo() . __( 'Branch Deleted', 'revisr' ), $msg );
+		echo "<script>
+				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_success&branch={$branch}'
+		</script>";
+	}
+
+	/**
+	 * Callback for a failed branch deletion.
+	 * @access public
+	 * @param int $error The error code thrown during deletion.
+	 */
+	public function null_delete_branch( $error ) {
+		echo "<script>
+				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_fail&branch={$branch}'
+		</script>";
+	}
+
+	/**
+	 * Renders the number of unpushed/unpulled commits for the AJAX buttons.
+	 * @access public
+	 * @param int $output The number of unpushed/unpulled commits.
+	 */
+	public function success_count_ajax_btn( $output ) {
+		if ( $output != 0 ) {
+			echo '(' . $output . ')';
+		}
+		exit();
+	}
+
+	/**
+	 * Returns nothing if there are no commits to push/pull.
+	 * @access public
+	 * @param int $error The error code received (if any).
+	 */
+	public function null_count_ajax_button( $error ) {
+		return;
+	}
+}
+

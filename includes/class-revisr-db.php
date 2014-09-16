@@ -57,12 +57,11 @@ class Revisr_DB
 	 * @access public
 	 */
 	public function __construct() {
-
-		$this->branch		= Revisr_Git::current_branch();
-		$this->dir 			= getcwd();
 		$this->git 			= new Revisr_Git;
+		$this->branch		= $this->git->current_branch();
+		$this->dir 			= getcwd();
 		$this->sql_file 	= 'revisr_db_backup.sql';
-		$this->options 		= Revisr_Admin::options();
+		$this->options 		= Revisr::get_options();
 		$this->upload_dir 	= wp_upload_dir();
 		$this->check_exec();
 
@@ -190,7 +189,7 @@ class Revisr_DB
 				'post_status' 	=> 'publish',
 			);
 			$post_id = wp_insert_post( $post );
-			$commit_hash = Revisr_Git::run( 'rev-parse --short HEAD' );
+			$commit_hash = $this->git->current_hash();
 			add_post_meta( $post_id, 'commit_hash', $commit_hash[0] );
 			add_post_meta( $post_id, 'db_hash', $commit_hash[0] );
 			add_post_meta( $post_id, 'branch', $this->branch );

@@ -95,7 +95,8 @@ class Revisr {
 	 */
 	private function admin_hooks() {
 		$revisr_admin = new Revisr_Admin( $this->options, $this->get_table_name() );
-		add_action( 'admin_post_process_commit', array( $revisr_admin, 'process_commit' ) );
+		add_action( 'publish_revisr_commits', array( $revisr_admin, 'process_commit' ) );
+		add_action( 'admin_post_process_checkout', array( $revisr_admin, 'process_checkout' ) );
 		add_action( 'admin_post_process_create_branch', array( $revisr_admin, 'process_create_branch' ) );
 		add_action( 'admin_post_process_delete_branch', array( $revisr_admin, 'process_delete_branch' ) );
 		add_action( 'admin_post_process_revert', array( $revisr_admin, 'process_revert' ) );
@@ -104,30 +105,16 @@ class Revisr {
 		if ( isset( $this->options['auto_pull'] ) ) {
 			add_action( 'admin_post_nopriv_revisr_update', array( $revisr_admin, 'pull' ) );
 		}
+		add_action( 'wp_ajax_ajax_button_count', array( $revisr_admin, 'ajax_button_count' ) );
 		add_action( 'wp_ajax_recent_activity', array( $revisr_admin, 'recent_activity' ) );
 		add_action( 'wp_ajax_render_alert', array( $revisr_admin, 'render_alert' ) );
 		add_action( 'wp_ajax_pending_files', array( $revisr_admin, 'pending_files' ) );
 		add_action( 'wp_ajax_committed_files', array( $revisr_admin, 'committed_files' ) );
-		add_action( 'publish_revisr_commits', array( $admin, 'process_commit' ) );
-		/*
-		add_action( 'admin_post_checkout', array( $git, 'checkout' ) );
-		add_action( 'admin_post_create_branch', array( $git, 'create_branch' ) );
-		add_action( 'admin_post_delete_branch', array( $git, 'delete_branch' ) );
-		add_action( 'admin_post_revert', array( $git, 'revert' ) );
-		add_action( 'admin_post_view_diff', array( $git, 'view_diff' ) );
-		add_action( 'admin_post_repo_init', array( $git, 'repo_init' ) );
-		if ( isset( $this->options['auto_pull'] ) ) {
-			add_action( 'admin_post_nopriv_revisr_update', array( $git, 'pull' ) );
-		}
-		add_action( 'wp_ajax_count_unpulled', array( $revisr_admin, 'count_unpulled' ) );
-		add_action( 'wp_ajax_count_unpushed', array( $revisr_admin, 'count_unpushed' ) );
 		add_action( 'wp_ajax_discard', array( $revisr_admin, 'discard' ) );
 		add_action( 'wp_ajax_push', array( $revisr_admin, 'push' ) );
 		add_action( 'wp_ajax_pull', array( $revisr_admin, 'pull' ) );
 		add_action( 'wp_ajax_view_diff', array( $revisr_admin, 'view_diff' ) );
-
 		add_action( 'wp_ajax_verify_remote', array( $revisr_admin, 'verify_remote' ) );
-		*/
 	}
 
 	/**

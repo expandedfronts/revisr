@@ -23,8 +23,8 @@ jQuery(document).ready(function() {
 	});
 
 	var unpushed = {
-		action: 'count_unpushed',
-		should_exit: 'true'
+		action: 'ajax_button_count',
+		data: 'unpushed'
 	};
 
 	jQuery.post(ajaxurl, unpushed, function(response) {
@@ -32,8 +32,8 @@ jQuery(document).ready(function() {
 	});
 
 	var unpulled = {
-		action: 'count_unpulled',
-		should_exit: 'true'
+		action: 'ajax_button_count',
+		data : 'unpulled'
 	};
 
 	jQuery.post(ajaxurl, unpulled, function(response) {
