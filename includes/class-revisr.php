@@ -36,7 +36,7 @@ class Revisr {
 	/**
 	 * The name of the database table to use for the plugin.
 	 */
-	public $table_tame;
+	public $table_name;
 
 	/**
 	 * The current version of the plugin.
@@ -123,6 +123,7 @@ class Revisr {
 	 */
 	private function admin_setup_hooks() {
 		$revisr_setup = new Revisr_Setup( $this->options, $this->get_table_name() );
+		$plugin = $this->plugin_name;
 		add_action( 'init', array( $revisr_setup, 'revisr_post_types' ) );
 		add_action( 'admin_notices', array( $revisr_setup, 'site5_notice' ) );
 		add_action( 'load-edit.php', array( $revisr_setup, 'default_views' ) );

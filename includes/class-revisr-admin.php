@@ -74,16 +74,6 @@ class Revisr_Admin
 	}
 
 	/**
-	 * Pushes any committed changes if "Automatically push new commits" is checked.
-	 * @access public
-	 */
-	public function auto_push() {
-		if ( isset( $this->options['auto_push'] ) ) {
-			$this->git->push();
-		}
-	}
-
-	/**
 	 * Logs an event to the database.
 	 * @access public
 	 * @param string $message The message to show in the Recent Activity. 
@@ -114,7 +104,7 @@ class Revisr_Admin
 	 * @param string $subject The subject line of the email.
 	 * @param string $message The message for the email.
 	 */
-	private function notify( $subject, $message ) {
+	public static function notify( $subject, $message ) {
 		$options = get_option( 'revisr_settings' );
 		$url = get_admin_url() . 'admin.php?page=revisr';
 
@@ -240,7 +230,7 @@ class Revisr_Admin
 			$branch = $_POST['branch'];
 			$this->git->delete_branch( $branch );
 			if ( isset( $_POST['delete_remote_branch'] ) ) {
-				$this->git->run( "push {$this->remote} --delete {$branch}" );
+				$this->git->run( "push {$this->git->remote} --delete {$branch}" );
 			}
 		}
 		exit();
@@ -311,7 +301,7 @@ class Revisr_Admin
 		check_ajax_referer('pending_nonce', 'security');
 		$output = $this->git->status();
 		$total_pending = count( $output );
-		echo "<br>There are <strong>{$total_pending}</strong> untracked files that can be added to this commit on branch <strong>" . $this->branch . "</strong>.<br>
+		echo "<br>There are <strong>{$total_pending}</strong> untracked files that can be added to this commit on branch <strong>" . $this->git->branch . "</strong>.<br>
 		Use the boxes below to add/remove files. Double-click modified files to view diffs.<br><br>";
 		echo "<input id='backup_db_cb' type='checkbox' name='backup_db'><label for='backup_db_cb'>" . __( 'Backup database?', 'revisr' ) . "</label><br><br>";
 

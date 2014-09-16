@@ -41,7 +41,7 @@ class Revisr_Setup
 		global $wpdb;
 		$this->wpdb = $wpdb;
 		$this->options = $options;
-		$this->git = new Revisr_Git( $options, $git_dir );
+		$this->git = new Revisr_Git();
 		$this->table_name = $this->wpdb->prefix . 'revisr';
 		$this->dir = plugin_dir_path( __FILE__ );
 	}

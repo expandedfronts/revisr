@@ -11,7 +11,7 @@
 if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" ) {
 
 	$git = new Revisr_Git;
-	$options = Revisr_Admin::options();
+	$options = Revisr::get_options();
 	
 	if ( isset( $options['gitignore'] ) ) {
 		chdir( ABSPATH );

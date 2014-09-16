@@ -189,7 +189,7 @@ class Revisr_DB
 				'post_status' 	=> 'publish',
 			);
 			$post_id = wp_insert_post( $post );
-			$commit_hash = $this->git->current_hash();
+			$commit_hash = $this->git->hash;
 			add_post_meta( $post_id, 'commit_hash', $commit_hash[0] );
 			add_post_meta( $post_id, 'db_hash', $commit_hash[0] );
 			add_post_meta( $post_id, 'branch', $this->branch );

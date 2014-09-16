@@ -52,6 +52,16 @@ class Revisr_Git
 	}
 
 	/**
+	 * Pushes changes if "Automatically push new commits" is enabled.
+	 * @access public
+	 */
+	public function auto_push() {
+		if ( $this->options['auto_push'] ) {
+			$this->push();
+		}
+	}
+
+	/**
 	 * Lists available branches on the local repository.
 	 * @access public
 	 * @param string $args 		Any arguements to pass to the function.
@@ -161,7 +171,7 @@ class Revisr_Git
 	 * @param string $branch The branch to delete.
 	 */
 	public function delete_branch( $branch, $delete_remote = false ) {
-		$deletion = $this->git->run( "branch -D $branch", __FUNCTION__ );
+		$deletion = $this->run( "branch -D $branch", __FUNCTION__ );
 		return $deletion;
 	}
 
@@ -454,6 +464,7 @@ class Revisr_Git_Callback extends Revisr_Git
 	 * @param array $output An array of output from the checkout.
 	 */
 	public function success_checkout( $output ) {
+		$branch = $this->branch;
 		$msg = sprintf( __( 'Checked out branch: %s.', 'revisr' ), $branch );
 		$email_msg = sprintf( __( '%s was switched to branch %s.', 'revisr' ), get_bloginfo(), $branch );
 		Revisr_Admin::alert( $msg );
@@ -469,7 +480,7 @@ class Revisr_Git_Callback extends Revisr_Git
 	public function null_checkout( $error ) {
 		$msg = __( 'There was an error checking out the branch. Check your configuration and try again.', 'revisr' );
 		Revisr_Admin::alert( $msg, true );
-		Revisr_Admin::log( $msg );
+		Revisr_Admin::log( $msg, 'error' );
 	}
 
 	/**
@@ -499,6 +510,7 @@ class Revisr_Git_Callback extends Revisr_Git
 	 * @param array $output An array of output from the deletion.
 	 */
 	public function success_delete_branch( $output ) {
+		$branch = $_POST['branch'];
 		$msg = sprintf( __( 'Deleted branch %s.', 'revisr'), $branch );
 		Revisr_Admin::log( $msg, 'branch' );
 		Revisr_Admin::notify( get_bloginfo() . __( 'Branch Deleted', 'revisr' ), $msg );
@@ -514,7 +526,7 @@ class Revisr_Git_Callback extends Revisr_Git
 	 */
 	public function null_delete_branch( $error ) {
 		echo "<script>
-				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_fail&branch={$branch}'
+				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_fail'
 		</script>";
 	}
 
