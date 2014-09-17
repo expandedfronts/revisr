@@ -304,7 +304,6 @@ class Revisr_Admin
 			echo "<div id='revisr_alert' class='error'>" . wpautop( $error ) . "</div>";
 		} else if ( $alert ) {
 			echo "<div id='revisr_alert' class='updated'>" . wpautop( $alert ) . "</div>";
-			delete_transient('revisr_alert');
 		} else {
 			$untracked = $this->git->count_untracked();
 			$branch = $this->git->branch;

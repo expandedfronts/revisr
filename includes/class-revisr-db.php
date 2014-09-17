@@ -20,7 +20,7 @@ class Revisr_DB
 	/**
 	 * The current directory.
 	 */
-	private $dir;
+	private $current_dir;
 
 	/**
 	 * The current branch.
@@ -59,7 +59,7 @@ class Revisr_DB
 	public function __construct() {
 		$this->git 			= new Revisr_Git;
 		$this->branch		= $this->git->current_branch();
-		$this->dir 			= getcwd();
+		$this->current_dir  = getcwd();
 		$this->sql_file 	= 'revisr_db_backup.sql';
 		$this->options 		= Revisr::get_options();
 		$this->upload_dir 	= wp_upload_dir();
@@ -84,7 +84,7 @@ class Revisr_DB
 	 * @access public
 	 */
 	public function __destruct() {
-		chdir( $this->dir );
+		chdir( $this->current_dir );
 	}
 
 	/**
@@ -92,7 +92,6 @@ class Revisr_DB
 	 * @access public
 	 */
 	public function backup() {
-		
 		exec( "{$this->path}mysqldump {$this->conn} > {$this->sql_file}" );
 
 		if ( $this->verify_backup() != false ) {
@@ -105,11 +104,11 @@ class Revisr_DB
 
 			$msg = __( 'Successfully backed up the database.', 'revisr' );
 			Revisr_Admin::log( $msg, 'backup' );
-			$this->maybe_return( $msg );
+			Revisr_Admin::alert( $msg );
 		} else {
 			$msg = __( 'Failed to backup the database.', 'revisr' );
 			Revisr_Admin::log( $msg, 'error');
-			$this->maybe_return( $msg );
+			Revisr_Admin::alert( $msg, true );
 		}
 	}
 
@@ -123,8 +122,8 @@ class Revisr_DB
 
 			$branch = $_GET['branch'];
 			
-			if ( $branch != $this->branch ) {
-				$this->git->checkout($branch);
+			if ( $branch != $this->git->branch ) {
+				$this->git->checkout( $branch );
 			}
 
 			if ( $this->verify_backup() === false ) {
@@ -135,22 +134,23 @@ class Revisr_DB
 			$this->backup();
 
 			$commit 		= escapeshellarg( $_GET['db_hash'] );
-			$current_temp	= Revisr_Git::run( "log --pretty=format:'%h' -n 1" );
+			$current_temp	= $this->git->run( "log --pretty=format:'%h' -n 1" );
 
-			$checkout = Revisr_Git::run( "checkout {$commit} {$this->upload_dir['basedir']}/{$this->sql_file}", true );
+			$checkout = $this->git->run( "checkout {$commit} {$this->upload_dir['basedir']}/{$this->sql_file}" );
 
 			if ( $checkout !== 1 ) {
 				
 				exec( "{$this->path}mysql {$this->conn} < {$this->sql_file}" );
-				Revisr_Git::run( "checkout {$this->branch} {$this->upload_dir['basedir']}/{$this->sql_file}" );
+				$this->git->run( "checkout {$this->branch} {$this->upload_dir['basedir']}/{$this->sql_file}" );
 				
 				if (is_array($current_temp)) {
 					$current_commit = str_replace("'", "", $current_temp);
 					$undo_nonce 	= wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$current_commit[0]}&branch={$_GET['branch']}"), 'revert_db', 'revert_db_nonce' );
-					$msg = sprintf( __( 'Reverted the database to a previous commit. <a href="%s">Undo</a>', 'revisr'), $undo_nonce );
+					$msg = sprintf( __( 'Successfully reverted the database to a previous commit. <a href="%s">Undo</a>', 'revisr'), $undo_nonce );
 					Revisr_Admin::log( $msg, 'revert' );
-					$redirect = get_admin_url() . "admin.php?page=revisr&revert_db=success&prev_commit={$current_commit[0]}";
-					wp_redirect($redirect);			
+					Revisr_Admin::alert( $msg );
+					$redirect = get_admin_url() . "admin.php?page=revisr";
+					wp_redirect( $redirect );			
 				} else {
 					wp_die( __( 'Something went wrong. Check your settings and try again.', 'revisr' ) );
 				}
@@ -170,14 +170,14 @@ class Revisr_DB
 	 * @param boolean $insert_post Whether to insert a new commit custom_post_type.
 	 */
 	public function commit_db( $insert_post = false ) {
-		$commit_msg = escapeshellarg( __( 'Backed up the database with Revisr.', 'revisr' ) );
+		$commit_msg = __( 'Backed up the database with Revisr.', 'revisr' );
 		$file 	= $this->upload_dir['basedir'] . '/' . $this->sql_file;
-		$add 	= Revisr_Git::run( "add {$file}" );
-		$commit = Revisr_Git::run( "commit -m $commit_msg" );
+		$add 	= $this->git->run( "add {$file}" );
+		$this->git->commit( $commit_msg );
 
-		if ( $add === false || $commit === false ) {
+		if ( $add === false ) {
 			$error = __( 'There was an error committing the database.', 'revisr' );
-			$this->maybe_return( $error );
+			Revisr_Admin::alert( $error, true );
 		}
 
 		//Insert the corresponding post if necessary.
@@ -189,29 +189,16 @@ class Revisr_DB
 				'post_status' 	=> 'publish',
 			);
 			$post_id = wp_insert_post( $post );
-			$commit_hash = $this->git->hash;
-			add_post_meta( $post_id, 'commit_hash', $commit_hash[0] );
-			add_post_meta( $post_id, 'db_hash', $commit_hash[0] );
-			add_post_meta( $post_id, 'branch', $this->branch );
+			$commit_hash = $this->git->current_commit();
+			add_post_meta( $post_id, 'commit_hash', $commit_hash );
+			add_post_meta( $post_id, 'db_hash', $commit_hash );
+			add_post_meta( $post_id, 'branch', $this->git->branch );
 			add_post_meta( $post_id, 'files_changed', '0' );
 			add_post_meta( $post_id, 'committed_files', array() );
 		}
 
 		//Push changes if necessary.
 		$this->git->auto_push();
-	}
-
-	/**
-	 * Echoes the result if necessary.
-	 * @access private
-	 * @param string $status 		The string to output.
-	 * @param string $insert_post 	Whether to insert a post.
-	 */
-	private function maybe_return( $status ) {
-		if ( isset( $_REQUEST['source'] ) && $_REQUEST['source'] == 'ajax_button' ) {
-			echo '<p>' . $status . '</p>';
-			exit();
-		}
 	}
 
 	/**

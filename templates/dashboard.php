@@ -83,6 +83,8 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 
 								?>
 							</table>
+							<?php echo 'hash: ' .$git->hash; ?>
+							
 
 						</div> <!-- .inside -->
 						

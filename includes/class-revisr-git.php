@@ -136,8 +136,8 @@ class Revisr_Git
 	 * @access public
 	 */
 	public function current_commit() {
-		$commit_hash = $this->run( 'git rev-parse --short HEAD' );
-		return $commit_hash;
+		$commit_hash = $this->run( 'rev-parse --short HEAD' );
+		return $commit_hash[0];
 	}
 
 	/**
