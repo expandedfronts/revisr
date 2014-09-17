@@ -87,7 +87,8 @@ class Revisr_Git
 	 * @param string $branch The name of the branch to create.
 	 */
 	public function create_branch( $branch ) {
-		$this->run( "branch $branch" );
+		$new_branch = $this->run( "branch $branch" );
+		return $new_branch;
 	}
 
 	/**
@@ -329,11 +330,11 @@ class Revisr_Git
 	/**
 	 * Executes a Git command.
 	 * @access public
-	 * @param string $args 		    The git command to execute.
-	 * @param string $callback 	    The function to callback on response.
-	 * @param bool 	 $return_error 	Whether to return the error callback.
+	 * @param string 	$args 		    The git command to execute.
+	 * @param string 	$callback 	    The function to callback on response.
+	 * @param bool 	 	$return_error 	Whether to return the error callback.
 	 */
-	public function run( $args, $callback = '' ) {
+	public function run( $args, $callback = '', $return_error = true ) {
 		$cmd = "git $args";
 		$dir = getcwd();
 		chdir( $this->dir );
@@ -343,7 +344,7 @@ class Revisr_Git
 			$response = new Revisr_Git_Callback;
 			$success_callback = 'success_' . $callback;
 			$failure_callback = 'null_' . $callback;
-			if ( $error ) {
+			if ( $error && $return_error == true ) {
 				return $response->$failure_callback( $error );
 			} else {
 				return $response->$success_callback( $output );

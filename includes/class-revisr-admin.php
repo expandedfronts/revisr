@@ -54,9 +54,9 @@ class Revisr_Admin
 	 */
 	public static function alert( $message, $is_error = false ) {
 		if ( $is_error == true ) {
-			set_transient( 'revisr_error', $message, 10 );
+			set_transient( 'revisr_error', $message, 20 );
 		} else {
-			set_transient( 'revisr_alert', $message, 5 );
+			set_transient( 'revisr_alert', $message, 15 );
 		}
 	}
 
@@ -72,6 +72,21 @@ class Revisr_Admin
 		}
 		exit();
 	}
+
+	/**
+	 * Counts the number of commits in the database. on a given branch.
+	 * @access public
+	 * @param string $branch The name of the branch to count commits for.
+	 */
+	public static function count_commits( $branch ) {
+		global $wpdb;
+		if ($branch == "all") {
+			$num_commits = $wpdb->get_results( "SELECT * FROM " . $wpdb->postmeta . " WHERE meta_key = 'branch'" );
+		} else {
+			$num_commits = $wpdb->get_results( "SELECT * FROM " . $wpdb->postmeta . " WHERE meta_key = 'branch' AND meta_value = '".$branch."'" );
+		}
+		return count( $num_commits );
+	}	
 
 	/**
 	 * Logs an event to the database.
@@ -192,7 +207,7 @@ class Revisr_Admin
 			$msg = sprintf( __( 'Committed <a href="%s">#%s</a> to the local repository.', 'revisr' ), $view_link, $clean_hash );
 			Revisr_Admin::log( $msg, 'commit' );
 
-			$this->auto_push();
+			$this->git->auto_push();
 
 			//Backup the database if necessary
 			if ( isset( $_REQUEST['backup_db'] ) && $_REQUEST['backup_db'] == 'on' ) {
@@ -212,12 +227,17 @@ class Revisr_Admin
 	/**
 	 * Processes the creation of a new branch.
 	 * @access public
-	 * @param string $branch The name of the new branch.
 	 */
-	public function process_create_branch( $branch ) {
-		$this->git->create_branch( $branch );
+	public function process_create_branch() {
+		$branch = $_REQUEST['branch_name'];
+		$result = $this->git->create_branch( $branch );
 		if ( isset( $_REQUEST['checkout'] ) ) {
 			$this->git->checkout( $branch );
+		}
+		if ( $result !== false ) {
+			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&new_branch=success' );
+		} else {
+			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&new_branch=error' );
 		}
 	}
 

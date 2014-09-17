@@ -66,8 +66,8 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 						<div id="branches_box" class="inside">
 							<table id="branches_table" class="widefat">
 								<?php
-
-									$output = $git->branches;
+									$git = new Revisr_Git;
+									$output = $git->branches();
 									if ( is_array( $output ) ) {
 										foreach ($output as $key => $value){
 											$branch = substr($value, 2);

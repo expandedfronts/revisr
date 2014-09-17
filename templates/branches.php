@@ -39,13 +39,14 @@
 					</tr>
 				</thead>
 					<?php
-						$output = Revisr_Git::run( 'branch' );
+						$git = new Revisr_Git;
+						$output = $git->branches();
 
 						if ( is_array( $output ) ) {
 							foreach ($output as $key => $value){
 								
 								$branch 		= substr($value, 2);
-								$num_commits 	= $admin->count_commits( $branch );
+								$num_commits 	= Revisr_Admin::count_commits( $branch );
 								
 								if (substr( $value, 0, 1 ) === "*"){
 									echo "<tr>
@@ -56,7 +57,7 @@
 										<a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Delete</a>
 									</td></tr>";
 								} else {
-									$checkout_url = get_admin_url() . "admin-post.php?action=checkout&branch={$branch}";
+									$checkout_url = get_admin_url() . "admin-post.php?action=process_checkout&branch={$branch}";
 									$delete_url = get_admin_url() . "admin-post.php?action=delete_branch_form&branch={$branch}&TB_iframe=true&width=350&height=150";
 									?>
 									<tr>
@@ -95,7 +96,7 @@
 						<div class="form-field">
 							<input id="checkout-new-branch" type="checkbox" name="checkout_new_branch" style="width: 17px;">
 							<label  id="checkout-label" for="checkout-new-branch"><?php _e('Checkout new branch?'); ?></label>
-							<input type="hidden" name="action" value="create_branch">
+							<input type="hidden" name="action" value="process_create_branch">
 							<p id="add-branch-submit" class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e( 'Create Branch', 'revisr' ); ?>" style="width:150px;"></p>
 						</div>
 					</form>
