@@ -94,7 +94,8 @@ class Revisr {
 	 * @access private
 	 */
 	private function admin_hooks() {
-		$revisr_admin = new Revisr_Admin( $this->options, $this->get_table_name() );
+		$revisr_admin 	= new Revisr_Admin( $this->options, $this->get_table_name() );
+		$revisr_git 	= new Revisr_Git();
 		add_action( 'publish_revisr_commits', array( $revisr_admin, 'process_commit' ) );
 		add_action( 'admin_post_process_checkout', array( $revisr_admin, 'process_checkout' ) );
 		add_action( 'admin_post_process_create_branch', array( $revisr_admin, 'process_create_branch' ) );
@@ -114,7 +115,7 @@ class Revisr {
 		add_action( 'wp_ajax_push', array( $revisr_admin, 'push' ) );
 		add_action( 'wp_ajax_pull', array( $revisr_admin, 'pull' ) );
 		add_action( 'wp_ajax_view_diff', array( $revisr_admin, 'view_diff' ) );
-		add_action( 'wp_ajax_verify_remote', array( $revisr_admin, 'verify_remote' ) );
+		add_action( 'wp_ajax_verify_remote', array( $revisr_git, 'verify_remote' ) );
 	}
 
 	/**

@@ -435,7 +435,7 @@ class Revisr_Git
 	 * @param string $remote The remote to ping.
 	 */
 	public function verify_remote() {
-		$ping = $this->run( "ls-remote " . $_REQUEST['remote'] . " HEAD" );
+		$ping = $this->run( "ls-remote " . $_REQUEST['remote'] . " HEAD", __FUNCTION__ );
 		return $ping;
 	}
 
@@ -551,5 +551,25 @@ class Revisr_Git_Callback extends Revisr_Git
 	public function null_count_ajax_button( $error ) {
 		return;
 	}
+
+	/**
+	 * Returns "Success!" if the connection to remote was successful.
+	 * @acccess public
+	 * @param array $output An array of output from the Git command.
+	 */
+	public function success_verify_remote( $output ) {
+		echo 'Success!';
+		exit();
+	}
+
+	/**
+	 * Returns if the connection to the remote was unsuccessful.
+	 * @access public
+	 * @param  int $errror The error code that was thrown.
+	 */
+	public function null_verify_remote( $error ) {
+		echo "Remote not found...";
+		exit();
+	} 
 }
 

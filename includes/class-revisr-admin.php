@@ -50,7 +50,7 @@ class Revisr_Admin
 	 * Stores an alert to be rendered on the dashboard.
 	 * @access public
 	 * @param string  $mesage 	The message to display.
-	 * @param string  $is_error Whether the message is an error.
+	 * @param bool    $is_error Whether the message is an error.
 	 */
 	public static function alert( $message, $is_error = false ) {
 		if ( $is_error == true ) {
@@ -100,7 +100,7 @@ class Revisr_Admin
 		$table = $wpdb->prefix . 'revisr';
 		$wpdb->insert(
 			"$table",
-			array(
+			array( 
 				'time' 		=> $time,
 				'message'	=> $message,
 				'event' 	=> $event,

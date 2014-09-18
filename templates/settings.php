@@ -18,18 +18,18 @@ if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" )
 		file_put_contents( ".gitignore", $options['gitignore'] );
 	}
 	if ( isset( $options['username'] ) && $options['username'] != "" ) {
-		Revisr_Git::run('config user.name "' . $options['username'] . '"');
+		$git->run('config user.name "' . $options['username'] . '"');
 	}
 	if ( isset( $options['email'] ) && $options['email'] != "" ) {
-		Revisr_Git::run('config user.email "' . $options['email'] . '"');
+		$git->run('config user.email "' . $options['email'] . '"');
 	}
 	if ( isset( $options['remote_url'] ) && $options['remote_url'] != "" ) {
-		Revisr_Git::run('config remote.origin.url ' . $options['remote_url']);
+		$git->run('config remote.origin.url ' . $options['remote_url']);
 	}
 
-	Revisr_Git::run("add .gitignore");
+	$git->run("add .gitignore");
 	$commit_msg = __( 'Updated .gitignore.', 'revisr' );
-	Revisr_Git::run("commit -m \"$commit_msg\"");
+	$git->run("commit -m \"$commit_msg\"");
 
 	$git->auto_push();
 
