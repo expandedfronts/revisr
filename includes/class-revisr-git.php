@@ -56,7 +56,7 @@ class Revisr_Git
 	 * @access public
 	 */
 	public function auto_push() {
-		if ( $this->options['auto_push'] ) {
+		if ( isset( $this->options['auto_push'] ) ) {
 			$this->push();
 		}
 	}
@@ -407,7 +407,7 @@ class Revisr_Git
 	 */
 	public function count_unpulled() {
 		$this->fetch();
-		$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline", 'count_ajax_button' );
+		$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline", 'count_ajax_btn' );
 		return count( $unpulled );
 	}
 
@@ -416,7 +416,7 @@ class Revisr_Git
 	 * @access public
 	 */
 	public function count_unpushed() {
-		$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline", 'count_ajax_button' );
+		$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline", 'count_ajax_btn' );
 		return count( $unpushed );
 	}
 
@@ -443,7 +443,7 @@ class Revisr_Git
 	 * Returns the current version of Git.
 	 * @access public
 	 */
-	public function version () {
+	public function version() {
 		$version = $this->run( 'version' );
 		return $version;
 	}
@@ -537,8 +537,8 @@ class Revisr_Git_Callback extends Revisr_Git
 	 * @param int $output The number of unpushed/unpulled commits.
 	 */
 	public function success_count_ajax_btn( $output ) {
-		if ( $output != 0 ) {
-			echo '(' . $output . ')';
+		if ( count( $output ) != 0 ) {
+			echo '(' . count( $output ) . ')';
 		}
 		exit();
 	}
