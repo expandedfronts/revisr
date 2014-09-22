@@ -298,7 +298,7 @@ class Revisr_Git
 	 */
 	public function push() {
 		$this->reset();
-		$push = $this->run( "push {$this->remote} HEAD --quiet" );
+		$push = $this->run( "push {$this->remote} HEAD --quiet", __FUNCTION__ );
 		return $push;
 	}
 
@@ -549,6 +549,53 @@ class Revisr_Git_Callback extends Revisr_Git
 	 * @param int $error The error code received (if any).
 	 */
 	public function null_count_ajax_button( $error ) {
+		return;
+	}
+
+	/**
+	 * Returns if a pull was successful.
+	 * @access public
+	 * @param array $output The output from the Git command.
+	 */
+	public function success_pull( $output ){
+		$msg = __( 'Successfully pulled changes from the remote repository.', 'revisr' );
+		Revisr_Admin::log( $msg, 'pull' );
+		Revisr_Admin::alert( $msg );
+	}
+
+	/**
+	 * Returns if a pull failed.
+	 * @access public
+	 * @param int $error The error code that was received.
+	 */
+	public function null_pull( $error ) {
+		$msg = __( 'There was an error pulling from the remote repository. The local repository could be ahead, or there may be an authentication issue.', 'revisr' );
+		Revisr_Admin::alert( $msg );
+		Revisr_Admin::log( __( 'Error pulling changes from the remote repository.', 'revisr' ), 'error' );
+		exit();
+	}
+
+	/**
+	 * Returns if a push was successful.
+	 * @access public
+	 * @param array $output The output from the Git command.
+	 */
+	public function success_push( $output ) {
+		$msg = __( 'Successfully pushed any committed changes to the remote repository.', 'revisr' );
+		Revisr_Admin::alert( $msg );
+		Revisr_Admin::log( $msg, 'push' );
+		return;
+	}
+
+	/**
+	 * Returns if a push failed.
+	 * @access public
+	 * @param int $error The error code that was received.
+	 */
+	public function null_push( $error ) {
+		$msg = __( 'There was an error pushing to the remote repository. The remote repository could be ahead, or there may be an authentication issue.', 'revisr' );
+		Revisr_Admin::alert( $msg );
+		Revisr_Admin::log( __( 'Error pushing changes to the remote repository.', 'revisr' ), 'error' );
 		return;
 	}
 

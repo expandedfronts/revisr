@@ -94,7 +94,7 @@ jQuery(document).ready(function() {
 	    if (confirm("Are you sure you want to discard your uncommitted changes and push to the remote?") == true) {
 	   		jQuery('#loader').show();
 	   		var data = {
-				action: 'push'
+				action: 'process_push'
 			};
 			jQuery.post(ajaxurl, data, function(response) {
 				var error_div = document.getElementById("revisr_alert");
@@ -124,7 +124,7 @@ jQuery(document).ready(function() {
 	    if (confirm("Are you sure you want to discard your uncommitted changes and pull from the remote?") == true) {
 	    	jQuery('#loader').show();
 	   		var data = {
-				action: 'pull',
+				action: 'process_pull',
 				from_dash: 'true',
 				security: dashboard_vars.ajax_nonce
 			};

@@ -265,6 +265,65 @@ class Revisr_Admin
 	}
 
 	/**
+	 * Processes a pull.
+	 * @access public
+	 */
+	public function process_pull() {
+		//Determine whether this is a request from the dashboard or a POST request.
+		$from_dash = check_ajax_referer( 'dashboard_nonce', 'security', false );
+		if ( $from_dash == false ) {
+			if ( ! isset( $this->options['auto_pull'] ) ) {
+				wp_die( __( 'You are not authorized to perform this action.', 'revisr' ) );
+			}
+		}
+
+		$this->git->reset();
+		$this->git->fetch();
+
+		$commits_since  = $this->git->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline" );
+
+		if ( is_array( $commits_since ) ) {
+			//Iterate through the commits to pull and add them to the database.
+			foreach ( $commits_since as $commit ) {
+				$commit_hash = substr( $commit, 0, 7 );
+				$commit_msg = substr( $commit, 40 );
+				$show_files = $this->git->run( 'show --pretty="format:" --name-status ' . $commit_hash );
+				
+				if ( is_array( $show_files ) ) {
+					$files_changed = array_filter( $show_files );			
+					$post = array(
+						'post_title'	=> $commit_msg,
+						'post_content'	=> '',
+						'post_type'		=> 'revisr_commits',
+						'post_status'	=> 'publish',
+						);
+					$post_id = wp_insert_post( $post );
+
+					add_post_meta( $post_id, 'commit_hash', $commit_hash );
+					add_post_meta( $post_id, 'branch', $this->branch );
+					add_post_meta( $post_id, 'files_changed', count( $files_changed ) );
+					add_post_meta( $post_id, 'committed_files', $files_changed );
+
+					$view_link = get_admin_url() . "post.php?post=$post_id&action=edit";
+					$msg = sprintf( __( 'Pulled <a href="%s">#%s</a> from %s/%s.', 'revisr' ), $view_link, $commit_hash, $this->remote, $this->branch );
+					Revisr_Admin::log( $msg, 'pull' );
+				}
+			}
+		}
+		//Pull the changes or return an error on failure.
+		$this->git->pull();
+	}
+
+	/**
+	 * Processes a push.
+	 * @access public
+	 */
+	public function process_push(){
+		$this->git->reset();
+		$this->git->push();
+	}
+
+	/**
 	 * Displays the recent activity box on the dashboard.
 	 * @access public
 	 */

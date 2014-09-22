@@ -112,8 +112,8 @@ class Revisr {
 		add_action( 'wp_ajax_pending_files', array( $revisr_admin, 'pending_files' ) );
 		add_action( 'wp_ajax_committed_files', array( $revisr_admin, 'committed_files' ) );
 		add_action( 'wp_ajax_discard', array( $revisr_admin, 'discard' ) );
-		add_action( 'wp_ajax_push', array( $revisr_admin, 'push' ) );
-		add_action( 'wp_ajax_pull', array( $revisr_admin, 'pull' ) );
+		add_action( 'wp_ajax_push', array( $revisr_admin, 'process_push' ) );
+		add_action( 'wp_ajax_pull', array( $revisr_admin, 'process_pull' ) );
 		add_action( 'wp_ajax_view_diff', array( $revisr_admin, 'view_diff' ) );
 		add_action( 'wp_ajax_verify_remote', array( $revisr_git, 'verify_remote' ) );
 	}

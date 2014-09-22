@@ -83,25 +83,17 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 
 								?>
 							</table>
-							<?php echo 'hash: ' .$git->hash; ?>
-							
-
 						</div> <!-- .inside -->
-						
 					</div> <!-- .postbox -->
 
 					<div class="postbox">
-					
 						<h3><span><?php _e( 'About this plugin', 'revisr' ); ?></span></h3>
 						<div class="inside">
 							<?php printf( __( 'Please read more about this plugin at %s.', 'revisr' ),  ' <a href="http://revisr.io/">revisr.io</a>' ); ?>
 							<br><br>
 							&copy; 2014 Expanded Fronts, LLC
 						</div> <!-- .inside -->
-						
 					</div> <!-- .postbox -->
-
-
 					
 				</div> <!-- .meta-box-sortables -->
 				
