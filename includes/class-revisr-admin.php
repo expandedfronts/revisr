@@ -280,7 +280,7 @@ class Revisr_Admin
 		$this->git->reset();
 		$this->git->fetch();
 
-		$commits_since  = $this->git->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline" );
+		$commits_since  = $this->git->run( "log {$this->git->branch}..{$this->remote}/{$this->git->branch} --pretty=oneline" );
 
 		if ( is_array( $commits_since ) ) {
 			//Iterate through the commits to pull and add them to the database.

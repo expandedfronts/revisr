@@ -101,7 +101,8 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 == Changelog ==
 = 1.7 = 
 * Added the ability to create a new repository if one does not already exist
-* Added ability to merge branches via fast-forwarding.
+* Added ability to merge branches via fast-forwarding
+* Added ability to add tags to commits
 * General improvements
 
 = 1.6.3 =
