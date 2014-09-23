@@ -280,7 +280,7 @@ class Revisr_Admin
 		$this->git->reset();
 		$this->git->fetch();
 
-		$commits_since  = $this->git->run( "log {$this->git->branch}..{$this->remote}/{$this->git->branch} --pretty=oneline" );
+		$commits_since  = $this->git->run( "log {$this->git->branch}..{$this->git->remote}/{$this->git->branch} --pretty=oneline" );
 
 		if ( is_array( $commits_since ) ) {
 			//Iterate through the commits to pull and add them to the database.
@@ -305,7 +305,7 @@ class Revisr_Admin
 					add_post_meta( $post_id, 'committed_files', $files_changed );
 
 					$view_link = get_admin_url() . "post.php?post=$post_id&action=edit";
-					$msg = sprintf( __( 'Pulled <a href="%s">#%s</a> from %s/%s.', 'revisr' ), $view_link, $commit_hash, $this->remote, $this->branch );
+					$msg = sprintf( __( 'Pulled <a href="%s">#%s</a> from %s/%s.', 'revisr' ), $view_link, $commit_hash, $this->git->remote, $this->git->branch );
 					Revisr_Admin::log( $msg, 'pull' );
 				}
 			}
@@ -321,6 +321,46 @@ class Revisr_Admin
 	public function process_push(){
 		$this->git->reset();
 		$this->git->push();
+	}
+
+	/**
+	 * Processes a diff request.
+	 * @access public
+	 */
+	public function view_diff() {
+		?>
+		<html>
+		<head><title><?php _e( 'View Diff', 'revisr' ); ?></title>
+		</head>
+		<body>
+		<?php
+			if ( isset( $_REQUEST['commit'] ) && $_REQUEST['commit'] != "" ) {
+				$diff = $this->git->run("show {$_REQUEST['commit']} {$_REQUEST['file']}");
+			}
+			else {
+				$diff = $this->git->run("diff {$_REQUEST['file']}");
+			}
+
+			if ( is_array( $diff ) ) {
+				foreach ( $diff as $line ) {
+					if (substr( $line, 0, 1 ) === "+") {
+						echo "<span class='diff_added' style='background-color:#cfc;'>" . htmlspecialchars($line) . "</span><br>";
+					}
+					else if (substr( $line, 0, 1 ) === "-") {
+						echo "<span class='diff_removed' style='background-color:#fdd;'>" . htmlspecialchars($line) . "</span><br>";
+					}
+					else {
+						echo htmlspecialchars($line) . "<br>";
+					}	
+				}			
+			} else {
+				_e( 'Failed to render the diff.', 'revisr' );
+			}
+		?>
+		</body>
+		</html>
+		<?php
+		exit();
 	}
 
 	/**

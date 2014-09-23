@@ -177,15 +177,6 @@ class Revisr_Git
 	}
 
 	/**
-	 * Runs a Diff.
-	 * @access public
-	 * @param string $args What to diff.
-	 */
-	public function diff() {
-
-	}
-
-	/**
 	 * Fetches changes without merging them.
 	 * @access public
 	 */

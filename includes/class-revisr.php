@@ -223,6 +223,17 @@ class Revisr {
 	}
 
 	/**
+	 * Displays the link to the settings on the WordPress plugin page.
+	 * @access public
+	 * @param array $links The links assigned to Revisr.
+	 */
+	public function revisr_settings_link( $links ) {
+		$settings_link = '<a href="admin.php?page=revisr_settings">' . __( 'Settings', 'revisr') . '</a>'; 
+  		array_unshift($links, $settings_link); 
+  		return $links; 
+	}	
+
+	/**
 	 * Installs the database table.
 	 * @access public
 	 */

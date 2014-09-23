@@ -53,7 +53,5 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/class-revisr.php';
  */
 $revisr = new Revisr();
 register_activation_hook( __FILE__, array( $revisr, 'revisr_install' ) );
-/**
- TODO: Fix add_filter below.
- */
-//add_filter("plugin_action_links_$plugin", array( $revisr, 'revisr_settings_link' ) );
+
+add_filter( 'plugin_action_links_'  . plugin_basename(__FILE__), array( $revisr, 'revisr_settings_link' ) );
