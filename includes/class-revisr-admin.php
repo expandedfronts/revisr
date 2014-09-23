@@ -165,12 +165,12 @@ class Revisr_Admin
 	public function process_commit() {
 		if ( isset( $_REQUEST['_wpnonce'] ) && isset( $_REQUEST['_wp_http_referer'] ) ) {
 			
-			$id 	  = get_the_ID();
-			$title 	  = $_REQUEST['post_title'];
-			$post_new = get_admin_url() . 'post-new.php?post_type=revisr_commits';
+			$id 	  		= get_the_ID();
+			$commit_msg 	= $_REQUEST['post_title'];
+			$post_new 		= get_admin_url() . 'post-new.php?post_type=revisr_commits';
 
 			//Require a message to be entered for the commit.
-			if ( $title == 'Auto Draft' || $title == '' ) {
+			if ( $commit_msg == 'Auto Draft' || $commit_msg == '' ) {
 				$url = $post_new . '&message=42';
 				wp_redirect( $url );
 				exit();
@@ -189,38 +189,10 @@ class Revisr_Admin
 				$staged_files = array();
 			}
 
-			$commit_msg = escapeshellarg( $title );
-			$this->git->commit( $commit_msg );
-			
-			//Variables to store in meta.
-			$commit_hash = $this->git->run( "log --pretty=format:'%h' -n 1" );
-			$clean_hash = trim( $commit_hash[0], "'" );
-			$view_link = get_admin_url() . "post.php?post={$id}&action=edit";
-			
-			//Add post meta
-			add_post_meta( get_the_ID(), 'commit_hash', $clean_hash );
-			add_post_meta( get_the_ID(), 'branch', $this->git->branch );
 			add_post_meta( get_the_ID(), 'committed_files', $staged_files );
 			add_post_meta( get_the_ID(), 'files_changed', count( $staged_files ) );
 
-			//Log the commit
-			$msg = sprintf( __( 'Committed <a href="%s">#%s</a> to the local repository.', 'revisr' ), $view_link, $clean_hash );
-			Revisr_Admin::log( $msg, 'commit' );
-
-			$this->git->auto_push();
-
-			//Backup the database if necessary
-			if ( isset( $_REQUEST['backup_db'] ) && $_REQUEST['backup_db'] == 'on' ) {
-				$db = new Revisr_DB;
-				$db->backup();
-				$db_hash = $this->git->run( "log --pretty=format:'%h' -n 1" );
-				add_post_meta( get_the_ID(), 'db_hash', $db_hash[0] );
-			}
-
-			//Notify the admin.
-			$email_msg = sprintf( __( 'A new commit was made to the repository: <br> #%s - %s', 'revisr' ), $clean_hash, $title );
-			Revisr_Admin::notify( get_bloginfo() . __( ' - New Commit', 'revisr' ), $email_msg );
-			return $clean_hash;		
+			$this->git->commit( $commit_msg, 'commit' );	
 		}
 	}
 
@@ -334,7 +306,7 @@ class Revisr_Admin
 		</head>
 		<body>
 		<?php
-			if ( isset( $_REQUEST['commit'] ) && $_REQUEST['commit'] != "" ) {
+			if ( isset( $_REQUEST['commit'] ) ) {
 				$diff = $this->git->run("show {$_REQUEST['commit']} {$_REQUEST['file']}");
 			}
 			else {
@@ -360,34 +332,6 @@ class Revisr_Admin
 		</body>
 		</html>
 		<?php
-		exit();
-	}
-
-	/**
-	 * Displays the recent activity box on the dashboard.
-	 * @access public
-	 */
-	public function recent_activity() {
-		global $wpdb;
-		$revisr_events = $wpdb->get_results( "SELECT id, time, message FROM $this->table_name ORDER BY id DESC LIMIT 15", ARRAY_A );
-
-		if ( $revisr_events ) {
-			?>
-			<table class="widefat">
-				<tbody id="activity_content">
-				<?php
-					foreach ($revisr_events as $revisr_event) {
-						$timestamp = strtotime($revisr_event['time']);
-						$time  	   = sprintf( __( '%s ago', 'revisr' ), human_time_diff( $timestamp ) );
-						echo "<tr><td>{$revisr_event['message']}</td><td>{$time}</td></tr>";
-					}
-				?>
-				</tbody>
-			</table>
-			<?php		
-		} else {
-			_e( '<p id="revisr_activity_no_results">Your recent activity will show up here.</p>', 'revisr' );
-		}
 		exit();
 	}
 

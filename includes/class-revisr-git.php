@@ -56,7 +56,7 @@ class Revisr_Git
 	 * @access public
 	 */
 	public function auto_push() {
-		if ( isset( $this->options['auto_push'] ) ) {
+		if ( isset( $this->options['auto_push'] ) && $this->options['auto_push'] == 'on' ) {
 			$this->push();
 		}
 	}
@@ -94,11 +94,12 @@ class Revisr_Git
 	/**
 	 * Commits any staged files to the local repository.
 	 * @access public
-	 * @param string $message The message to use with the commit.
+	 * @param string $message 	The message to use with the commit.
+	 * @param string $callback 	The callback to run.
 	 */
-	public function commit( $message ) {
+	public function commit( $message, $callback = '' ) {
 		$commit_message = escapeshellarg($message);
-		$commit = $this->run( "commit -m$commit_message" );
+		$commit = $this->run( "commit -m$commit_message", $callback );
 		return $commit;
 	}
 

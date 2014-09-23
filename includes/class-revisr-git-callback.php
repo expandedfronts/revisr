@@ -39,9 +39,34 @@ class Revisr_Git_Callback extends Revisr_Git
 	 * @access public
 	 */
 	public function success_commit( $output = '' ) {
-		$commit_hash = $this->current_commit();
-		$msg = sprintf( __( 'Successfully commmitted %s to the local repository.', 'revisr' ) );
+		$id 			= get_the_ID();
+		$view_link 		= get_admin_url() . "post.php?post={$id}&action=edit";
+		$commit_hash 	= $this->current_commit();
+		$commit_msg 	= $_REQUEST['post_title'];
+
+		add_post_meta( get_the_ID(), 'commit_hash', $commit_hash );
+		add_post_meta( get_the_ID(), 'branch', $this->branch );
+
+		//Backup the database if necessary
+		if ( isset( $_REQUEST['backup_db'] ) && $_REQUEST['backup_db'] == 'on' ) {
+			$db = new Revisr_DB;
+			$db->backup();
+			$db_hash = $this->git->run( "log --pretty=format:'%h' -n 1" );
+			add_post_meta( get_the_ID(), 'db_hash', $db_hash[0] );
+		}
+
+		//Log the event.
+		$msg = sprintf( __( 'Commmitted <a href="%s">#%s</a> to the local repository.', 'revisr' ), $view_link, $commit_hash );
 		Revisr_Admin::log( $msg, 'commit' );
+
+		//Notify the admin.
+		$email_msg = sprintf( __( 'A new commit was made to the repository: <br> #%s - %s', 'revisr' ), $commit_hash, $commit_msg );
+		Revisr_Admin::notify( get_bloginfo() . __( ' - New Commit', 'revisr' ), $email_msg );
+
+		//Push if necessary.
+		$this->auto_push();
+
+		return $commit_hash;
 	}
 
 	/**

@@ -108,7 +108,6 @@ class Revisr {
 			add_action( 'admin_post_nopriv_revisr_update', array( $revisr_admin, 'pull' ) );
 		}
 		add_action( 'wp_ajax_ajax_button_count', array( $revisr_admin, 'ajax_button_count' ) );
-		add_action( 'wp_ajax_recent_activity', array( $revisr_admin, 'recent_activity' ) );
 		add_action( 'wp_ajax_render_alert', array( $revisr_admin, 'render_alert' ) );
 		add_action( 'wp_ajax_pending_files', array( $revisr_admin, 'pending_files' ) );
 		add_action( 'wp_ajax_committed_files', array( $revisr_admin, 'committed_files' ) );
@@ -145,6 +144,7 @@ class Revisr {
 		add_filter( 'bulk_post_updated_messages', array( $revisr_setup, 'revisr_commits_bulk_messages' ), 10, 2 );
 		add_filter( 'custom_menu_order', array( $revisr_setup, 'revisr_commits_submenu_order' ) );
 		add_filter( "plugin_action_links_$plugin", array( $revisr_setup, 'settings_link' ) );
+		add_action( 'wp_ajax_recent_activity', array( $revisr_setup, 'recent_activity' ) );
 		$revisr_settings = new Revisr_Settings( $this->options );
 	}
 

@@ -487,6 +487,35 @@ class Revisr_Setup
 		</div>
 		<?php
 	}
+
+	/**
+	 * Displays the recent activity box on the dashboard.
+	 * @access public
+	 */
+	public function recent_activity() {
+		global $wpdb;
+		$revisr_events = $wpdb->get_results( "SELECT id, time, message FROM $this->table_name ORDER BY id DESC LIMIT 15", ARRAY_A );
+
+		if ( $revisr_events ) {
+			?>
+			<table class="widefat">
+				<tbody id="activity_content">
+				<?php
+					foreach ($revisr_events as $revisr_event) {
+						$timestamp = strtotime($revisr_event['time']);
+						$time  	   = sprintf( __( '%s ago', 'revisr' ), human_time_diff( $timestamp ) );
+						echo "<tr><td>{$revisr_event['message']}</td><td>{$time}</td></tr>";
+					}
+				?>
+				</tbody>
+			</table>
+			<?php		
+		} else {
+			_e( '<p id="revisr_activity_no_results">Your recent activity will show up here.</p>', 'revisr' );
+		}
+		exit();
+	}
+	
 	/**
 	 * Displays the "Sponsored by Site5" logo.
 	 * @access public
