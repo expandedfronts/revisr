@@ -38,7 +38,6 @@ class Revisr_Admin
 	 * @access public
 	 * @param array  	$options 		An array of user options and preferences.
 	 * @param string 	$table_name 	The name of the database table to use.
-	 * @param string 	$git_dir 		The name of the top-level Git directory.
 	 */
 	public function __construct( $options, $table_name ) {
 		$this->options 		= $options;
@@ -54,9 +53,9 @@ class Revisr_Admin
 	 */
 	public static function alert( $message, $is_error = false ) {
 		if ( $is_error == true ) {
-			set_transient( 'revisr_error', $message, 20 );
+			set_transient( 'revisr_error', $message, 10 );
 		} else {
-			set_transient( 'revisr_alert', $message, 15 );
+			set_transient( 'revisr_alert', $message, 3 );
 		}
 	}
 
@@ -66,9 +65,9 @@ class Revisr_Admin
 	 */
 	public function ajax_button_count() {
 		if ( $_REQUEST['data'] == 'unpulled' ) {
-			$this->git->count_unpulled();
+			return $this->git->count_unpulled();
 		} else {
-			$this->git->count_unpushed();
+			return $this->git->count_unpushed();
 		}
 		exit();
 	}
@@ -122,7 +121,6 @@ class Revisr_Admin
 	public static function notify( $subject, $message ) {
 		$options = get_option( 'revisr_settings' );
 		$url = get_admin_url() . 'admin.php?page=revisr';
-
 		if ( isset( $options['notifications'] ) ) {
 			$email = $options['email'];
 			$message .= '<br><br>';
@@ -164,18 +162,15 @@ class Revisr_Admin
 	 */
 	public function process_commit() {
 		if ( isset( $_REQUEST['_wpnonce'] ) && isset( $_REQUEST['_wp_http_referer'] ) ) {
-			
 			$id 	  		= get_the_ID();
 			$commit_msg 	= $_REQUEST['post_title'];
 			$post_new 		= get_admin_url() . 'post-new.php?post_type=revisr_commits';
-
 			//Require a message to be entered for the commit.
 			if ( $commit_msg == 'Auto Draft' || $commit_msg == '' ) {
 				$url = $post_new . '&message=42';
 				wp_redirect( $url );
 				exit();
 			}
-
 			//Stage any necessary files.
 			if ( isset( $_POST['staged_files'] ) ) {
 				$this->git->stage_files( $_POST['staged_files'] );
@@ -188,10 +183,8 @@ class Revisr_Admin
 				}
 				$staged_files = array();
 			}
-
 			add_post_meta( get_the_ID(), 'committed_files', $staged_files );
 			add_post_meta( get_the_ID(), 'files_changed', count( $staged_files ) );
-
 			$this->git->commit( $commit_msg, 'commit' );	
 		}
 	}
@@ -225,6 +218,17 @@ class Revisr_Admin
 				$this->git->run( "push {$this->git->remote} --delete {$branch}" );
 			}
 		}
+		exit();
+	}
+
+	/**
+	 * Resets all uncommitted changes to the working directory.
+	 * @access public
+	 */
+	public function process_discard() {
+		$this->git->reset( '--hard', 'HEAD', true );
+		Revisr_Admin::log( __('Discarded all uncommitted changes.', 'revisr'), 'discard' );
+		Revisr_Admin::alert( __('Successfully discarded any uncommitted changes.', 'revisr') );
 		exit();
 	}
 
@@ -308,20 +312,16 @@ class Revisr_Admin
 		<?php
 			if ( isset( $_REQUEST['commit'] ) ) {
 				$diff = $this->git->run("show {$_REQUEST['commit']} {$_REQUEST['file']}");
-			}
-			else {
+			} else {
 				$diff = $this->git->run("diff {$_REQUEST['file']}");
 			}
-
 			if ( is_array( $diff ) ) {
 				foreach ( $diff as $line ) {
 					if (substr( $line, 0, 1 ) === "+") {
 						echo "<span class='diff_added' style='background-color:#cfc;'>" . htmlspecialchars($line) . "</span><br>";
-					}
-					else if (substr( $line, 0, 1 ) === "-") {
+					} else if (substr( $line, 0, 1 ) === "-") {
 						echo "<span class='diff_removed' style='background-color:#fdd;'>" . htmlspecialchars($line) . "</span><br>";
-					}
-					else {
+					} else {
 						echo htmlspecialchars($line) . "<br>";
 					}	
 				}			
@@ -342,15 +342,12 @@ class Revisr_Admin
 	public function render_alert() {
 		$alert = get_transient( 'revisr_alert' );
 		$error = get_transient( 'revisr_error' );
-
 		if ( $error ) {
-			echo "<div id='revisr_alert' class='error'>" . wpautop( $error ) . "</div>";
+			echo "<div class='revisr-alert error'>" . wpautop( $error ) . "</div>";
 		} else if ( $alert ) {
-			echo "<div id='revisr_alert' class='updated'>" . wpautop( $alert ) . "</div>";
+			echo "<div class='revisr-alert updated'>" . wpautop( $alert ) . "</div>";
 		} else {
-			$untracked = $this->git->count_untracked();
-			$branch = $this->git->branch;
-			echo "<div id='revisr_alert' class='updated'><p>There are currently $untracked untracked files on branch $branch.</p></div>";
+			printf( __('<div class="revisr-alert updated"><p>There are currently %s untracked files on branch %s.</p></div>', 'revisr' ), $this->git->count_untracked(), $this->git->branch );
 		}
 		exit();
 	}
@@ -369,12 +366,9 @@ class Revisr_Admin
 
 		if ( is_array( $output ) ) {
 				?>
-				
 				<!-- Staging -->
 				<div class="stage-container">
-					
 					<p><strong><?php _e( 'Staged Files', 'revisr' ); ?></strong></p>
-					
 					<select id='staged' multiple="multiple" name="staged_files[]" size="6">
 					<?php
 					//Clean up output from git status and echo the results.
@@ -386,36 +380,26 @@ class Revisr_Admin
 					}
 					?>
 					</select>
-
 					<div class="stage-nav">
 						<input id="unstage-file" type="button" class="button button-primary stage-nav-button" value="<?php _e( 'Unstage Selected', 'revisr' ); ?>" onclick="unstage_file()" />
 						<br>
 						<input id="unstage-all" type="button" class="button stage-nav-button" value="<?php _e( 'Unstage All', 'revisr' ); ?>" onclick="unstage_all()" />
 					</div>
-
-				</div><!-- /Staging -->
-				
+				</div><!-- /Staging -->		
 				<br>
-
 				<!-- Unstaging -->
 				<div class="stage-container">
-					
 					<p><strong><?php _e( 'Unstaged Files', 'revisr' ); ?></strong></p>
-
 					<select id="unstaged" multiple="multiple" size="6">
 					</select>
-
 					<div class="stage-nav">
 						<input id="stage-file" type="button" class="button button-primary stage-nav-button" value="<?php _e( 'Stage Selected', 'revisr' ); ?>" onclick="stage_file()" />
 						<br>
 						<input id="stage-all" type="button" class="button stage-nav-button" value="<?php _e( 'Stage All', 'revisr' ); ?>" onclick="stage_all()" />
 					</div>
-
 				</div><!-- /Unstaging -->
-
 			<?php	
-		}
-			
+		}	
 		exit();
 	}
 
@@ -428,33 +412,27 @@ class Revisr_Admin
 			exit();
 		}
 		check_ajax_referer( 'committed_nonce', 'security' );
-
 		$committed_files = get_post_custom_values( 'committed_files', $_POST['id'] );
-		$commit_hash = get_post_custom_values( 'commit_hash', $_POST['id'] );
+		$commit_hash	 = get_post_custom_values( 'commit_hash', $_POST['id'] );
 		if ( is_array( $committed_files ) ) {
 			foreach ( $committed_files as $file ) {
 				$output = unserialize( $file );
 			}
 		}
-
 		if ( isset( $output ) ) {
 			printf( __('<br><strong>%s</strong> files were included in this commit. Double-click files marked as "Modified" to view the changes in a diff.', 'revisr' ), count( $output ) );
-
 			echo "<input id='commit_hash' name='commit_hash' value='{$commit_hash[0]}' type='hidden' />";
 			echo '<br><br><select id="committed" multiple="multiple" size="6">';
 				foreach ( $output as $result ) {
 					$short_status = substr( $result, 0, 3 );
 					$file = substr($result, 2);
 					$status = Revisr_Git::get_status( $short_status );
-					
 					printf( '<option class="committed" value="%s">%s [%s]</option>', $result, $file, $status );	
-
 				}
 			echo '</select>';
 		} else {
 			_e( 'No files were included in this commit.', 'revisr' );
 		}
-
 		exit();
 	}
 }

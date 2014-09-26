@@ -117,7 +117,7 @@ class Revisr_Git_Callback extends Revisr_Git
 	 * Returns nothing if there are no commits to push/pull.
 	 * @access public
 	 */
-	public function null_count_ajax_button( $output = '' ) {
+	public function null_count_ajax_btn( $output = '' ) {
 		return;
 	}
 
@@ -137,7 +137,7 @@ class Revisr_Git_Callback extends Revisr_Git
 	 */
 	public function null_pull( $output = '' ) {
 		$msg = __( 'There was an error pulling from the remote repository. The local repository could be ahead, or there may be an authentication issue.', 'revisr' );
-		Revisr_Admin::alert( $msg );
+		Revisr_Admin::alert( $msg, true );
 		Revisr_Admin::log( __( 'Error pulling changes from the remote repository.', 'revisr' ), 'error' );
 		exit();
 	}
@@ -158,7 +158,7 @@ class Revisr_Git_Callback extends Revisr_Git
 	 */
 	public function null_push( $output = '' ) {
 		$msg = __( 'There was an error pushing to the remote repository. The remote repository could be ahead, or there may be an authentication issue.', 'revisr' );
-		Revisr_Admin::alert( $msg );
+		Revisr_Admin::alert( $msg, true );
 		Revisr_Admin::log( __( 'Error pushing changes to the remote repository.', 'revisr' ), 'error' );
 		return;
 	}

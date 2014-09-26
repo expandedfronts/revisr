@@ -1,147 +1,101 @@
+var alert_div 			= document.getElementById("revisr_alert");
+var alert_wrapper_div 	= document.getElementById("revisr-alert-container");
+var activity_div 		= document.getElementById("revisr_activity");
+var unpulled_div 		= document.getElementById("unpulled");
+var unpushed_div 		= document.getElementById("unpushed");
+var alert_request 		= {action: 'render_alert'};
+var activity_request 	= {action: 'recent_activity'};
+
+function delayed_refresh() {
+	setTimeout(function(){
+		update_alert();
+	}, 4000 );
+}
+function update_alert() {
+	jQuery.ajax({
+		type : 'POST',
+		url : ajaxurl,
+		data : alert_request,
+		success : function(response){ 
+			jQuery("#revisr-loading-alert").hide();
+			jQuery("#revisr-processing-request").hide();
+			alert_wrapper_div.innerHTML = response; 
+		}
+	});
+}
+function update_recent_activity() {
+	jQuery.ajax({
+		type : 'POST',
+		url : ajaxurl,
+		data : activity_request,
+		success : function(response){
+			activity_div.innerHTML = response;
+		}
+	});
+}
+function update_counts() {
+	var unpulled_request = {action: 'ajax_button_count',data : 'unpulled'};
+	jQuery.post(ajaxurl, unpulled_request, function(response) {
+		unpulled_div.innerHTML = response;
+	});
+	var unpushed_request = {action: 'ajax_button_count',data: 'unpushed'};
+	jQuery.post(ajaxurl, unpushed_request, function(response) {
+		unpushed_div.innerHTML = response;
+	});
+}
+function processing() {
+	jQuery('.revisr-alert').hide();
+	jQuery("#loader").show();
+	jQuery("#revisr-processing-request").show();
+}
+function process_complete() {
+	jQuery("#loader").hide();
+	update_alert();
+	update_recent_activity();
+	update_counts();
+	delayed_refresh();
+}
+update_alert();
+update_recent_activity();
+update_counts();
+jQuery('#loader').hide();
+
 jQuery(document).ready(function() {
-
-	var alert_data = {
-		action: 'render_alert'
-	};
-
-	jQuery.post(ajaxurl, alert_data, function(response) {
-		document.getElementById("revisr-alert-container").innerHTML = response;
-	});
-
-	setInterval(function(){
-		jQuery.post(ajaxurl, alert_data, function(response) {
-			document.getElementById("revisr-alert-container").innerHTML = response;
-		});
-	}, 3000 );
-
-	var recent_data = {
-		action: 'recent_activity'
-	};
-
-	jQuery.post(ajaxurl, recent_data, function(response) {
-		document.getElementById("revisr_activity").innerHTML = response;
-	});
-
-	var unpushed = {
-		action: 'ajax_button_count',
-		data: 'unpushed'
-	};
-
-	jQuery.post(ajaxurl, unpushed, function(response) {
-		document.getElementById("unpushed").innerHTML = response;
-	});
-
-	var unpulled = {
-		action: 'ajax_button_count',
-		data : 'unpulled'
-	};
-
-	jQuery.post(ajaxurl, unpulled, function(response) {
-		document.getElementById("unpulled").innerHTML = response;
-	});
-
-	jQuery('#loader').hide();
-
 	jQuery("#commit-btn").click(function() { 
 		window.location = "post-new.php?post_type=revisr_commits";
 	});
-
 	jQuery("#discard-btn").click(function() { 
-
 	    if (confirm("Are you sure you want to discard your uncommitted changes?") == true) {
-	    	jQuery('#loader').show();
-	   		var data = {
-				action: 'discard',
-				security: dashboard_vars.ajax_nonce
-			};
-			jQuery.post(ajaxurl, data, function(response) {
-				var error_div = document.getElementById("revisr_alert");
-				if (response.indexOf('error') !== -1) {
-					error_div.className = "error";
-				}
-				else {
-					error_div.className = "updated";
-				}
-				error_div.innerHTML = response;
-				jQuery('#loader').hide();
-				jQuery.post(ajaxurl, recent_data, function(response) {
-					document.getElementById("revisr_activity").innerHTML = response;
-				});
+	    	processing();
+	   		var discard_request = {action: 'discard',security: dashboard_vars.ajax_nonce};
+			jQuery.post(ajaxurl, discard_request, function(response) {
+				process_complete();
 			});
-
 	    } 
-	    else {
-	        console.log("Revert cancelled.");
-	    }
 	});
-
 	jQuery("#backup-btn").click(function() {
-		jQuery("#loader").show();
-		var data = {
-			action: 'backup_db',
-			source: 'ajax_button'
-		}
+		processing();
+		var data = {action: 'backup_db',source: 'ajax_button'}
 		jQuery.post(ajaxurl, data, function(response) {
-			jQuery("#loader").hide();
-			jQuery.post(ajaxurl, recent_data, function(response) {
-				document.getElementById("revisr_activity").innerHTML = response;
-			});
+			process_complete();
 		});
 	});
-
 	jQuery("#push-btn").click(function() { 
-	 
 	    if (confirm("Are you sure you want to discard your uncommitted changes and push to the remote?") == true) {
-	   		jQuery('#loader').show();
-	   		var data = {
-				action: 'process_push'
-			};
-			jQuery.post(ajaxurl, data, function(response) {
-				jQuery('#loader').hide();
-				jQuery.post(ajaxurl, recent_data, function(response) {
-					document.getElementById("revisr_activity").innerHTML = response;
-						jQuery.post(ajaxurl, unpushed, function(response) {
-							document.getElementById("unpushed").innerHTML = response;
-						});
-				});	
+	   		processing();
+	   		var push_request = {action: 'process_push'};
+			jQuery.post(ajaxurl, push_request, function(response) {
+				process_complete();
 			});
 	    } 
-	    else {
-	        console.log("Push cancelled.");
-	    }
 	});
-
 	jQuery("#pull-btn").click(function() { 
-
 	    if (confirm("Are you sure you want to discard your uncommitted changes and pull from the remote?") == true) {
-	    	jQuery('#loader').show();
-	   		var data = {
-				action: 'process_pull',
-				from_dash: 'true',
-				security: dashboard_vars.ajax_nonce
-			};
-			
-			jQuery.post(ajaxurl, data, function(response) {
-				var error_div = document.getElementById("revisr_alert");
-				if (response.indexOf('revisr_error') !== -1) {
-					error_div.className = "error";
-				}
-				else {
-					error_div.className = "updated";
-				}
-				error_div.innerHTML = response;
-				jQuery('#loader').hide();
-				jQuery.post(ajaxurl, recent_data, function(response) {
-					document.getElementById("revisr_activity").innerHTML = response;
-						jQuery.post(ajaxurl, unpulled, function(response) {
-							document.getElementById("unpulled").innerHTML = response;
-						});
-				});
+	    	processing();
+	   		var pull_request = {action: 'process_pull',from_dash: 'true',security: dashboard_vars.ajax_nonce};
+			jQuery.post(ajaxurl, pull_request, function(response) {
+				process_complete();
 			});
 	    } 
-	    else {
-	        console.log("Pull cancelled.");
-	    }
 	});
-
 }); // end ready 

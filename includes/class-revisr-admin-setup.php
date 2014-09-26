@@ -54,7 +54,7 @@ class Revisr_Setup
 	public function revisr_scripts( $hook ) {
 		wp_register_style( 'revisr_dashboard_css', plugins_url() . '/revisr/assets/css/dashboard.css', array(), '07052014' );
 		wp_register_style( 'revisr_commits_css', plugins_url() . '/revisr/assets/css/commits.css', array(), '08202014' );
-		wp_register_script( 'revisr_dashboard', plugins_url() . '/revisr/assets/js/dashboard.js', 'jquery',  '07052014', true );
+		wp_register_script( 'revisr_dashboard', plugins_url() . '/revisr/assets/js/dashboard.js', 'jquery',  '09232014' );
 		wp_register_script( 'revisr_staging', plugins_url() . '/revisr/assets/js/staging.js', 'jquery', '07052014', false );
 		wp_register_script( 'revisr_committed', plugins_url() . '/revisr/assets/js/committed.js', 'jquery', '07052014', false );
 		wp_register_script( 'revisr_settings', plugins_url() . '/revisr/assets/js/settings.js', 'jquery', '08272014', true );
@@ -492,10 +492,10 @@ class Revisr_Setup
 	 * Displays the recent activity box on the dashboard.
 	 * @access public
 	 */
-	public function recent_activity() {
+	public static function recent_activity() {
 		global $wpdb;
-		$revisr_events = $wpdb->get_results( "SELECT id, time, message FROM $this->table_name ORDER BY id DESC LIMIT 15", ARRAY_A );
-
+		$table_name = $wpdb->prefix . 'revisr';
+		$revisr_events = $wpdb->get_results( "SELECT id, time, message FROM $table_name ORDER BY id DESC LIMIT 15", ARRAY_A );
 		if ( $revisr_events ) {
 			?>
 			<table class="widefat">
@@ -513,7 +513,10 @@ class Revisr_Setup
 		} else {
 			_e( '<p id="revisr_activity_no_results">Your recent activity will show up here.</p>', 'revisr' );
 		}
-		exit();
+
+		if ( defined("DOING_AJAX") ) {
+			exit();
+		}
 	}
 	
 	/**

@@ -64,6 +64,7 @@ class Revisr {
 		$this->admin_setup_hooks();		
 		$this->admin_hooks();
 		$this->db_hooks();
+		$this->check_compatibility();
 	}
 
 	/**
@@ -97,6 +98,7 @@ class Revisr {
 	private function admin_hooks() {
 		$revisr_admin 	= new Revisr_Admin( $this->options, $this->get_table_name() );
 		$revisr_git 	= new Revisr_Git();
+		add_action( 'wp_ajax_render_alert', array( $revisr_admin, 'render_alert' ) );
 		add_action( 'publish_revisr_commits', array( $revisr_admin, 'process_commit' ) );
 		add_action( 'admin_post_process_checkout', array( $revisr_admin, 'process_checkout' ) );
 		add_action( 'admin_post_process_create_branch', array( $revisr_admin, 'process_create_branch' ) );
@@ -108,10 +110,9 @@ class Revisr {
 			add_action( 'admin_post_nopriv_revisr_update', array( $revisr_admin, 'pull' ) );
 		}
 		add_action( 'wp_ajax_ajax_button_count', array( $revisr_admin, 'ajax_button_count' ) );
-		add_action( 'wp_ajax_render_alert', array( $revisr_admin, 'render_alert' ) );
 		add_action( 'wp_ajax_pending_files', array( $revisr_admin, 'pending_files' ) );
 		add_action( 'wp_ajax_committed_files', array( $revisr_admin, 'committed_files' ) );
-		add_action( 'wp_ajax_discard', array( $revisr_admin, 'discard' ) );
+		add_action( 'wp_ajax_discard', array( $revisr_admin, 'process_discard' ) );
 		add_action( 'wp_ajax_process_push', array( $revisr_admin, 'process_push' ) );
 		add_action( 'wp_ajax_process_pull', array( $revisr_admin, 'process_pull' ) );
 		add_action( 'wp_ajax_view_diff', array( $revisr_admin, 'view_diff' ) );
@@ -165,7 +166,7 @@ class Revisr {
 	private function check_compatibility() {
 		if ( ! function_exists( 'exec' ) ) {
 			Revisr_Admin::alert( __( 'It appears that you don\'t have the PHP exec() function enabled on your server. This can be enabled in your php.ini.
-				Check with your web host if you\'re not sure what this means.', 'revisr'), 'error');
+				Check with your web host if you\'re not sure what this means.', 'revisr'), true );
 		}
 	}
 
