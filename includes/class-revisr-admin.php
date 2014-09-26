@@ -65,9 +65,9 @@ class Revisr_Admin
 	 */
 	public function ajax_button_count() {
 		if ( $_REQUEST['data'] == 'unpulled' ) {
-			return $this->git->count_unpulled();
+			echo $this->git->count_unpulled();
 		} else {
-			return $this->git->count_unpushed();
+			echo $this->git->count_unpushed();
 		}
 		exit();
 	}
@@ -162,7 +162,6 @@ class Revisr_Admin
 	 */
 	public function process_commit() {
 		if ( isset( $_REQUEST['_wpnonce'] ) && isset( $_REQUEST['_wp_http_referer'] ) ) {
-			$id 	  		= get_the_ID();
 			$commit_msg 	= $_REQUEST['post_title'];
 			$post_new 		= get_admin_url() . 'post-new.php?post_type=revisr_commits';
 			//Require a message to be entered for the commit.
@@ -276,7 +275,7 @@ class Revisr_Admin
 					$post_id = wp_insert_post( $post );
 
 					add_post_meta( $post_id, 'commit_hash', $commit_hash );
-					add_post_meta( $post_id, 'branch', $this->branch );
+					add_post_meta( $post_id, 'branch', $this->git->branch );
 					add_post_meta( $post_id, 'files_changed', count( $files_changed ) );
 					add_post_meta( $post_id, 'committed_files', $files_changed );
 

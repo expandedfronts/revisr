@@ -51,7 +51,7 @@ class Revisr_Git_Callback extends Revisr_Git
 		if ( isset( $_REQUEST['backup_db'] ) && $_REQUEST['backup_db'] == 'on' ) {
 			$db = new Revisr_DB;
 			$db->backup();
-			$db_hash = $this->git->run( "log --pretty=format:'%h' -n 1" );
+			$db_hash = $this->run( "log --pretty=format:'%h' -n 1" );
 			add_post_meta( get_the_ID(), 'db_hash', $db_hash[0] );
 		}
 
