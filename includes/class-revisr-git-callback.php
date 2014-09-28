@@ -74,7 +74,7 @@ class Revisr_Git_Callback extends Revisr_Git
 	 * @access public
 	 */
 	public function null_commit( $output = '' ) {
-		$msg = __( 'There was an error committing the changes to the local repository.', 'revisr' );
+		$msg = __( 'Error committing the changes to the local repository.', 'revisr' );
 		Revisr_Admin::log( $msg, 'error' );
 	}
 
@@ -118,7 +118,28 @@ class Revisr_Git_Callback extends Revisr_Git
 	 * @access public
 	 */
 	public function null_count_ajax_btn( $output = '' ) {
-		return;
+		exit();
+	}
+
+	/**
+	 * Returns if the repo initialization was successful.
+	 * @access public
+	 */
+	public function success_init_repo() {
+		Revisr_Admin::log( __( 'Initialized a new repository.', 'revisr' ), 'init' );
+		Revisr_Admin::alert( __( 'Successfully initialized a new repository. Please configure the settings for the remote if you haven\'t done so already.', 'revisr' ) );
+		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
+		exit();
+	}
+
+	/**
+	 * Returns if an initialization failed.
+	 * @access public
+	 */
+	public function null_init_repo() {
+		Revisr_Admin::log( __( 'Failed to initialize a new repository.', 'revisr' ), 'error' );
+		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
+		exit();
 	}
 
 	/**

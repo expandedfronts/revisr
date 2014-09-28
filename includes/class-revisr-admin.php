@@ -232,14 +232,6 @@ class Revisr_Admin
 	}
 
 	/**
-	 * Processes the creation of a new repository.
-	 * @access public
-	 */
-	public function process_init() {
-		$this->git->init();
-	}
-
-	/**
 	 * Processes a pull.
 	 * @access public
 	 */

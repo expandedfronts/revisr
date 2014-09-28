@@ -9,13 +9,15 @@
  */
 
 if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" ) {
-
 	$git = new Revisr_Git;
 	$options = Revisr::get_options();
-	
-	if ( isset( $options['gitignore'] ) ) {
+	if ( isset( $options['gitignore'] ) && $options['gitignore'] != "" ) {
 		chdir( ABSPATH );
 		file_put_contents( ".gitignore", $options['gitignore'] );
+			$git->run("add .gitignore");
+			$commit_msg = __( 'Updated .gitignore.', 'revisr' );
+			$git->run("commit -m \"$commit_msg\"");
+			$git->auto_push();
 	}
 	if ( isset( $options['username'] ) && $options['username'] != "" ) {
 		$git->run('config user.name "' . $options['username'] . '"');
@@ -26,18 +28,8 @@ if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" )
 	if ( isset( $options['remote_url'] ) && $options['remote_url'] != "" ) {
 		$git->run('config remote.origin.url ' . $options['remote_url']);
 	}
-
-	$git->run("add .gitignore");
-	$commit_msg = __( 'Updated .gitignore.', 'revisr' );
-	$git->run("commit -m \"$commit_msg\"");
-
-	$git->auto_push();
-
-	chdir( $git->dir );
 }
-
 ?>
-
 <div class="wrap">
 	<div id="revisr_settings">
 		<h2><?php _e( 'Revisr - Settings', 'revisr' ); ?></h2>
@@ -54,7 +46,6 @@ if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" )
 		</h2>
 		<form class="settings-form" method="post" action="options.php">
 			<?php
-
 				//Decides which settings to display.
 				$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general_settings';
 	            if ( $active_tab == 'general_settings' ) {
@@ -67,7 +58,6 @@ if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" )
 		            settings_fields( 'revisr_database_settings' );   
 	            	do_settings_sections( 'revisr_database_settings' );
 	            }
-
 	            submit_button(); 
 		    ?>
 		</form>

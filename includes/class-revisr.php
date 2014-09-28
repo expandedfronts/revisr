@@ -103,9 +103,9 @@ class Revisr {
 		add_action( 'admin_post_process_checkout', array( $revisr_admin, 'process_checkout' ) );
 		add_action( 'admin_post_process_create_branch', array( $revisr_admin, 'process_create_branch' ) );
 		add_action( 'admin_post_process_delete_branch', array( $revisr_admin, 'process_delete_branch' ) );
+		add_action( 'admin_post_init_repo', array( $revisr_git, 'init_repo' ) );
 		add_action( 'admin_post_process_revert', array( $revisr_admin, 'process_revert' ) );
 		add_action( 'admin_post_process_view_diff', array( $revisr_admin, 'process_view_diff' ) );
-		add_action( 'admin_post_process_init', array( $revisr_admin, 'process_init' ) );
 		if ( isset( $this->options['auto_pull'] ) ) {
 			add_action( 'admin_post_nopriv_revisr_update', array( $revisr_admin, 'pull' ) );
 		}
@@ -164,9 +164,13 @@ class Revisr {
 	 * @access private
 	 */
 	private function check_compatibility() {
+		$git = new Revisr_Git;
 		if ( ! function_exists( 'exec' ) ) {
 			Revisr_Admin::alert( __( 'It appears that you don\'t have the PHP exec() function enabled on your server. This can be enabled in your php.ini.
 				Check with your web host if you\'re not sure what this means.', 'revisr'), true );
+		}
+		if ( ! is_writeable( $git->dir ) ) {
+			Revisr_Admin::alert( __( 'Revisr requires write permissions to the repository. The recommended settings are 755 for directories, and 644 for files.', 'revisr' ), true );
 		}
 	}
 

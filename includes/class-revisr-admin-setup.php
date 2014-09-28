@@ -36,7 +36,7 @@ class Revisr_Setup
 	 */
 	public $dir;
 
-	public function __construct( $options, $table_name ) {
+	public function __construct( $options ) {
 
 		global $wpdb;
 		$this->wpdb = $wpdb;

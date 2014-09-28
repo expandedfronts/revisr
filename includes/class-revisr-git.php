@@ -151,6 +151,8 @@ class Revisr_Git
 		if ( $dir ) {
 			return $dir;
 		} else {
+			$alert = sprintf( __( 'Revisr could not detect a Git repository. <a href="%s">Click here</a> to create one.', 'revisr' ), $url );
+			Revisr_Admin::alert( $alert, true );
 			return ABSPATH;
 		}
 	}
@@ -244,8 +246,8 @@ class Revisr_Git
 	 * Initializes a new repository.
 	 * @access public
 	 */
-	public function init() {
-		$init = $this->run( 'init .' );
+	public function init_repo() {
+		$init = $this->run( 'init .', __FUNCTION__ );
 		return $init;
 	}
 
