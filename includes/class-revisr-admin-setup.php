@@ -157,6 +157,7 @@ class Revisr_Setup
 			}			
 		} else {
 			add_meta_box( 'revisr_pending_files', __( 'Untracked Files', 'revisr' ), array( $this, 'pending_files_meta' ), 'revisr_commits', 'normal', 'high' );
+			add_meta_box( 'revisr_add_tag', __( 'Add Tag', 'revisr' ), array( $this, 'add_tag_meta' ), 'revisr_commits', 'side', 'high' );
 		}
 	}
 	
@@ -356,6 +357,15 @@ class Revisr_Setup
 	}
 
 	/**
+	 * Displays the "Add Tag" meta box on the sidebar.
+	 * @access public
+	 */
+	public function add_tag_meta() {
+		echo "<label for='tag_name'>" . __( 'Tag Name:', 'revisr' ) . '</label><br>';
+		echo "<input id='tag_name' type='text' name='tag_name' />";
+	}
+
+	/**
 	 * Displays the files changed in a commit.
 	 * @access public
 	 */
@@ -378,13 +388,14 @@ class Revisr_Setup
 	 */
 	public function columns() {
 		$columns = array (
-			'cb' => '<input type="checkbox" />',
-			'hash' => __( 'ID', 'revisr' ),
-			'title' => __( 'Commit', 'revisr' ),
-			'branch' => __( 'Branch', 'revisr' ),			
-			'files_changed' => __( 'Files Changed', 'revisr' ),
-			'date' => __( 'Date', 'revisr' ),
-		);
+					'cb' 			=> '<input type="checkbox" />',
+					'hash' 			=> __( 'ID', 'revisr' ),
+					'title' 		=> __( 'Commit', 'revisr' ),
+					'branch' 		=> __( 'Branch', 'revisr' ),
+					'tag' 			=> __( 'Tag', 'revisr' ),
+					'files_changed' => __( 'Files Changed', 'revisr' ),
+					'date' 			=> __( 'Date', 'revisr' ),
+				);
 		return $columns;
 	}
 
@@ -406,7 +417,13 @@ class Revisr_Setup
 				if ( isset( $branch_meta[0] ) ) {
 					echo $branch_meta[0];
 				}
-			break;			
+			break;
+			case "tag":
+				$tag_meta = get_post_meta( $post_id, "git_tag" );
+				if ( isset( $tag_meta[0] ) ) {
+					echo $tag_meta[0];
+				}
+			break;
 			case "files_changed":
 				$files_meta = get_post_meta( $post_id, "files_changed" );
 				if ( isset( $files_meta[0] ) ) {

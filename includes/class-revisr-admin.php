@@ -182,6 +182,13 @@ class Revisr_Admin
 				}
 				$staged_files = array();
 			}
+
+			//Add a tag if necessary.
+			if ( isset( $_POST['tag_name'] ) ) {
+				$this->git->tag( $_POST['tag_name'] );
+				add_post_meta( get_the_ID(), 'git_tag', $_POST['tag_name'] );
+			}
+
 			add_post_meta( get_the_ID(), 'committed_files', $staged_files );
 			add_post_meta( get_the_ID(), 'files_changed', count( $staged_files ) );
 			$this->git->commit( $commit_msg, 'commit' );	

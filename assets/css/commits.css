@@ -42,6 +42,27 @@
 td.hash.column-hash {
 	width:70px !important;
 }
+.column-title {
+	width: 400px !important;
+}
+#branch {
+	text-align: center;
+}
+#tag {
+	text-align: center;
+}
+#files_changed {
+	text-align: center;
+}
+.column-branch {
+	text-align: center;
+}
+.column-tag {
+	text-align: center;
+}
+.column-files_changed {
+	text-align: center;
+}
 #revisr_settings th {
 	width: 290px;
 }

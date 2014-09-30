@@ -41,6 +41,8 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 			<!-- sidebar -->
 			<div id="postbox-container-1" class="postbox-container">
 				<div class="meta-box-sortables">
+					
+					<!-- BEGIN QUICK ACTIONS -->
 					<div class="postbox">
 						<h3><span><?php _e('Quick Actions', 'revisr'); ?></span> <div id='loader'><img src="<?php echo $loader_url; ?>"/></div></h3>
 						<div class="inside">
@@ -51,29 +53,55 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span id="pull-text" class="qb-text">| <?php _e( 'Pull Changes', 'revisr' ); ?>  <span id="unpulled"></span></span></button>
 						</div> <!-- .inside -->
 					</div> <!-- .postbox -->
-					<div class="postbox">
-						<h3><?php _e('Branches', 'revisr'); ?><span id="manage_branches"> (<a href="<?php echo get_admin_url(); ?>admin.php?page=revisr_branches" title="Manage Branches"><?php _e( 'Manage', 'revisr' ); ?></a>)</span></h3>
-						<div id="branches_box" class="inside">
-							<table id="branches_table" class="widefat">
-								<?php
-									$output = $git->branches();
-									if ( is_array( $output ) ) {
-										foreach ($output as $key => $value){
-											$branch = substr($value, 2);
-											
-											if (substr( $value, 0, 1 ) === "*"){
-												echo "<tr><td><strong>$branch</strong></td><td width='70'><a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Checked Out</a></td></tr>";
-											}
-											else {
-												echo "<tr><td>$branch</td><td width='70'><a class='button branch-btn' href='" . get_admin_url() . "admin-post.php?action=checkout&branch={$branch}'>Checkout</a></td></tr>";
-											}
-										}										
-									}
+					<!-- END QUICK ACTIONS -->
 
-								?>
-							</table>
-						</div> <!-- .inside -->
-					</div> <!-- .postbox -->
+					<!-- BEGIN BRANCHES/TAGS WIDGET -->
+					<div id="branches_tags_widget" class="postbox ">
+						<h3 class="hndle"><span><?php _e( 'Branches/Tags', 'revisr' ); ?></span></h3>
+						<div class="inside">
+							<div id="taxonomy-category" class="categorydiv">
+								<ul id="branches-tags-tabs" class="category-tabs">
+									<li id="branches-tab" class="tabs"><a id="branches-link" href="#branches" onclick="return false;"><?php _e( 'Branches', 'revisr' ); ?></a></li>
+									<li id="tags-tab" class="hide-if-no-js"><a id="tags-link" href="#tags" onclick="return false;"><?php _e( 'Tags', 'revisr' ); ?></a></li>
+								</ul>
+								<div id="branches" class="tabs-panel" style="display: block;">
+									<table id="branches_table" class="widefat">
+										<?php
+											$output = $git->branches();
+											if ( is_array( $output ) ) {
+												foreach ($output as $key => $value){
+													$branch = substr($value, 2);
+													
+													if (substr( $value, 0, 1 ) === "*"){
+														echo "<tr><td><strong>$branch</strong></td><td width='70'><a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Checked Out</a></td></tr>";
+													}
+													else {
+														echo "<tr><td>$branch</td><td width='70'><a class='button branch-btn' href='" . get_admin_url() . "admin-post.php?action=checkout&branch={$branch}'>Checkout</a></td></tr>";
+													}
+												}										
+											}
+
+										?>
+									</table>
+								</div>
+								<div id="tags" class="tabs-panel" style="display: none;">
+									<ul id="tags-list">
+										<?php
+											$tags = $git->run( 'tag' );
+											foreach ( $tags as $tag ) {
+												echo "<li>$tag</li>";
+											}
+										?>
+									</ul>
+								</div>
+								<div id="manage_branches" class="wp-hidden-children">
+									<h4><a id="manage-branches-link" href="<?php echo get_admin_url() . 'admin.php?page=revisr_branches'; ?>" class="hide-if-no-js">Manage Branches</a></h4>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- END BRANCHES/TAGS WIDGET -->
+
 					<div class="postbox">
 						<h3><span><?php _e( 'About this plugin', 'revisr' ); ?></span></h3>
 						<div class="inside">

@@ -98,4 +98,16 @@ jQuery(document).ready(function() {
 			});
 	    } 
 	});
+	jQuery("#branches-link").click(function() {
+		jQuery("#tags-tab").attr('class', 'hide-if-no-js');
+		jQuery("#branches-tab").attr('class', 'tabs');
+		jQuery("#tags").hide();
+		jQuery("#branches").show();
+	});
+	jQuery("#tags-link").click(function() {
+		jQuery("#branches-tab").attr('class', 'hide-if-no-js');
+		jQuery("#tags-tab").attr('class', 'tabs');
+		jQuery("#branches").hide();
+		jQuery("#tags").show();
+	});
 }); // end ready 
