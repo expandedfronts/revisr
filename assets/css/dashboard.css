@@ -76,6 +76,9 @@
 #loader {
 	float: right;
 }
+#branches {
+	padding: 0;
+}
 #manage_branches {
 	font-size: 12px;
 }

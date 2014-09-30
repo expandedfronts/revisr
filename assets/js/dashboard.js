@@ -34,7 +34,7 @@ function update_recent_activity() {
 	});
 }
 function update_counts() {
-	var unpulled_request = {action: 'ajax_button_count',data : 'unpulled'};
+	var unpulled_request = {action: 'ajax_button_count',data: 'unpulled'};
 	jQuery.post(ajaxurl, unpulled_request, function(response) {
 		unpulled_div.innerHTML = response;
 	});
