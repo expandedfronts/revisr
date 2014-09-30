@@ -298,6 +298,42 @@ class Revisr_Admin
 	}
 
 	/**
+	 * Processes a revert to an earlier commit.
+	 * @access public
+	 */
+	public function process_revert() {
+	    if ( isset( $_GET['revert_nonce'] ) && wp_verify_nonce( $_GET['revert_nonce'], 'revert' ) ) {
+			
+			$branch 	= $_GET['branch'];
+			$commit 	= $_GET['commit_hash'];			
+			$commit_msg = sprintf( __( 'Reverted to commit: #%s.', 'revisr' ), $commit );
+
+			if ( $branch != $this->git->branch ) {
+				$this->git->checkout( $branch );
+			}
+
+			$this->git->reset( '--hard', 'HEAD', true );
+			$this->git->reset( '--hard', $commit );
+			$this->git->reset( '--soft', 'HEAD@{1}' );
+			$this->git->run( 'add -A' );
+			$this->git->commit( $commit_msg );
+			$this->git->auto_push();
+			
+			$post_url = get_admin_url() . "post.php?post=" . $_GET['post_id'] . "&action=edit";
+
+			$msg = sprintf( __( 'Reverted to commit <a href="%s">#%s</a>.', 'revisr' ), $post_url, $commit );
+			$email_msg = sprintf( __( '%s was reverted to commit #%s', 'revisr' ), get_bloginfo(), $commit );
+			Revisr_Admin::log( $msg, 'revert' );
+			Revisr_Admin::notify( get_bloginfo() . __( ' - Commit Reverted', 'revisr' ), $email_msg );
+			$redirect = get_admin_url() . "admin.php?page=revisr";
+			wp_redirect( $redirect );
+		}
+		else {
+			wp_die( __( 'You are not authorized to access this page.', 'revisr' ) );
+		}
+	}
+
+	/**
 	 * Processes a diff request.
 	 * @access public
 	 */

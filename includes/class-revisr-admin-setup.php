@@ -236,7 +236,7 @@ class Revisr_Setup
 		        $branch_meta = get_post_custom_values( 'branch', get_the_ID() );
 		        $db_hash_meta = get_post_custom_values( 'db_hash', get_the_ID() );
 		        $commit_hash = Revisr_Git::get_hash( $id );
-		        $revert_nonce = wp_nonce_url( admin_url("admin-post.php?action=revert&commit_hash={$commit_hash}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert', 'revert_nonce' );
+		        $revert_nonce = wp_nonce_url( admin_url("admin-post.php?action=process_revert&commit_hash={$commit_hash}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert', 'revert_nonce' );
 		        $actions['revert'] = "<a href='" . $revert_nonce . "'>" . __( 'Revert Files', 'revisr' ) . "</a>";
 		        
 		        if ( is_array( $db_hash_meta ) ) {
@@ -481,7 +481,7 @@ class Revisr_Setup
 	}
 
 	/**
-	 * Displays the form to create a new branch.
+	 * Displays the form to delete a branch.
 	 * @access public
 	 */
 	public function delete_branch_form() {
