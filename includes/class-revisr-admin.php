@@ -73,6 +73,18 @@ class Revisr_Admin
 	}
 
 	/**
+	 * Deletes existing transients.
+	 * @access public
+	 */
+	public static function clear_transients( $errors = true ) {
+		if ( $errors = true ) {
+			delete_transient( 'revisr_error' );
+		} else {
+			delete_transient( 'revisr_alert' );
+		}
+	}
+
+	/**
 	 * Counts the number of commits in the database. on a given branch.
 	 * @access public
 	 * @param string $branch The name of the branch to count commits for.
