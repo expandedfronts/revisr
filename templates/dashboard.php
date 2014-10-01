@@ -76,7 +76,7 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 														echo "<tr><td><strong>$branch</strong></td><td width='70'><a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Checked Out</a></td></tr>";
 													}
 													else {
-														echo "<tr><td>$branch</td><td width='70'><a class='button branch-btn' href='" . get_admin_url() . "admin-post.php?action=checkout&branch={$branch}'>Checkout</a></td></tr>";
+														echo "<tr><td>$branch</td><td width='70'><a class='button branch-btn' href='" . get_admin_url() . "admin-post.php?action=process_checkout&branch={$branch}'>Checkout</a></td></tr>";
 													}
 												}										
 											}

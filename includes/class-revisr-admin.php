@@ -43,6 +43,7 @@ class Revisr_Admin
 		$this->options 		= $options;
 		$this->table_name 	= $table_name;
 		$this->git 			= new Revisr_Git();
+		$this->db 			= new Revisr_DB();
 	}
 
 	/**
@@ -149,8 +150,7 @@ class Revisr_Admin
 	 */
 	public function process_checkout( $args = '', $new_branch = false ) {
 		if ( isset( $this->options['reset_db'] ) ) {
-			$db = new Revisr_DB();
-			$db->backup();
+			$this->db->backup();
 		}
 
 		if ( $args == '' ) {
@@ -162,7 +162,7 @@ class Revisr_Admin
 		$this->git->reset();
 		$this->git->checkout( $branch );
 		if ( isset( $this->options['reset_db'] ) && $new_branch === false ) {
-			$db->restore( true );
+			$this->db->restore( true );
 		}
 		$url = get_admin_url() . 'admin.php?page=revisr';
 		wp_redirect( $url );
@@ -248,6 +248,20 @@ class Revisr_Admin
 		Revisr_Admin::log( __('Discarded all uncommitted changes.', 'revisr'), 'discard' );
 		Revisr_Admin::alert( __('Successfully discarded any uncommitted changes.', 'revisr') );
 		exit();
+	}
+
+	/**
+	 * Processes a merge.
+	 * @access public
+	 */
+	public function process_merge() {
+		//Sets the default merge type to "Ours" if not chosen through the settings page.
+		if ( isset( $this->options['merge_type'] ) ) {
+			$merge_type = $this->options['merge_type'];
+		} else {
+			$merge_type = 'ours';
+		}
+		$this->git->merge( $_REQUEST['branch'], $merge_type );
 	}
 
 	/**

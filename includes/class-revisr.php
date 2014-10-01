@@ -103,6 +103,7 @@ class Revisr {
 		add_action( 'admin_post_process_checkout', array( $revisr_admin, 'process_checkout' ) );
 		add_action( 'admin_post_process_create_branch', array( $revisr_admin, 'process_create_branch' ) );
 		add_action( 'admin_post_process_delete_branch', array( $revisr_admin, 'process_delete_branch' ) );
+		add_action( 'admin_post_process_merge', array( $revisr_admin, 'process_merge' ) );
 		add_action( 'admin_post_init_repo', array( $revisr_git, 'init_repo' ) );
 		add_action( 'admin_post_process_revert', array( $revisr_admin, 'process_revert' ) );
 		add_action( 'admin_post_process_view_diff', array( $revisr_admin, 'process_view_diff' ) );

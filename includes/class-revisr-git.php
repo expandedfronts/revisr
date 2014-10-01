@@ -32,7 +32,7 @@ class Revisr_Git
 	/**
 	 * User options and preferences.
 	 */
-	private $options;
+	public $options;
 
 	/**
 	 * The name of the active remote.
@@ -269,11 +269,24 @@ class Revisr_Git
 	/**
 	 * Merges a branch into the current branch.
 	 * @access public
-	 * @param string $branch The branch to merge in.
+	 * @param string $branch The branch to merge into the current branch.
 	 */
-	public function merge( $branch ) {
+	public function merge( $branch, $merge_type ) {
 		$this->reset();
-		$merge = $this->run( "merge $branch --ff-only" );
+
+		//Determine how to perform the merge.
+		switch ( $merge_type ) {
+			case "theirs":
+				$strategy = '--strategy-option theirs';
+				break;
+			case "ff-only":
+				$strategy = '--ff-only';
+				break;
+			default:
+				$strategy = '--strategy-option ours';
+		}
+
+		$merge = $this->run( "merge $branch $strategy", __FUNCTION__ );
 		return $merge;
 	}
 

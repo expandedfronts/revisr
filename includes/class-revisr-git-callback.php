@@ -143,6 +143,37 @@ class Revisr_Git_Callback extends Revisr_Git
 	}
 
 	/**
+	 * Returns if a merge was successful.
+	 * @access public
+	 */
+	public function success_merge( $output = '' ) {
+		$alert_msg = sprintf( __( 'Successfully merged changes from branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->branch );
+		Revisr_Admin::alert( $alert_msg );
+		Revisr_Admin::log( $alert_msg, 'merge' );
+
+		//Restore the database if necessary.
+		if ( isset( $this->options['merge_type'] ) && $this->options['merge_type'] == "theirs" && isset( $this->options['reset_db'] ) ) {
+			$db = new Revisr_DB;
+			$db->restore( true );
+		}
+		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
+		exit();
+	}
+
+	/**
+	 * Returns if a merge failed.
+	 * @access public
+	 */
+	public function null_merge( $output = '' ) {
+		$log_msg = sprintf( __( 'Error merging branch %s into %s.', 'revisr'), $_REQUEST['branch'], $this->branch );
+		$alert_msg = sprintf( __( 'There was an error merging branch %s into your current branch. The merge was aborted to avoid conflicts.', 'revisr' ), $_REQUEST['branch'] );
+		Revisr_Admin::alert( $alert_msg, true );
+		Revisr_Admin::log( $log_msg, 'error' );
+		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
+		exit();
+	}
+
+	/**
 	 * Returns if a pull was successful.
 	 * @access public
 	 */

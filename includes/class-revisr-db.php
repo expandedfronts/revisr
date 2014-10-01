@@ -157,7 +157,7 @@ class Revisr_DB
 			} else {
 				wp_die( __( 'Failed to revert the database to an earlier commit.', 'revisr' ) );
 			}	
-		} else if ( $restore_branch === true ){
+		} else if ( $restore_branch == true ){
 			exec( "{$this->path}mysql {$this->conn} < {$this->sql_file}" );
 		} else {
 			wp_die( __( 'You are not authorized to perform this action.', 'revisr') );

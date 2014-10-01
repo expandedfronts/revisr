@@ -59,7 +59,7 @@ class Revisr_Settings
 
 		add_settings_section(
 			'revisr_remote_settings',
-			'Remote Repository Settings',
+			'Repository Settings',
 			array( $this, 'revisr_remote_settings_callback' ),
 			'revisr_remote_settings'
 		);
@@ -124,6 +124,14 @@ class Revisr_Settings
             'revisr_remote_settings', 
             'revisr_remote_settings'
         );
+
+        add_settings_field(
+        	'merge_type',
+        	'Merge Type',
+        	array( $this, 'merge_type_callback' ),
+        	'revisr_remote_settings',
+        	'revisr_remote_settings'
+    	);
 
     	add_settings_field(
     		'auto_push',
@@ -253,6 +261,21 @@ class Revisr_Settings
 			'<input type="text" id="remote_url" name="revisr_remote_settings[remote_url]" value="%s" class="regular-text" placeholder="https://user:pass@host.com/user/example.git" /><span id="verify-remote"></span>
 			<br><span class="description">Useful if you need to authenticate over "https://" instead of SSH, or if the remote has not already been set through Git.</span>',
 			$remote_url );
+	}
+
+	public function merge_type_callback() {
+			if ( isset( $this->options['merge_type'] ) ) {
+				$merge_type = $this->options['merge_type'];
+			} else {
+				$merge_type = 'ours';
+			}
+		?>
+		<select id="merge_type" name="revisr_remote_settings[merge_type]">
+			<option value="ours" <?php selected( $merge_type, 'ours' ); ?>><?php _e( 'Ours (keeps local)', 'revisr' ); ?></option>
+			<option value="theirs" <?php selected( $merge_type, 'theirs' ); ?>><?php _e( 'Theirs (keeps remote)', 'revisr' ); ?></option>
+			<option value="ff-only" <?php selected( $merge_type, 'ff-only' ); ?>><?php _e( 'Fast-forwarding Only'); ?></option>
+		</select>
+		<?php
 	}
 
 	public function auto_push_callback() {

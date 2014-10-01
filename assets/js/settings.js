@@ -18,3 +18,12 @@
 			result_span.innerHTML = response;
 		});
 	});
+
+	jQuery(".merge-btn").click(function() {
+		var target_branch = jQuery(this).attr("value");
+		if (confirm("Are you sure you want to merge branch " + target_branch + " into your current branch?")) {
+			return;
+		} else {
+			return false;
+		}
+	});
