@@ -3,12 +3,12 @@
 /**
  * The official Revisr WordPress plugin.
  *
- * A plugin that allows developers to manage WordPress websites with Git repositories.
+ * A plugin that allows users to manage WordPress websites with Git repositories.
  * Integrates several key git functions into the WordPress admin section.
  *
  * Plugin Name:       Revisr
  * Plugin URI:        http://revisr.io/
- * Description:       A plugin that allows developers to manage WordPress websites with Git repositories.
+ * Description:       A plugin that allows users to manage WordPress websites with Git repositories.
  * Version:           1.7
  * Author:            Expanded Fronts, LLC
  * Author URI:        http://expandedfronts.com/
@@ -31,27 +31,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// If this file is called directly, abort.
+/** Abort if this file was called directly. */
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-/**
- * The core plugin class that is used to define internationalization,
- * dashboard-specific hooks, and public-facing site hooks.
- */
+/** Loads the main plugin class. */
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-revisr.php';
 
-/**
- * Begins execution of the plugin.
- *
- * Since everything within the plugin is registered via hooks,
- * then kicking off the plugin from this point in the file does
- * not affect the page life cycle.
- *
- * @since    1.0.0
- */
+/** Begins execution of the plugin. */
 $revisr = new Revisr();
+
+/** Registers the activation hook. */
 register_activation_hook( __FILE__, array( $revisr, 'revisr_install' ) );
 
+/** Adds the settings link to the WordPress "Plugins" page. */
 add_filter( 'plugin_action_links_'  . plugin_basename(__FILE__), array( $revisr, 'revisr_settings_link' ) );

@@ -1,31 +1,25 @@
 <?php
-
 /**
- * Fired when the plugin is uninstalled.
+ * uninstall.php
  *
- * When populating this file, consider the following flow
- * of control:
+ * Fired when the plugin is deleted.
  *
- * - This method should be static
- * - Check if the $_REQUEST content actually is the plugin name
- * - Run an admin referrer check to make sure it goes through authentication
- * - Verify the output of $_GET makes sense
- * - Repeat with other user roles. Best directly by using the links/query string parameters.
- * - Repeat things for multisite. Once for a single site in the network, once sitewide.
- *
- * This file may be updated more in future version of the Boilerplate; however, this is the
- * general skeleton and outline for how the file should work.
- *
- * For more information, see the following discussion:
- * https://github.com/tommcfarlin/WordPress-Plugin-Boilerplate/pull/123#issuecomment-28541913
- *
- * @link       http://example.com
- * @since      1.0.0
- *
- * @package    Plugin_Name
+ * @package   Revisr
+ * @license   GPLv3
+ * @link      https://revisr.io
+ * @copyright 2014 Expanded Fronts, LLC
  */
 
-// If uninstall not called from WordPress, then exit.
+/** If uninstall not called from WordPress, exit. */
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+/** Remove any set cronjobs. */
+wp_clear_scheduled_hook( 'revisr_cron' );
+
+/** Delete the Revisr database table. */
+global $wpdb;
+$table_name = $wpdb->prefix . 'revisr';
+$sql 		= "DROP TABLE $table_name";
+$wpdb->query( $sql );
