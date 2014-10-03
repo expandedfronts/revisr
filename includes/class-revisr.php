@@ -126,7 +126,7 @@ class Revisr {
 	 * @access private
 	 */
 	private function admin_setup_hooks() {
-		$revisr_setup = new Revisr_Setup( $this->options, $this->get_table_name() );
+		$revisr_setup = new Revisr_Setup( $this->options );
 		$plugin = $this->plugin_name;
 		add_action( 'init', array( $revisr_setup, 'revisr_post_types' ) );
 		add_action( 'admin_notices', array( $revisr_setup, 'site5_notice' ) );

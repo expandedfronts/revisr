@@ -27,11 +27,6 @@ class Revisr_Setup
 	public $options;
 
 	/**
-	 * The name of the database table to use.
-	 */
-	public $table_name;
-
-	/**
 	 * The current directory.
 	 */
 	public $dir;

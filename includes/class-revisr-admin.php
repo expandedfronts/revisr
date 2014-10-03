@@ -83,7 +83,7 @@ class Revisr_Admin
 	 * @access public
 	 */
 	public static function clear_transients( $errors = true ) {
-		if ( $errors = true ) {
+		if ( $errors == true ) {
 			delete_transient( 'revisr_error' );
 		} else {
 			delete_transient( 'revisr_alert' );
