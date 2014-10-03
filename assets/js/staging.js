@@ -74,4 +74,3 @@ jQuery(document).on("dblclick", ".pending", function () {
         tb_show("View Diff", file);
     }
 });
-

@@ -296,7 +296,7 @@ class Revisr_Git
 	 */
 	public function pull() {
 		$this->reset();
-		$pull = $this->run( "pull {$this->remote} {$this->branch}" );
+		$pull = $this->run( "pull {$this->remote} {$this->branch}", __FUNCTION__, $this->count_unpulled( false ) );
 		return $pull;
 	}
 
@@ -306,7 +306,7 @@ class Revisr_Git
 	 */
 	public function push() {
 		$this->reset();
-		$push = $this->run( "push {$this->remote} HEAD --quiet", __FUNCTION__ );
+		$push = $this->run( "push {$this->remote} HEAD --quiet", __FUNCTION__, $this->count_unpushed( false ) );
 		return $push;
 	}
 
@@ -338,12 +338,12 @@ class Revisr_Git
 	/**
 	 * Executes a Git command.
 	 * @access public
-	 * @param string 	$args 		    The git command to execute.
+	 * @param string 	$command 		The git command to execute.
 	 * @param string 	$callback 	    The function to callback on response.
-	 * @param bool 	 	$return_error 	Whether to return the error callback.
+	 * @param string 	$args 			Optional additional arguements to pass to the callback.
 	 */
-	public function run( $args, $callback = '', $return_error = true ) {
-		$cmd = "git $args";
+	public function run( $command, $callback = '', $args = '' ) {
+		$cmd = "git $command";
 		$dir = getcwd();
 		chdir( $this->dir );
 		exec( $cmd, $output, $error );
@@ -352,10 +352,10 @@ class Revisr_Git
 			$response = new Revisr_Git_Callback;
 			$success_callback = 'success_' . $callback;
 			$failure_callback = 'null_' . $callback;
-			if ( $error && $return_error == true ) {
-				return $response->$failure_callback( $error );
+			if ( $error ) {
+				return $response->$failure_callback( $error, $args );
 			} else {
-				return $response->$success_callback( $output );
+				return $response->$success_callback( $output, $args );
 			}
 		}
 		if ( ! $error ) {
@@ -377,12 +377,12 @@ class Revisr_Git
 
 			if ( $status == __( 'Deleted', 'revisr' ) ) {
 				if ( $this->run( "rm {$file}" ) === false ) {
-					$error = sprintf( __( 'There was an error removing "%s" from the repository.', 'revisr' ), $file );
+					$error = sprintf( __( 'Error removing "%s" from the repository.', 'revisr' ), $file );
 					Revisr_Admin::log( $error, 'error' );
 				}
 			} else {
 				if ( $this->run( "add {$file}" ) === false ) {
-					$error = sprintf( __( 'There was an error adding "%s" to the repository.', 'revisr' ), $file );
+					$error = sprintf( __( 'Error adding "%s" to the repository.', 'revisr' ), $file );
 					Revisr_Admin::log( $error, 'error' );
 				}
 			}
@@ -413,19 +413,27 @@ class Revisr_Git
 	 * Returns the number of unpulled commits.
 	 * @access public
 	 */
-	public function count_unpulled() {
+	public function count_unpulled( $ajax_btn = true ) {
 		$this->fetch();
-		$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline", 'count_ajax_btn' );
-		return count( $unpulled );
+		if ( $ajax_btn == true ) {
+			$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline", 'count_ajax_btn' );
+		} else {
+			$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline" );
+			return count( $unpulled );
+		}
 	}
 
 	/**
 	 * Returns the number of unpushed commits.
 	 * @access public
 	 */
-	public function count_unpushed() {
-		$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline", 'count_ajax_btn' );
-		return count( $unpushed );
+	public function count_unpushed( $ajax_btn = true ) {
+		if ( $ajax_btn == true ) {
+			$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline", 'count_ajax_btn' );
+		} else {
+			$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline" );
+			return count( $unpushed );
+		}
 	}
 
 	/**

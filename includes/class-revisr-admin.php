@@ -34,6 +34,11 @@ class Revisr_Admin
 	protected $git;
 
 	/**
+	 * The database class.
+	 */
+	protected $db;
+
+	/**
 	 * Construct any necessary properties/values.
 	 * @access public
 	 * @param array  	$options 		An array of user options and preferences.
@@ -187,18 +192,9 @@ class Revisr_Admin
 				$this->git->stage_files( $_POST['staged_files'] );
 				$staged_files = $_POST['staged_files'];
 			} else {
-				if ( ! isset( $_REQUEST['backup_db'] ) ) {
-					$url = $post_new . '&message=43';
-					wp_redirect( $url );
-					exit();
-				}
-				$staged_files = array();
-			}
-
-			//Add a tag if necessary.
-			if ( isset( $_POST['tag_name'] ) ) {
-				$this->git->tag( $_POST['tag_name'] );
-				add_post_meta( get_the_ID(), 'git_tag', $_POST['tag_name'] );
+				$url = $post_new . '&message=43';
+				wp_redirect( $url );
+				exit();
 			}
 
 			add_post_meta( get_the_ID(), 'committed_files', $staged_files );
@@ -407,7 +403,12 @@ class Revisr_Admin
 		} else if ( $alert ) {
 			echo "<div class='revisr-alert updated'>" . wpautop( $alert ) . "</div>";
 		} else {
-			printf( __('<div class="revisr-alert updated"><p>There are currently %s untracked files on branch %s.</p></div>', 'revisr' ), $this->git->count_untracked(), $this->git->branch );
+			if ( $this->git->count_untracked() == '0' ) {
+				printf( __( '<div class="revisr-alert updated"><p>There are currently no untracked files on branch %s.', 'revisr' ), $this->git->branch );
+			} else {
+				$commit_link = get_admin_url() . 'post-new.php?post_type=revisr_commits';
+				printf( __('<div class="revisr-alert updated"><p>There are currently %s untracked files on branch %s. <a href="%s">Commit</a> your changes to save them.</p></div>', 'revisr' ), $this->git->count_untracked(), $this->git->branch, $commit_link );
+			}
 		}
 		exit();
 	}
@@ -418,10 +419,11 @@ class Revisr_Admin
 	 */
 	public function pending_files() {
 		check_ajax_referer('pending_nonce', 'security');
-		$output = $this->git->status();
-		$total_pending = count( $output );
-		echo "<br>There are <strong>{$total_pending}</strong> untracked files that can be added to this commit on branch <strong>" . $this->git->branch . "</strong>.<br>
-		Use the boxes below to add/remove files. Double-click modified files to view diffs.<br><br>";
+		$output 		= $this->git->status();
+		$total_pending 	= count( $output );
+		$text 			= sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit on branch <strong>%s</strong>.', 'revisr' ), $total_pending, $this->git->branch );
+		echo "<br>" . $text . "<br><br>";
+		_e( 'Use the boxes below to select the files to include in this commit. Only files in the "Staged Files" section will be included.<br>Double-click files marked as "Modified" to view the changes to the file.<br><br>', 'revisr' );
 		echo "<input id='backup_db_cb' type='checkbox' name='backup_db'><label for='backup_db_cb'>" . __( 'Backup database?', 'revisr' ) . "</label><br><br>";
 
 		if ( is_array( $output ) ) {
@@ -494,5 +496,36 @@ class Revisr_Admin
 			_e( 'No files were included in this commit.', 'revisr' );
 		}
 		exit();
+	}
+
+	/**
+	 * Runs from the WordPress cron.
+	 * @access public
+	 */
+	public function run_automatic_backup() {
+		$date 			= date("F j, Y");
+		$files 			= $this->git->status();
+		$backup_type 	= ucfirst( $this->options['automatic_backups'] );
+		$commit_msg 	= sprintf( __( '%s backup - %s', 'revisr' ), $backup_type, $date );
+		//In case there are no files to commit.
+		if ( $files == false ) {
+			$files = array();
+		}
+		$this->git->run( 'add -A' );
+		$post = array(
+			'post_title'	=> $commit_msg,
+			'post_content'	=> '',
+			'post_type'		=> 'revisr_commits',
+			'post_status'	=> 'publish',
+			);
+		$post_id = wp_insert_post( $post );
+		add_post_meta( $post_id, 'branch', $this->git->branch );
+		add_post_meta( $post_id, 'commit_hash', $this->git->current_commit() );
+		add_post_meta( $post_id, 'files_changed', count( $files ) );
+		add_post_meta( $post_id, 'committed_files', $files );
+		$this->db->backup();
+		add_post_meta( $post_id, 'db_hash', $this->git->current_commit() );
+		$log_msg = sprintf( __( 'The %s backup was run successfully.', 'revisr' ), $this->options['automatic_backups'] );
+		Revisr_Admin::log( $log_msg, 'backup' );
 	}
 }

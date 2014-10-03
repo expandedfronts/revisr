@@ -30,9 +30,8 @@ class Revisr_Settings
 		if ( is_admin() ) {
 			add_action( 'admin_init', array( $this, 'init_settings' ) );
 		}
-		$this->options = $options;
-
-		$this->git = new Revisr_Git();
+		$this->options 	= $options;
+		$this->git 		= new Revisr_Git();
 	}
 
 	/**
@@ -79,7 +78,7 @@ class Revisr_Settings
 	public function revisr_add_settings_fields() {
         add_settings_field(
             'username',
-            'Username',
+            __( 'Username', 'revisr' ),
             array( $this, 'username_callback' ),
             'revisr_general_settings',
             'revisr_general_settings'          
@@ -87,7 +86,7 @@ class Revisr_Settings
 
         add_settings_field(
             'email', 
-            'Email', 
+            __( 'Email', 'revisr'), 
             array( $this, 'email_callback' ), 
             'revisr_general_settings', 
             'revisr_general_settings'
@@ -95,23 +94,31 @@ class Revisr_Settings
 
         add_settings_field(
         	'gitignore',
-        	'Files / Directories to add to .gitignore',
-        	array( $this, 'gitignore_callback'),
+        	__( 'Files/Directories to ignore', 'revisr'),
+        	array( $this, 'gitignore_callback' ),
         	'revisr_general_settings',
         	'revisr_general_settings'
     	);
 
     	add_settings_field(
+    		'automatic_backups',
+    		__( 'Automatic backup schedule', 'revisr' ),
+    		array( $this, 'automatic_backups_callback' ),
+    		'revisr_general_settings',
+    		'revisr_general_settings'
+		);
+
+    	add_settings_field(
     		'notifications',
-    		'Enable email notifications?',
-    		array($this, 'notifications_callback'),
+    		__( 'Enable email notifications?', 'revisr' ),
+    		array( $this, 'notifications_callback' ),
     		'revisr_general_settings',
     		'revisr_general_settings'
 		);
 
 		add_settings_field(
             'remote_name', 
-            'Remote Name', 
+            __( 'Remote Name', 'revisr'), 
             array( $this, 'remote_name_callback' ), 
             'revisr_remote_settings', 
             'revisr_remote_settings'
@@ -119,7 +126,7 @@ class Revisr_Settings
 
         add_settings_field(
             'remote_url', 
-            'Remote URL', 
+            __( 'Remote URL', 'revisr'), 
             array( $this, 'remote_url_callback' ), 
             'revisr_remote_settings', 
             'revisr_remote_settings'
@@ -127,7 +134,7 @@ class Revisr_Settings
 
         add_settings_field(
         	'merge_type',
-        	'Merge Type',
+        	__( 'Merge Type', 'revisr' ),
         	array( $this, 'merge_type_callback' ),
         	'revisr_remote_settings',
         	'revisr_remote_settings'
@@ -135,7 +142,7 @@ class Revisr_Settings
 
     	add_settings_field(
     		'auto_push',
-    		'Automatically push new commits?',
+    		__( 'Automatically push new commits?', 'revisr' ),
     		array($this, 'auto_push_callback'),
     		'revisr_remote_settings',
     		'revisr_remote_settings'
@@ -143,7 +150,7 @@ class Revisr_Settings
 
 		add_settings_field(
 			'auto_pull',
-			'Automatically pull new commits?',
+			__( 'Automatically pull new commits?', 'revisr' ),
 			array($this, 'auto_pull_callback'),
 			'revisr_remote_settings',
 			'revisr_remote_settings'
@@ -151,7 +158,7 @@ class Revisr_Settings
 
         add_settings_field(
         	'mysql_path',
-        	'Path to MySQL',
+        	__( 'Path to MySQL', 'revisr' ),
         	array($this, 'mysql_path_callback'),
         	'revisr_database_settings',
         	'revisr_database_settings'
@@ -159,7 +166,7 @@ class Revisr_Settings
 
     	add_settings_field(
     		'reset_db',
-    		'Reset database when changing branches?',
+    		__( 'Reset database when changing branches?', 'revisr' ),
     		array($this, 'reset_db_callback'),
     		'revisr_database_settings',
     		'revisr_database_settings'
@@ -186,7 +193,7 @@ class Revisr_Settings
 	}
 
 	public function revisr_general_settings_callback() {
-
+		_e( 'These settings configure the local repository, and may be required for Revisr to work correctly.', 'revisr' );
 	}
 
 	public function revisr_remote_settings_callback() {
@@ -198,18 +205,22 @@ class Revisr_Settings
 	}		
 
 	public function username_callback() {
+		$username_text = __( 'The username to commit with in Git.', 'revisr' );
 		printf(
             '<input type="text" id="username" name="revisr_general_settings[username]" value="%s" class="regular-text" />
-            <br><span class="description">Username to commit with in Git.</span>',
-            isset( $this->options['username'] ) ? esc_attr( $this->options['username']) : ''
+            <br><span class="description">%s</span>',
+            isset( $this->options['username'] ) ? esc_attr( $this->options['username']) : '',
+            $username_text
         );
 	}
 
 	public function email_callback() {
+		$email_text = __( 'The email address associated to your Git username. Also used for notifications (if enabled).', 'revisr' );
 		printf(
             '<input type="text" id="email" name="revisr_general_settings[email]" value="%s" class="regular-text" />
-            <br><span class="description">Used for notifications and Git.</span>',
-            isset( $this->options['email'] ) ? esc_attr( $this->options['email']) : ''
+            <br><span class="description">%s</span>',
+            isset( $this->options['email'] ) ? esc_attr( $this->options['email']) : '',
+            $email_text
         );
 	}
 
@@ -223,33 +234,54 @@ class Revisr_Settings
 			$gitignore = '';
 		}
 
+		$gitignore_text = __( 'Add files or directories that you don\'t want to show up in Git here, one per line.<br>This will update the ".gitignore" file for this repository.', 'revisr' );
 		printf(
             '<textarea id="gitignore" name="revisr_general_settings[gitignore]" rows="6" />%s</textarea>
-            <br><span class="description">Add files or directories to be ignored here, one per line. <br>This will update the ".gitignore" file in the root directory of the repository.</span>',
-            $gitignore
+            <br><span class="description">%s</span>',
+            $gitignore,
+            $gitignore_text
 		);
+	}
+
+	public function automatic_backups_callback() {
+		$automatic_text = __( 'Enabling automatic backups will backup the database and files at the interval you choose.', 'revisr' );
+		if ( isset( $this->options['automatic_backups'] ) ) {
+			$schedule = $this->options['automatic_backups'];
+		} else {
+			$schedule = 'none';
+		}
+		?>
+			<select id="automatic_backups" name="revisr_general_settings[automatic_backups]">
+				<option value="none" <?php selected( $schedule, 'none' ); ?>><?php _e( 'None', 'revisr' ); ?></option>
+				<option value="daily" <?php selected( $schedule, 'daily' ); ?>><?php _e( 'Daily', 'revisr' ); ?></option>
+				<option value="weekly" <?php selected( $schedule, 'weekly' ); ?>><?php _e( 'Weekly', 'revisr' ); ?></option>
+			</select>
+		<?php
+		echo "<p class='description'>$automatic_text</p>";
 	}
 	
 	public function notifications_callback() {
+		$email_text = __( 'Enabling notifications will send updates about new commits, pulls, and pushes to the email address above.', 'revisr' );
 		printf(
 			'<input type="checkbox" id="notifications" name="revisr_general_settings[notifications]" %s />
-			<p class="description">Will be sent to the email address above.</p>',
-			isset( $this->options['notifications'] ) ? "checked" : ''
+			<p class="description">%s</p>',
+			isset( $this->options['notifications'] ) ? "checked" : '',
+			$email_text
 		);
 	}
 
 	public function remote_name_callback() {
+		$remote_text = __( 'Git sets this to "origin" by default when you clone a repository, and this should be sufficient in most cases. If you\'ve changed the remote name or have more than one remote, you can specify that here.', 'revisr' );
 		printf(
 			'<input type="text" id="remote_name" name="revisr_remote_settings[remote_name]" value="%s" class="regular-text" placeholder="origin" />
-			<br><span class="description">Set this to "origin" unless you have changed this previously in Git. Used for pushing to and pulling from remotes.</span>',
-			isset( $this->options['remote_name'] ) ? esc_attr( $this->options['remote_name']) : ''
+			<br><span class="description">%s</span>',
+			isset( $this->options['remote_name'] ) ? esc_attr( $this->options['remote_name']) : '',
+			$remote_text
 			);
 	}
 
 	public function remote_url_callback() {
-		
 		$check_remote = $this->git->run( 'config --get remote.origin.url' );
-
 		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != '' ) {
 			$remote_url = esc_attr( $this->options['remote_url'] );
 		} elseif ( $check_remote !== false ) {

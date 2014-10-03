@@ -57,7 +57,7 @@ class Revisr {
 		$this->wpdb 		= $wpdb;
 		$this->options 		= $this->get_options();
 		$this->plugin_name  = 'revisr';
-		$this->table_name 	= $this->wpdb->prefix . 'revisr';
+		$this->table_name 	= $this->get_table_name();
 		$this->version 		= '1.7.0';
 		$this->load_dependencies();
 		$this->set_locale();
@@ -98,6 +98,7 @@ class Revisr {
 	private function admin_hooks() {
 		$revisr_admin 	= new Revisr_Admin( $this->options, $this->get_table_name() );
 		$revisr_git 	= new Revisr_Git();
+		add_action( 'revisr_cron', array( $revisr_admin, 'run_automatic_backup' ) );
 		add_action( 'wp_ajax_render_alert', array( $revisr_admin, 'render_alert' ) );
 		add_action( 'publish_revisr_commits', array( $revisr_admin, 'process_commit' ) );
 		add_action( 'admin_post_process_checkout', array( $revisr_admin, 'process_checkout' ) );
@@ -215,8 +216,10 @@ class Revisr {
 	 * @access public
 	 * @return string The name of the database table.
 	 */
-	public function get_table_name() {
-		return $this->table_name;
+	public static function get_table_name() {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'revisr';
+		return $table_name;
 	}
 
 	/**

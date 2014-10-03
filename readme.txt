@@ -7,36 +7,34 @@ Stable tag: trunk
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 
-A simple plugin that integrates your git repository with WordPress.
+A simple plugin for managing your WordPress website with Git.
 
 == Description ==
 
-Revisr allows you to manage your WordPress website with a git repository. With Revisr, you can:
+Revisr allows you to manage your WordPress website with a Git repository. With Revisr, you can:
 
-* Track changes to the files and database of your WordPress installation
-* Optionally use different database versions for each branch
-* Commit and push changes to a remote repository (including Bitbucket and Github)
-* Automatically pull new commits via POST hooks
-* Pull changes down from a remote repository
-* Easily toggle between branches
-* Revert your website files and/or database to an earlier commit
-* Discard any unwanted changes
-* Manage .gitignore to prevent unwanted files/directories from being tracked
+* Track changes to your entire WordPress installation, or just the parts that you prefer
+* Commit changes from within the WordPress dashboard
+* Backup or restore your entire website in seconds
+* Set up daily or weekly automatic backups
+* Optionally push or pull changes to a remote repository, like Bitbucket or Github.
+* Test changes out before deploying them
+* Revert your website files and/or database to an earlier version
+* Quickly discard any unwanted changes
 
-A must have plugin for deploying WordPress using git repositories.
+A must have plugin for deploying and managing WordPress using Git repositories.
 
 
 == Installation ==
 
 = Requirements = 
-* A WordPress installation in the root folder of a Git repository
-* Git must be installed on the server (most updated versions of cPanel have it preinstalled)
+* A web server with Git and WordPress installed
 * The PHP exec() function enabled
 
 = Instructions =
 * Unzip the plugin folder and upload it to the plugins directory of your WordPress installation.
-* Configure any remote repositories on the plugin settings page. Supports git through SSH or HTTPS.
-* If authenticating with a remote repository via HTTPS with a password, be sure to password protect the .git directory via .htaccess or NGINX equivalent.
+* If the WordPress installation is not already in a Git repository, you will be prompted to initialize a new one.
+* Configure the plugin settings.
 
 = Notes =
 Please verify that database backups are working before attempting to revert the database, especially if attempting to do so on a production website. Backups use the mysqldump command, supported by most hosts/environments.
@@ -92,16 +90,17 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 == Screenshots ==
 
-1. The main dashboard of revisr.
+1. The main dashboard of Revisr.
 2. Simple staging area that lets you decide what gets committed.
 3. Easily view changes in files with Revisr's diffs. 
-4. The commit history, filtered by branch.
+4. A comprehensive history of your website, with unlimited restore points.
 
 
 == Changelog ==
 = 1.7 = 
-* Added the ability to create a new repository if one does not already exist
-* Added ability to merge branches via fast-forwarding
+* Added ability to create a new repository if one does not already exist
+* Added ability to set automatic backups
+* Added ability to merge changes
 * Added ability to add tags to commits
 * General improvements
 

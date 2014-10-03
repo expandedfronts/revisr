@@ -36,13 +36,16 @@ class Revisr_Setup
 	 */
 	public $dir;
 
+	/**
+	 * Load items necessary for setup.
+	 * @access public
+	 */
 	public function __construct( $options ) {
-
 		global $wpdb;
-		$this->wpdb = $wpdb;
-		$this->options = $options;
-		$this->git = new Revisr_Git();
-		$this->dir = plugin_dir_path( __FILE__ );
+		$this->wpdb 	= $wpdb;
+		$this->options 	= $options;
+		$this->git 		= new Revisr_Git();
+		$this->dir 		= plugin_dir_path( __FILE__ );
 	}
 
 	/**
@@ -96,7 +99,7 @@ class Revisr_Setup
 	}
 
 	/**
-	 * Registers the revisr_commits post type.
+	 * Registers the "revisr_commits" post type.
 	 * @access public
 	 */
 	public function revisr_post_types() {
@@ -147,7 +150,7 @@ class Revisr_Setup
 	}
 
 	/**
-	 * Adds the untracked/committed files meta boxes to the revisr_commits post type.
+	 * Adds custom meta boxes to the "revisr_commits" post type.
 	 * @access public
 	 */
 	public function meta() {
@@ -156,10 +159,36 @@ class Revisr_Setup
 				add_meta_box( 'revisr_committed_files', __( 'Committed Files', 'revisr' ), array( $this, 'committed_files_meta' ), 'revisr_commits', 'normal', 'high' );
 			}			
 		} else {
-			add_meta_box( 'revisr_pending_files', __( 'Untracked Files', 'revisr' ), array( $this, 'pending_files_meta' ), 'revisr_commits', 'normal', 'high' );
+			add_meta_box( 'revisr_pending_files', __( 'Stage Changes', 'revisr' ), array( $this, 'pending_files_meta' ), 'revisr_commits', 'normal', 'high' );
 			add_meta_box( 'revisr_add_tag', __( 'Add Tag', 'revisr' ), array( $this, 'add_tag_meta' ), 'revisr_commits', 'side', 'high' );
 		}
 	}
+
+	/**
+	 * Displays the "Add Tag" meta box on the sidebar.
+	 * @access public
+	 */
+	public function add_tag_meta() {
+		echo "<label for='tag_name'><p>" . __( 'Tag Name:', 'revisr' ) . '</p></label>';
+		echo "<input id='tag_name' type='text' name='tag_name' />";
+	}
+
+	/**
+	 * Displays the files changed in a commit.
+	 * @access public
+	 */
+	public function committed_files_meta() {
+		echo "<div id='committed_files_result'></div>";
+	}
+
+	/**
+	 * The container for the staging area.
+	 * @access public
+	 */
+	public function pending_files_meta() {
+		echo "<div id='message'></div>
+		<div id='pending_files_result'></div>";
+	}	
 	
 	/**
 	 * Registers the menus used by Revisr.
@@ -229,24 +258,22 @@ class Revisr_Setup
 		        unset( $actions['trash'] );
 		        unset( $actions['inline hide-if-no-js'] );
 
-		        $id = get_the_ID();
-		        $url = get_admin_url() . 'post.php?post=' . get_the_ID() . '&action=edit';
-
-		        $actions['view'] = "<a href='{$url}'>View</a>";
-		        $branch_meta = get_post_custom_values( 'branch', get_the_ID() );
-		        $db_hash_meta = get_post_custom_values( 'db_hash', get_the_ID() );
-		        $commit_hash = Revisr_Git::get_hash( $id );
-		        $revert_nonce = wp_nonce_url( admin_url("admin-post.php?action=process_revert&commit_hash={$commit_hash}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert', 'revert_nonce' );
-		        $actions['revert'] = "<a href='" . $revert_nonce . "'>" . __( 'Revert Files', 'revisr' ) . "</a>";
+		        $id 				= get_the_ID();
+		        $url 				= get_admin_url() . 'post.php?post=' . get_the_ID() . '&action=edit';
+		        $actions['view'] 	= "<a href='{$url}'>View</a>";
+		        $branch_meta 		= get_post_custom_values( 'branch', get_the_ID() );
+		        $db_hash_meta 		= get_post_custom_values( 'db_hash', get_the_ID() );
+		        $commit_hash 		= Revisr_Git::get_hash( $id );
+		        $revert_nonce 		= wp_nonce_url( admin_url("admin-post.php?action=process_revert&commit_hash={$commit_hash}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert', 'revert_nonce' );
+		        $actions['revert'] 	= "<a href='" . $revert_nonce . "'>" . __( 'Revert Files', 'revisr' ) . "</a>";
 		        
 		        if ( is_array( $db_hash_meta ) ) {
-		        	$db_hash = str_replace( "'", "", $db_hash_meta );
-		        	$revert_db_nonce = wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert_db', 'revert_db_nonce' );
+		        	$db_hash 			= str_replace( "'", "", $db_hash_meta );
+		        	$revert_db_nonce 	= wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert_db', 'revert_db_nonce' );
 			        if ( $db_hash[0] != '') {
 		          		$actions['revert_db'] = "<a href='" . $revert_db_nonce ."'>" . __( 'Revert Database', 'revisr' ) . "</a>";
 			        }		        	
-		        }		        
-		    	
+		        }        
 			}
 		}
 		return $actions;
@@ -357,32 +384,6 @@ class Revisr_Setup
 	}
 
 	/**
-	 * Displays the "Add Tag" meta box on the sidebar.
-	 * @access public
-	 */
-	public function add_tag_meta() {
-		echo "<label for='tag_name'>" . __( 'Tag Name:', 'revisr' ) . '</label><br>';
-		echo "<input id='tag_name' type='text' name='tag_name' />";
-	}
-
-	/**
-	 * Displays the files changed in a commit.
-	 * @access public
-	 */
-	public function committed_files_meta() {
-		echo "<div id='committed_files_result'></div>";
-	}
-
-	/**
-	 * The container for the staging area.
-	 * @access public
-	 */
-	public function pending_files_meta() {
-		echo "<div id='message'></div>
-		<div id='pending_files_result'></div>";
-	}
-
-	/**
 	 * Displays custom columns for the commits post type.
 	 * @access public
 	 */
@@ -471,7 +472,7 @@ class Revisr_Setup
 	 */
 	public function revisr_commits_bulk_messages( $bulk_messages, $bulk_counts ) {
 		$bulk_messages['revisr_commits'] = array(
-			'updated' => _n( '%s commit updated.', '%s commits updated.', $bulk_counts['updated'] ),
+			'updated' 	=> _n( '%s commit updated.', '%s commits updated.', $bulk_counts['updated'] ),
 			'locked'    => _n( '%s commit not updated, somebody is editing it.', '%s commits not updated, somebody is editing them.', $bulk_counts['locked'] ),
 			'deleted'   => _n( '%s commit permanently deleted.', '%s commits permanently deleted.', $bulk_counts['deleted'] ),
 			'trashed'   => _n( '%s commit moved to the Trash.', '%s commits moved to the Trash.', $bulk_counts['trashed'] ),
@@ -530,7 +531,7 @@ class Revisr_Setup
 			_e( '<p id="revisr_activity_no_results">Your recent activity will show up here.</p>', 'revisr' );
 		}
 
-		if ( defined("DOING_AJAX") ) {
+		if ( defined( "DOING_AJAX" ) ) {
 			exit();
 		}
 	}

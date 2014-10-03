@@ -9,26 +9,45 @@
  */
 
 if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" ) {
-	$git = new Revisr_Git;
-	$options = Revisr::get_options();
-	if ( isset( $options['gitignore'] ) && $options['gitignore'] != "" ) {
-		chdir( ABSPATH );
-		file_put_contents( ".gitignore", $options['gitignore'] );
+	$git 		= new Revisr_Git;
+	$options 	= Revisr::get_options();
+
+	//Update general settings.
+	if ( ! isset( $_GET['tab'] ) || $_GET['tab'] == 'general_settings' ) {
+		if ( isset( $options['gitignore'] ) && $options['gitignore'] != "" ) {
+			chdir( ABSPATH );
+			file_put_contents( ".gitignore", $options['gitignore'] );
 			$git->run("add .gitignore");
 			$commit_msg = __( 'Updated .gitignore.', 'revisr' );
 			$git->run("commit -m \"$commit_msg\"");
 			$git->auto_push();
+		}
+		if ( isset( $options['username'] ) && $options['username'] != "" ) {
+			$git->run('config user.name "' . $options['username'] . '"');
+		}
+		if ( isset( $options['email'] ) && $options['email'] != "" ) {
+			$git->run('config user.email "' . $options['email'] . '"');
+		}
+		if ( isset( $options['automatic_backups'] ) && $options['automatic_backups'] != 'none' ) {
+			$timestamp 	= wp_next_scheduled( 'revisr_cron' );
+			if ( $timestamp == false ) {
+				wp_schedule_event( time(), $options['automatic_backups'], 'revisr_cron' );
+			} else {
+				wp_reschedule_event( time(), $options['automatic_backups'], 'revisr_cron' );
+			}
+		} else {
+			wp_clear_scheduled_hook( 'revisr_cron' );
+		}
 	}
-	if ( isset( $options['username'] ) && $options['username'] != "" ) {
-		$git->run('config user.name "' . $options['username'] . '"');
-	}
-	if ( isset( $options['email'] ) && $options['email'] != "" ) {
-		$git->run('config user.email "' . $options['email'] . '"');
-	}
-	if ( isset( $options['remote_url'] ) && $options['remote_url'] != "" ) {
-		$git->run('config remote.origin.url ' . $options['remote_url']);
+	
+	//Update remote repositories.
+	if ( isset( $_GET['tab'] ) && $_GET['tab'] == 'remote_settings' ) {
+		if ( isset( $options['remote_url'] ) && $options['remote_url'] != "" ) {
+			$git->run('config remote.origin.url ' . $options['remote_url']);
+		}
 	}
 }
+
 ?>
 <div class="wrap">
 	<div id="revisr_settings">
