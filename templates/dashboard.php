@@ -11,7 +11,6 @@
 $git 		= new Revisr_Git();
 $dir 		= plugin_dir_path( __FILE__ );
 $loader_url = plugins_url( '../assets/img/loader.gif' , __FILE__ );
-
 wp_enqueue_script( 'revisr_dashboard' );
 wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 	'ajax_nonce' => wp_create_nonce( 'dashboard_nonce' ),
@@ -41,7 +40,6 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 			<!-- sidebar -->
 			<div id="postbox-container-1" class="postbox-container">
 				<div class="meta-box-sortables">
-					
 					<!-- BEGIN QUICK ACTIONS -->
 					<div class="postbox">
 						<h3><span><?php _e('Quick Actions', 'revisr'); ?></span> <div id='loader'><img src="<?php echo $loader_url; ?>"/></div></h3>
@@ -54,7 +52,6 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 						</div> <!-- .inside -->
 					</div> <!-- .postbox -->
 					<!-- END QUICK ACTIONS -->
-
 					<!-- BEGIN BRANCHES/TAGS WIDGET -->
 					<div id="branches_tags_widget" class="postbox ">
 						<h3 class="hndle"><span><?php _e( 'Branches/Tags', 'revisr' ); ?></span></h3>
@@ -71,7 +68,6 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 											if ( is_array( $output ) ) {
 												foreach ($output as $key => $value){
 													$branch = substr($value, 2);
-													
 													if (substr( $value, 0, 1 ) === "*"){
 														echo "<tr><td><strong>$branch</strong></td><td width='70'><a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Checked Out</a></td></tr>";
 													}
@@ -80,7 +76,6 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 													}
 												}										
 											}
-
 										?>
 									</table>
 								</div>
@@ -101,7 +96,6 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 						</div>
 					</div>
 					<!-- END BRANCHES/TAGS WIDGET -->
-
 					<div class="postbox">
 						<h3><span><?php _e( 'About this plugin', 'revisr' ); ?></span></h3>
 						<div class="inside">

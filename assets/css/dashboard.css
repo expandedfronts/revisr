@@ -193,3 +193,6 @@
 #poststuff {
 	padding-top: 0px !important;
 }
+#post-hook-input {
+	width: 350px;
+}

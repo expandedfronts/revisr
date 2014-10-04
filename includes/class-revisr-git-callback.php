@@ -127,7 +127,10 @@ class Revisr_Git_Callback extends Revisr_Git
 	public function success_init_repo() {
 		Revisr_Admin::clear_transients();
 		Revisr_Admin::log( __( 'Initialized a new repository.', 'revisr' ), 'init' );
-		Revisr_Admin::alert( __( 'Successfully initialized a new repository. Please configure the settings for the remote if you haven\'t done so already.', 'revisr' ) );
+		$settings_link 	= get_admin_url() . 'admin.php?page=revisr_settings';
+		$commit_link 	= get_admin_url() . 'post-new.php?post_type=revisr_commits';
+		$alert_msg 		= sprintf( __( 'Successfully initialized a new repository. Please confirm your <a href="%s">settings</a> before creating your first <a href="%s">commit</a>.', 'revisr' ), $settings_link, $commit_link );
+		Revisr_Admin::alert( $alert_msg );
 		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
 		exit();
 	}

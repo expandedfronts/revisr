@@ -525,7 +525,7 @@ class Revisr_Admin
 		add_post_meta( $post_id, 'committed_files', $files );
 		$this->db->backup();
 		add_post_meta( $post_id, 'db_hash', $this->git->current_commit() );
-		$log_msg = sprintf( __( 'The %s backup was run successfully.', 'revisr' ), $this->options['automatic_backups'] );
+		$log_msg = sprintf( __( 'The %s backup ran successfully.', 'revisr' ), $this->options['automatic_backups'] );
 		Revisr_Admin::log( $log_msg, 'backup' );
 	}
 }

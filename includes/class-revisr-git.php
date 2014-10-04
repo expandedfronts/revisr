@@ -163,7 +163,7 @@ class Revisr_Git
 	 * @access public
 	 */
 	public function current_remote() {
-		if ( isset( $this->options['remote_name'] ) ) {
+		if ( isset( $this->options['remote_name'] ) && $this->options['remote_name'] != '' ) {
 			return $this->options['remote_name'];
 		} else {
 			return 'origin';

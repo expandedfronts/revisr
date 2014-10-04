@@ -27,3 +27,13 @@
 			return false;
 		}
 	});
+	jQuery(document).ready(function() {
+		jQuery('#post-hook').hide();
+		jQuery('#auto_pull').change(function(){
+	  		if (this.checked) {
+	    		jQuery('#post-hook').fadeIn('slow');
+	  		} else {
+	    		jQuery('#post-hook').fadeOut('slow');
+	  		}                   
+		});
+	});
