@@ -83,7 +83,7 @@ class Revisr_Git_Callback extends Revisr_Git
 	 * @access public
 	 */
 	public function success_delete_branch( $output = '', $args = '' ) {
-		$branch = $_POST['branch'];
+		$branch = $args;
 		$msg = sprintf( __( 'Deleted branch %s.', 'revisr'), $branch );
 		Revisr_Admin::log( $msg, 'branch' );
 		Revisr_Admin::notify( get_bloginfo() . __( 'Branch Deleted', 'revisr' ), $msg );
@@ -129,19 +129,18 @@ class Revisr_Git_Callback extends Revisr_Git
 		Revisr_Admin::clear_transients();
 		Revisr_Admin::log( __( 'Initialized a new repository.', 'revisr' ), 'init' );
 		if ( isset( $this->options['username'] ) && $this->options['username'] != "" ) {
-			$this->run('config user.name "' . $this->options['username'] . '"');
+			$this->config_user_name( $this->options['username'] );
 		}
 		if ( isset( $this->options['email'] ) && $this->options['email'] != "" ) {
-			$this->run('config user.email "' . $this->options['email'] . '"');
+			$this->config_user_email( $this->options['email'] );
 		}
 		if ( isset( $this->options['remote_name'] ) && $this->options['remote_name'] != "" ) {
 			$remote_name = $this->options['remote_name'];
 		} else {
 			$remote_name = 'origin';
 		}
-		$add = $this->run("remote add $remote_name {$options['remote_url']}");
-		if ( $add == false ) {
-			$this->run( "remote set-url $remote_name {$options['remote_url']}" );
+		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != "" ) {
+			$this->run("remote add $remote_name {$options['remote_url']}");
 		}
 		$settings_link 	= get_admin_url() . 'admin.php?page=revisr_settings';
 		$commit_link 	= get_admin_url() . 'post-new.php?post_type=revisr_commits';
@@ -255,4 +254,20 @@ class Revisr_Git_Callback extends Revisr_Git
 		_e( 'Remote not found...', 'revisr' );
 		exit();
 	} 
+
+	/**
+	 * Returns the Git version.
+	 * @access public
+	 */
+	public function success_version( $output = '', $args = '' ) {
+		return $output['0'];
+	}
+
+	/**
+	 * Returns if Revisr could not detect the Git version.
+	 * @access public
+	 */
+	public function null_version( $output = '', $args = '' ) {
+		return __( 'Unknown', 'revisr' );
+	}
 }

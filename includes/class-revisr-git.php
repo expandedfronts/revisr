@@ -176,7 +176,7 @@ class Revisr_Git
 	 * @param string $branch The branch to delete.
 	 */
 	public function delete_branch( $branch, $delete_remote = false ) {
-		$deletion = $this->run( "branch -D $branch", __FUNCTION__ );
+		$deletion = $this->run( "branch -D $branch", __FUNCTION__, $branch );
 		return $deletion;
 	}
 
@@ -259,7 +259,7 @@ class Revisr_Git
 	 */
 	public function is_branch( $branch ) {
 		$branches = $this->branches();
-		if ( in_array( $branch, $branches ) ) {
+		if ( in_array( $branch, $branches ) || in_array( "* $branch", $branches ) || in_array( "  $branch", $branches ) ) {
 			return true;
 		} else {
 			return false;
@@ -285,7 +285,6 @@ class Revisr_Git
 			default:
 				$strategy = '--strategy-option ours';
 		}
-
 		$merge = $this->run( "merge $branch $strategy", __FUNCTION__ );
 		return $merge;
 	}
@@ -450,8 +449,12 @@ class Revisr_Git
 	 * @access public
 	 * @param string $remote The remote to ping.
 	 */
-	public function verify_remote() {
-		$ping = $this->run( "ls-remote " . $_REQUEST['remote'] . " HEAD", __FUNCTION__ );
+	public function verify_remote( $remote = '' ) {
+		if ( $remote != '' ) {
+			$ping = $this->run( "ls-remote $remote HEAD", __FUNCTION__ );
+		} else {
+			$ping = $this->run( "ls-remote " . $_REQUEST['remote'] . " HEAD", __FUNCTION__ );
+		}
 		return $ping;
 	}
 
@@ -460,7 +463,7 @@ class Revisr_Git
 	 * @access public
 	 */
 	public function version() {
-		$version = $this->run( 'version' );
+		$version = $this->run( 'version', __FUNCTION__ );
 		return $version;
 	}
 }

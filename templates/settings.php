@@ -23,10 +23,10 @@ if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" )
 			$git->auto_push();
 		}
 		if ( isset( $options['username'] ) && $options['username'] != "" ) {
-			$git->run('config user.name "' . $options['username'] . '"');
+			$git->config_user_name( $options['username'] );
 		}
 		if ( isset( $options['email'] ) && $options['email'] != "" ) {
-			$git->run('config user.email "' . $options['email'] . '"');
+			$git->config_user_email( $options['email'] );
 		}
 		if ( isset( $options['automatic_backups'] ) && $options['automatic_backups'] != 'none' ) {
 			$timestamp 	= wp_next_scheduled( 'revisr_cron' );
