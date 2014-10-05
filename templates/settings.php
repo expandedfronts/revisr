@@ -43,7 +43,15 @@ if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" )
 	//Update remote repositories.
 	if ( isset( $_GET['tab'] ) && $_GET['tab'] == 'remote_settings' ) {
 		if ( isset( $options['remote_url'] ) && $options['remote_url'] != "" ) {
-			$git->run('config remote.origin.url ' . $options['remote_url']);
+			if ( isset( $options['remote_name'] ) && $options['remote_name'] != "" ) {
+				$remote_name = $options['remote_name'];
+			} else {
+				$remote_name = 'origin';
+			}
+			$add = $git->run("remote add $remote_name {$options['remote_url']}");
+			if ( $add == false ) {
+				$git->run( "remote set-url $remote_name {$options['remote_url']}" );
+			}
 		}
 	}
 }

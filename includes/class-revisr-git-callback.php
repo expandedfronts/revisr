@@ -3,6 +3,7 @@
  * class-revisr-git-callback.php
  * 
  * Processes Git responses and errors.
+ * 
  * @package   Revisr
  * @license   GPLv3
  * @link      https://revisr.io
@@ -127,6 +128,21 @@ class Revisr_Git_Callback extends Revisr_Git
 	public function success_init_repo() {
 		Revisr_Admin::clear_transients();
 		Revisr_Admin::log( __( 'Initialized a new repository.', 'revisr' ), 'init' );
+		if ( isset( $this->options['username'] ) && $this->options['username'] != "" ) {
+			$this->run('config user.name "' . $this->options['username'] . '"');
+		}
+		if ( isset( $this->options['email'] ) && $this->options['email'] != "" ) {
+			$this->run('config user.email "' . $this->options['email'] . '"');
+		}
+		if ( isset( $this->options['remote_name'] ) && $this->options['remote_name'] != "" ) {
+			$remote_name = $this->options['remote_name'];
+		} else {
+			$remote_name = 'origin';
+		}
+		$add = $this->run("remote add $remote_name {$options['remote_url']}");
+		if ( $add == false ) {
+			$this->run( "remote set-url $remote_name {$options['remote_url']}" );
+		}
 		$settings_link 	= get_admin_url() . 'admin.php?page=revisr_settings';
 		$commit_link 	= get_admin_url() . 'post-new.php?post_type=revisr_commits';
 		$alert_msg 		= sprintf( __( 'Successfully initialized a new repository. Please confirm your <a href="%s">settings</a> before creating your first <a href="%s">commit</a>.', 'revisr' ), $settings_link, $commit_link );

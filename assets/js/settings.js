@@ -27,7 +27,7 @@
 			return false;
 		}
 	});
-	jQuery(document).ready(function() {
+	jQuery(document).ready(function($) {
 		jQuery('#post-hook').hide();
 		jQuery('#auto_pull').change(function(){
 	  		if (this.checked) {

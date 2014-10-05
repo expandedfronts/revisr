@@ -246,15 +246,16 @@ class Revisr_Settings
 			if ( isset( $this->options['merge_type'] ) ) {
 				$merge_type = $this->options['merge_type'];
 			} else {
-				$merge_type = 'ours';
+				$merge_type = 'none';
 			}
 		?>
-		<select id="merge_type" name="revisr_remote_settings[merge_type]">
-			<option value="ours" <?php selected( $merge_type, 'ours' ); ?>><?php _e( 'Ours (keeps local)', 'revisr' ); ?></option>
-			<option value="theirs" <?php selected( $merge_type, 'theirs' ); ?>><?php _e( 'Theirs (keeps remote)', 'revisr' ); ?></option>
-			<option value="ff-only" <?php selected( $merge_type, 'ff-only' ); ?>><?php _e( 'Fast-forwarding Only'); ?></option>
+		<select id="merge_type" name="revisr_general_settings[merge_type]">
+			<option value="none" data-description="<?php _e( 'If you plan to use multiple branches, select how Revisr should handle your merges. <br>This isn\'t necessary if you\'re primarily using Revisr for backups.', 'revisr'); ?>" <?php selected( $merge_type, 'none' );?>><?php _e( 'None (disables merging)', 'revisr' ); ?></option>
+			<option value="ff-only" data-description="<?php _e( 'Revisr will only merge if there are no conflicts.<br>This is the safest merge strategy.', 'revisr'); ?>" <?php selected( $merge_type, 'ff-only' ); ?>><?php _e( 'Fast-forwarding Only'); ?></option>
+			<option value="ours" data-description="<?php _e( 'If conflicts occur during a merge, Revisr will keep the local version of the affected files.', 'revisr'); ?>" <?php selected( $merge_type, 'ours' ); ?>><?php _e( 'Ours (keeps local)', 'revisr' ); ?></option>
+			<option value="theirs" data-description="<?php _e( 'If conflicts occur during a merge, Revisr will keep the files from the branch being merged in.<br>This is NOT recommended for live/production sites.', 'revisr'); ?>" <?php selected( $merge_type, 'theirs' ); ?>><?php _e( 'Theirs (keeps remote)', 'revisr' ); ?></option>
 		</select>
-		<p class="description"></p>
+		<p id="merge-description" class="description"></p>
 		<?php
 	}	
 	
