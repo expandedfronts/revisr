@@ -36,4 +36,8 @@
 	    		jQuery('#post-hook').fadeOut('slow');
 	  		}                   
 		});
+		$('#merge_type').change(function () {
+    		var $selected = $(this).find(':selected');
+    		$('#merge-description').html($selected.data('description'));
+		}).trigger('change');
 	});
