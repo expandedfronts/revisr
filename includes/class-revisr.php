@@ -237,8 +237,8 @@ class Revisr {
 	 * @param array $links The links assigned to Revisr.
 	 */
 	public function revisr_settings_link( $links ) {
-		$settings_link = '<a href="admin.php?page=revisr_settings">' . __( 'Settings', 'revisr') . '</a>'; 
-  		array_unshift($links, $settings_link); 
+		$settings_link = '<a href="admin.php?page=revisr_settings">' . __( 'Settings', 'revisr' ) . '</a>'; 
+  		array_unshift( $links, $settings_link ); 
   		return $links; 
 	}	
 
@@ -257,6 +257,6 @@ class Revisr {
 		
 	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	   	dbDelta( $sql );
-	   	add_option( "revisr_db_version", "1.0" );
+	   	add_option( 'revisr_db_version', '1.0' );
 	}	
 }

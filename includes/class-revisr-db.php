@@ -203,9 +203,9 @@ class Revisr_DB
 
 	/**
 	 * Verifies that a backup file is valid.
-	 * @access private
+	 * @access public
 	 */
-	private function verify_backup() {
+	public function verify_backup() {
 		if ( ! file_exists( $this->sql_file ) || filesize( $this->sql_file ) < 1000 ) {
 			return false;
 		} else {

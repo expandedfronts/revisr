@@ -121,7 +121,43 @@ class Revisr_Git
 	public function config_user_name( $username = '' ) {
 		$username = $this->run( "config user.name $username" );
 		return $username;
-	}	
+	}
+
+	/**
+	 * Returns the number of unpulled commits.
+	 * @access public
+	 */
+	public function count_unpulled( $ajax_btn = true ) {
+		$this->fetch();
+		if ( $ajax_btn == true ) {
+			$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline", 'count_ajax_btn' );
+		} else {
+			$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline" );
+			return count( $unpulled );
+		}
+	}
+
+	/**
+	 * Returns the number of unpushed commits.
+	 * @access public
+	 */
+	public function count_unpushed( $ajax_btn = true ) {
+		if ( $ajax_btn == true ) {
+			$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline", 'count_ajax_btn' );
+		} else {
+			$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline" );
+			return count( $unpushed );
+		}
+	}
+
+	/**
+	 * Returns the number of untracked/modified files.
+	 * @access public
+	 */
+	public function count_untracked() {
+		$untracked = $this->run( 'status --short' );
+		return count( $untracked );
+	}
 
 	/**
 	 * Returns the current branch.
@@ -129,7 +165,9 @@ class Revisr_Git
 	 */
 	public function current_branch() {
 		$current_branch = $this->run( 'rev-parse --abbrev-ref HEAD' );
-		return $current_branch[0];
+		if ( $current_branch != false ) {
+			return $current_branch[0];
+		}
 	}
 
 	/**
@@ -205,7 +243,6 @@ class Revisr_Git
 				$commit_hash = $commit_meta[0];
 			}
 		}
-
 		if ( empty( $commit_hash ) ) {
 			return __( 'Unknown', 'revisr' );
 		} else {
@@ -373,7 +410,6 @@ class Revisr_Git
 		foreach ( $staged_files as $result ) {
 			$file = substr( $result, 3 );
 			$status = Revisr_Git::get_status( substr( $result, 0, 2 ) );
-
 			if ( $status == __( 'Deleted', 'revisr' ) ) {
 				if ( $this->run( "rm {$file}" ) === false ) {
 					$error = sprintf( __( 'Error removing "%s" from the repository.', 'revisr' ), $file );
@@ -406,42 +442,6 @@ class Revisr_Git
 	public function tag( $tag = '' ) {
 		$tag = $this->run( "tag $tag" );
 		return $tag;
-	}
-
-	/**
-	 * Returns the number of unpulled commits.
-	 * @access public
-	 */
-	public function count_unpulled( $ajax_btn = true ) {
-		$this->fetch();
-		if ( $ajax_btn == true ) {
-			$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline", 'count_ajax_btn' );
-		} else {
-			$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline" );
-			return count( $unpulled );
-		}
-	}
-
-	/**
-	 * Returns the number of unpushed commits.
-	 * @access public
-	 */
-	public function count_unpushed( $ajax_btn = true ) {
-		if ( $ajax_btn == true ) {
-			$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline", 'count_ajax_btn' );
-		} else {
-			$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline" );
-			return count( $unpushed );
-		}
-	}
-
-	/**
-	 * Returns the number of untracked/modified files.
-	 * @access public
-	 */
-	public function count_untracked() {
-		$untracked = $this->run( 'status --short' );
-		return count( $untracked );
 	}
 
 	/**

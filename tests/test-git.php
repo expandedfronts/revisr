@@ -95,9 +95,23 @@ class RevisrGitTest extends WP_UnitTestCase {
 		$this->assertEquals( false, $is_branch );
 	}
 
+	/**
+	 * Tests a commit.
+	 */
 	function test_commit() {
 		$this->git->run( 'add -A' );
 		$this->git->commit( 'Committed pending files' );
 		$this->assertEquals( null, $this->git->count_untracked() );
+	}
+
+	/**
+	 * Tests the count_untracked() function.
+	 */
+	function test_count_untracked() {
+		$untracked = $this->git->count_untracked();
+		$this->assertEquals( 0, $untracked );
+		$myfile = fopen("testfile.txt", "w");
+		$new_untracked = $this->git->count_untracked();
+		$this->assertEquals( 1, $new_untracked );
 	}
 }
