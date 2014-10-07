@@ -101,17 +101,32 @@ class RevisrGitTest extends WP_UnitTestCase {
 	function test_commit() {
 		$this->git->run( 'add -A' );
 		$this->git->commit( 'Committed pending files' );
-		$this->assertEquals( null, $this->git->count_untracked() );
+		$this->assertEquals( 0, $this->git->count_untracked() );
 	}
 
 	/**
 	 * Tests the count_untracked() function.
 	 */
 	function test_count_untracked() {
-		$untracked = $this->git->count_untracked();
-		$this->assertEquals( 0, $untracked );
-		$myfile = fopen("testfile.txt", "w");
+		$myfile = fopen("sample-file.txt", "w");
 		$new_untracked = $this->git->count_untracked();
 		$this->assertEquals( 1, $new_untracked );
+	}
+
+	/**
+	 * Tests the reset functionality.
+	 */
+	function test_reset() {
+		$this->git->reset( '--hard', 'HEAD', true );
+		$after_reset  = $this->git->count_untracked();
+		$this->assertEquals( 0, $after_reset );
+	}
+
+	/**
+	 * Tests the Git status functionality.
+	 */
+	function test_status() {
+		$status = $this->git->status();
+		$this->assertNotEquals( false, $status );
 	}
 }

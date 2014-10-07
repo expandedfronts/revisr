@@ -50,7 +50,7 @@ class Revisr {
 	 * Load the dependencies, define the locale, and set the hooks for the Dashboard and
 	 * the public-facing side of the site.
 	 *
-	 * @since    1.0.0
+	 * @since    1.7.0
 	 */
 	public function __construct() {
 		global $wpdb;
@@ -163,17 +163,20 @@ class Revisr {
 
 	/**
 	 * Makes sure that Revisr is compatible in the current environment.
-	 * @access private
+	 * @access public
 	 */
-	private function check_compatibility() {
+	public function check_compatibility() {
 		$git = new Revisr_Git;
 		if ( ! function_exists( 'exec' ) ) {
 			Revisr_Admin::alert( __( 'It appears that you don\'t have the PHP exec() function enabled on your server. This can be enabled in your php.ini.
 				Check with your web host if you\'re not sure what this means.', 'revisr'), true );
+			return false;
 		}
 		if ( ! is_writeable( $git->dir ) ) {
 			Revisr_Admin::alert( __( 'Revisr requires write permissions to the repository. The recommended settings are 755 for directories, and 644 for files.', 'revisr' ), true );
+			return false;
 		}
+		return true;
 	}
 
 	/**

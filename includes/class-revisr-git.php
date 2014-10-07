@@ -190,8 +190,8 @@ class Revisr_Git
 			return $dir;
 		} else {
 			$url = get_admin_url() . 'admin-post.php?action=init_repo';
-			$alert = sprintf( __( 'Revisr could not detect a Git repository. <a href="%s">Click here</a> to create one.', 'revisr' ), $url );
-			Revisr_Admin::alert( $alert, true );
+			$alert = sprintf( __( 'Thanks for installing Revisr! No Git repository was detected, <a href="%s">click here</a> to create one.', 'revisr' ), $url );
+			Revisr_Admin::alert( $alert );
 			return ABSPATH;
 		}
 	}
@@ -301,6 +301,14 @@ class Revisr_Git
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Checks if the WordPress install is in a Git repository.
+	 * @access public
+	 */
+	public function is_repo() {
+		$dir = exec( 'git rev-parse --show-toplevel' );
 	}
 
 	/**
