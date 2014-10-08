@@ -51,6 +51,15 @@ class RevisrGitTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests a commit.
+	 */
+	function test_commit() {
+		$this->git->run( 'add -A' );
+		$this->git->commit( 'Committed pending files' );
+		$this->assertEquals( 0, $this->git->count_untracked() );
+	}
+
+	/**
 	 * Tests the branches function.
 	 */
 	function test_branches() {
@@ -93,15 +102,6 @@ class RevisrGitTest extends WP_UnitTestCase {
 		$this->git->delete_branch( 'deletethisbranch' );
 		$is_branch = $this->git->is_branch( 'deletethisbranch' );
 		$this->assertEquals( false, $is_branch );
-	}
-
-	/**
-	 * Tests a commit.
-	 */
-	function test_commit() {
-		$this->git->run( 'add -A' );
-		$this->git->commit( 'Committed pending files' );
-		$this->assertEquals( 0, $this->git->count_untracked() );
 	}
 
 	/**
