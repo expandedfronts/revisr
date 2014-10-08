@@ -318,21 +318,9 @@ class Revisr_Git
 	 * @access public
 	 * @param string $branch The branch to merge into the current branch.
 	 */
-	public function merge( $branch, $merge_type ) {
+	public function merge( $branch ) {
 		$this->reset();
-
-		//Determine how to perform the merge.
-		switch ( $merge_type ) {
-			case "theirs":
-				$strategy = '--strategy-option theirs';
-				break;
-			case "ff-only":
-				$strategy = '--ff-only';
-				break;
-			default:
-				$strategy = '--strategy-option ours';
-		}
-		$merge = $this->run( "merge $branch $strategy", __FUNCTION__ );
+		$merge = $this->run( "merge $branch --strategy-option ours", __FUNCTION__ );
 		return $merge;
 	}
 

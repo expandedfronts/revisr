@@ -251,13 +251,7 @@ class Revisr_Admin
 	 * @access public
 	 */
 	public function process_merge() {
-		//Sets the default merge type to "Ours" if not chosen through the settings page.
-		if ( isset( $this->options['merge_type'] ) ) {
-			$merge_type = $this->options['merge_type'];
-		} else {
-			$merge_type = 'ours';
-		}
-		$this->git->merge( $_REQUEST['branch'], $merge_type );
+		$this->git->merge( $_REQUEST['branch'] );
 	}
 
 	/**

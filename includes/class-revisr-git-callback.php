@@ -168,12 +168,6 @@ class Revisr_Git_Callback extends Revisr_Git
 		$alert_msg = sprintf( __( 'Successfully merged changes from branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->branch );
 		Revisr_Admin::alert( $alert_msg );
 		Revisr_Admin::log( $alert_msg, 'merge' );
-
-		//Restore the database if necessary.
-		if ( isset( $this->options['merge_type'] ) && $this->options['merge_type'] == "theirs" && isset( $this->options['reset_db'] ) ) {
-			$db = new Revisr_DB;
-			$db->restore( true );
-		}
 		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
 		exit();
 	}
