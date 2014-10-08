@@ -63,7 +63,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the branches function.
 	 */
 	function test_branches() {
-		$branches = $this->git->branches();
+		$branches = $this->git->get_branches();
 		$this->assertContains( 'master', $branches[0] );
 	}
 
@@ -138,5 +138,15 @@ class RevisrGitTest extends WP_UnitTestCase {
 		$current 	= $this->git->current_commit();
 		$length 	= strlen($current);
 		$this->assertEquals( 7, $length );
+	}
+
+	/**
+	 * Tests the tag() function.
+	 */
+	function test_tag() {
+		$tag 	= $this->git->tag( 'v1.0' );
+		$tags 	= $this->git->tag();
+		$this->assertNotEquals( false, $tag );
+		$this->assertEquals( 'v1.0', $tags[0] );
 	}
 }

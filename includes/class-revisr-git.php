@@ -62,17 +62,6 @@ class Revisr_Git
 	}
 
 	/**
-	 * Lists available branches on the local repository.
-	 * @access public
-	 * @param string $args 		Any arguements to pass to the function.
-	 * @param string $branch 	The branch to act on.
-	 */
-	public function branches() {
-		$branches = $this->run( 'branch' );
-		return $branches;
-	}
-
-	/**
 	 * Checks out an existing branch.
 	 * @access public
 	 * @param string $branch The branch to checkout.
@@ -230,6 +219,17 @@ class Revisr_Git
 	}
 
 	/**
+	 * Returns available branches on the local repository.
+	 * @access public
+	 * @param string $args 		Any arguements to pass to the function.
+	 * @param string $branch 	The branch to act on.
+	 */
+	public function get_branches() {
+		$branches = $this->run( 'branch' );
+		return $branches;
+	}
+
+	/**
 	 * Returns the commit hash for a specific commit.
 	 * @access public
 	 * @param int $post_id The ID of the associated post.
@@ -280,7 +280,7 @@ class Revisr_Git
 			$status = false;
 		}
 		return $status;
-	}	
+	}
 
 	/**
 	 * Initializes a new repository.
@@ -297,7 +297,7 @@ class Revisr_Git
 	 * @param string $branch The branch to check.
 	 */
 	public function is_branch( $branch ) {
-		$branches = $this->branches();
+		$branches = $this->get_branches();
 		if ( in_array( $branch, $branches ) || in_array( "* $branch", $branches ) || in_array( "  $branch", $branches ) ) {
 			return true;
 		} else {
@@ -433,7 +433,7 @@ class Revisr_Git
 	}
 
 	/**
-	 * Adds a tag to the repository.
+	 * Adds a tag to the repository, or returns a list of tags if no parameters are passed.
 	 * @access public
 	 * @param string $tag 		The tag to add.
 	 */

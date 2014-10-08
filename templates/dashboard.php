@@ -64,7 +64,7 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 								<div id="branches" class="tabs-panel" style="display: block;">
 									<table id="branches_table" class="widefat">
 										<?php
-											$output = $git->branches();
+											$output = $git->get_branches();
 											if ( is_array( $output ) ) {
 												foreach ($output as $key => $value){
 													$branch = substr($value, 2);
@@ -82,7 +82,7 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 								<div id="tags" class="tabs-panel" style="display: none;">
 									<ul id="tags-list">
 										<?php
-											$tags = $git->run( 'tag' );
+											$tags = $git->tag();
 											foreach ( $tags as $tag ) {
 												echo "<li>$tag</li>";
 											}

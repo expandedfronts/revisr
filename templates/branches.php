@@ -40,7 +40,7 @@
 				</thead>
 					<?php
 						$git = new Revisr_Git;
-						$output = $git->branches();
+						$output = $git->get_branches();
 
 						if ( is_array( $output ) ) {
 							foreach ($output as $key => $value){
