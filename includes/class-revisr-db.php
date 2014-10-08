@@ -71,10 +71,20 @@ class Revisr_DB
 			$this->path = '';
 		}
 
-		if ( DB_PASSWORD != '' ) {
-			$this->conn = "-u '" . DB_USER . "' -p'" . DB_PASSWORD . "' " . DB_NAME . " --host " . DB_HOST;
+		if ( $this->check_port( DB_HOST ) != false ) {
+			$port 		= $this->check_port( DB_HOST );
+			$add_port 	= " --port=$port";
+			$temp 		= strlen($port) * -1 - 1;
+			$db_host 	= substr( DB_HOST, 0, $temp );
 		} else {
-			$this->conn = "-u '" . DB_USER . "' " . DB_NAME . " --host " . DB_HOST;
+			$add_port 	= '';
+			$db_host 	= DB_HOST;
+		}
+
+		if ( DB_PASSWORD != '' ) {
+			$this->conn = "-u '" . DB_USER . "' -p'" . DB_PASSWORD . "' " . DB_NAME . " --host " . $db_host . $add_port;
+		} else {
+			$this->conn = "-u '" . DB_USER . "' " . DB_NAME . " --host " . $db_host . $add_port;
 		}
 		chdir( $this->upload_dir['basedir'] );
 	}
@@ -210,6 +220,20 @@ class Revisr_DB
 			return false;
 		} else {
 			return true;
+		}
+	}
+
+	/**
+	 * Checks if a given URL is using a port, if so, return the port number.
+	 * @access public
+	 * @param string $url The URL to parse.
+	 */
+	public function check_port( $url ) {
+		$parsed_url = parse_url( $url );
+		if ( isset( $parsed_url['port'] ) && $parsed_url['port'] != '' ) {
+			return $parsed_url['port'];
+		} else {
+			return false;
 		}
 	}
 
