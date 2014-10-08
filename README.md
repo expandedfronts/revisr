@@ -1,6 +1,5 @@
 #Revisr [![Build Status](https://travis-ci.org/ExpandedFronts/revisr.svg?branch=dev)](https://travis-ci.org/ExpandedFronts/revisr) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ExpandedFronts/revisr/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ExpandedFronts/revisr/?branch=master)
 
----
 ##Description##
 
 Revisr allows you to manage your WordPress website with a Git repository. With Revisr, you can:
