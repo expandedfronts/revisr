@@ -1,5 +1,4 @@
 <?php
-
 /**
  * class-revisr-i18n.php
  * 

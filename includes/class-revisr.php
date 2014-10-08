@@ -1,5 +1,4 @@
 <?php
-
 /**
  * class-revisr.php
  *
@@ -78,6 +77,7 @@ class Revisr {
 		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-db.php';
 		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-git.php';
 		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-git-callback.php';
+		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-cron.php';
 		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-settings.php';
 	}
 
@@ -98,7 +98,6 @@ class Revisr {
 	private function admin_hooks() {
 		$revisr_admin 	= new Revisr_Admin( $this->options, $this->get_table_name() );
 		$revisr_git 	= new Revisr_Git();
-		add_action( 'revisr_cron', array( $revisr_admin, 'run_automatic_backup' ) );
 		add_action( 'wp_ajax_render_alert', array( $revisr_admin, 'render_alert' ) );
 		add_action( 'publish_revisr_commits', array( $revisr_admin, 'process_commit' ) );
 		add_action( 'admin_post_process_checkout', array( $revisr_admin, 'process_checkout' ) );
@@ -149,6 +148,16 @@ class Revisr {
 		add_filter( "plugin_action_links_$plugin", array( $revisr_setup, 'settings_link' ) );
 		add_action( 'wp_ajax_recent_activity', array( $revisr_setup, 'recent_activity' ) );
 		$revisr_settings = new Revisr_Settings( $this->options );
+	}
+
+	/**
+	 * Loads hooks for processing crons.
+	 * @access private
+	 */
+	private function cron_hooks() {
+		$revisr_cron = new Revisr_Cron();
+		add_filter( 'cron_schedules', array( $this, 'revisr_schedules' ) );
+		add_action( 'revisr_cron', array( $revisr_cron, 'run_automatic_backup' ) );
 	}
 
 	/**

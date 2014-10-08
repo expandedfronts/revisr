@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The official Revisr WordPress plugin.
  *

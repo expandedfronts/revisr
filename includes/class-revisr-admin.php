@@ -1,5 +1,4 @@
 <?php
-
 /**
  * class-revisr-admin.php
  *
@@ -511,7 +510,7 @@ class Revisr_Admin
 			'post_content'	=> '',
 			'post_type'		=> 'revisr_commits',
 			'post_status'	=> 'publish',
-			);
+		);
 		$post_id = wp_insert_post( $post );
 		add_post_meta( $post_id, 'branch', $this->git->branch );
 		add_post_meta( $post_id, 'commit_hash', $this->git->current_commit() );

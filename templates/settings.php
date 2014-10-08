@@ -33,7 +33,8 @@ if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" )
 			if ( $timestamp == false ) {
 				wp_schedule_event( time(), $options['automatic_backups'], 'revisr_cron' );
 			} else {
-				wp_reschedule_event( time(), $options['automatic_backups'], 'revisr_cron' );
+				wp_clear_scheduled_hook( 'revisr_cron' );
+				wp_schedule_event( time(), $options['automatic_backups'], 'revisr_cron' );
 			}
 		} else {
 			wp_clear_scheduled_hook( 'revisr_cron' );

@@ -11,7 +11,4 @@
 			<directory prefix="test-" suffix=".php">./tests/</directory>
 		</testsuite>
 	</testsuites>
-	<logging>
-		<log type="coverage-clover" target="coverage.clover"/>
-	</logging>
 </phpunit>
