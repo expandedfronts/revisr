@@ -21,12 +21,9 @@ before_script:
     - cd /home/travis/build/ExpandedFronts/revisr/
     - git config user.name "revisr"
     - git config user.email "support@expandedfronts.com"
-    - curl -s http://getcomposer.org/installer | php
-    - php composer.phar install --dev --no-interaction
 
 after_script:
-  - php vendor/bin/coveralls -v
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
-script:
-  - mkdir -p build/logs
-  - php vendor/bin/phpunit -c phpunit.xml.dist
+script: phpunit --coverage-clover=coverage.clover
