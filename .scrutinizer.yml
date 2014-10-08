@@ -1,7 +1,7 @@
-#.scrutinizer.yml
+#.scrutinizer.yml config
 tools:
     external_code_coverage: true
-        timeout: 1200    # Timeout in seconds.
+        timeout: 1200
     php_mess_detector: true
     php_code_sniffer: true
     php_code_coverage: true
