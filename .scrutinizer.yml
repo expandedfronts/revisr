@@ -1,8 +1,8 @@
 # .scrutinizer.yml
 tools:
     external_code_coverage:
-        timeout: 900    # Timeout in seconds.
-        runs: 8    # Scrutinizer will wait for two code coverage submissions
+        timeout: 1200    # Timeout in seconds.
+        runs: 2    # Scrutinizer will wait for two code coverage submissions
     php_mess_detector: true
     php_code_sniffer: true
     php_code_coverage: true

@@ -130,4 +130,13 @@ class RevisrGitTest extends WP_UnitTestCase {
 		$status = $this->git->status();
 		$this->assertNotEquals( false, $status );
 	}
+
+	/**
+	 * Tests the current_commit() function. Expects 7 digit short SHA1 hash.
+	 */
+	function test_current_commit() {
+		$current 	= $this->git->current_commit();
+		$length 	= strlen($current);
+		$this->assertEquals( 7, $length );
+	}
 }

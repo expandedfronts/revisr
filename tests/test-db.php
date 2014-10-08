@@ -34,4 +34,12 @@ class RevisrDBTest extends WP_UnitTestCase {
 		$backup = $this->db->backup();
 		$this->assertFileExists( ABSPATH . '/wp-content/uploads/revisr_db_backup.sql' );
 	}
+
+	/**
+	 * Tests the verify_backup() function.
+	 */
+	function test_verify_backup() {
+		$verify = $this->db->verify_backup();
+		$this->assertEquals( true, $verify );
+	}
 }
