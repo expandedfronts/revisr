@@ -210,7 +210,7 @@ class Revisr_Admin
 	public function process_create_branch() {
 		$branch = $_REQUEST['branch_name'];
 		$result = $this->git->create_branch( $branch );
-		if ( isset( $_REQUEST['checkout'] ) ) {
+		if ( isset( $_REQUEST['checkout_new_branch'] ) ) {
 			$this->git->checkout( $branch );
 		}
 		if ( $result !== false ) {
