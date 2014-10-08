@@ -79,10 +79,7 @@ If you have the "Reset Database when Switching Branches" option checked, a few t
 
 Then, Revisr switches branches and restores the last available database backup for that new branch. For example, you could create some posts on a branch called "dev", and switch back to the master branch. Once on master, you wouldn't see the posts on the dev branch because the database has essentially been kept seperate. Once you switch back to dev, you'll see your posts just how you left them. A more useful scenario would be testing out plugins or upgrades on a seperate branch without permanently affecting the database.
 
-= Why are my commits timing out? =
-This is likely an authentication issue. You can fix this by configuring your SSH keys or using the HTTPS authentication option on the settings page.
-
-= Why aren't my commits being pushed to the remote repository? =
+= Why aren't my commits being pushed to Bitbucket/GitHub? =
 This is either an authentication issue or the remote branch is ahead of yours.
 
 = Can I damage my site with this plugin? =
@@ -99,9 +96,10 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 == Changelog ==
 = 1.7 = 
 * Added ability to create a new repository if one does not already exist
-* Added ability to set automatic backups
+* Added ability to create automatic daily or weekly backups
 * Added ability to merge changes
 * Added ability to add tags to commits
+* Fixed bug with backing up the database when a port is used
 * General improvements
 
 = 1.6.3 =
