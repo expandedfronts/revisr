@@ -19,5 +19,7 @@ before_script:
     - cd /tmp/wordpress/
     - git init .
     - cd /home/travis/build/ExpandedFronts/revisr/
+    - git config user.name "revisr"
+    - git config user.email "support@expandedfronts.com"
 
 script: phpunit

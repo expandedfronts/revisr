@@ -18,7 +18,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Tests the check_port() functionality.
 	 */
 	function test_check_port() {
-		$port = $this->db->check_port( DB_HOST );
+		$port = $this->db->check_port( 'localhost' );
 		$this->assertNotEquals( false, $port );
 		$this->assertEquals( '8889', $port );
 		$new_port = $this->db->check_port( 'http://example.com:8080' );
