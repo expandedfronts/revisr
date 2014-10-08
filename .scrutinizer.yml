@@ -1,10 +1,10 @@
-# .scrutinizer.yml
+#.scrutinizer.yml
 tools:
     external_code_coverage: true
     php_mess_detector: true
     php_code_sniffer: true
     php_code_coverage: true
     php_sim: true
-	php_change_tracking: true
-	php_analyzer: true
-	php_pdepend: true
+    php_change_tracking: true
+    php_analyzer: true
+    php_pdepend: true
