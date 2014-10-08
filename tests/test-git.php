@@ -92,7 +92,8 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 */
 	function test_checkout() {
 		$this->git->checkout( 'testbranch' );
-		$this->assertEquals( 'testbranch', $this->git->branch );
+		$current_branch = $this->git->current_branch();
+		$this->assertEquals( 'testbranch', $current_branch );
 	}
 
 	/**
