@@ -181,15 +181,9 @@ class Revisr_DB
 	 */
 	public function commit_db( $insert_post = false ) {
 		$commit_msg = __( 'Backed up the database with Revisr.', 'revisr' );
-		$file 	= $this->upload_dir['basedir'] . '/' . $this->sql_file;
-		$add 	= $this->git->run( "add {$file}" );
+		$file 		= $this->upload_dir['basedir'] . '/' . $this->sql_file;
+		$this->git->run( "add {$file}" );
 		$this->git->commit( $commit_msg );
-
-		if ( $add === false ) {
-			$error = __( 'There was an error committing the database.', 'revisr' );
-			Revisr_Admin::alert( $error, true );
-		}
-
 		//Insert the corresponding post if necessary.
 		if ( $insert_post === true ) {
 			$post = array(
@@ -198,15 +192,14 @@ class Revisr_DB
 				'post_type' 	=> 'revisr_commits',
 				'post_status' 	=> 'publish',
 			);
-			$post_id = wp_insert_post( $post );
-			$commit_hash = $this->git->current_commit();
+			$post_id 		= wp_insert_post( $post );
+			$commit_hash 	= $this->git->current_commit();
 			add_post_meta( $post_id, 'commit_hash', $commit_hash );
 			add_post_meta( $post_id, 'db_hash', $commit_hash );
 			add_post_meta( $post_id, 'branch', $this->git->branch );
 			add_post_meta( $post_id, 'files_changed', '0' );
 			add_post_meta( $post_id, 'committed_files', array() );
 		}
-
 		//Push changes if necessary.
 		$this->git->auto_push();
 	}
