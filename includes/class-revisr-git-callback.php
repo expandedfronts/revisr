@@ -86,7 +86,7 @@ class Revisr_Git_Callback extends Revisr_Git
 		$msg 		= sprintf( __( 'Deleted branch %s.', 'revisr'), $branch );
 		$email_msg 	= sprintf( __( 'The branch "%s" on the repository for %s was deleted.', 'revisr' ), $branch, get_bloginfo() );
 		Revisr_Admin::log( $msg, 'branch' );
-		Revisr_Admin::notify( get_bloginfo() . __( ' - Branch Deleted', 'revisr' ), $msg );
+		Revisr_Admin::notify( get_bloginfo() . __( ' - Branch Deleted', 'revisr' ), $email_msg );
 		echo "<script>
 				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_success&branch={$branch}'
 		</script>";
@@ -140,7 +140,7 @@ class Revisr_Git_Callback extends Revisr_Git
 			$remote_name = 'origin';
 		}
 		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != "" ) {
-			$this->run("remote add $remote_name {$options['remote_url']}");
+			$this->run("remote add $remote_name {$this->options['remote_url']}");
 		}
 		$settings_link 	= get_admin_url() . 'admin.php?page=revisr_settings';
 		$commit_link 	= get_admin_url() . 'post-new.php?post_type=revisr_commits';
@@ -165,9 +165,10 @@ class Revisr_Git_Callback extends Revisr_Git
 	 * @access public
 	 */
 	public function success_merge( $output = '', $args = '' ) {
-		$alert_msg = sprintf( __( 'Successfully merged changes from branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->branch );
+		$alert_msg 	= sprintf( __( 'Successfully merged changes from branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->branch );
+		$log_msg 	= sprintf( __( 'Merged branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->branch );
 		Revisr_Admin::alert( $alert_msg );
-		Revisr_Admin::log( $alert_msg, 'merge' );
+		Revisr_Admin::log( $log_msg, 'merge' );
 		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
 		exit();
 	}

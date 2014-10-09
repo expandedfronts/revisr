@@ -31,7 +31,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Tests a database backup.
 	 */
 	function test_backup() {
-		$backup = $this->db->backup();
+		$this->db->backup();
 		$this->assertFileExists( ABSPATH . '/wp-content/uploads/revisr_db_backup.sql' );
 	}
 
