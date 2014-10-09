@@ -11,15 +11,14 @@
  */
 class Revisr_Git_Callback extends Revisr_Git
 {
-
 	/**
 	 * Callback for a successful checkout.
 	 * @access public
 	 */
 	public function success_checkout( $output = '', $args = '' ) {
-		$branch = $this->branch;
-		$msg = sprintf( __( 'Checked out branch: %s.', 'revisr' ), $branch );
-		$email_msg = sprintf( __( '%s was switched to branch %s.', 'revisr' ), get_bloginfo(), $branch );
+		$branch 	= $this->branch;
+		$msg 		= sprintf( __( 'Checked out branch: %s.', 'revisr' ), $branch );
+		$email_msg 	= sprintf( __( '%s was switched to branch %s.', 'revisr' ), get_bloginfo(), $branch );
 		Revisr_Admin::alert( $msg );
 		Revisr_Admin::log( $msg, "branch" );
 		Revisr_Admin::notify(get_bloginfo() . __( ' - Branch Changed', 'revisr'), $email_msg );
@@ -83,10 +82,11 @@ class Revisr_Git_Callback extends Revisr_Git
 	 * @access public
 	 */
 	public function success_delete_branch( $output = '', $args = '' ) {
-		$branch = $args;
-		$msg = sprintf( __( 'Deleted branch %s.', 'revisr'), $branch );
+		$branch 	= $args;
+		$msg 		= sprintf( __( 'Deleted branch %s.', 'revisr'), $branch );
+		$email_msg 	= sprintf( __( 'The branch "%s" on the repository for %s was deleted.', 'revisr' ), $branch, get_bloginfo() );
 		Revisr_Admin::log( $msg, 'branch' );
-		Revisr_Admin::notify( get_bloginfo() . __( 'Branch Deleted', 'revisr' ), $msg );
+		Revisr_Admin::notify( get_bloginfo() . __( ' - Branch Deleted', 'revisr' ), $msg );
 		echo "<script>
 				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_success&branch={$branch}'
 		</script>";
@@ -177,8 +177,8 @@ class Revisr_Git_Callback extends Revisr_Git
 	 * @access public
 	 */
 	public function null_merge( $output = '', $args = '' ) {
-		$log_msg = sprintf( __( 'Error merging branch %s into %s.', 'revisr'), $_REQUEST['branch'], $this->branch );
-		$alert_msg = sprintf( __( 'There was an error merging branch %s into your current branch. The merge was aborted to avoid conflicts.', 'revisr' ), $_REQUEST['branch'] );
+		$log_msg 	= sprintf( __( 'Error merging branch %s into %s.', 'revisr'), $_REQUEST['branch'], $this->branch );
+		$alert_msg 	= sprintf( __( 'There was an error merging branch %s into your current branch. The merge was aborted to avoid conflicts.', 'revisr' ), $_REQUEST['branch'] );
 		Revisr_Admin::alert( $alert_msg, true );
 		Revisr_Admin::log( $log_msg, 'error' );
 		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
@@ -191,7 +191,7 @@ class Revisr_Git_Callback extends Revisr_Git
 	 */
 	public function success_pull( $output = '', $args = '' ) {
 		if ( $args == '0' ) {
-			$msg = __( 'The local repository is up-to-date with the remote repository.', 'revisr' );
+			$msg = __( 'The local repository is already up-to-date with the remote repository.', 'revisr' );
 			Revisr_Admin::alert( $msg );
 		} else {
 			$msg = sprintf( _n( 'Successfully pulled %s commit from %s/%s.', 'Successfully pulled %s commits from %s/%s.', $args, 'revisr' ), $args, $this->remote, $this->branch );

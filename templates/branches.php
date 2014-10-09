@@ -16,11 +16,14 @@
 			switch ( $_GET['status'] ) {
 				case "create_success":
 					$msg = sprintf( __( 'Successfully created branch: %s.', 'revisr' ), $_GET['branch'] );
-					echo '<div id="revisr-alert" class="updated"><p>' . $msg . '</p></div>';
+					echo '<div id="revisr-alert" class="updated" style="margin-top:20px;"><p>' . $msg . '</p></div>';
+					break;
+				case "create_error":
+					$msg = __( 'Failed to create the new branch.', 'revisr' );
 					break;
 				case "delete_success":
 					$msg = sprintf( __( 'Successfully deleted branch: %s.', 'revisr' ), $_GET['branch'] );
-					echo '<div id="revisr-error" class="error"><p>' . $msg . '</p></div>';
+					echo '<div id="revisr-alert" class="updated" style="margin-top:20px;"><p>' . $msg . '</p></div>';
 					break;
 				default:
 					//Do nothing.

@@ -64,7 +64,7 @@ if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" )
 		<?php
 			$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general_settings';
 			if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" ) {
-				_e( '<div id="revisr_alert" class="updated"><p>Settings updated successfully.</p></div>', 'revisr' );
+				_e( '<div id="revisr_alert" class="updated" style="margin-top:20px;"><p>Settings updated successfully.</p></div>', 'revisr' );
 			}
 		?>
 		<h2 class="nav-tab-wrapper">

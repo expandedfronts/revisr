@@ -71,16 +71,6 @@ class Revisr_Git
 	}
 
 	/**
-	 * Creates a new branch.
-	 * @access public
-	 * @param string $branch The name of the branch to create.
-	 */
-	public function create_branch( $branch ) {
-		$new_branch = $this->run( "branch $branch" );
-		return $new_branch;
-	}
-
-	/**
 	 * Commits any staged files to the local repository.
 	 * @access public
 	 * @param string $message 	The message to use with the commit.
@@ -149,6 +139,16 @@ class Revisr_Git
 	}
 
 	/**
+	 * Creates a new branch.
+	 * @access public
+	 * @param string $branch The name of the branch to create.
+	 */
+	public function create_branch( $branch ) {
+		$new_branch = $this->run( "branch $branch" );
+		return $new_branch;
+	}	
+
+	/**
 	 * Returns the current branch.
 	 * @access public
 	 */
@@ -204,7 +204,7 @@ class Revisr_Git
 	 * @access public
 	 * @param string $branch The branch to delete.
 	 */
-	public function delete_branch( $branch, $delete_remote = false ) {
+	public function delete_branch( $branch ) {
 		$deletion = $this->run( "branch -D $branch", __FUNCTION__, $branch );
 		return $deletion;
 	}
@@ -221,8 +221,6 @@ class Revisr_Git
 	/**
 	 * Returns available branches on the local repository.
 	 * @access public
-	 * @param string $args 		Any arguements to pass to the function.
-	 * @param string $branch 	The branch to act on.
 	 */
 	public function get_branches() {
 		$branches = $this->run( 'branch' );
@@ -235,8 +233,7 @@ class Revisr_Git
 	 * @param int $post_id The ID of the associated post.
 	 */
 	public static function get_hash( $post_id ) {
-		$commit_meta = maybe_unserialize( get_post_meta( $post_id, "commit_hash" ) );
-					
+		$commit_meta = maybe_unserialize( get_post_meta( $post_id, "commit_hash" ) );		
 		if ( isset( $commit_meta[0] ) ) {
 			if ( ! is_array( $commit_meta[0] ) && strlen( $commit_meta[0] ) == "1" ) {
 				$commit_hash = $commit_meta;
@@ -310,7 +307,12 @@ class Revisr_Git
 	 * @access public
 	 */
 	public function is_repo() {
-		$dir = exec( 'git rev-parse --show-toplevel' );
+		exec( 'git rev-parse --show-toplevel', $output, $error );
+		if ( $error ) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	/**

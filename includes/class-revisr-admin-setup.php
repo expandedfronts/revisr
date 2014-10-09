@@ -55,9 +55,7 @@ class Revisr_Setup
 		wp_register_script( 'revisr_staging', plugins_url() . '/revisr/assets/js/staging.js', 'jquery', '07052014', false );
 		wp_register_script( 'revisr_committed', plugins_url() . '/revisr/assets/js/committed.js', 'jquery', '07052014', false );
 		wp_register_script( 'revisr_settings', plugins_url() . '/revisr/assets/js/settings.js', 'jquery', '08272014', true );
-
 		$allowed_pages = array( 'revisr', 'revisr_settings', 'revisr_branches' );
-		
 		//Enqueue common styles and scripts.
 		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
 			wp_enqueue_style( 'revisr_dashboard_css' );
@@ -65,7 +63,6 @@ class Revisr_Setup
 			wp_enqueue_script( 'thickbox' );
 			wp_enqueue_script( 'revisr_settings' );
 		}
-
 		//Enqueue styles and scripts on the Revisr staging area.
 		if ( $hook == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == "revisr_commits" ) {
 			wp_enqueue_script( 'revisr_staging' );
@@ -74,7 +71,6 @@ class Revisr_Setup
 				)
 			);
 		}
-		
 		//Enqueue styles and scripts for viewing a commit.
 		if ( $hook == 'post.php' && get_post_type() == 'revisr_commits' ) {
 			wp_enqueue_script( 'revisr_committed' );
@@ -84,7 +80,6 @@ class Revisr_Setup
 				)
 			);			
 		}
-
 		//Add styles and scripts to commits pages.
 		if ( get_post_type() == 'revisr_commits' || isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
 			wp_enqueue_style( 'revisr_commits_css' );
@@ -356,9 +351,9 @@ class Revisr_Setup
 	 */
 	public function admin_bar( $wp_admin_bar ) {
 		if ( $this->git->count_untracked() != 0 ) {
-			$untracked = $this->git->count_untracked();
-			$text = sprintf( _n( '%s Untracked File', '%s Untracked Files', $untracked, 'revisr' ), $untracked );
-			$args = array(
+			$untracked 	= $this->git->count_untracked();
+			$text 		= sprintf( _n( '%s Untracked File', '%s Untracked Files', $untracked, 'revisr' ), $untracked );
+			$args 		= array(
 				'id'    => 'revisr',
 				'title' => $text,
 				'href'  => get_admin_url() . 'post-new.php?post_type=revisr_commits',
@@ -384,14 +379,14 @@ class Revisr_Setup
 	 */
 	public function columns() {
 		$columns = array (
-					'cb' 			=> '<input type="checkbox" />',
-					'hash' 			=> __( 'ID', 'revisr' ),
-					'title' 		=> __( 'Commit', 'revisr' ),
-					'branch' 		=> __( 'Branch', 'revisr' ),
-					'tag' 			=> __( 'Tag', 'revisr' ),
-					'files_changed' => __( 'Files Changed', 'revisr' ),
-					'date' 			=> __( 'Date', 'revisr' ),
-				);
+			'cb' 			=> '<input type="checkbox" />',
+			'hash' 			=> __( 'ID', 'revisr' ),
+			'title' 		=> __( 'Commit', 'revisr' ),
+			'branch' 		=> __( 'Branch', 'revisr' ),
+			'tag' 			=> __( 'Tag', 'revisr' ),
+			'files_changed' => __( 'Files Changed', 'revisr' ),
+			'date' 			=> __( 'Date', 'revisr' ),
+		);
 		return $columns;
 	}
 

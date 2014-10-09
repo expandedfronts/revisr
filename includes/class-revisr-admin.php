@@ -136,13 +136,13 @@ class Revisr_Admin
 	 * @param string $message The message for the email.
 	 */
 	public static function notify( $subject, $message ) {
-		$options = get_option( 'revisr_settings' );
-		$url = get_admin_url() . 'admin.php?page=revisr';
+		$options 	= get_option( 'revisr_settings' );
+		$url 		= get_admin_url() . 'admin.php?page=revisr';
 		if ( isset( $options['notifications'] ) ) {
-			$email = $options['email'];
-			$message .= '<br><br>';
-			$message .= sprintf( __( '<a href="%s">Click here</a> for more details.', 'revisr' ), $url );
-			$headers = "Content-Type: text/html; charset=ISO-8859-1\r\n";
+			$email 		= $options['email'];
+			$message	.= '<br><br>';
+			$message	.= sprintf( __( '<a href="%s">Click here</a> for more details.', 'revisr' ), $url );
+			$headers 	= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 			wp_mail( $email, $subject, $message, $headers );
 		}
 	}
@@ -213,9 +213,9 @@ class Revisr_Admin
 			$this->git->checkout( $branch );
 		}
 		if ( $result !== false ) {
-			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&new_branch=success' );
+			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_success&branch=' . $branch );
 		} else {
-			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&new_branch=error' );
+			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_error&branch=' . $branch );
 		}
 	}
 
