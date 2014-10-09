@@ -109,7 +109,7 @@ class Revisr_Git
 	public function count_unpulled( $ajax_btn = true ) {
 		$this->fetch();
 		if ( $ajax_btn == true ) {
-			$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline", 'count_ajax_btn' );
+			$this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline", 'count_ajax_btn' );
 		} else {
 			$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline" );
 			return count( $unpulled );
@@ -122,7 +122,7 @@ class Revisr_Git
 	 */
 	public function count_unpushed( $ajax_btn = true ) {
 		if ( $ajax_btn == true ) {
-			$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline", 'count_ajax_btn' );
+			$this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline", 'count_ajax_btn' );
 		} else {
 			$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline" );
 			return count( $unpushed );

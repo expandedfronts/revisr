@@ -21,7 +21,7 @@
 
 	jQuery(".merge-btn").click(function() {
 		var target_branch = jQuery(this).attr("value");
-		if (confirm("Are you sure you want to merge branch " + target_branch + " into your current branch?")) {
+		if (confirm("Are you sure you want to merge branch " + target_branch + " into your current branch? In the event of conflicts, Revisr will keep the local version of the file.")) {
 			return;
 		} else {
 			return false;
