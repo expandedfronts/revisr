@@ -63,6 +63,7 @@ class Revisr {
 		$this->admin_setup_hooks();		
 		$this->admin_hooks();
 		$this->db_hooks();
+		$this->cron_hooks();
 		$this->check_compatibility();
 	}
 
@@ -156,7 +157,7 @@ class Revisr {
 	 */
 	private function cron_hooks() {
 		$revisr_cron = new Revisr_Cron();
-		add_filter( 'cron_schedules', array( $this, 'revisr_schedules' ) );
+		add_filter( 'cron_schedules', array( $revisr_cron, 'revisr_schedules' ) );
 		add_action( 'revisr_cron', array( $revisr_cron, 'run_automatic_backup' ) );
 	}
 

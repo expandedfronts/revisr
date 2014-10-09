@@ -28,6 +28,16 @@ class Revisr_Cron {
 	protected $options;
 
 	/**
+	 * Sets up the class.
+	 * @access public
+	 */
+	public function __construct() {
+		$this->db 		= new Revisr_DB();
+		$this->git 		= new Revisr_Git();
+		$this->options 	= Revisr::get_options();
+	}
+
+	/**
 	 * Creates new schedules.
 	 * @access public
 	 * @param array $schedules An array of available schedules.
