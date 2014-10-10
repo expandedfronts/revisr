@@ -15,6 +15,7 @@
  * License URI:       http://www.gnu.org/licenses/gpl-3.0.txt
  * Text Domain:       revisr
  * Domain Path:       /languages
+ * Network: 		  true
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
