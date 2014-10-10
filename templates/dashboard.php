@@ -83,8 +83,10 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 									<ul id="tags-list">
 										<?php
 											$tags = $git->tag();
-											foreach ( $tags as $tag ) {
-												echo "<li>$tag</li>";
+											if ( is_array( $tags ) ) {
+												foreach ( $tags as $tag ) {
+													echo "<li>$tag</li>";
+												}
 											}
 										?>
 									</ul>
