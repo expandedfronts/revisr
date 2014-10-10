@@ -385,9 +385,9 @@ class Revisr_Git
 		exec( $cmd, $output, $error );
 		chdir( $dir );
 		if ( $callback != '' ) {
-			$response = new Revisr_Git_Callback;
-			$success_callback = 'success_' . $callback;
-			$failure_callback = 'null_' . $callback;
+			$response 			= new Revisr_Git_Callback;
+			$success_callback 	= 'success_' . $callback;
+			$failure_callback 	= 'null_' . $callback;
 			if ( $error ) {
 				return $response->$failure_callback( $error, $args );
 			} else {

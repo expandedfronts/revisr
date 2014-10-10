@@ -7,7 +7,7 @@
  * @package   Revisr
  * @license   GPLv3
  * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts
+ * @copyright 2014 Expanded Fronts, LLC
  */
 
 class Revisr_DB
@@ -153,10 +153,10 @@ class Revisr_DB
 				exec( "{$this->path}mysql {$this->conn} < {$this->sql_file}" );
 				$this->git->run( "checkout {$this->branch} {$this->upload_dir['basedir']}/{$this->sql_file}" );
 				
-				if (is_array($current_temp)) {
-					$current_commit = str_replace("'", "", $current_temp);
-					$undo_nonce 	= wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$current_commit[0]}&branch={$_GET['branch']}"), 'revert_db', 'revert_db_nonce' );
-					$msg = sprintf( __( 'Successfully reverted the database to a previous commit. <a href="%s">Undo</a>', 'revisr'), $undo_nonce );
+				if ( is_array( $current_temp ) ) {
+					$current_commit = str_replace( "'", "", $current_temp );
+					$undo_nonce 	= wp_nonce_url( admin_url( "admin-post.php?action=revert_db&db_hash={$current_commit[0]}&branch={$_GET['branch']}" ), 'revert_db', 'revert_db_nonce' );
+					$msg = sprintf( __( 'Successfully reverted the database to a previous commit. <a href="%s">Undo</a>', 'revisr' ), $undo_nonce );
 					Revisr_Admin::log( $msg, 'revert' );
 					Revisr_Admin::alert( $msg );
 					$redirect = get_admin_url() . "admin.php?page=revisr";

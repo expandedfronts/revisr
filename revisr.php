@@ -37,7 +37,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /** Loads the main plugin class. */
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-revisr.php';
+require plugin_dir_path( __FILE__ ) . 'includes/class-revisr.php';
 
 /** Begins execution of the plugin. */
 $revisr = new Revisr();
