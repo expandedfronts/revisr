@@ -66,8 +66,8 @@ It is also adviseable to add Revisr to the gitignore file via the settings page 
 ## Changelog ##
 
 #### 1.7.1 ####
-* Fixed potential bug with tags widget
-* Small cleanup
+* Fixed potential PHP warning with tags widget
+* Fixed permissions to just check the ".git/" directory
 
 #### 1.7 #### 
 * Added ability to create a new repository if one does not already exist
