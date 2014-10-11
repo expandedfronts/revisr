@@ -15,7 +15,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests the check_port() functionality.
+	 * Tests the check_port() function.
 	 */
 	function test_check_port() {
 		$port = $this->db->check_port( 'localhost' );
@@ -25,6 +25,15 @@ class RevisrDBTest extends WP_UnitTestCase {
 		$this->assertEquals( '8080', $new_port );
 		$no_port = $this->db->check_port( 'http://example.com/' );
 		$this->assertEquals( false, $no_port );
+	}
+
+	/**
+	 * Tests the build_connection() function.
+	 */
+	function test_build_connection() {
+		$conn = $this->db->build_connection();
+		$this->assertNotEquals( null, $conn );
+		$this->assertContains( '--host', $conn );
 	}
 
 	/**

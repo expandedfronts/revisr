@@ -63,28 +63,12 @@ class Revisr_DB {
 		$this->sql_file 	= 'revisr_db_backup.sql';
 		$this->options 		= Revisr::get_options();
 		$this->upload_dir 	= wp_upload_dir();
+		$this->conn 		= $this->build_connection();
 		$this->check_exec();
-
 		if ( isset( $this->options['mysql_path'] ) ) {
 			$this->path = $this->options['mysql_path'];
 		} else {
 			$this->path = '';
-		}
-
-		if ( $this->check_port( DB_HOST ) != false ) {
-			$port 		= $this->check_port( DB_HOST );
-			$add_port 	= " --port=$port";
-			$temp 		= strlen($port) * -1 - 1;
-			$db_host 	= substr( DB_HOST, 0, $temp );
-		} else {
-			$add_port 	= '';
-			$db_host 	= DB_HOST;
-		}
-
-		if ( DB_PASSWORD != '' ) {
-			$this->conn = "-u '" . DB_USER . "' -p'" . DB_PASSWORD . "' " . DB_NAME . " --host " . $db_host . $add_port;
-		} else {
-			$this->conn = "-u '" . DB_USER . "' " . DB_NAME . " --host " . $db_host . $add_port;
 		}
 		chdir( $this->upload_dir['basedir'] );
 	}
@@ -120,6 +104,29 @@ class Revisr_DB {
 			Revisr_Admin::log( $msg, 'error');
 			Revisr_Admin::alert( $msg, true );
 		}
+	}
+
+	/**
+	 * Builds the database connection for MySQL.
+	 * @access private
+	 * @return string
+	 */
+	public function build_connection() {
+		if ( $this->check_port( DB_HOST ) != false ) {
+			$port 		= $this->check_port( DB_HOST );
+			$add_port 	= " --port=$port";
+			$temp 		= strlen($port) * -1 - 1;
+			$db_host 	= substr( DB_HOST, 0, $temp );
+		} else {
+			$add_port 	= '';
+			$db_host 	= DB_HOST;
+		}
+		if ( DB_PASSWORD != '' ) {
+			$conn = "-u '" . DB_USER . "' -p'" . DB_PASSWORD . "' " . DB_NAME . " --host " . $db_host . $add_port;
+		} else {
+			$conn = "-u '" . DB_USER . "' " . DB_NAME . " --host " . $db_host . $add_port;
+		}
+		return $conn;
 	}
 
 	/**
