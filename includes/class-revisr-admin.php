@@ -53,7 +53,7 @@ class Revisr_Admin {
 	/**
 	 * Stores an alert to be rendered on the dashboard.
 	 * @access public
-	 * @param string  $mesage 	The message to display.
+	 * @param string  $message 	The message to display.
 	 * @param bool    $is_error Whether the message is an error.
 	 */
 	public static function alert( $message, $is_error = false ) {
@@ -150,7 +150,8 @@ class Revisr_Admin {
 	/**
 	 * Checks out an existing branch.
 	 * @access public
-	 * @param string $branch The name of the branch to checkout.
+	 * @param string 	$args 			The branch (or other args) to pass to the checkout command.
+	 * @param boolean 	$new_branch 	Whether the branch being checked out is a new branch.
 	 */
 	public function process_checkout( $args = '', $new_branch = false ) {
 		if ( isset( $this->options['reset_db'] ) ) {

@@ -214,6 +214,7 @@ class Revisr_DB {
 	/**
 	 * Verifies that a backup file is valid.
 	 * @access public
+	 * @return boolean
 	 */
 	public function verify_backup() {
 		if ( ! file_exists( $this->sql_file ) || filesize( $this->sql_file ) < 1000 ) {
@@ -226,7 +227,8 @@ class Revisr_DB {
 	/**
 	 * Checks if a given URL is using a port, if so, return the port number.
 	 * @access public
-	 * @param string $url The URL to parse.
+	 * @param 	string $url The URL to parse.
+	 * @return 	string|boolean
 	 */
 	public function check_port( $url ) {
 		$parsed_url = parse_url( $url );
