@@ -82,20 +82,18 @@ class Revisr_DB {
 	}
 
 	/**
-	 * Backs up the database.
+	 * Backs up the entire database.
 	 * @access public
 	 */
 	public function backup() {
 		exec( "{$this->path}mysqldump {$this->conn} > {$this->sql_file}" );
 
 		if ( $this->verify_backup() != false ) {
-
 			if ( isset( $_REQUEST['source'] ) && $_REQUEST['source'] == 'ajax_button' ) {
 				$this->commit_db( true );
 			} else {
 				$this->commit_db();
 			}
-
 			$msg = __( 'Successfully backed up the database.', 'revisr' );
 			Revisr_Admin::log( $msg, 'backup' );
 			Revisr_Admin::alert( $msg );
@@ -130,7 +128,7 @@ class Revisr_DB {
 	}
 
 	/**
-	 * Restores the database to an earlier version if it exists.
+	 * Restores the entire database to an earlier version if it exists.
 	 * @access public
 	 * @param boolean $restore_branch True if restoring the database from another branch.
 	 */
@@ -138,7 +136,6 @@ class Revisr_DB {
 		if ( isset($_GET['revert_db_nonce']) && wp_verify_nonce( $_GET['revert_db_nonce'], 'revert_db' ) ) {
 
 			$branch = $_GET['branch'];
-			
 			if ( $branch != $this->git->branch ) {
 				$this->git->checkout( $branch );
 			}
@@ -152,8 +149,7 @@ class Revisr_DB {
 
 			$commit 		= escapeshellarg( $_GET['db_hash'] );
 			$current_temp	= $this->git->run( "log --pretty=format:'%h' -n 1" );
-
-			$checkout = $this->git->run( "checkout {$commit} {$this->upload_dir['basedir']}/{$this->sql_file}" );
+			$checkout 		= $this->git->run( "checkout {$commit} {$this->upload_dir['basedir']}/{$this->sql_file}" );
 
 			if ( $checkout !== 1 ) {
 				

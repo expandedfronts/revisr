@@ -64,7 +64,7 @@ class Revisr_Cron {
 		if ( $files == false ) {
 			$files = array();
 		}
-		$this->git->run( 'add -A' );
+		$this->git->stage_files( $files );
 		$this->git->commit( $commit_msg );
 		$post = array(
 			'post_title'	=> $commit_msg,
