@@ -10,8 +10,8 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
-class Revisr_DB
-{
+class Revisr_DB {
+	
 	/**
 	 * The connection to use for the sqldump/import.
 	 */

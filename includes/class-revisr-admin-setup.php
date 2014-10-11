@@ -10,8 +10,8 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
-class Revisr_Setup
-{
+class Revisr_Setup {
+	
 	/**
 	 * The WordPress database object.
 	 */

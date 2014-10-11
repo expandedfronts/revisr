@@ -10,8 +10,8 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
-class Revisr_Admin
-{
+class Revisr_Admin {
+	
 	/**
 	 * User options and preferences.
 	 */

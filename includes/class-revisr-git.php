@@ -10,10 +10,11 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+//Needed for callbacks.
 include_once 'class-revisr-admin.php';
 
-class Revisr_Git
-{
+class Revisr_Git {
+
 	/**
 	 * The current branch of the local repository.
 	 */

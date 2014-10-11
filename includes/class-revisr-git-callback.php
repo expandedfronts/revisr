@@ -9,8 +9,8 @@
  * @link      https://revisr.io
  * @copyright 2014 Expanded Fronts, LLC
  */
-class Revisr_Git_Callback extends Revisr_Git
-{
+class Revisr_Git_Callback extends Revisr_Git {
+	
 	/**
 	 * Callback for a successful checkout.
 	 * @access public
