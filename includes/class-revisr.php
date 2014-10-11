@@ -176,13 +176,13 @@ class Revisr {
 	 * @access public
 	 */
 	public function check_compatibility() {
-		$git = new Revisr_Git;
 		if ( ! function_exists( 'exec' ) ) {
 			Revisr_Admin::alert( __( 'It appears that you don\'t have the PHP exec() function enabled on your server. This can be enabled in your php.ini.
 				Check with your web host if you\'re not sure what this means.', 'revisr'), true );
 			return false;
 		}
-		if ( ! is_writeable( $git->dir ) ) {
+		$git = new Revisr_Git;
+		if ( ! is_writeable( $git->dir . '/.git/' ) ) {
 			Revisr_Admin::alert( __( 'Revisr requires write permissions to the repository. The recommended settings are 755 for directories, and 644 for files.', 'revisr' ), true );
 			return false;
 		}
