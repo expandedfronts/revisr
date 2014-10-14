@@ -94,6 +94,9 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 
 == Changelog ==
+= 1.7.2 =
+* Tweaked permissions check to only check permissions if repository exists.
+
 = 1.7.1 =
 * Fixed potential PHP notice with tags widget
 * Fixed permissions to just check the ".git/" directory
