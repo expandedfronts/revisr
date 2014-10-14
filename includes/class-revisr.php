@@ -182,7 +182,7 @@ class Revisr {
 			return false;
 		}
 		$git = new Revisr_Git;
-		if ( ! is_writeable( $git->dir . '/.git/' ) ) {
+		if ( is_dir( $git->dir . '/.git/' ) && !is_writeable( $git->dir . '/.git/' ) ) {
 			Revisr_Admin::alert( __( 'Revisr requires write permissions to the repository. The recommended settings are 755 for directories, and 644 for files.', 'revisr' ), true );
 			return false;
 		}
