@@ -28,6 +28,7 @@
 		}
 	});
 	jQuery(document).ready(function($) {
+		jQuery('#advanced-tracking').hide();
 		jQuery('#post-hook').hide();
 		jQuery('#auto_pull').change(function(){
 	  		if (this.checked) {
@@ -36,8 +37,11 @@
 	    		jQuery('#post-hook').fadeOut('slow');
 	  		}                   
 		});
-		$('#merge_type').change(function () {
-    		var $selected = $(this).find(':selected');
-    		$('#merge-description').html($selected.data('description'));
-		}).trigger('change');
+		jQuery('#tracking-select').change(function(){
+			if (this.value == 'decide') {
+				jQuery('#advanced-tracking').show();
+			} else {
+				jQuery('#advanced-tracking').hide();
+			}
+		});
 	});

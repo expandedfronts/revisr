@@ -89,6 +89,13 @@ class Revisr_Settings
             'revisr_general_settings'
         );
         add_settings_field(
+        	'tracking',
+        	__( 'What do you want to track?', 'revisr'),
+        	array( $this, 'tracking_callback' ),
+        	'revisr_general_settings',
+        	'revisr_general_settings'
+    	);
+        add_settings_field(
         	'gitignore',
         	__( 'Files/Directories to ignore', 'revisr'),
         	array( $this, 'gitignore_callback' ),
@@ -200,6 +207,34 @@ class Revisr_Settings
             isset( $this->options['email'] ) ? esc_attr( $this->options['email']) : '',
             __( 'The email address associated to your Git username. Also used for notifications (if enabled).', 'revisr' )
         );
+	}
+
+	public function tracking_callback() {
+		printf(
+			'<select id="tracking-select" name="revisr_general_settings[tracking]">
+				<option value="everything">%s</option>
+				<option value="decide">%s</option>
+			</select>',
+			__( 'Everything', 'revisr' ),
+			__( 'Let me decide...', 'revisr' )
+		);
+
+		printf(
+			'<div id="advanced-tracking"><br>
+				<input type="checkbox" name="revisr_general_settings[tracking][]" value="wp_core" />
+				<span class="description">%s</span><br><br>
+				<input type="checkbox" name="revisr_general_settings[tracking][]" value="plugins" />
+				<span class="description">%s</span><br><br>
+				<input type="checkbox" name="revisr_general_settings[tracking][]" value="themes" />
+				<span class="description">%s</span><br><br>
+				<input type="checkbox" name="revisr_general_settings[tracking][]" value="database" />
+				<span class="description">%s</span>
+			</div>',
+			__( 'WordPress Core', 'revisr' ),
+			__( 'Plugins', 'revisr' ),
+			__( 'Themes', 'revisr' ),
+			__( 'Database', 'revisr' )
+		);
 	}
 
 	public function gitignore_callback() {
