@@ -11,7 +11,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Initialize the database object.
 	 */
 	function setUp() {
-		$this->db = new Revisr_DB();
+		$this->db = new Revisr_DB( '/Applications/MAMP/Library/bin/' );
 	}
 
 	/**
@@ -31,7 +31,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Tests the build_connection() function.
 	 */
 	function test_build_connection() {
-		$conn = $this->db->build_connection();
+		$conn = $this->db->build_conn();
 		$this->assertNotEquals( null, $conn );
 		$this->assertContains( '--host', $conn );
 	}
@@ -40,15 +40,17 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Tests a database backup.
 	 */
 	function test_backup() {
+		$this->db->path = '/Applications/MAMP/Library/bin/';
 		$this->db->backup();
-		$this->assertFileExists( ABSPATH . '/wp-content/uploads/revisr_db_backup.sql' );
+		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/.htaccess' );
+		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/revisr_wptests_posts.sql' );
 	}
 
 	/**
 	 * Tests the verify_backup() function.
 	 */
 	function test_verify_backup() {
-		$verify = $this->db->verify_backup();
+		$verify = $this->db->verify_backup( 'wptests_posts' );
 		$this->assertEquals( true, $verify );
 	}
 }

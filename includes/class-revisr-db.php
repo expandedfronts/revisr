@@ -36,7 +36,7 @@ class Revisr_DB {
 	 * Initialize the class.
 	 * @access public
 	 */
-	public function __construct() {
+	public function __construct( $test_path = '' ) {
 		global $wpdb;
 		$this->options 		= Revisr::get_options();
 		$this->upload_dir 	= wp_upload_dir();
@@ -46,6 +46,8 @@ class Revisr_DB {
 		$this->setup_env();
 		if ( isset( $this->options['mysql_path'] ) ) {
 			$this->path = $this->options['mysql_path'];
+		} elseif ( $test_path != '' ) {
+			$this->path = $test_path;
 		} else {
 			$this->path = '';
 		}
@@ -110,11 +112,11 @@ class Revisr_DB {
 
 	/**
 	 * Builds the database connection.
-	 * @access 	private
+	 * @access 	public
 	 * @param 	string $table Optional table name to add to the connection.
 	 * @return 	string
 	 */
-	private function build_conn( $table = '' ) {
+	public function build_conn( $table = '' ) {
 		if ( $this->check_port( DB_HOST ) != false ) {
 			$port 		= $this->check_port( DB_HOST );
 			$add_port 	= " --port=$port";

@@ -220,11 +220,16 @@ class Revisr_Git {
 	}
 
 	/**
-	 * Returns available branches on the local repository.
+	 * Returns available branches on the local or remote repository.
 	 * @access public
+	 * @param  boolean $remote If set to true, will retrieve the remote branches.
 	 */
-	public function get_branches() {
-		$branches = $this->run( 'branch' );
+	public function get_branches( $remote = false ) {
+		if ( $remote == true ) {
+			$branches = $this->run( 'branch -r' );
+		} else {
+			$branches = $this->run( 'branch' );
+		}
 		return $branches;
 	}
 
