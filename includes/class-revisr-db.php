@@ -230,16 +230,6 @@ class Revisr_DB {
 	 * @return array   			Collection of information gathered during the run.
 	 */
 	public function revisr_srdb_replacer( $table, $search = '', $replace = '' ) {
-		$report = array(
-			'tables' 	=> 0,
-			'rows' 		=> 0,
-			'change' 	=> 0,
-			'updates' 	=> 0,
-			'start' 	=> microtime(),
-			'end' 		=> microtime(),
-			'errors'	=> array(),
-		);
-		$report[ 'tables' ]++;
 
 		//Get a list of columns in this table.
 		$columns = array();
@@ -269,9 +259,7 @@ class Revisr_DB {
 			
 			//Loop through the data.
 			foreach ( $data as $row ) {
-				$report[ 'rows' ]++; // Increment the row counter
 				$current_row++;
-
 				$update_sql = array();
 				$where_sql 	= array();
 				$upd 		= false;
@@ -284,7 +272,6 @@ class Revisr_DB {
 
 					// Something was changed
 					if ( $edited_data != $data_to_fix ) {
-						$report[ 'change' ]++;
 						$update_sql[] = $column . ' = "' . $this->mysql_escape_mimic( $edited_data ) . '"';
 						$upd = true;
 					}
@@ -296,19 +283,19 @@ class Revisr_DB {
 				if ( $upd && ! empty( $where_sql ) ) {
 					$sql = 'UPDATE ' . $table . ' SET ' . implode( ', ', $update_sql ) . ' WHERE ' . implode( ' AND ', array_filter( $where_sql ) );
 					$result = $this->wpdb->query( $sql );
-					if ( ! $result )
-						$report[ 'errors' ][] = __( 'Error updating table.', 'revisr' );
-					else
-						$report[ 'updates' ]++;
-
+					if ( ! $result ) {
+						$error_msg = sprintf( __( 'Error updating the table: %s.', 'revisr' ), $table );
+					}
 				} elseif ( $upd ) {
-					$report[ 'errors' ][] = sprintf( '"%s" has no primary key, manual change needed on row %s.', $table, $current_row );
-				}						
+					$error_msg = sprintf( __( 'The table "%s" has no primary key. Manual change needed on row %s.', 'revisr' ), $table, $current_row );
+				}
 			}
 		}
 		$this->wpdb->flush();
-		$report[ 'end' ] = microtime( );
-		file_put_contents('log.txt', $report);
+		if ( isset( $error_msg ) ) {
+			Revisr_Admin::log( $error_msg, $error );
+			return false;
+		}
 	}
 
 	/**
