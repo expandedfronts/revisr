@@ -65,11 +65,14 @@ It is also adviseable to add Revisr to the gitignore file via the settings page 
 
 ## Changelog ##
 
+#### 1.7.2 ####
+* Tweaked permissions check to only check permissions if repository exists.
+
 #### 1.7.1 ####
 * Fixed potential PHP warning with tags widget
 * Fixed permissions to just check the ".git/" directory
 
-#### 1.7 #### 
+#### 1.7 ####
 * Added ability to create a new repository if one does not already exist
 * Added ability to create automatic daily or weekly backups
 * Added ability to merge changes
