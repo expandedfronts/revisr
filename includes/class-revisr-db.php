@@ -293,7 +293,7 @@ class Revisr_DB {
 		}
 		$this->wpdb->flush();
 		if ( isset( $error_msg ) ) {
-			Revisr_Admin::log( $error_msg, $error );
+			Revisr_Admin::log( $error_msg, 'error' );
 			return false;
 		}
 	}
