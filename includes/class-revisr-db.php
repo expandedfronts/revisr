@@ -57,7 +57,7 @@ class Revisr_DB {
 	/**
 	 * Initiate the class.
 	 * @access public
-	 * @param string $path Optional, overrides the saved setting (for testing).
+	 * @param  string $path Optional, overrides the saved setting (for testing).
 	 */
 	public function __construct( $path = '' ) {
 		global $wpdb;
@@ -187,7 +187,7 @@ class Revisr_DB {
 	/**
 	 * Adds a table to version control.
 	 * @access private
-	 * @param string $table The table to add.
+	 * @param  string $table The table to add.
 	 */
 	private function add_table( $table ) {
 		$this->git->run( "add {$this->upload_dir['basedir']}/revisr-backups/revisr_$table.sql" );
@@ -204,7 +204,7 @@ class Revisr_DB {
 	/**
 	 * Backs up a database table.
 	 * @access private
-	 * @param string $table The table to backup.
+	 * @param  string $table The table to backup.
 	 */
 	private function backup_table( $table ) {
 		$conn = $this->build_conn( $table );
@@ -237,7 +237,7 @@ class Revisr_DB {
 	 * @link https://wordpress.org/plugins/vaultpress/
 	 * 
 	 * @access public
-	 * @param string $table The table to import.
+	 * @param  string $table The table to import.
 	 */
 	public function import_table( $table ) {
 		//Only import if the file exists and is valid.
@@ -331,7 +331,7 @@ class Revisr_DB {
 	/**
 	 * Verifies a backup for a table.
 	 * @access public
-	 * @param string $table The table to check.
+	 * @param  string $table The table to check.
 	 * @return boolean
 	 */
 	public function verify_backup( $table ) {
@@ -499,9 +499,9 @@ class Revisr_DB {
 
 	/**
 	 * Mimics the mysql_real_escape_string function. Adapted from a post by 'feedr' on php.net.
-	 * @link http://php.net/manual/en/function.mysql-real-escape-string.php#101248
+	 * @link   http://php.net/manual/en/function.mysql-real-escape-string.php#101248
 	 * @access public
-	 * @param string $input The string to escape.
+	 * @param  string $input The string to escape.
 	 */
 	public function mysql_escape_mimic( $input ) {
 

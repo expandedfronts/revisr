@@ -56,6 +56,7 @@ class Revisr_Setup {
 		wp_register_script( 'revisr_staging', plugins_url() . '/revisr/assets/js/staging.js', 'jquery', '07052014', false );
 		wp_register_script( 'revisr_committed', plugins_url() . '/revisr/assets/js/committed.js', 'jquery', '07052014', false );
 		wp_register_script( 'revisr_settings', plugins_url() . '/revisr/assets/js/settings.js', 'jquery', '08272014', true );
+		
 		$allowed_pages = array( 'revisr', 'revisr_settings', 'revisr_branches' );
 		//Enqueue common styles and scripts.
 		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
@@ -65,7 +66,7 @@ class Revisr_Setup {
 			wp_enqueue_script( 'revisr_settings' );
 		}
 		//Enqueue styles and scripts on the Revisr staging area.
-		if ( $hook == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == "revisr_commits" ) {
+		if ( $hook == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
 			wp_enqueue_script( 'revisr_staging' );
 			wp_localize_script( 'revisr_staging', 'pending_vars', array(
 				'ajax_nonce' => wp_create_nonce( 'pending_nonce' ),
@@ -76,8 +77,8 @@ class Revisr_Setup {
 		if ( $hook == 'post.php' && get_post_type() == 'revisr_commits' ) {
 			wp_enqueue_script( 'revisr_committed' );
 			wp_localize_script( 'revisr_committed', 'committed_vars', array(
-				'post_id' => $_GET['post'],
-				'ajax_nonce' => wp_create_nonce( 'committed_nonce' ),
+				'post_id' 		=> $_GET['post'],
+				'ajax_nonce' 	=> wp_create_nonce( 'committed_nonce' ),
 				)
 			);			
 		}
@@ -160,8 +161,11 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function add_tag_meta() {
-		echo "<label for='tag_name'><p>" . __( 'Tag Name:', 'revisr' ) . '</p></label>';
-		echo "<input id='tag_name' type='text' name='tag_name' />";
+		printf(
+			'<label for="tag_name"><p>%s</p></label>
+			<input id="tag_name" type="text" name="tag_name" />',
+			__( 'Tag Name:', 'revisr' )
+		);
 	}
 
 	/**
@@ -251,7 +255,7 @@ class Revisr_Setup {
 
 		        $id 				= get_the_ID();
 		        $url 				= get_admin_url() . 'post.php?post=' . get_the_ID() . '&action=edit';
-		        $actions['view'] 	= "<a href='{$url}'>View</a>";
+		        $actions['view'] 	= "<a href='{$url}'>" . __( 'View', 'revisr' ) . "</a>";
 		        $branch_meta 		= get_post_custom_values( 'branch', get_the_ID() );
 		        $db_hash_meta 		= get_post_custom_values( 'db_hash', get_the_ID() );
 		        $commit_hash 		= Revisr_Git::get_hash( $id );
@@ -261,7 +265,7 @@ class Revisr_Setup {
 		        if ( is_array( $db_hash_meta ) ) {
 		        	$db_hash 			= str_replace( "'", "", $db_hash_meta );
 		        	$revert_db_nonce 	= wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert_db', 'revert_db_nonce' );
-			        if ( $db_hash[0] != '') {
+			        if ( $db_hash[0] != '' ) {
 		          		$actions['revert_db'] = "<a href='" . $revert_db_nonce ."'>" . __( 'Revert Database', 'revisr' ) . "</a>";
 			        }		        	
 		        }        
@@ -276,8 +280,8 @@ class Revisr_Setup {
 	 * @param object $commits The commits query.
 	 */
 	public function filters( $commits ) {
-		if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == "revisr_commits" ) {
-			if ( isset( $_GET['branch'] ) && $_GET['branch'] != "all" ) {
+		if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
+			if ( isset( $_GET['branch'] ) && $_GET['branch'] != 'all' ) {
 				$commits->set( 'meta_key', 'branch' );
 				$commits->set( 'meta_value', $_GET['branch'] );
 				$commits->set( 'post_type', 'revisr_commits' );
@@ -292,7 +296,7 @@ class Revisr_Setup {
 	 * @param string $branch The name of the branch to count commits for.
 	 */
 	public function count_commits( $branch ) {
-		if ($branch == "all") {
+		if ( $branch == 'all' ) {
 			$num_commits = $this->wpdb->get_results( "SELECT * FROM " . $this->wpdb->postmeta . " WHERE meta_key = 'branch'" );
 		} else {
 			$num_commits = $this->wpdb->get_results( "SELECT * FROM " . $this->wpdb->postmeta . " WHERE meta_key = 'branch' AND meta_value = '".$branch."'" );
@@ -319,14 +323,16 @@ class Revisr_Setup {
 		        admin_url( 'edit.php?post_type=revisr_commits&branch='.$branch ),
 		        $this->count_commits( $branch ) );
 			}
-			if ( $_GET['branch'] == "all" ) {
-				$class = 'class="current"';
-			} else {
-				$class = '';
+			$class = '';
+			if ( $_GET['branch'] == 'all' ) {
+				$class = ' class="current"';
 			}
-			$views['all'] = sprintf( __( '<a href="%s"' . $class . '>All Branches <span class="count">(%d)</span></a>', 'revisr' ),
+			$views['all'] = sprintf( 
+				__( '<a href="%s"%s>All Branches <span class="count">(%d)</span></a>', 'revisr' ),
 				admin_url( 'edit.php?post_type=revisr_commits&branch=all' ),
-				$this->count_commits( "all" ));
+				$class,
+				$this->count_commits( 'all' )
+			);
 			unset( $views['publish'] );
 			unset( $views['draft'] );
 			unset( $views['trash'] );
@@ -342,7 +348,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function default_views() {
-		if( !isset($_GET['branch'] ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == "revisr_commits") {
+		if( !isset($_GET['branch'] ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
 			$_GET['branch'] = $this->git->branch;
 		}
 	}
@@ -369,7 +375,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function disable_autodraft() {
-		if ( "revisr_commits" == get_post_type() ) {
+		if ( 'revisr_commits' == get_post_type() ) {
 			wp_dequeue_script( 'autosave' );
 		}
 	}
@@ -434,22 +440,22 @@ class Revisr_Setup {
 	public function revisr_commits_custom_messages( $messages ) {
 		$post = get_post();
 		$messages['revisr_commits'] = array(
-		0  => '', // Unused. Messages start at index 1.
-		1  => __( 'Commit updated.', 'revisr_commits' ),
-		2  => __( 'Custom field updated.', 'revisr_commits' ),
-		3  => __( 'Custom field deleted.', 'revisr_commits' ),
-		4  => __( 'Commit updated.', 'revisr_commits' ),
-		/* translators: %s: date and time of the revision */
-		5  => isset( $_GET['revision'] ) ? sprintf( __( 'Commit restored to revision from %s', 'revisr_commits' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-		6  => __( 'Committed files on branch <strong>' . $this->git->branch . '</strong>.', 'revisr_commits' ),
-		7  => __( 'Commit saved.', 'revisr_commits' ),
-		8  => __( 'Commit submitted.', 'revisr_commits' ),
-		9  => sprintf(
-			__( 'Commit scheduled for: <strong>%1$s</strong>.', 'revisr_commits' ),
-			// translators: Publish box date format, see http://php.net/date
-			date_i18n( __( 'M j, Y @ G:i', 'revisr_commits' ), strtotime( $post->post_date ) )
-		),
-		10 => __( 'Commit draft updated.', 'revisr_commits' ),
+			0  => '', // Unused. Messages start at index 1.
+			1  => __( 'Commit updated.', 'revisr' ),
+			2  => __( 'Custom field updated.', 'revisr' ),
+			3  => __( 'Custom field deleted.', 'revisr' ),
+			4  => __( 'Commit updated.', 'revisr' ),
+			/* translators: %s: date and time of the revision */
+			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Commit restored to revision from %s', 'revisr' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => sprintf( __( 'Committed files on branch <strong>%s</strong>.', 'revisr' ), $this->git->branch ),
+			7  => __( 'Commit saved.', 'revisr' ),
+			8  => __( 'Commit submitted.', 'revisr' ),
+			9  => sprintf(
+				__( 'Commit scheduled for: <strong>%1$s</strong>.', 'revisr' ),
+				// translators: Publish box date format, see http://php.net/date
+				date_i18n( __( 'M j, Y @ G:i', 'revisr' ), strtotime( $post->post_date ) )
+			),
+			10 => __( 'Commit draft updated.', 'revisr' ),
 		);
 
 		return $messages;
@@ -486,8 +492,8 @@ class Revisr_Setup {
 	 */
 	public static function recent_activity() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . 'revisr';
-		$revisr_events = $wpdb->get_results( "SELECT id, time, message FROM $table_name ORDER BY id DESC LIMIT 15", ARRAY_A );
+		$table_name 	= $wpdb->prefix . 'revisr';
+		$revisr_events 	= $wpdb->get_results( "SELECT id, time, message FROM $table_name ORDER BY id DESC LIMIT 15", ARRAY_A );
 		if ( $revisr_events ) {
 			?>
 			<table class="widefat">
