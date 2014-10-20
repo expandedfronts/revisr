@@ -90,13 +90,13 @@ class Revisr_Admin {
 	}
 
 	/**
-	 * Counts the number of commits in the database. on a given branch.
+	 * Counts the number of commits in the database on a given branch.
 	 * @access public
 	 * @param string $branch The name of the branch to count commits for.
 	 */
 	public static function count_commits( $branch ) {
 		global $wpdb;
-		if ($branch == "all") {
+		if ( $branch == 'all' ) {
 			$num_commits = $wpdb->get_results( "SELECT * FROM " . $wpdb->postmeta . " WHERE meta_key = 'branch'" );
 		} else {
 			$num_commits = $wpdb->get_results( "SELECT * FROM " . $wpdb->postmeta . " WHERE meta_key = 'branch' AND meta_value = '".$branch."'" );
@@ -112,7 +112,7 @@ class Revisr_Admin {
 	 */
 	public static function log( $message, $event ) {
 		global $wpdb;
-		$time = current_time( 'mysql', 1 );
+		$time  = current_time( 'mysql', 1 );
 		$table = $wpdb->prefix . 'revisr';
 		$wpdb->insert(
 			"$table",
@@ -166,6 +166,7 @@ class Revisr_Admin {
 		
 		$this->git->reset();
 		$this->git->checkout( $branch );
+		
 		if ( isset( $this->options['reset_db'] ) && $new_branch === false ) {
 			$this->db->restore( true );
 		}
@@ -286,7 +287,7 @@ class Revisr_Admin {
 						'post_content'	=> '',
 						'post_type'		=> 'revisr_commits',
 						'post_status'	=> 'publish',
-						);
+					);
 					$post_id = wp_insert_post( $post );
 
 					add_post_meta( $post_id, 'commit_hash', $commit_hash );

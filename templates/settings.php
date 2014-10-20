@@ -66,6 +66,11 @@ if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" )
 			if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" ) {
 				_e( '<div id="revisr_alert" class="updated" style="margin-top:20px;"><p>Settings updated successfully.</p></div>', 'revisr' );
 			}
+			if ( isset( $_GET['init'] ) && $_GET['init'] == 'success' ) {
+				printf( '<div id="revisr_alert" class="updated" style="margin-top:20px;"><p>%s</p></div>',
+					__( 'Successfully initialized a new repository. Please confirm the settings below before creating your first commit.', 'revisr' )
+				);
+			}
 		?>
 		<h2 class="nav-tab-wrapper">
 		    <a href="?page=revisr_settings&tab=general_settings" class="nav-tab <?php echo $active_tab == 'general_settings' ? 'nav-tab-active' : ''; ?>">General</a>

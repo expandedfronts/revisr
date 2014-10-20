@@ -9,6 +9,7 @@
  * @link      https://revisr.io
  * @copyright 2014 Expanded Fronts, LLC
  */
+
 class Revisr_Git_Callback extends Revisr_Git {
 	
 	/**
@@ -142,11 +143,9 @@ class Revisr_Git_Callback extends Revisr_Git {
 		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != "" ) {
 			$this->run("remote add $remote_name {$this->options['remote_url']}");
 		}
-		$settings_link 	= get_admin_url() . 'admin.php?page=revisr_settings';
-		$commit_link 	= get_admin_url() . 'post-new.php?post_type=revisr_commits';
-		$alert_msg 		= sprintf( __( 'Successfully initialized a new repository. Please confirm your <a href="%s">settings</a> before creating your first <a href="%s">commit</a>.', 'revisr' ), $settings_link, $commit_link );
-		Revisr_Admin::alert( $alert_msg );
-		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
+		$msg = sprintf( __( 'Successfully created a new repository.', 'revisr' ), $settings_link, $commit_link );
+		Revisr_Admin::log( $msg, 'init' );
+		wp_redirect( get_admin_url() . 'admin.php?page=revisr_settings&init=success' );
 		exit();
 	}
 
@@ -155,7 +154,7 @@ class Revisr_Git_Callback extends Revisr_Git {
 	 * @access public
 	 */
 	public function null_init_repo() {
-		Revisr_Admin::log( __( 'Failed to initialize a new repository.', 'revisr' ), 'error' );
+		Revisr_Admin::log( __( 'Failed to initialize a new repository. Please make sure that Git is installed on the server and that Revisr has write permissons to the WordPress install.', 'revisr' ), 'error' );
 		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
 		exit();
 	}

@@ -448,7 +448,7 @@ class Revisr_Git {
 		$branch = $_REQUEST['branch'];
 		$this->fetch();
 		$this->reset( '--hard', $this->remote . "/$branch" );
-		$db->import_tables();
+		$db->import();
 	}
 
 	/**
