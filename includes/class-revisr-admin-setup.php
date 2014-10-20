@@ -28,11 +28,6 @@ class Revisr_Setup {
 	public $options;
 
 	/**
-	 * The current directory.
-	 */
-	public $dir;
-
-	/**
 	 * Load items necessary for setup.
 	 * @access public
 	 */
@@ -41,7 +36,6 @@ class Revisr_Setup {
 		$this->wpdb 	= $wpdb;
 		$this->options 	= $options;
 		$this->git 		= new Revisr_Git();
-		$this->dir 		= plugin_dir_path( REVISR_FILE );
 	}
 
 	/**
@@ -221,7 +215,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function revisr_dashboard() {
-		include_once $this->dir . 'templates/dashboard.php';
+		include_once REVISR_PATH . 'templates/dashboard.php';
 	}
 
 	/**
@@ -229,7 +223,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function revisr_branches() {
-		include_once $this->dir . 'templates/branches.php';
+		include_once REVISR_PATH . 'templates/branches.php';
 	}
 
 	/**
@@ -237,7 +231,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function revisr_settings() {
-		include_once $this->dir . 'templates/settings.php';
+		include_once REVISR_PATH . 'templates/settings.php';
 	}
 
 	/**
@@ -483,7 +477,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function delete_branch_form() {
-		include_once $this->dir . 'assets/partials/delete-branch-form.php';
+		include_once REVISR_PATH . 'assets/partials/delete-branch-form.php';
 	}
 
 	/**
@@ -491,7 +485,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function merge_branch_form() {
-		include_once $this->dir . 'assets/partials/merge-form.php';
+		include_once REVISR_PATH . 'assets/partials/merge-form.php';
 	}
 
 	/**

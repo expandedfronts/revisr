@@ -38,11 +38,6 @@ class Revisr {
 	public $table_name;
 
 	/**
-	 * The current version of the plugin.
-	 */
-	protected $version;
-
-	/**
 	 * Define the core functionality of the plugin.
 	 *
 	 * Set the plugin name and the plugin version that can be used throughout the plugin.
@@ -57,7 +52,6 @@ class Revisr {
 		$this->options 		= $this->get_options();
 		$this->plugin_name  = 'revisr';
 		$this->table_name 	= $this->get_table_name();
-		$this->version 		= '1.7.0';
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->admin_setup_hooks();		
@@ -72,14 +66,14 @@ class Revisr {
 	 * @access private
 	 */
 	private function load_dependencies() {
-		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-i18n.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-admin.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-admin-setup.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-db.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-git.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-git-callback.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-cron.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-revisr-settings.php';
+		require_once REVISR_PATH . 'includes/class-revisr-i18n.php';
+		require_once REVISR_PATH . 'includes/class-revisr-admin.php';
+		require_once REVISR_PATH . 'includes/class-revisr-admin-setup.php';
+		require_once REVISR_PATH . 'includes/class-revisr-db.php';
+		require_once REVISR_PATH . 'includes/class-revisr-git.php';
+		require_once REVISR_PATH . 'includes/class-revisr-git-callback.php';
+		require_once REVISR_PATH . 'includes/class-revisr-cron.php';
+		require_once REVISR_PATH . 'includes/class-revisr-settings.php';
 	}
 
 	/**
@@ -233,15 +227,6 @@ class Revisr {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'revisr';
 		return $table_name;
-	}
-
-	/**
-	 * Retrieve the version number of the plugin.
-	 * @access public
-	 * @return string The version number of the plugin.
-	 */
-	public function get_version() {
-		return $this->version;
 	}
 
 	/**
