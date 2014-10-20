@@ -36,6 +36,11 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+/** Sets this file as the main plugin file for future reference. */
+if ( ! defined( 'REVISR_FILE' ) ) {
+	define( 'REVISR_FILE', __FILE__ );
+}
+
 /** Loads the main plugin class. */
 require plugin_dir_path( __FILE__ ) . 'includes/class-revisr.php';
 

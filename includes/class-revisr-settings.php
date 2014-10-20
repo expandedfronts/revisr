@@ -10,8 +10,8 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
-class Revisr_Settings
-{
+class Revisr_Settings {
+	
 	/**
 	 * Array of user preferences and settings.
 	 */

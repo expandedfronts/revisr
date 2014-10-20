@@ -41,7 +41,7 @@ class Revisr_Setup {
 		$this->wpdb 	= $wpdb;
 		$this->options 	= $options;
 		$this->git 		= new Revisr_Git();
-		$this->dir 		= plugin_dir_path( __FILE__ );
+		$this->dir 		= plugin_dir_path( REVISR_FILE );
 	}
 
 	/**
@@ -50,12 +50,12 @@ class Revisr_Setup {
 	 * @param string $hook The page to enqueue the styles/scripts.
 	 */
 	public function revisr_scripts( $hook ) {
-		wp_register_style( 'revisr_dashboard_css', plugins_url() . '/revisr/assets/css/dashboard.css', array(), '07052014' );
-		wp_register_style( 'revisr_commits_css', plugins_url() . '/revisr/assets/css/commits.css', array(), '08202014' );
-		wp_register_script( 'revisr_dashboard', plugins_url() . '/revisr/assets/js/dashboard.js', 'jquery',  '09232014' );
-		wp_register_script( 'revisr_staging', plugins_url() . '/revisr/assets/js/staging.js', 'jquery', '07052014', false );
-		wp_register_script( 'revisr_committed', plugins_url() . '/revisr/assets/js/committed.js', 'jquery', '07052014', false );
-		wp_register_script( 'revisr_settings', plugins_url() . '/revisr/assets/js/settings.js', 'jquery', '08272014', true );
+		wp_register_style( 'revisr_dashboard_css', plugins_url( '/assets/css/dashboard.css', REVISR_FILE ), array(), '07052014' );
+		wp_register_style( 'revisr_commits_css', plugins_url( '/assets/css/commits.css', REVISR_FILE ), array(), '08202014' );
+		wp_register_script( 'revisr_dashboard', plugins_url( '/assets/js/dashboard.js', REVISR_FILE ), 'jquery',  '09232014' );
+		wp_register_script( 'revisr_staging', plugins_url( '/assets/js/staging.js', REVISR_FILE ), 'jquery', '07052014', false );
+		wp_register_script( 'revisr_committed', plugins_url( '/assets/js/committed.js', REVISR_FILE ), 'jquery', '07052014', false );
+		wp_register_script( 'revisr_settings', plugins_url( '/assets/js/settings.js', REVISR_FILE ), 'jquery', '08272014', true );
 		
 		$allowed_pages = array( 'revisr', 'revisr_settings', 'revisr_branches' );
 		//Enqueue common styles and scripts.
@@ -190,7 +190,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function menus() {
-		$menu = add_menu_page( 'Dashboard', 'Revisr', 'manage_options', 'revisr', array( $this, 'revisr_dashboard' ), plugins_url( 'revisr/assets/img/white_18x20.png' ) );
+		$menu = add_menu_page( 'Dashboard', 'Revisr', 'manage_options', 'revisr', array( $this, 'revisr_dashboard' ), plugins_url( '/assets/img/white_18x20.png', REVISR_FILE ) );
 		add_submenu_page( 'revisr', 'Revisr - Dashboard', 'Dashboard', 'manage_options', 'revisr', array( $this, 'revisr_dashboard' ) );
 		add_submenu_page( 'revisr', 'Revisr - Branches', 'Branches', 'manage_options', 'revisr_branches', array( $this, 'revisr_branches' ) );
 		add_submenu_page( 'revisr', 'Revisr - Settings', 'Settings', 'manage_options', 'revisr_settings', array( $this, 'revisr_settings' ) );
@@ -221,7 +221,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function revisr_dashboard() {
-		include_once $this->dir . "../templates/dashboard.php";
+		include_once $this->dir . 'templates/dashboard.php';
 	}
 
 	/**
@@ -229,7 +229,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function revisr_branches() {
-		include_once $this->dir . "../templates/branches.php";
+		include_once $this->dir . 'templates/branches.php';
 	}
 
 	/**
@@ -237,7 +237,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function revisr_settings() {
-		include_once $this->dir . "../templates/settings.php";
+		include_once $this->dir . 'templates/settings.php';
 	}
 
 	/**
@@ -483,7 +483,15 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function delete_branch_form() {
-		include_once $this->dir . "../assets/partials/delete-branch-form.php";
+		include_once $this->dir . 'assets/partials/delete-branch-form.php';
+	}
+
+	/**
+	 * Displays the form to merge a branch.
+	 * @access public
+	 */
+	public function merge_branch_form() {
+		include_once $this->dir . 'assets/partials/merge-form.php';
 	}
 
 	/**
@@ -534,7 +542,7 @@ class Revisr_Setup {
 			?>
 			<div id="site5_wrapper">
 				<?php _e( 'Sponsored by', 'revisr' ); ?>
-				<a href="http://www.site5.com/" target="_blank"><img id="site5_logo" src="<?php echo plugins_url( 'revisr/assets/img/site5.png' ); ?>" width="80" /></a>
+				<a href="http://www.site5.com/" target="_blank"><img id="site5_logo" src="<?php echo plugins_url( '/assets/img/site5.png?v=2.0', REVISR_FILE ); ?>" width="80" /></a>
 			</div>
 			<?php
 		}

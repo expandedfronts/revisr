@@ -109,7 +109,7 @@ class Revisr {
 		add_action( 'admin_post_process_revert', array( $revisr_admin, 'process_revert' ) );
 		add_action( 'admin_post_process_view_diff', array( $revisr_admin, 'process_view_diff' ) );
 		if ( isset( $this->options['auto_pull'] ) ) {
-			add_action( 'admin_post_nopriv_revisr_update', array( $revisr_admin, 'pull' ) );
+			add_action( 'admin_post_nopriv_revisr_update', array( $revisr_admin, 'process_pull' ) );
 		}
 		add_action( 'wp_ajax_ajax_button_count', array( $revisr_admin, 'ajax_button_count' ) );
 		add_action( 'wp_ajax_pending_files', array( $revisr_admin, 'pending_files' ) );
