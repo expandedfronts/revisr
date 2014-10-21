@@ -132,6 +132,7 @@ class Revisr {
 		add_action( 'post_row_actions', array( $revisr_setup, 'custom_actions' ) );
 		add_action( 'admin_menu', array( $revisr_setup, 'menus' ), 2 );
 		add_action( 'admin_post_delete_branch_form', array( $revisr_setup, 'delete_branch_form' ) );
+		add_action( 'admin_post_merge_branch_form', array ( $revisr_setup, 'merge_branch_form' ) );
 		add_action( 'manage_edit-revisr_commits_columns', array( $revisr_setup, 'columns' ) );
 		add_action( 'manage_revisr_commits_posts_custom_column', array( $revisr_setup, 'custom_columns' ) );
 		add_action( 'admin_enqueue_scripts', array( $revisr_setup, 'revisr_scripts' ) );

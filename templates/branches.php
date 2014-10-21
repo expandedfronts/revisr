@@ -43,13 +43,23 @@
 				</thead>
 					<?php
 						$git = new Revisr_Git;
-						$output = $git->get_branches();
+						$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'local_branches';
 
+						if ( $active_tab == 'remote_branches' ) {
+							$output = $git->get_branches( true );
+						} else {
+							$output = $git->get_branches();
+						}
+						
 						if ( is_array( $output ) ) {
 							foreach ($output as $key => $value){
 								
 								$branch 		= substr($value, 2);
 								$num_commits 	= Revisr_Admin::count_commits( $branch );
+
+								if ( $active_tab == 'remote_branches' ) {
+									$num_commits = count( $git->run( "log $branch --pretty=oneline" ) );
+								}
 								
 								if (substr( $value, 0, 1 ) === "*"){
 									echo "<tr>
@@ -62,15 +72,15 @@
 									</td></tr>";
 								} else {
 									$checkout_url 	= get_admin_url() . "admin-post.php?action=process_checkout&branch={$branch}";
-									$merge_url 		= get_admin_url() . "admin-post.php?action=process_merge&branch={$branch}";
+									$merge_url 		= get_admin_url() . "admin-post.php?action=merge_branch_form&branch={$branch}&TB_iframe=true&width=400&height=225";
 									$delete_url 	= get_admin_url() . "admin-post.php?action=delete_branch_form&branch={$branch}&TB_iframe=true&width=350&height=150";
 									?>
 									<tr>
 									<td><?php echo $branch; ?></td>
-									<td class="center-td"><?php echo $num_commits; ?></td>
+									<td style='text-align:center;'><?php echo $num_commits; ?></td>
 									<td class="center-td">
 										<a class='button branch-btn' href='<?php echo $checkout_url; ?>'><?php _e( 'Checkout', 'revisr' ); ?></a>
-										<a class='button branch-btn merge-btn' href="<?php echo $merge_url; ?>" value="<?php echo $branch; ?>">Merge</a>
+										<a class='button branch-btn merge-btn thickbox' href="<?php echo $merge_url; ?>" value="<?php echo $branch; ?>">Merge</a>
 										<a class='button branch-btn delete-branch-btn thickbox' href='<?php echo $delete_url; ?>' title='<?php _e( 'Delete Branch', 'revisr' ); ?>'><?php _e( 'Delete', 'revisr' ); ?></a>
 									</td></tr>
 									<?php

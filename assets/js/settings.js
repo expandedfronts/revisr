@@ -18,30 +18,19 @@
 			result_span.innerHTML = response;
 		});
 	});
-
-	jQuery(".merge-btn").click(function() {
-		var target_branch = jQuery(this).attr("value");
-		if (confirm("Are you sure you want to merge branch " + target_branch + " into your current branch? In the event of conflicts, Revisr will keep the local version of the file.")) {
-			return;
-		} else {
-			return false;
-		}
+	jQuery('#advanced-db-tracking').hide();
+	jQuery('#post-hook').hide();
+	jQuery('#auto_pull').change(function(){
+  		if (this.checked) {
+    		jQuery('#post-hook').fadeIn('fast');
+  		} else {
+    		jQuery('#post-hook').fadeOut('fast');
+  		}                   
 	});
-	jQuery(document).ready(function($) {
-		jQuery('#advanced-tracking').hide();
-		jQuery('#post-hook').hide();
-		jQuery('#auto_pull').change(function(){
-	  		if (this.checked) {
-	    		jQuery('#post-hook').fadeIn('slow');
-	  		} else {
-	    		jQuery('#post-hook').fadeOut('slow');
-	  		}                   
-		});
-		jQuery('#tracking-select').change(function(){
-			if (this.value == 'decide') {
-				jQuery('#advanced-tracking').show();
-			} else {
-				jQuery('#advanced-tracking').hide();
-			}
-		});
+	jQuery('#db-tracking-select').change(function(){
+		if (this.value == 'decide') {
+			jQuery('#advanced-db-tracking').fadeIn('fast');
+		} else {
+			jQuery('#advanced-db-tracking').fadeOut('fast');
+		}
 	});

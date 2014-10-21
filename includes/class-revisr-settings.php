@@ -76,22 +76,22 @@ class Revisr_Settings {
 	public function revisr_add_settings_fields() {
         add_settings_field(
             'username',
-            __( 'Username', 'revisr' ),
+            __( 'Git Username', 'revisr' ),
             array( $this, 'username_callback' ),
             'revisr_general_settings',
             'revisr_general_settings'          
         );      
         add_settings_field(
             'email', 
-            __( 'Email', 'revisr'), 
+            __( 'Git Email', 'revisr'), 
             array( $this, 'email_callback' ), 
             'revisr_general_settings', 
             'revisr_general_settings'
         );
         add_settings_field(
-        	'tracking',
-        	__( 'What do you want to track?', 'revisr'),
-        	array( $this, 'tracking_callback' ),
+        	'git_env',
+        	__( 'Environment', 'revisr' ),
+        	array( $this, 'environment_callback' ),
         	'revisr_general_settings',
         	'revisr_general_settings'
     	);
@@ -143,6 +143,13 @@ class Revisr_Settings {
 			array($this, 'auto_pull_callback'),
 			'revisr_remote_settings',
 			'revisr_remote_settings'
+		);
+		add_settings_field(
+			'db_tracking',
+			__( 'Database tables to track:', 'revisr'),
+			array( $this, 'db_tracking_callback' ),
+			'revisr_database_settings',
+			'revisr_database_settings'
 		);
         add_settings_field(
         	'mysql_path',
@@ -209,9 +216,20 @@ class Revisr_Settings {
         );
 	}
 
-	public function tracking_callback() {
+	public function environment_callback() {
 		printf(
-			'<select id="tracking-select" name="revisr_general_settings[tracking]">
+			'<select id="env-select" name="revisr_general_settings[git_env]">
+				<option value="dev">%s</option>
+				<option value="live">%s</option>
+			</select>',
+			__( 'Test Environment', 'revisr' ),
+			__( 'Live Site', 'revisr' )
+		);
+	}
+
+	public function db_tracking_callback() {
+		printf(
+			'<select id="db-tracking-select" name="revisr_general_settings[db_tracking]">
 				<option value="everything">%s</option>
 				<option value="decide">%s</option>
 			</select>',
@@ -220,20 +238,20 @@ class Revisr_Settings {
 		);
 
 		printf(
-			'<div id="advanced-tracking"><br>
-				<input type="checkbox" name="revisr_general_settings[tracking][]" value="wp_core" />
+			'<div id="advanced-db-tracking"><br>
+				<input type="checkbox" name="revisr_general_settings[file_tracking[]" value="settings" />
 				<span class="description">%s</span><br><br>
-				<input type="checkbox" name="revisr_general_settings[tracking][]" value="plugins" />
+				<input type="checkbox" name="revisr_general_settings[file_tracking[]" value="comments" />
 				<span class="description">%s</span><br><br>
-				<input type="checkbox" name="revisr_general_settings[tracking][]" value="themes" />
+				<input type="checkbox" name="revisr_general_settings[file_tracking[]" value="posts" />
 				<span class="description">%s</span><br><br>
-				<input type="checkbox" name="revisr_general_settings[tracking][]" value="database" />
-				<span class="description">%s</span>
+				<input type="checkbox" name="revisr_general_settings[file_tracking[]" value="users" />
+				<span class="description">%s</span><br><br>
 			</div>',
-			__( 'WordPress Core', 'revisr' ),
-			__( 'Plugins', 'revisr' ),
-			__( 'Themes', 'revisr' ),
-			__( 'Database', 'revisr' )
+			__( 'Settings', 'revisr' ),
+			__( 'Posts, Pages, and Media', 'revisr' ),
+			__( 'Comments', 'revisr' ),
+			__( 'Users', 'revisr' )
 		);
 	}
 
