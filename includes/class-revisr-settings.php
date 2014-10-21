@@ -18,11 +18,6 @@ class Revisr_Settings {
 	public $options;
 
 	/**
-	 * The main git class.
-	 */
-	public $git;
-
-	/**
 	 * Initialize the class.
 	 * @access public
 	 */
@@ -31,7 +26,6 @@ class Revisr_Settings {
 			add_action( 'admin_init', array( $this, 'init_settings' ) );
 		}
 		$this->options 	= $options;
-		$this->git 		= new Revisr_Git();
 	}
 
 	/**
@@ -307,7 +301,9 @@ class Revisr_Settings {
 	}
 
 	public function remote_url_callback() {
-		$check_remote = $this->git->run( 'config --get remote.origin.url' );
+		$git 			= new Revisr_Git();
+		$check_remote 	= $git->run( 'config --get remote.origin.url' );
+		
 		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != '' ) {
 			$remote_url = esc_attr( $this->options['remote_url'] );
 		} elseif ( $check_remote !== false ) {

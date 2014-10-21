@@ -143,7 +143,7 @@ class Revisr_Git_Callback extends Revisr_Git {
 		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != "" ) {
 			$this->run("remote add $remote_name {$this->options['remote_url']}");
 		}
-		$msg = sprintf( __( 'Successfully created a new repository.', 'revisr' ), $settings_link, $commit_link );
+		$msg = sprintf( __( 'Successfully created a new repository.', 'revisr' ) );
 		Revisr_Admin::log( $msg, 'init' );
 		wp_redirect( get_admin_url() . 'admin.php?page=revisr_settings&init=success' );
 		exit();
