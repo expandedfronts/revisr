@@ -139,9 +139,9 @@ class Revisr_Settings {
 			'revisr_remote_settings'
 		);
 		add_settings_field(
-			'db_tracking',
-			__( 'Database tables to track:', 'revisr'),
-			array( $this, 'db_tracking_callback' ),
+			'tracked_tables',
+			__( 'Database tables to track', 'revisr' ),
+			array( $this, 'tracked_tables_callback'),
 			'revisr_database_settings',
 			'revisr_database_settings'
 		);
@@ -218,34 +218,6 @@ class Revisr_Settings {
 			</select>',
 			__( 'Test Environment', 'revisr' ),
 			__( 'Live Site', 'revisr' )
-		);
-	}
-
-	public function db_tracking_callback() {
-		printf(
-			'<select id="db-tracking-select" name="revisr_general_settings[db_tracking]">
-				<option value="everything">%s</option>
-				<option value="decide">%s</option>
-			</select>',
-			__( 'Everything', 'revisr' ),
-			__( 'Let me decide...', 'revisr' )
-		);
-
-		printf(
-			'<div id="advanced-db-tracking"><br>
-				<input type="checkbox" name="revisr_general_settings[file_tracking[]" value="settings" />
-				<span class="description">%s</span><br><br>
-				<input type="checkbox" name="revisr_general_settings[file_tracking[]" value="comments" />
-				<span class="description">%s</span><br><br>
-				<input type="checkbox" name="revisr_general_settings[file_tracking[]" value="posts" />
-				<span class="description">%s</span><br><br>
-				<input type="checkbox" name="revisr_general_settings[file_tracking[]" value="users" />
-				<span class="description">%s</span><br><br>
-			</div>',
-			__( 'Settings', 'revisr' ),
-			__( 'Posts, Pages, and Media', 'revisr' ),
-			__( 'Comments', 'revisr' ),
-			__( 'Users', 'revisr' )
 		);
 	}
 
@@ -340,6 +312,35 @@ class Revisr_Settings {
 			__( '<br><br><span id="post-hook" class="description">You will need to add the following POST hook to Bitbucket/GitHub:<br><input id="post-hook-input" type="text" value="%s" disabled /></span>', 'revisr'), 
 			$post_hook 
 		);
+	}
+
+	public function tracked_tables_callback() {
+		$selected = '';
+		if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'custom' ) {
+			$selected = ' selected';
+		}
+		printf(
+			'<select id="db-tracking-select" name="revisr_database_settings[db_tracking]">
+				<option value="all_tables">%s</option>
+				<option value="custom"%s>%s</option>
+			</select>',
+			__( 'Track all tables', 'revisr' ),
+			$selected,
+			__( 'Let me decide...', 'revisr' )
+		);
+
+		//Allows the user to select the tables they want to track.
+		$db 	= new Revisr_DB();
+		$tables = $db->get_tables();
+		echo '<div id="advanced-db-tracking"><br><select name="revisr_database_settings[tracked_tables][]" multiple="multiple" style="width:350px;height:250px;">';
+		foreach ( $tables as $table ) {
+			$table_selected = '';
+			if ( in_array( $table, $db->get_tracked_tables() ) ) {
+				$table_selected = ' selected';
+			}
+			echo "<option value='$table'$table_selected>$table</option>";
+		}
+		echo '</select></div>';
 	}
 
 	public function mysql_path_callback() {

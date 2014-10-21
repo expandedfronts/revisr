@@ -148,12 +148,26 @@ class Revisr_DB {
 	/**
 	 * Returns an array of tables in the database.
 	 * @access public
+	 * @return array
 	 */
 	public function get_tables() {
 		$tables = $this->wpdb->get_col( 'SHOW TABLES' );
 		if ( is_array( $tables ) ) {
 			return $tables;
 		}
+	}
+
+	/**
+	 * Returns the array of tables that are to be tracked.
+	 * @access public
+	 * @return array
+	 */
+	public function get_tracked_tables() {
+		if ( isset( $this->options['tracked_tables'] ) && is_array( $this->options['tracked_tables'] ) ) {
+			$tracked_tables = array_intersect( $this->options['tracked_tables'], $this->get_tables() );
+			return $tracked_tables;
+		}
+		return array();
 	}
 
 	/**
@@ -204,7 +218,16 @@ class Revisr_DB {
 	 * @access public
 	 */
 	public function backup() {
-		$this->run( 'backup', $this->get_tables() );
+		//Run the backup.
+		$this->run( 'backup', $this->get_tracked_tables() );
+
+		//Commit any changed database files and insert a post if necessary.
+		if ( isset( $_REQUEST['source'] ) && $_REQUEST['source'] == 'ajax_button' ) {
+			$this->commit_db( true );
+		} else {
+			$this->commit_db();
+		}
+
 	}
 
 	/**
@@ -235,6 +258,34 @@ class Revisr_DB {
 			Revisr_Admin::alert( $msg );
 		}
 	}
+
+	/**
+	 * Commits the database to the repository and pushes if needed.
+	 * @access public
+	 * @param boolean $insert_post Whether to insert a new commit custom_post_type.
+	 */
+	public function commit_db( $insert_post = false ) {
+		$commit_msg  = __( 'Backed up the database with Revisr.', 'revisr' );
+		$commit_hash = $this->git->commit( $commit_msg );
+		//Insert the corresponding post if necessary.
+		if ( $insert_post === true ) {
+			$post = array(
+				'post_title' 	=> $commit_msg,
+				'post_content' 	=> '',
+				'post_type' 	=> 'revisr_commits',
+				'post_status' 	=> 'publish',
+			);
+			$post_id 		= wp_insert_post( $post );
+			$commit_hash 	= $this->git->current_commit();
+			add_post_meta( $post_id, 'commit_hash', $commit_hash );
+			add_post_meta( $post_id, 'db_hash', $commit_hash );
+			add_post_meta( $post_id, 'branch', $this->git->branch );
+			add_post_meta( $post_id, 'files_changed', '0' );
+			add_post_meta( $post_id, 'committed_files', array() );
+		}
+		//Push changes if necessary.
+		$this->git->auto_push();
+	}	
 
 	/**
 	 * Imports a table from a Revisr .sql file to the database.

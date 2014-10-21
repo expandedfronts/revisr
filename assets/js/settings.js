@@ -18,7 +18,12 @@
 			result_span.innerHTML = response;
 		});
 	});
-	jQuery('#advanced-db-tracking').hide();
+
+	if ( jQuery("#db-tracking-select").val() == 'custom' ) {
+		jQuery("#advanced-db-tracking").show();
+	} else {
+		jQuery('#advanced-db-tracking').hide();		
+	}
 	jQuery('#post-hook').hide();
 	jQuery('#auto_pull').change(function(){
   		if (this.checked) {
@@ -28,7 +33,7 @@
   		}                   
 	});
 	jQuery('#db-tracking-select').change(function(){
-		if (this.value == 'decide') {
+		if (this.value == 'custom') {
 			jQuery('#advanced-db-tracking').fadeIn('fast');
 		} else {
 			jQuery('#advanced-db-tracking').fadeOut('fast');
