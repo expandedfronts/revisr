@@ -9,7 +9,7 @@
  */
 
 $git 		= new Revisr_Git();
-$loader_url = plugins_url( 'assets/img/loader.gif' , REVISR_FILE );
+$loader_url = REVISR_URL . 'assets/img/loader.gif';
 wp_enqueue_script( 'revisr_dashboard' );
 wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 	'ajax_nonce' => wp_create_nonce( 'dashboard_nonce' ),
