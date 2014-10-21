@@ -137,6 +137,12 @@ class Revisr_DB {
 			PHP_EOL . '</FilesMatch>';
 			file_put_contents( '.htaccess', $htaccess_content );
 		}
+
+		//Prevent directory listing.
+		if ( ! file_exists( 'index.php' ) ) {
+			$index_content = '<?php // Silence is golden' . PHP_EOL;
+			file_put_contents( 'index.php', $index_content );
+		}
 	}
 
 	/**
