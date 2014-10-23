@@ -198,8 +198,8 @@ class Revisr_Git_Callback extends Revisr_Git {
 			Revisr_Admin::alert( $msg );
 
 			if ( isset( $_POST['import_db'] ) && $_POST['import_db'] == true ) {
-				$db 	= new Revisr_DB();
-				$import = $db->run( 'import', $db->get_tracked_tables() );
+				$db = new Revisr_DB();
+				$db->run( 'import', $db->get_tracked_tables() );
 			}
 		}
 	}

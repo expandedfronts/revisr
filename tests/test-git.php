@@ -144,7 +144,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the tag() function.
 	 */
 	function test_tag() {
-		$tag 	= $this->git->tag( 'v1.0' );
+		$this->git->tag( 'v1.0' );
 		$tags 	= $this->git->tag();
 		$this->assertEquals( 'v1.0', $tags[0] );
 	}

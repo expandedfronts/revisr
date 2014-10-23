@@ -160,7 +160,7 @@ class Revisr_Admin {
 		$this->git->checkout( $branch );
 		
 		if ( isset( $this->options['reset_db'] ) && $new_branch === false ) {
-			$this->db->run( 'import', $db->get_tracked_tables() );
+			$this->db->run( 'import', $this->db->get_tracked_tables() );
 		}
 		$url = get_admin_url() . 'admin.php?page=revisr';
 		wp_redirect( $url );
