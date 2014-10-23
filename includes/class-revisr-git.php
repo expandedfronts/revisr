@@ -14,26 +14,31 @@ class Revisr_Git {
 
 	/**
 	 * The current branch of the local repository.
+	 * @var string
 	 */
 	public $branch;
 
 	/**
-	 * The top-level Git directory ( '.git/' ).
+	 * The top-level Git directory.
+	 * @var string
 	 */
 	public $dir;
 
 	/**
 	 * The short SHA1 hash of the current state of the repository.
+	 * @var string
 	 */
 	public $hash;
 
 	/**
 	 * User options and preferences.
+	 * @var array
 	 */
 	public $options;
 
 	/**
 	 * The name of the active remote.
+	 * @var string
 	 */
 	public $remote;
 

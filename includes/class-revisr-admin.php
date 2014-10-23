@@ -14,47 +14,38 @@ class Revisr_Admin {
 	
 	/**
 	 * User options and preferences.
+	 * @var array
 	 */
 	protected $options;
 
 	/**
-	 * The database table to use for logging.
-	 */
-	protected $table_name;
-
-	/**
-	 * The top-level Git directory.
-	 */
-	protected $dir;
-
-	/**
 	 * The main Git class.
+	 * @var Revisr_Git()
 	 */
 	protected $git;
 
 	/**
 	 * The database class.
+	 * @var Revisr_DB()
 	 */
 	protected $db;
 
 	/**
 	 * Construct any necessary properties/values.
 	 * @access public
-	 * @param array  	$options 		An array of user options and preferences.
-	 * @param string 	$table_name 	The name of the database table to use.
+	 * @param  array $options An array of user options and preferences.
 	 */
-	public function __construct( $options, $table_name ) {
-		$this->options 		= $options;
-		$this->table_name 	= $table_name;
-		$this->git 			= new Revisr_Git();
-		$this->db 			= new Revisr_DB();
+	public function __construct( $options ) {
+		$this->options 	= $options;
+		$this->git 		= new Revisr_Git();
+		$this->db 		= new Revisr_DB();
 	}
 
 	/**
 	 * Stores an alert to be rendered on the dashboard.
 	 * @access public
-	 * @param string  $message 	The message to display.
-	 * @param bool    $is_error Whether the message is an error.
+	 * @param  string  $message 	The message to display.
+	 * @param  bool    $is_error Whether the message is an error.
 	 */
 	public static function alert( $message, $is_error = false ) {
 		if ( $is_error == true ) {
@@ -92,7 +83,7 @@ class Revisr_Admin {
 	/**
 	 * Counts the number of commits in the database on a given branch.
 	 * @access public
-	 * @param string $branch The name of the branch to count commits for.
+	 * @param  string $branch The name of the branch to count commits for.
 	 */
 	public static function count_commits( $branch ) {
 		global $wpdb;
@@ -107,8 +98,8 @@ class Revisr_Admin {
 	/**
 	 * Logs an event to the database.
 	 * @access public
-	 * @param string $message The message to show in the Recent Activity. 
-	 * @param string $event   Will be used for filtering later. 
+	 * @param  string $message The message to show in the Recent Activity. 
+	 * @param  string $event   Will be used for filtering later. 
 	 */
 	public static function log( $message, $event ) {
 		global $wpdb;
@@ -132,12 +123,13 @@ class Revisr_Admin {
 	/**
 	 * Notifies the admin if notifications are enabled.
 	 * @access private
-	 * @param string $subject The subject line of the email.
-	 * @param string $message The message for the email.
+	 * @param  string $subject The subject line of the email.
+	 * @param  string $message The message for the email.
 	 */
 	public static function notify( $subject, $message ) {
-		$options 	= get_option( 'revisr_settings' );
+		$options 	= Revisr::get_options();
 		$url 		= get_admin_url() . 'admin.php?page=revisr';
+
 		if ( isset( $options['notifications'] ) ) {
 			$email 		= $options['email'];
 			$message	.= '<br><br>';
@@ -150,8 +142,8 @@ class Revisr_Admin {
 	/**
 	 * Checks out an existing branch.
 	 * @access public
-	 * @param string 	$args 			The branch (or other args) to pass to the checkout command.
-	 * @param boolean 	$new_branch 	Whether the branch being checked out is a new branch.
+	 * @param  string 	$args 			The branch (or other args) to pass to the checkout command.
+	 * @param  boolean 	$new_branch 	Whether the branch being checked out is a new branch.
 	 */
 	public function process_checkout( $args = '', $new_branch = false ) {
 		if ( isset( $this->options['reset_db'] ) ) {
@@ -168,7 +160,7 @@ class Revisr_Admin {
 		$this->git->checkout( $branch );
 		
 		if ( isset( $this->options['reset_db'] ) && $new_branch === false ) {
-			$this->db->restore( true );
+			$this->db->run( 'import', $db->get_tracked_tables() );
 		}
 		$url = get_admin_url() . 'admin.php?page=revisr';
 		wp_redirect( $url );

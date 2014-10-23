@@ -196,18 +196,24 @@ class Revisr_Git_Callback extends Revisr_Git {
 		} else {
 			$msg = sprintf( _n( 'Successfully pulled %s commit from %s/%s.', 'Successfully pulled %s commits from %s/%s.', $args, 'revisr' ), $args, $this->remote, $this->branch );
 			Revisr_Admin::alert( $msg );
+
+			if ( isset( $_POST['import_db'] ) && $_POST['import_db'] == true ) {
+				$db 	= new Revisr_DB();
+				$import = $db->run( 'import', $db->get_tracked_tables() );
+			}
 		}
 	}
 
 	/**
 	 * Returns if a pull failed.
 	 * @access public
+	 * @return boolean
 	 */
 	public function null_pull( $output = '', $args = '' ) {
 		$msg = __( 'There was an error pulling from the remote repository. The local repository could be ahead, or there may be an authentication issue.', 'revisr' );
 		Revisr_Admin::alert( $msg, true );
 		Revisr_Admin::log( __( 'Error pulling changes from the remote repository.', 'revisr' ), 'error' );
-		exit();
+		return false;
 	}
 
 	/**
@@ -218,6 +224,8 @@ class Revisr_Git_Callback extends Revisr_Git {
 		$msg = sprintf( _n( 'Successfully pushed %s commit to %s/%s.', 'Successfully pushed %s commits to %s/%s.', $args, 'revisr' ), $args, $this->remote, $this->branch );
 		Revisr_Admin::alert( $msg );
 		Revisr_Admin::log( $msg, 'push' );
+		$remote = new Revisr_Remote();
+		$remote->send_request();
 	}
 
 	/**

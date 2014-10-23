@@ -24,13 +24,25 @@
 	} else {
 		jQuery('#advanced-db-tracking').hide();		
 	}
-	jQuery('#post-hook').hide();
-	jQuery('#auto_pull').change(function(){
-  		if (this.checked) {
-    		jQuery('#post-hook').fadeIn('fast');
+	if ( jQuery("#env-select").val() == 'dev' ) {
+		jQuery("#live-env-text").show();
+	} else {
+		jQuery("#live-env-text").hide();
+	}
+	jQuery( '#post-hook' ).hide();
+	jQuery( '#auto_pull' ).change( function() {
+  		if ( this.checked ) {
+    		jQuery( '#post-hook' ).fadeIn( 'fast' );
   		} else {
-    		jQuery('#post-hook').fadeOut('fast');
+    		jQuery( '#post-hook' ).fadeOut( 'fast' );
   		}                   
+	});
+	jQuery( '#env-select' ).change( function() {
+		if ( this.value == 'dev' ) {
+			jQuery( '#live-env-text' ).fadeIn( 'fast' );
+		} else {
+			jQuery( '#live-env-text' ).fadeOut( 'fast' );
+		}
 	});
 	jQuery('#db-tracking-select').change(function(){
 		if (this.value == 'custom') {

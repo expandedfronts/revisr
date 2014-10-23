@@ -211,13 +211,25 @@ class Revisr_Settings {
 	}
 
 	public function environment_callback() {
+		$selected = '';
+		if ( isset( $this->options['git_env'] ) && $this->options['git_env'] != 'live' ) {
+			$selected = ' selected';
+		}
 		printf(
 			'<select id="env-select" name="revisr_general_settings[git_env]">
-				<option value="dev">%s</option>
 				<option value="live">%s</option>
+				<option value="dev"%s>%s</option>
+				
 			</select>',
-			__( 'Test Environment', 'revisr' ),
-			__( 'Live Site', 'revisr' )
+			__( 'Live Site', 'revisr' ),
+			$selected,
+			__( 'Test Environment', 'revisr' )
+		);
+
+		printf(
+			'<div id="live-env-text"><br><input type="text" name="revisr_general_settings[live_url]" value="%s" class="regular-text" placeholder="http://www.example.com" /><br><span class="description">%s</span></div>',
+			isset( $this->options['live_url'] ) ? esc_attr( $this->options['live_url'] ) : '',
+			__( 'Live Site URL - only required if you want to push changes to the live site from this test environment.', 'revisr' )
 		);
 	}
 

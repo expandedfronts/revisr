@@ -69,6 +69,7 @@ class Revisr {
 		require_once REVISR_PATH . 'includes/class-revisr-i18n.php';
 		require_once REVISR_PATH . 'includes/class-revisr-admin.php';
 		require_once REVISR_PATH . 'includes/class-revisr-admin-setup.php';
+		require_once REVISR_PATH . 'includes/class-revisr-remote.php';
 		require_once REVISR_PATH . 'includes/class-revisr-db.php';
 		require_once REVISR_PATH . 'includes/class-revisr-git.php';
 		require_once REVISR_PATH . 'includes/class-revisr-git-callback.php';
@@ -91,7 +92,7 @@ class Revisr {
 	 * @access private
 	 */
 	private function admin_hooks() {
-		$revisr_admin 	= new Revisr_Admin( $this->options, $this->get_table_name() );
+		$revisr_admin 	= new Revisr_Admin( $this->options );
 		$revisr_git 	= new Revisr_Git();
 		add_action( 'wp_ajax_render_alert', array( $revisr_admin, 'render_alert' ) );
 		add_action( 'publish_revisr_commits', array( $revisr_admin, 'process_commit' ) );

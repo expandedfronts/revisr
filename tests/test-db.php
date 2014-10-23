@@ -43,6 +43,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	function test_backup() {
 		$this->db->backup();
 		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/.htaccess' );
+		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/index.php' );
 		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/revisr_wptests_posts.sql' );
 	}
 

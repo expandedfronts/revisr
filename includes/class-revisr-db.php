@@ -192,7 +192,7 @@ class Revisr_DB {
 					$status[$table] = $this->revert_table( $table, $args );
 					break;
 				case 'import':
-					$status[$table] = $this->import_table( $table );
+					$status[$table] = $this->import_table( $table, $args );
 					break;
 				default:
 					return false;
@@ -294,9 +294,11 @@ class Revisr_DB {
 	 * @link https://wordpress.org/plugins/vaultpress/
 	 * 
 	 * @access public
-	 * @param  string $table The table to import.
+	 * @param  string $table 		The table to import.
+	 * @param  string $replace_url 	Replace this URL in the database with the live URL. 
 	 */
-	public function import_table( $table ) {
+	public function import_table( $table, $replace_url = '' ) {
+		$live_url = site_url();
 		//Only import if the file exists and is valid.
 		if ( $this->verify_backup( $table ) == false ) {
 			return false;
@@ -305,6 +307,9 @@ class Revisr_DB {
 		if ( $mysql = exec( 'which mysql' ) ) {
 			$conn = $this->build_conn();
 			exec( "{$mysql} {$conn} < revisr_$table.sql" );
+			if ( $replace_url != '' ) {
+				$this->revisr_srdb( $table, $replace_url, $live_url );
+			}
 			return true;
 		}
 		//Fallback on manually querying the file.
@@ -330,6 +335,11 @@ class Revisr_DB {
 			}
 		}
 		fclose( $fh );
+
+		if ( $replace_url != '' ) {
+			$this->revisr_srdb( $table, $replace_url, $live_url );
+		}
+
 		if ( $status['errors'] !== 0 ) {
 			return false;
 		}
@@ -517,7 +527,7 @@ class Revisr_DB {
 				$dataClass 	= get_class( $data );
 				$_tmp  		= new $dataClass();
 				foreach ( $data as $key => $value ) {
-					$_tmp->$key = recursive_unserialize_replace( $from, $to, $value, false );
+					$_tmp->$key = $this->recursive_unserialize_replace( $from, $to, $value, false );
 				}
 
 				$data = $_tmp;
