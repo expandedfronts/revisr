@@ -453,7 +453,7 @@ class Revisr_Git {
 		$branch = $_REQUEST['branch'];
 		$this->fetch();
 		$this->reset( '--hard', $this->remote . "/$branch" );
-		$db->run->( 'import', $this->db->get_tracked_tables() );
+		$db->run( 'import', $this->db->get_tracked_tables() );
 	}
 
 	/**
