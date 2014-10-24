@@ -218,8 +218,15 @@ class Revisr_DB {
 	 * @access public
 	 */
 	public function backup() {
+		//Get the tables to backup.
+		if ( empty( $this->get_tracked_tables() ) ) {
+			$tables = $this->get_tables();
+		} else {
+			$tables = $this->get_tracked_tables();
+		}
+
 		//Run the backup.
-		$this->run( 'backup', $this->get_tracked_tables() );
+		$this->run( 'backup', $tables );
 
 		//Commit any changed database files and insert a post if necessary.
 		if ( isset( $_REQUEST['source'] ) && $_REQUEST['source'] == 'ajax_button' ) {
@@ -227,7 +234,6 @@ class Revisr_DB {
 		} else {
 			$this->commit_db();
 		}
-
 	}
 
 	/**

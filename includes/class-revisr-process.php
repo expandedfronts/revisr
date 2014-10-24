@@ -44,7 +44,7 @@ class Revisr_Process {
 	 * Processes the request to checkout an existing branch.
 	 * @access public
 	 */
-	public function process_checkout() {
+	public function process_checkout( $args = '', $new_branch = false ) {
 		if ( isset( $this->options['reset_db'] ) ) {
 			$this->db->backup();
 		}

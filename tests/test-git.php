@@ -24,12 +24,13 @@ class RevisrGitTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests the current dir with an initialized repository.
+	 * Tests the init function.
 	 */
-	function test_current_dir() {
-		$dir = $this->git->current_dir();
-		$this->assertFileExists( $dir );
-		$this->assertFileExists( $dir . '/.git/config' );
+	function test_init_repo() {
+		if ( ! $this->git->is_repo() ) {
+			$this->git->init_repo();
+		}
+		$this->assertEquals( true, $this->git->is_repo() );
 	}
 
 	/**
@@ -48,6 +49,15 @@ class RevisrGitTest extends WP_UnitTestCase {
 		$this->git->config_user_email( 'support@expandedfronts.com' );
 		$current_email = $this->git->run( 'config user.email' );
 		$this->assertEquals( 'support@expandedfronts.com', $current_email[0] );
+	}
+
+	/**
+	 * Tests the current dir with an initialized repository.
+	 */
+	function test_current_dir() {
+		$dir = $this->git->current_dir();
+		$this->assertFileExists( $dir );
+		$this->assertFileExists( $dir . '/.git/config' );
 	}
 
 	/**
