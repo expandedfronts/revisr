@@ -219,10 +219,9 @@ class Revisr_DB {
 	 */
 	public function backup() {
 		//Get the tables to backup.
-		if ( empty( $this->get_tracked_tables() ) ) {
+		$tables = $this->get_tracked_tables();
+		if ( empty( $tables ) ) {
 			$tables = $this->get_tables();
-		} else {
-			$tables = $this->get_tracked_tables();
 		}
 
 		//Run the backup.
