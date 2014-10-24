@@ -11,7 +11,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Initialize the database object.
 	 */
 	function setUp() {
-		$this->db = new Revisr_DB( '/Applications/MAMP/Library/bin/' );
+		$this->db = new Revisr_DB();
 	}
 
 	/**
