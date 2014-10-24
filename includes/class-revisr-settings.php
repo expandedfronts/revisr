@@ -345,12 +345,14 @@ class Revisr_Settings {
 		$db 	= new Revisr_DB();
 		$tables = $db->get_tables();
 		echo '<div id="advanced-db-tracking"><br><select name="revisr_database_settings[tracked_tables][]" multiple="multiple" style="width:350px;height:250px;">';
-		foreach ( $tables as $table ) {
-			$table_selected = '';
-			if ( in_array( $table, $db->get_tracked_tables() ) ) {
-				$table_selected = ' selected';
+		if ( is_array( $tables ) ) {
+			foreach ( $tables as $table ) {
+				$table_selected = '';
+				if ( in_array( $table, $db->get_tracked_tables() ) ) {
+					$table_selected = ' selected';
+				}
+				echo "<option value='$table'$table_selected>$table</option>";
 			}
-			echo "<option value='$table'$table_selected>$table</option>";
 		}
 		echo '</select></div>';
 	}
