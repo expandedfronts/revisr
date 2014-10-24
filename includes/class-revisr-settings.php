@@ -68,6 +68,7 @@ class Revisr_Settings {
 	 * @access public
 	 */
 	public function revisr_add_settings_fields() {
+		//General settings tab
         add_settings_field(
             'username',
             __( 'Git Username', 'revisr' ),
@@ -82,13 +83,6 @@ class Revisr_Settings {
             'revisr_general_settings', 
             'revisr_general_settings'
         );
-        add_settings_field(
-        	'git_env',
-        	__( 'Environment', 'revisr' ),
-        	array( $this, 'environment_callback' ),
-        	'revisr_general_settings',
-        	'revisr_general_settings'
-    	);
         add_settings_field(
         	'gitignore',
         	__( 'Files/Directories to ignore', 'revisr'),
@@ -110,6 +104,8 @@ class Revisr_Settings {
     		'revisr_general_settings',
     		'revisr_general_settings'
 		);
+
+		//Remote settings tab
 		add_settings_field(
             'remote_name', 
             __( 'Remote Name', 'revisr'), 
@@ -124,6 +120,13 @@ class Revisr_Settings {
             'revisr_remote_settings', 
             'revisr_remote_settings'
         );
+        add_settings_field(
+        	'live_url',
+        	__( 'Live Site URL', 'revisr' ),
+        	array( $this, 'live_url_callback' ),
+        	'revisr_remote_settings',
+        	'revisr_remote_settings'
+    	);
     	add_settings_field(
     		'auto_push',
     		__( 'Automatically push new commits?', 'revisr' ),
@@ -138,6 +141,8 @@ class Revisr_Settings {
 			'revisr_remote_settings',
 			'revisr_remote_settings'
 		);
+
+		//Database settings tab
 		add_settings_field(
 			'tracked_tables',
 			__( 'Database tables to track', 'revisr' ),
@@ -210,29 +215,6 @@ class Revisr_Settings {
         );
 	}
 
-	public function environment_callback() {
-		$selected = '';
-		if ( isset( $this->options['git_env'] ) && $this->options['git_env'] != 'live' ) {
-			$selected = ' selected';
-		}
-		printf(
-			'<select id="env-select" name="revisr_general_settings[git_env]">
-				<option value="live">%s</option>
-				<option value="dev"%s>%s</option>
-				
-			</select>',
-			__( 'Live Site', 'revisr' ),
-			$selected,
-			__( 'Test Environment', 'revisr' )
-		);
-
-		printf(
-			'<div id="live-env-text"><br><input type="text" name="revisr_general_settings[live_url]" value="%s" class="regular-text" placeholder="http://www.example.com" /><br><span class="description">%s</span></div>',
-			isset( $this->options['live_url'] ) ? esc_attr( $this->options['live_url'] ) : '',
-			__( 'Live Site URL - only required if you want to push changes to the live site from this test environment.', 'revisr' )
-		);
-	}
-
 	public function gitignore_callback() {
 		chdir( ABSPATH );
 		if ( isset( $this->options['gitignore'] ) ) {
@@ -300,6 +282,14 @@ class Revisr_Settings {
 			<br><span class="description">%s</span>',
 			$remote_url,
 			__( 'Useful if you need to authenticate over "https://" instead of SSH, or if the remote has not already been set through Git.', 'revisr' )
+		);
+	}
+
+	public function live_url_callback() {
+		printf(
+			'<input type="text" name="revisr_general_settings[live_url]" value="%s" class="regular-text" placeholder="http://www.example.com" /><br><span class="description">%s</span>',
+			isset( $this->options['live_url'] ) ? esc_attr( $this->options['live_url'] ) : '',
+			__( 'If this is a test environment for a live site, add the WordPress \'Site URL\' for the live site here to automatically push changes to this URL.', 'revisr' )
 		);
 	}
 

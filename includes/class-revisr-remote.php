@@ -42,7 +42,7 @@ class Revisr_Remote {
 		if ( isset( $this->options['live_url'] ) && $this->options['live_url'] != '' ) {
 			return $this->options['live_url'];
 		} else {
-			wp_die( __( 'API URL NOT SET!', 'revisr' ) );
+			wp_die( __( 'Live URL not set.', 'revisr' ) );
 		}
 	}
 

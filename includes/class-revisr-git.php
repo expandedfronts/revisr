@@ -330,7 +330,7 @@ class Revisr_Git {
 	 */
 	public function merge( $branch ) {
 		$this->reset();
-		$merge = $this->run( "merge $branch --strategy-option ours", __FUNCTION__ );
+		$merge = $this->run( "merge $branch --strategy-option theirs", __FUNCTION__ );
 		return $merge;
 	}
 

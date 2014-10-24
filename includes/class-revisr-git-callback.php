@@ -168,8 +168,6 @@ class Revisr_Git_Callback extends Revisr_Git {
 		$log_msg 	= sprintf( __( 'Merged branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->branch );
 		Revisr_Admin::alert( $alert_msg );
 		Revisr_Admin::log( $log_msg, 'merge' );
-		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
-		exit();
 	}
 
 	/**
@@ -224,8 +222,10 @@ class Revisr_Git_Callback extends Revisr_Git {
 		$msg = sprintf( _n( 'Successfully pushed %s commit to %s/%s.', 'Successfully pushed %s commits to %s/%s.', $args, 'revisr' ), $args, $this->remote, $this->branch );
 		Revisr_Admin::alert( $msg );
 		Revisr_Admin::log( $msg, 'push' );
-		$remote = new Revisr_Remote();
-		$remote->send_request();
+		if ( isset( $this->options['live_url'] ) && $this->options['live_url'] != '' ) {
+			$remote = new Revisr_Remote();
+			$remote->send_request();
+		}
 	}
 
 	/**

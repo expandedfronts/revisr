@@ -46,7 +46,7 @@
 						$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'local_branches';
 
 						if ( $active_tab == 'remote_branches' ) {
-							$output = $git->get_branches( true );
+							$output 	= $git->get_branches( true );
 						} else {
 							$output = $git->get_branches();
 						}
@@ -72,7 +72,7 @@
 									</td></tr>";
 								} else {
 									$checkout_url 	= get_admin_url() . "admin-post.php?action=process_checkout&branch={$branch}";
-									$merge_url 		= get_admin_url() . "admin-post.php?action=merge_branch_form&branch={$branch}&TB_iframe=true&width=400&height=225";
+									$merge_url 		= get_admin_url() . "admin-post.php?action=merge_branch_form&branch={$branch}&TB_iframe=true&width=350&height=225";
 									$delete_url 	= get_admin_url() . "admin-post.php?action=delete_branch_form&branch={$branch}&TB_iframe=true&width=350&height=150";
 									?>
 									<tr>
@@ -80,7 +80,7 @@
 									<td style='text-align:center;'><?php echo $num_commits; ?></td>
 									<td class="center-td">
 										<a class='button branch-btn' href='<?php echo $checkout_url; ?>'><?php _e( 'Checkout', 'revisr' ); ?></a>
-										<a class='button branch-btn merge-btn thickbox' href="<?php echo $merge_url; ?>" value="<?php echo $branch; ?>">Merge</a>
+										<a class='button branch-btn merge-btn thickbox' href="<?php echo $merge_url; ?>" title="<?php _e( 'Merge Branch', 'revisr' ); ?>">Merge</a>
 										<a class='button branch-btn delete-branch-btn thickbox' href='<?php echo $delete_url; ?>' title='<?php _e( 'Delete Branch', 'revisr' ); ?>'><?php _e( 'Delete', 'revisr' ); ?></a>
 									</td></tr>
 									<?php
@@ -97,6 +97,7 @@
 						</tr>
 					</tfoot>
 				</table>
+				<p><a href="?page=revisr_branches&tab=local_branches"><?php _e( 'Local Branches', 'revisr' ); ?></a> | <a href="?page=revisr_branches&tab=remote_branches"><?php _e( 'Remote Branches', 'revisr' ); ?></a></p>
 			</form>
 		</div><!-- /#col-right -->
 		<div id="col-left">
