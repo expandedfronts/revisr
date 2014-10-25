@@ -106,6 +106,28 @@ class Revisr_Git {
 	}
 
 	/**
+	 * Stores URLs for Revisr to the .git/config (to be environment-agnostic).
+	 * @access public
+	 * @param  string $env The associated environment.
+	 * @param  string $url The URL to store.
+	 */
+	public function config_revisr_url( $env, $url = '' ) {
+		$revisr_url = $this->run( "config revisrurl.$env $url" );
+		return $revisr_url;
+	}
+
+	/**
+	 * Stores environment paths to .git/config (to be environment-agnostic).
+	 * @access public
+	 * @param  string $service 	For ex., git or mysql
+	 * @param  string $path 	The path to store.
+	 */
+	public function config_revisr_path( $service, $path = '' ) {
+		$revisr_path = $this->run( "config revisrpath.$service $path" );
+		return $revisr_path;
+	}
+
+	/**
 	 * Returns the number of unpulled commits.
 	 * @access public
 	 */
