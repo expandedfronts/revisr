@@ -9,7 +9,7 @@
  * @link      https://revisr.io
  * @copyright 2014 Expanded Fronts, LLC
  */
-$styles_url = get_admin_url() . "load-styles.php?c=0&dir=ltr&load=dashicons,admin-bar,wp-admin,buttons,wp-auth-check";
+$styles_url = REVISR_URL . 'assets/css/thickbox.css';
 ?>
 <link href="<?php echo $styles_url; ?>" rel="stylesheet" type="text/css">
 <div class="container" style="padding:10px">

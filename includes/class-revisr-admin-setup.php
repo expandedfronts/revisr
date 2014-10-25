@@ -218,6 +218,14 @@ class Revisr_Setup {
 	}
 
 	/**
+	 * Displays the form to pull a remote branch.
+	 * @access public
+	 */
+	public function pull_remote_form() {
+		include_once REVISR_PATH . 'assets/partials/pull-remote-form.php';
+	}
+
+	/**
 	 * Displays the recent activity box on the dashboard.
 	 * @access public
 	 */

@@ -145,6 +145,7 @@ class Revisr {
 		add_action( 'admin_menu', array( $revisr_setup, 'menus' ), 2 );
 		add_action( 'admin_post_delete_branch_form', array( $revisr_setup, 'delete_branch_form' ) );
 		add_action( 'admin_post_merge_branch_form', array ( $revisr_setup, 'merge_branch_form' ) );
+		add_action( 'admin_post_pull_remote_form', array( $revisr_setup, 'pull_remote_form' ) );
 		add_action( 'admin_enqueue_scripts', array( $revisr_setup, 'revisr_scripts' ) );
 		add_action( 'admin_bar_menu', array( $revisr_setup, 'admin_bar' ), 999 );
 		add_filter( 'custom_menu_order', array( $revisr_setup, 'revisr_commits_submenu_order' ) );
