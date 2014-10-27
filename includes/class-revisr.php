@@ -72,9 +72,9 @@ class Revisr {
 	 * @access private
 	 */
 	private function set_locale() {
-		$plugin_i18n = new Revisr_i18n();
-		$plugin_i18n->set_domain( $this->get_plugin_name() );
-		add_action( 'plugins_loaded', array( $plugin_i18n, 'load_plugin_textdomain' ) );
+		$revisr_i18n = new Revisr_i18n();
+		$revisr_i18n->set_domain( $this->get_plugin_name() );
+		add_action( 'plugins_loaded', array( $revisr_i18n, 'load_plugin_textdomain' ) );
 	}
 
 	/**
