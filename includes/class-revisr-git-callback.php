@@ -10,6 +10,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Revisr_Git_Callback extends Revisr_Git {
 	
 	/**
@@ -46,25 +49,25 @@ class Revisr_Git_Callback extends Revisr_Git {
 		$commit_msg 	= $_REQUEST['post_title'];
 		add_post_meta( $id, 'commit_hash', $commit_hash );
 		add_post_meta( $id, 'branch', $this->branch );
-		//Backup the database if necessary
+		// Backup the database if necessary
 		if ( isset( $_REQUEST['backup_db'] ) && $_REQUEST['backup_db'] == 'on' ) {
 			$db = new Revisr_DB;
 			$db->backup();
 			$db_hash = $this->run( "log --pretty=format:'%h' -n 1" );
 			add_post_meta( $id, 'db_hash', $db_hash[0] );
 		}
-		//Log the event.
+		// Log the event.
 		$msg = sprintf( __( 'Commmitted <a href="%s">#%s</a> to the local repository.', 'revisr' ), $view_link, $commit_hash );
 		Revisr_Admin::log( $msg, 'commit' );
-		//Notify the admin.
+		// Notify the admin.
 		$email_msg = sprintf( __( 'A new commit was made to the repository: <br> #%s - %s', 'revisr' ), $commit_hash, $commit_msg );
 		Revisr_Admin::notify( get_bloginfo() . __( ' - New Commit', 'revisr' ), $email_msg );
-		//Add a tag if necessary.
+		// Add a tag if necessary.
 		if ( isset( $_REQUEST['tag_name'] ) ) {
 			$this->tag( $_POST['tag_name'] );
 			add_post_meta( $id, 'git_tag', $_POST['tag_name'] );
 		}
-		//Push if necessary.
+		// Push if necessary.
 		$this->auto_push();
 		return $commit_hash;
 	}

@@ -10,6 +10,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Revisr_Settings_Fields {
 
 	/**
@@ -126,10 +129,10 @@ class Revisr_Settings_Fields {
             __( 'Add files or directories that you don\'t want to show up in Git here, one per line.<br>This will update the ".gitignore" file for this repository.', 'revisr' )
 		);
 
-		//Write the updated setting to the .gitignore.
+		// Write the updated setting to the .gitignore.
 		if ( $this->is_updated( 'gitignore' ) ) {
 			chdir( ABSPATH );
-			file_put_contents( '.gitignore', $options['gitignore'] );
+			file_put_contents( '.gitignore', $this->options['gitignore'] );
 			$this->git->run( 'add .gitignore' );
 			$commit_msg = __( 'Updated .gitignore.', 'revisr' );
 			$this->git->run("commit -m \"$commit_msg\"");
@@ -156,7 +159,7 @@ class Revisr_Settings_Fields {
 			<span class="description"><?php _e( 'Automatic backups will backup both the files and database at the interval of your choosing.', 'revisr' ); ?></span>
 		<?php
 
-		//Update the cron settings/clear if necessary on save.
+		// Update the cron settings/clear if necessary on save.
 		if ( $this->is_updated( 'automatic_backups' ) ) {
 
 			if ( isset( $this->options['automatic_backups'] ) && $this->options['automatic_backups'] != 'none' ) {
@@ -203,7 +206,7 @@ class Revisr_Settings_Fields {
 			$remote_name = 'origin';
 		}
 
-		//Sets the remote name and/or URL if necessary.
+		// Sets the remote name and/or URL if necessary.
 		$add = $this->git->run( "remote add $remote_name {$this->options['remote_url']}" );
 		if ( $add == false ) {
 			$this->git->run( "remote set-url $remote_name {$this->options['remote_url']}" );
@@ -295,7 +298,7 @@ class Revisr_Settings_Fields {
 			__( 'Let me decide...', 'revisr' )
 		);
 
-		//Allows the user to select the tables they want to track.
+		// Allows the user to select the tables they want to track.
 		$db 	= new Revisr_DB();
 		$tables = $db->get_tables();
 		echo '<div id="advanced-db-tracking"><br><select name="revisr_database_settings[tracked_tables][]" multiple="multiple" style="width:350px;height:250px;">';

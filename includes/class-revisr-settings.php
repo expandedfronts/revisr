@@ -10,6 +10,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Revisr_Settings {
 	
 	/**
@@ -70,7 +73,6 @@ class Revisr_Settings {
 	 * @access public
 	 */
 	public function revisr_add_settings_fields() {
-		//General settings tab
         add_settings_field(
             'username',
             __( 'Git Username', 'revisr' ),

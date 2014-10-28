@@ -10,6 +10,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Revisr_Git {
 
 	/**
@@ -410,14 +413,14 @@ class Revisr_Git {
 	 */
 	public function run( $command, $callback = '', $args = '' ) {
 		
-		//Run the actual Git command.
+		// Run the actual Git command.
 		$cmd = "git $command";
 		$dir = getcwd();
 		chdir( $this->dir );
 		exec( $cmd, $output, $error );
 		chdir( $dir );
 		
-		//If using a callback, initiate the callback class and call the function.
+		// If using a callback, initiate the callback class and call the function.
 		if ( $callback != '' ) {
 			$response 			= new Revisr_Git_Callback;
 			$success_callback 	= 'success_' . $callback;
@@ -429,7 +432,7 @@ class Revisr_Git {
 			}
 		}
 
-		//If not using a callback, return the output (or false on failure).
+		// If not using a callback, return the output (or false on failure).
 		if ( ! $error ) {
 			return $output;
 		} else {

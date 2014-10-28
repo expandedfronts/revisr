@@ -10,6 +10,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Revisr_Setup {
 	
 	/**
@@ -52,14 +55,14 @@ class Revisr_Setup {
 		wp_register_script( 'revisr_settings', REVISR_URL . 'assets/js/settings.js', 'jquery', '08272014', true );
 		
 		$allowed_pages = array( 'revisr', 'revisr_settings', 'revisr_branches' );
-		//Enqueue common styles and scripts.
+		// Enqueue common styles and scripts.
 		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
 			wp_enqueue_style( 'revisr_dashboard_css' );
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
 			wp_enqueue_script( 'revisr_settings' );
 		}
-		//Enqueue styles and scripts on the Revisr staging area.
+		// Enqueue styles and scripts on the Revisr staging area.
 		if ( $hook == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
 			wp_enqueue_script( 'revisr_staging' );
 			wp_localize_script( 'revisr_staging', 'pending_vars', array(
@@ -67,7 +70,7 @@ class Revisr_Setup {
 				)
 			);
 		}
-		//Enqueue styles and scripts for viewing a commit.
+		// Enqueue styles and scripts for viewing a commit.
 		if ( $hook == 'post.php' && get_post_type() == 'revisr_commits' ) {
 			wp_enqueue_script( 'revisr_committed' );
 			wp_localize_script( 'revisr_committed', 'committed_vars', array(

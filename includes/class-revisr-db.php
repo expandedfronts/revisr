@@ -10,6 +10,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Revisr_DB {
 
 	/**
@@ -105,7 +108,7 @@ class Revisr_DB {
 		if ( $table != '' ) {
 			$table = " $table";
 		}
-		//Workaround for Windows/Mac compatibility.
+		// Workaround for Windows/Mac compatibility.
 		if ( DB_PASSWORD != '' ) {
 			$conn = "-u '" . DB_USER . "' -p'" . DB_PASSWORD . "' " . DB_NAME . $table . " --host " . $db_host . $add_port;
 		} else {
@@ -119,7 +122,7 @@ class Revisr_DB {
 	 * @access private
 	 */
 	public function setup_env() {
-		//Create the backups directory if it doesn't exist.
+		// Create the backups directory if it doesn't exist.
 		$backup_dir = $this->upload_dir['basedir'] . '/revisr-backups/';
 		if ( is_dir( $backup_dir ) ) {
 			chdir( $backup_dir );
@@ -128,7 +131,7 @@ class Revisr_DB {
 			chdir( $backup_dir );
 		}
 
-		//Prevent '.sql' files from public access.
+		// Prevent '.sql' files from public access.
 		if ( ! file_exists( '.htaccess' ) ) {
 			$htaccess_content = '<FilesMatch "\.sql">' .
 			PHP_EOL . 'Order allow,deny' .
@@ -138,7 +141,7 @@ class Revisr_DB {
 			file_put_contents( '.htaccess', $htaccess_content );
 		}
 
-		//Prevent directory listing.
+		// Prevent directory listing.
 		if ( ! file_exists( 'index.php' ) ) {
 			$index_content = '<?php // Silence is golden' . PHP_EOL;
 			file_put_contents( 'index.php', $index_content );
@@ -152,9 +155,7 @@ class Revisr_DB {
 	 */
 	public function get_tables() {
 		$tables = $this->wpdb->get_col( 'SHOW TABLES' );
-		if ( is_array( $tables ) ) {
-			return $tables;
-		}
+		return $tables;
 	}
 
 	/**
@@ -179,10 +180,10 @@ class Revisr_DB {
 	 * @return boolean
 	 */
 	public function run( $action, $tables = array(), $args = '' ) {
-		//Initialize the response array.
+		// Initialize the response array.
 		$status = array();
 
-		//Iterate through the tables and perform the action.
+		// Iterate through the tables and perform the action.
 		foreach ( $tables as $table ) {
 			switch ( $action ) {
 				case 'backup':
@@ -199,7 +200,7 @@ class Revisr_DB {
 			}
 		}
 
-		//Process the results and alert the user.
+		// Process the results and alert the user.
 		$callback = $action . '_callback';
 		$this->$callback( $status );
 	}
@@ -218,16 +219,16 @@ class Revisr_DB {
 	 * @access public
 	 */
 	public function backup() {
-		//Get the tables to backup.
+		// Get the tables to backup.
 		$tables = $this->get_tracked_tables();
 		if ( empty( $tables ) ) {
 			$tables = $this->get_tables();
 		}
 
-		//Run the backup.
+		// Run the backup.
 		$this->run( 'backup', $tables );
 
-		//Commit any changed database files and insert a post if necessary.
+		// Commit any changed database files and insert a post if necessary.
 		if ( isset( $_REQUEST['source'] ) && $_REQUEST['source'] == 'ajax_button' ) {
 			$this->commit_db( true );
 		} else {
@@ -267,12 +268,12 @@ class Revisr_DB {
 	/**
 	 * Commits the database to the repository and pushes if needed.
 	 * @access public
-	 * @param boolean $insert_post Whether to insert a new commit custom_post_type.
+	 * @param  boolean $insert_post Whether to insert a new commit custom_post_type.
 	 */
 	public function commit_db( $insert_post = false ) {
 		$commit_msg  = __( 'Backed up the database with Revisr.', 'revisr' );
-		$commit_hash = $this->git->commit( $commit_msg );
-		//Insert the corresponding post if necessary.
+		$this->git->commit( $commit_msg );
+		// Insert the corresponding post if necessary.
 		if ( $insert_post === true ) {
 			$post = array(
 				'post_title' 	=> $commit_msg,
@@ -288,7 +289,7 @@ class Revisr_DB {
 			add_post_meta( $post_id, 'files_changed', '0' );
 			add_post_meta( $post_id, 'committed_files', array() );
 		}
-		//Push changes if necessary.
+		// Push changes if necessary.
 		$this->git->auto_push();
 	}	
 
@@ -304,11 +305,11 @@ class Revisr_DB {
 	 */
 	public function import_table( $table, $replace_url = '' ) {
 		$live_url = site_url();
-		//Only import if the file exists and is valid.
+		// Only import if the file exists and is valid.
 		if ( $this->verify_backup( $table ) == false ) {
 			return false;
 		}
-		//Try to pass the file directly to MySQL.
+		// Try to pass the file directly to MySQL.
 		if ( $mysql = exec( 'which mysql' ) ) {
 			$conn = $this->build_conn();
 			exec( "{$mysql} {$conn} < revisr_$table.sql" );
@@ -317,7 +318,7 @@ class Revisr_DB {
 			}
 			return true;
 		}
-		//Fallback on manually querying the file.
+		// Fallback on manually querying the file.
 		$fh 	= fopen( "revisr_$table.sql", 'r' );
 		$size	= filesize( "revisr_$table.sql" );
 		$status = array(
@@ -371,13 +372,13 @@ class Revisr_DB {
 	/**
 	 * Reverts a table to an earlier commit.
 	 * @access private
-	 * @param  array  $table  The table to revert.
+	 * @param  string $table  The table to revert.
 	 * @param  string $commit The commit to revert to.
 	 * @return boolean
 	 */
 	private function revert_table( $table, $commit ) {
 		$checkout = $this->git->run( "checkout $commit {$this->upload_dir['basedir']}/revisr-backups/revisr_$table.sql" );
-		if ( $checkout != false ) {
+		if ( $checkout !== false ) {
 			return $this->import_table( $table );
 		}
 		return false;
@@ -427,7 +428,7 @@ class Revisr_DB {
 	 */
 	public function revisr_srdb( $table, $search = '', $replace = '' ) {
 
-		//Get a list of columns in this table.
+		// Get a list of columns in this table.
 		$columns = array();
 		$fields  = $this->wpdb->get_results( 'DESCRIBE ' . $table );
 		foreach ( $fields as $column ) {
@@ -435,7 +436,7 @@ class Revisr_DB {
 		}
 		$this->wpdb->flush();
 
-		//Count the number of rows we have in the table if large we'll split into blocks, This is a mod from Simon Wheatley
+		// Count the number of rows we have in the table if large we'll split into blocks, This is a mod from Simon Wheatley
 		$this->wpdb->get_results( 'SELECT COUNT(*) FROM ' . $table );
 		$row_count = $this->wpdb->num_rows;
 		if ( $row_count == 0 )
@@ -453,7 +454,7 @@ class Revisr_DB {
 			// Grab the content of the table.
 			$data = $this->wpdb->get_results( "SELECT * FROM $table LIMIT $start, $end", ARRAY_A );
 			
-			//Loop through the data.
+			// Loop through the data.
 			foreach ( $data as $row ) {
 				$current_row++;
 				$update_sql = array();
@@ -548,7 +549,7 @@ class Revisr_DB {
 				return serialize( $data );
 
 		} catch( Exception $error ) {
-
+			Revisr_Admin::log( $error, 'error' );
 		}
 
 		return $data;

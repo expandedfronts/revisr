@@ -51,10 +51,10 @@ jQuery(document).ready(function($) {
 	var empty_title = url.indexOf("message=42");
     var empty_commit = url.indexOf("message=43");
 
-	if (empty_title != "-1") {
+	if ( empty_title !== "-1" ) {
 		document.getElementById('message').innerHTML = "<div class='error'><p>Please enter a message for your commit.</p></div>";
 	}
-    if (empty_commit != "-1") {
+    if ( empty_commit !== "-1" ) {
         document.getElementById('message').innerHTML = "<div class='error'><p>Nothing was added to the commit. Please use the section below to add files to be included in the commit.</p></div>";
     }
 
@@ -68,8 +68,8 @@ jQuery(document).ready(function($) {
 
 jQuery(document).on("dblclick", ".pending", function () {
     var pending = event.target.value;
-    var status = pending.substr(0, 3);
-    if (status === " M ") {
+    var status  = pending.substr(0, 3);
+    if ( status === " M " ) {
         var file = ajaxurl + "?action=view_diff&file=" + pending.substr(3);
         tb_show("View Diff", file);
     }

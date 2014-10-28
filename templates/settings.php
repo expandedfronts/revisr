@@ -7,6 +7,10 @@
  * @link      https://revisr.io
  * @copyright 2014 Expanded Fronts, LLC
  */
+
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 ?>
 <div class="wrap">
 	<div id="revisr_settings">
@@ -32,7 +36,7 @@
 		
 		<form class="settings-form" method="post" action="options.php">
 			<?php
-				//Decides which settings to display.
+				// Decides which settings to display.
 				$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general_settings';
 	            if ( $active_tab == 'general_settings' ) {
 	            	settings_fields( 'revisr_general_settings' );   

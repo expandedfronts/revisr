@@ -8,6 +8,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 $git 		= new Revisr_Git();
 $loader_url = REVISR_URL . 'assets/img/loader.gif';
 wp_enqueue_script( 'revisr_dashboard' );

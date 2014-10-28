@@ -7,6 +7,9 @@
  * @link      https://revisr.io
  * @copyright 2014 Expanded Fronts, LLC
  */
+
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
 
 <div class="wrap">
@@ -26,7 +29,7 @@
 					echo '<div id="revisr-alert" class="updated" style="margin-top:20px;"><p>' . $msg . '</p></div>';
 					break;
 				default:
-					//Do nothing.
+					// Do nothing.
 			}
 		}
 	?>

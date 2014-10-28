@@ -10,6 +10,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Revisr_Process {
 
 	/**
@@ -74,14 +77,14 @@ class Revisr_Process {
 			$commit_msg 	= $_REQUEST['post_title'];
 			$post_new 		= get_admin_url() . 'post-new.php?post_type=revisr_commits';
 			
-			//Require a message to be entered for the commit.
+			// Require a message to be entered for the commit.
 			if ( $commit_msg == 'Auto Draft' || $commit_msg == '' ) {
 				$url = $post_new . '&message=42';
 				wp_redirect( $url );
 				exit();
 			}
 
-			//Stage any necessary files, or cancel if none are found.
+			// Stage any necessary files, or cancel if none are found.
 			if ( isset( $_POST['staged_files'] ) ) {
 				$this->git->stage_files( $_POST['staged_files'] );
 				$staged_files = $_POST['staged_files'];
@@ -91,7 +94,7 @@ class Revisr_Process {
 				exit();
 			}
 
-			//Add the necessary post meta and make the commit in Git.
+			// Add the necessary post meta and make the commit in Git.
 			add_post_meta( get_the_ID(), 'committed_files', $staged_files );
 			add_post_meta( get_the_ID(), 'files_changed', count( $staged_files ) );
 			$this->git->commit( $commit_msg, 'commit' );	
@@ -165,7 +168,7 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_pull() {
-		//Determine whether this is a request from the dashboard or a POST request.
+		// Determine whether this is a request from the dashboard or a POST request.
 		$from_dash = check_ajax_referer( 'dashboard_nonce', 'security', false );
 		if ( $from_dash == false ) {
 			if ( ! isset( $this->options['auto_pull'] ) ) {
@@ -179,7 +182,7 @@ class Revisr_Process {
 		$commits_since  = $this->git->run( "log {$this->git->branch}..{$this->git->remote}/{$this->git->branch} --pretty=oneline" );
 
 		if ( is_array( $commits_since ) ) {
-			//Iterate through the commits to pull and add them to the database.
+			// Iterate through the commits to pull and add them to the database.
 			foreach ( $commits_since as $commit ) {
 				$commit_hash = substr( $commit, 0, 7 );
 				$commit_msg = substr( $commit, 40 );
@@ -206,7 +209,7 @@ class Revisr_Process {
 				}
 			}
 		}
-		//Pull the changes or return an error on failure.
+		// Pull the changes or return an error on failure.
 		$this->git->pull();
 	}
 	

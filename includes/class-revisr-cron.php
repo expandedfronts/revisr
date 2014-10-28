@@ -43,7 +43,7 @@ class Revisr_Cron {
 	 * @param array $schedules An array of available schedules.
 	 */
 	public function revisr_schedules( $schedules ) {
-		//Adds weekly backups
+		// Adds weekly backups
 		$schedules['weekly'] = array(
 			'interval' => 604800,
 			'display'  => __( 'Weekly', 'revisr' )
@@ -60,7 +60,7 @@ class Revisr_Cron {
 		$files 			= $this->git->status();
 		$backup_type 	= ucfirst( $this->options['automatic_backups'] );
 		$commit_msg 	= sprintf( __( '%s backup - %s', 'revisr' ), $backup_type, $date );
-		//In case there are no files to commit.
+		// In case there are no files to commit.
 		if ( $files == false ) {
 			$files = array();
 		}

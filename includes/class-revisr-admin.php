@@ -10,6 +10,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Revisr_Admin {
 
 	/**
@@ -216,7 +219,7 @@ class Revisr_Admin {
 					<p><strong><?php _e( 'Staged Files', 'revisr' ); ?></strong></p>
 					<select id='staged' multiple="multiple" name="staged_files[]" size="6">
 					<?php
-					//Clean up output from git status and echo the results.
+					// Clean up output from git status and echo the results.
 					foreach ( $output as $result ) {
 						$short_status = substr( $result, 0, 3 );
 						$file = substr( $result, 3 );
