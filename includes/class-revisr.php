@@ -65,6 +65,7 @@ class Revisr {
 		require_once REVISR_PATH . 'includes/class-revisr-git-callback.php';
 		require_once REVISR_PATH . 'includes/class-revisr-cron.php';
 		require_once REVISR_PATH . 'includes/class-revisr-settings.php';
+		require_once REVISR_PATH . 'includes/class-revisr-settings-fields.php';
 	}
 
 	/**

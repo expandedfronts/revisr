@@ -409,11 +409,15 @@ class Revisr_Git {
 	 * @param  string 	$args 			Optional additional arguements to pass to the callback.
 	 */
 	public function run( $command, $callback = '', $args = '' ) {
+		
+		//Run the actual Git command.
 		$cmd = "git $command";
 		$dir = getcwd();
 		chdir( $this->dir );
 		exec( $cmd, $output, $error );
 		chdir( $dir );
+		
+		//If using a callback, initiate the callback class and call the function.
 		if ( $callback != '' ) {
 			$response 			= new Revisr_Git_Callback;
 			$success_callback 	= 'success_' . $callback;
@@ -424,6 +428,8 @@ class Revisr_Git {
 				return $response->$success_callback( $output, $args );
 			}
 		}
+
+		//If not using a callback, return the output (or false on failure).
 		if ( ! $error ) {
 			return $output;
 		} else {
