@@ -40,7 +40,7 @@ class Revisr_Settings_Fields {
 	 * Checks if a setting has been saved and is not empty.
 	 * Used to determine if we should update the .git/config.
 	 * @access private
-	 * @param  string The option to check.
+	 * @param  string $option The option to check.
 	 * @return boolean
 	 */
 	private function is_updated( $option ) {
@@ -114,6 +114,16 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function gitignore_callback() {
+		// Write the updated setting to the .gitignore.
+		if ( $this->is_updated( 'gitignore' ) ) {
+			chdir( ABSPATH );
+			file_put_contents( '.gitignore', $this->options['gitignore'] );
+			$this->git->run( 'add .gitignore' );
+			$commit_msg = __( 'Updated .gitignore.', 'revisr' );
+			$this->git->run("commit -m \"$commit_msg\"");
+			$this->git->auto_push();
+		}
+		
 		chdir( ABSPATH );
 		if ( isset( $this->options['gitignore'] ) ) {
 			$gitignore = $this->options['gitignore'];
@@ -128,16 +138,6 @@ class Revisr_Settings_Fields {
             $gitignore,
             __( 'Add files or directories that you don\'t want to show up in Git here, one per line.<br>This will update the ".gitignore" file for this repository.', 'revisr' )
 		);
-
-		// Write the updated setting to the .gitignore.
-		if ( $this->is_updated( 'gitignore' ) ) {
-			chdir( ABSPATH );
-			file_put_contents( '.gitignore', $this->options['gitignore'] );
-			$this->git->run( 'add .gitignore' );
-			$commit_msg = __( 'Updated .gitignore.', 'revisr' );
-			$this->git->run("commit -m \"$commit_msg\"");
-			$this->git->auto_push();
-		}
 	}
 
 	/**
@@ -312,6 +312,37 @@ class Revisr_Settings_Fields {
 			}
 		}
 		echo '</select></div>';		
+	}
+
+	/**
+	 * Displays/updates the "Development URL" settings field.
+	 * NOTE: DO NOT USE THE OPTION AS STORED IN THE DATABASE!
+	 * @access public
+	 */
+	public function development_url_callback() {
+		// Allow the user to unset the dev URL.
+		if ( isset( $_GET['settings-updated'] ) ) {
+			if ( isset( $this->options['development_url'] ) && $this->options['development_url'] != '' ) {
+				$this->git->config_revisr_url( 'dev', $this->options['development_url'] );
+			} else {
+				$this->git->run( 'config --unset revisrurl.dev' );
+			}
+		}
+
+		// Grab the URL from the .git/config as it will be replaced in the database.
+		$get_url = $this->git->config_revisr_url( 'dev' );
+		if ( is_array( $get_url ) ) {
+			$dev_url = $get_url[0];
+		} else {
+			$dev_url = '';
+		}
+
+		printf(
+			'<input type="text" id="development_url" name="revisr_database_settings[development_url]" class="regular-text" value="%s" />
+			<br><p class="description">%s</p>',
+			$dev_url,
+			__( 'If you\'re importing the database from a separate environment, enter the URL for the development environment here and it will be replaced in the databse during import.', 'revisr' )
+		);
 	}
 
 	/**
