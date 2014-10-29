@@ -17,7 +17,7 @@ class Revisr_Settings {
 	
 	/**
 	 * The Settings callback class.
-	 * @var Revisr_Settings_Fieldsk()
+	 * @var Revisr_Settings_Fields()
 	 */
 	public $settings_fields;
 

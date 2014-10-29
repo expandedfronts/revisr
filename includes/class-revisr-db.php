@@ -70,10 +70,11 @@ class Revisr_DB {
 		$this->upload_dir 	= wp_upload_dir();
 		$this->options 		= Revisr::get_options();
 
-		if ( isset( $this->options['mysql_path'] ) ) {
-			$this->path = $this->options['mysql_path'];
-		} elseif ( $path != '' ) {
-			$this->path = $path;
+		$get_path = $this->git->config_revisr_path( 'mysql' );
+		if ( is_array( $get_path ) ) {
+			$this->path = $get_path[0];
+		} else {
+			$this->path = '';
 		}
 
 		$this->setup_env();

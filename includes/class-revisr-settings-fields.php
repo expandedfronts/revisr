@@ -322,7 +322,7 @@ class Revisr_Settings_Fields {
 	public function development_url_callback() {
 		// Allow the user to unset the dev URL.
 		if ( isset( $_GET['settings-updated'] ) ) {
-			if ( isset( $this->options['development_url'] ) && $this->options['development_url'] != '' ) {
+			if ( $this->is_updated( 'development_url' ) ) {
 				$this->git->config_revisr_url( 'dev', $this->options['development_url'] );
 			} else {
 				$this->git->run( 'config --unset revisrurl.dev' );
@@ -341,7 +341,7 @@ class Revisr_Settings_Fields {
 			'<input type="text" id="development_url" name="revisr_database_settings[development_url]" class="regular-text" value="%s" />
 			<br><p class="description">%s</p>',
 			$dev_url,
-			__( 'If you\'re importing the database from a separate environment, enter the URL for the development environment here and it will be replaced in the databse during import.', 'revisr' )
+			__( 'If you\'re importing the database from a separate environment, enter the URL for the development environment here and it will be replaced in the database during import.', 'revisr' )
 		);
 	}
 
@@ -350,10 +350,24 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function mysql_path_callback() {
+		if ( isset( $_GET['settings-updated'] ) ) {
+			if ( $this->is_updated( 'mysql_path' ) ) {
+				$this->git->config_revisr_path( 'mysql', $this->options['mysql_path'] );
+			} else {
+				$this->git->run( 'config --unset revisrpath.mysql' );
+			}
+		}
+
+		$get_path = $this->git->config_revisr_path( 'mysql' );
+		if ( is_array( $get_path) ) {
+			$mysql_path = $get_path[0];
+		} else {
+			$mysql_path = '';
+		}
 		printf(
 			'<input type="text" id="mysql_path" name="revisr_database_settings[mysql_path]" value="%s" class="regular-text" placeholder="" />
 			<br><p class="description">%s</p>',
-			isset( $this->options['mysql_path'] ) ? esc_attr( $this->options['mysql_path']) : '',
+			$mysql_path,
 			__( 'Leave blank if the full path to MySQL has already been set on the server. Some possible settings include:
 			<br><br>For MAMP: /Applications/MAMP/Library/bin/<br>
 			For WAMP: C:\wamp\bin\mysql\mysql5.6.12\bin\ ', 'revisr' )
