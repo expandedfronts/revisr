@@ -37,10 +37,10 @@ class Revisr_Admin {
 	 * Initialize the class.
 	 * @access public
 	 */
-	public function __construct( $options ) {
+	public function __construct() {
 		$this->db 		= new Revisr_DB();
 		$this->git 		= new Revisr_Git();
-		$this->options 	= $options;
+		$this->options 	= Revisr::get_options();
 	}
 
 	/**

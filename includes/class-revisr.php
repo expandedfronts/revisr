@@ -86,7 +86,7 @@ class Revisr {
 	 * @access private
 	 */
 	private function admin_hooks() {
-		$revisr_admin 	= new Revisr_Admin( $this->options );
+		$revisr_admin 	= new Revisr_Admin();
 		$revisr_git 	= new Revisr_Git();
 		add_action( 'wp_ajax_render_alert', array( $revisr_admin, 'render_alert' ) );
 		add_action( 'wp_ajax_ajax_button_count', array( $revisr_admin, 'ajax_button_count' ) );
