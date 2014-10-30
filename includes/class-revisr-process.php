@@ -172,8 +172,10 @@ class Revisr_Process {
 		$from_dash = check_ajax_referer( 'dashboard_nonce', 'security', false );
 		if ( $from_dash == false ) {
 			if ( ! isset( $this->options['auto_pull'] ) ) {
-				wp_die( __( 'You are not authorized to perform this action.', 'revisr' ) );
+				wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 			}
+			$remote = new Revisr_Remote();
+			$remote->check_token();
 		}
 
 		$this->git->reset();

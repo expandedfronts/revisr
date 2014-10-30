@@ -13,27 +13,48 @@
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Revisr_Remote {
+class Revisr_Remote extends Revisr_Admin {
+
 
 	/**
-	 * User options and preferences.
-	 * @var array
-	 */
-	protected $options;
-
-	/**
-	 * The URL of the live instance.
-	 * @var string
-	 */
-	protected $url;
-
-	/**
-	 * Initialize the class and get things going.
+	 * Returns the current token, creating one if it does not exist.
 	 * @access public
+	 * @return string|array The token, or false on complete failure.
 	 */
-	public function __construct() {
-		$this->options 	= Revisr::get_options();
-		$this->url 		= $this->get_live_url();
+	public function get_token() {
+		$check = $this->git->run( 'config revisr.token' );
+
+		if ( $check === false ) {
+			$token = wp_generate_password( 16, false, false );
+			$save  = $this->git->run( "config revisr.token $token" );
+
+			if ( $save !== false ) {
+				return $token;
+			} else {
+				return false;
+			}
+		} elseif ( is_array( $check ) ) {
+			return $check[0];
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Verifies a token is valid.
+	 * @access public
+	 * @return boolean
+	 */
+	public function check_token() {
+		if ( isset( $_REQUEST['token'] ) ) {
+			$safe_token = $this->git->run( 'config revisr.token' );
+			if ( is_array( $safe_token ) ) {
+				if ( $safe_token[0] === $_REQUEST['token'] ) {
+					return true;
+				}
+			}			
+		}
+		wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 	}
 
 	/**
@@ -54,11 +75,10 @@ class Revisr_Remote {
 	 * @access public
 	 */
 	public function send_request() {
-		$db 	= new Revisr_DB();
 		$body 	= array(
 			'dev_url' 		=> site_url(),
 			'action' 		=> 'revisr_update',
-			'tables' 		=> $db->get_tracked_tables(),
+			'tables' 		=> $this->db->get_tracked_tables(),
 			'import_db' 	=> true,
 			'new_branch' 	=> false
 		);

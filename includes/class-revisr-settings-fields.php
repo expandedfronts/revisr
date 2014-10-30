@@ -237,14 +237,14 @@ class Revisr_Settings_Fields {
 	}
 
 	/**
-	 * Displays/updates the "Live URL" settings field.
+	 * Displays/updates the "Update URL" settings field.
 	 * @access public
 	 */
-	public function live_url_callback() {
+	public function update_url_callback() {
 		printf(
 			'<input type="text" name="revisr_general_settings[live_url]" value="%s" class="regular-text" placeholder="http://www.example.com" /><br><span class="description">%s</span>',
 			isset( $this->options['live_url'] ) ? esc_attr( $this->options['live_url'] ) : '',
-			__( 'If this is a test environment for a live site, add the WordPress \'Site URL\' for the live site here to automatically push changes to this URL.', 'revisr' )
+			__( 'If you have Revisr installed on another server using the same repository,<br> you can add the "Revisr Update URL" for that instance here to trigger an update with every push.', 'revisr' )
 		);
 	}
 
@@ -272,11 +272,20 @@ class Revisr_Settings_Fields {
 			isset( $this->options['auto_pull'] ) ? "checked" : '',
 			__( 'Check to allow Revisr to automatically pull commits from Bitbucket or Github.', 'revisr' )
 		);
-		$post_hook = get_admin_url() . 'admin-post.php?action=revisr_update';
-		printf( 
-			__( '<br><br><span id="post-hook" class="description">You will need to add the following POST hook to Bitbucket/GitHub:<br><input id="post-hook-input" type="text" value="%s" disabled /></span>', 'revisr'), 
-			$post_hook 
-		);		
+		$remote 	= new Revisr_Remote();
+		$token 		= $remote->get_token();
+
+		if ( $token ) {
+			$post_hook 	= get_admin_url() . 'admin-post.php?action=revisr_update&token=' . $remote->get_token();
+			printf( 
+				__( '<br><br><span id="post-hook" class="description">You will need to add the following POST hook to Bitbucket/GitHub:<br><input id="post-hook-input" type="text" value="%s" disabled /></span>', 'revisr'), 
+				$post_hook 
+			);	
+		}
+		else {
+			echo '<p id="post-hook" class="description">' . __( 'There was an error generating the webhook. Please make sure that Revisr has write access to the ".git/config" and try again.', 'revisr' ) . '</p>';
+		}
+	
 	}			
 
 	/**
@@ -380,11 +389,14 @@ class Revisr_Settings_Fields {
 	 */
 	public function reset_db_callback() {
 		printf(
-			'<input type="checkbox" id="reset_db" name="revisr_database_settings[reset_db]" %s />
+			'<input type="checkbox" id="reset_db" name="revisr_database_settings[reset_db]" %s /><label for="reset_db">%s</label><br><br>
+			<input type="checkbox" id="import_db" name="revisr_database_settings[import_db]" %s /><label for="import_db">%s</label><br><br>
 			<p class="description">%s</p>',
 			isset( $this->options['reset_db'] ) ? "checked" : '',
-			__( 'When switching to a different branch, should Revisr automatically restore the latest database backup for that branch?<br>
-			If enabled, the database will be automatically backed up before switching branches.', 'revisr' )
+			__( 'Import database when changing branches?', 'revisr' ),
+			isset( $this->options['import_db'] ) ? "checked" : '',
+			__( 'Import database when pulling commits?', 'revisr' ),
+			__( 'If checked, Revisr will automatically import the tracked tables and run any necessary find/replaces. Useful if using Revisr accross multiple environments.', 'revisr' )
 		);		
 	}
 }
