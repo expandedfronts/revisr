@@ -1,7 +1,7 @@
 === Revisr ===
 Contributors: ExpandedFronts
 Tags: revisr, git, git management, revision tracking, revision, backup, database, database backup, database plugin, deploy, commit, bitbucket, github
-Requires at least: 3.5.1
+Requires at least: 3.7
 Tested up to: 4.0
 Stable tag: trunk
 License: GPLv3
@@ -17,7 +17,7 @@ Revisr allows you to manage your WordPress website with a Git repository. With R
 * Commit changes from within the WordPress dashboard
 * Backup or restore your entire website in seconds
 * Set up daily or weekly automatic backups
-* Optionally push or pull changes to a remote repository, like Bitbucket or Github.
+* Optionally push or pull changes to a remote repository, like Bitbucket or Github
 * Test changes out before deploying them
 * Revert your website files and/or database to an earlier version
 * Quickly discard any unwanted changes
@@ -94,6 +94,15 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 
 == Changelog ==
+= 1.8 =
+* Added ability to track individual database tables
+* Added ability to import tracked database tables while pulling changes
+* Added ability to run a safe search/replace on the database during import to support multiple environments (supports serialization)
+* Added unique token to the webhook to improve security (existing webhooks will need to be updated)
+* Added fallback to the WordPress database class if mysqldump is not available
+* Added "Debug" settings panel to improve troubleshooting
+* Moved backups to 'wp-content/uploads/revisr-backups/' (path may vary)
+
 = 1.7.2 =
 * Tweaked permissions check to only check permissions if repository exists.
 

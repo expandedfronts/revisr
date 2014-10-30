@@ -123,9 +123,9 @@ class Revisr_Settings {
             'revisr_remote_settings'
         );
         add_settings_field(
-        	'live_url',
-        	__( 'Live Site URL', 'revisr' ),
-        	array( $this->settings_fields, 'live_url_callback' ),
+        	'update_url',
+        	__( 'Revisr Update URL', 'revisr' ),
+        	array( $this->settings_fields, 'update_url_callback' ),
         	'revisr_remote_settings',
         	'revisr_remote_settings'
     	);
@@ -166,7 +166,7 @@ class Revisr_Settings {
     	);
     	add_settings_field(
     		'reset_db',
-    		__( 'Reset database when changing branches?', 'revisr' ),
+    		__( 'Import Options', 'revisr' ),
     		array( $this->settings_fields, 'reset_db_callback' ),
     		'revisr_database_settings',
     		'revisr_database_settings'

@@ -476,7 +476,6 @@ class Revisr_Git {
 
 	/**
 	 * Syncs with a remote branch.
-	 * TODO: RENAME ONCE STRATEGY DETERMINED
 	 * @access public
 	 */
 	public function sync_remote() {
