@@ -29,9 +29,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		?>
 
 		<h2 class="nav-tab-wrapper">
-		    <a href="?page=revisr_settings&tab=general_settings" class="nav-tab <?php echo $active_tab == 'general_settings' ? 'nav-tab-active' : ''; ?>">General</a>
-		    <a href="?page=revisr_settings&tab=remote_settings" class="nav-tab <?php echo $active_tab == 'remote_settings' ? 'nav-tab-active' : ''; ?>">Remote Repository</a>
-		    <a href="?page=revisr_settings&tab=database_settings" class="nav-tab <?php echo $active_tab == 'database_settings' ? 'nav-tab-active' : ''; ?>">Database</a>
+		    <a href="?page=revisr_settings&tab=general_settings" class="nav-tab <?php echo $active_tab == 'general_settings' ? 'nav-tab-active' : ''; ?>"><?php _e( 'General', 'revisr' ); ?></a>
+		    <a href="?page=revisr_settings&tab=remote_settings" class="nav-tab <?php echo $active_tab == 'remote_settings' ? 'nav-tab-active' : ''; ?>"><?php _e( 'Remote', 'revisr' ); ?></a>
+		    <a href="?page=revisr_settings&tab=database_settings" class="nav-tab <?php echo $active_tab == 'database_settings' ? 'nav-tab-active' : ''; ?>"><?php _e( 'Database', 'revisr' ); ?></a>
 		</h2>
 		
 		<form class="settings-form" method="post" action="options.php">
