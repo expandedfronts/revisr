@@ -443,21 +443,27 @@ class Revisr_Git {
 	 * @param  array $staged_files The files to add/remove
 	 */
 	public function stage_files( $staged_files ) {
+		$errors = array();
+		
 		foreach ( $staged_files as $result ) {
 			$file 	= substr( $result, 3 );
 			$status = Revisr_Git::get_status( substr( $result, 0, 2 ) );
 			
 			if ( $status == __( 'Deleted', 'revisr' ) ) {
 				if ( $this->run( "rm {$file}" ) === false ) {
-					$error = sprintf( __( 'Error removing "%s" from the repository.', 'revisr' ), $file );
-					Revisr_Admin::log( $error, 'error' );
+					$errors[] = $file;
 				}
 			} else {
 				if ( $this->run( "add {$file}" ) === false ) {
-					$error = sprintf( __( 'Error adding "%s" to the repository.', 'revisr' ), $file );
-					Revisr_Admin::log( $error, 'error' );
+					$errors[] = $file;
 				}
 			}
+		}
+
+		if ( ! empty( $errors ) ) {
+			$msg = __( 'There was an error staging the files. Please check the settings and try again.', 'revisr' );
+			Revisr_Admin::alert( $msg, true );
+			Revisr_Admin::log( __( 'Error staging files.', 'revisr' ), 'error' );
 		}
 	}	
 
