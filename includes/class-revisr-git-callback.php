@@ -199,7 +199,7 @@ class Revisr_Git_Callback extends Revisr_Git {
 			$msg = sprintf( _n( 'Successfully pulled %s commit from %s/%s.', 'Successfully pulled %s commits from %s/%s.', $args, 'revisr' ), $args, $this->remote, $this->branch );
 			Revisr_Admin::alert( $msg );
 
-			if ( isset( $_POST['import_db'] ) && $_POST['import_db'] == true ) {
+			if ( isset( $this->options['import_db'] ) ) {
 				$db = new Revisr_DB();
 				$db->run( 'import', $db->get_tracked_tables(), $this->config_revisr_url( 'dev' ) );
 			}
