@@ -48,14 +48,18 @@ jQuery(document).ready(function($) {
 	});
 
 	var url = document.URL;
-	var empty_title = url.indexOf("message=42");
+	var empty_title  = url.indexOf("message=42");
     var empty_commit = url.indexOf("message=43");
+    var error_commit = url.indexOf("message=44");
 
 	if ( empty_title != "-1" ) {
-		document.getElementById('message').innerHTML = "<div class='error'><p>Please enter a message for your commit.</p></div>";
+		document.getElementById('message').innerHTML = "<div class='error'><p>" + pending_vars.empty_title_msg + "</p></div>";
 	}
     if ( empty_commit != "-1" ) {
-        document.getElementById('message').innerHTML = "<div class='error'><p>Nothing was added to the commit. Please use the section below to add files to be included in the commit.</p></div>";
+        document.getElementById('message').innerHTML = "<div class='error'><p>" + pending_vars.empty_commit_msg + "</p></div>";
+    }
+    if ( error_commit != "-1" ) {
+        document.getElementById('message').innerHTML = "<div class='error'><p>" + pending_vars.error_commit_msg + "</p></div>";
     }
 
     $("#publish").click(function() {  
@@ -71,6 +75,6 @@ jQuery(document).on("dblclick", ".pending", function () {
     var status  = pending.substr(0, 3);
     if ( status === " M " ) {
         var file = ajaxurl + "?action=view_diff&file=" + pending.substr(3);
-        tb_show("View Diff", file);
+        tb_show(pending_vars.view_diff, file);
     }
 });

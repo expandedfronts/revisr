@@ -79,6 +79,8 @@ class Revisr_Git_Callback extends Revisr_Git {
 	public function null_commit( $output = '', $args = '' ) {
 		$msg = __( 'Error committing the changes to the local repository.', 'revisr' );
 		Revisr_Admin::log( $msg, 'error' );
+		$url = get_admin_url() . 'post-new.php?post_type=revisr_commits&message=44';
+		wp_redirect( $url );
 	}
 
 	/**
