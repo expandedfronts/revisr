@@ -120,6 +120,7 @@ class Revisr {
 	 */
 	private function revisr_process_hooks() {
 		$revisr_process = new Revisr_Process();
+		add_action( 'init', array( $revisr_process, 'process_is_repo' ) );
 		add_action( 'publish_revisr_commits', array( $revisr_process, 'process_commit' ) );
 		add_action( 'admin_post_process_checkout', array( $revisr_process, 'process_checkout' ) );
 		add_action( 'admin_post_process_create_branch', array( $revisr_process, 'process_create_branch' ) );

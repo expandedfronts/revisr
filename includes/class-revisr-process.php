@@ -44,6 +44,23 @@ class Revisr_Process {
 	}
 
 	/**
+	 * Checks if a the current WordPress site is a repository,
+	 * and returns a link to create a new repository if not.
+	 * @access public
+	 * @return boolean
+	 */
+	public function process_is_repo() {
+		if ( $this->git->is_repo() ) {
+			return true;
+		} else {
+			$init_url 	= wp_nonce_url( get_admin_url() . 'admin-post.php?action=init_repo', 'init_repo', 'revisr_init_nonce' );
+			$alert 		= sprintf( __( 'Thanks for installing Revisr! No Git repository was detected, <a href="%s">click here</a> to create one.', 'revisr' ), $init_url );
+			Revisr_Admin::alert( $alert );
+		}
+		return false;
+	}
+
+	/**
 	 * Processes the request to checkout an existing branch.
 	 * @access public
 	 */
@@ -149,7 +166,10 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_init() {
-
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_init_nonce'], 'init_repo' ) ) {
+			wp_die( 'Cheatin&#8217; uh?', 'revisr' );
+		}
+		$this->git->init_repo();
 	}
 	
 	/**

@@ -208,9 +208,6 @@ class Revisr_Git {
 		if ( $dir ) {
 			return $dir;
 		} else {
-			$url 	= get_admin_url() . 'admin-post.php?action=init_repo';
-			$alert 	= sprintf( __( 'Thanks for installing Revisr! No Git repository was detected, <a href="%s">click here</a> to create one.', 'revisr' ), $url );
-			Revisr_Admin::alert( $alert );
 			return ABSPATH;
 		}
 	}

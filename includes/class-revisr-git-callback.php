@@ -133,7 +133,6 @@ class Revisr_Git_Callback extends Revisr_Git {
 	 */
 	public function success_init_repo() {
 		Revisr_Admin::clear_transients();
-		Revisr_Admin::log( __( 'Initialized a new repository.', 'revisr' ), 'init' );
 		if ( isset( $this->options['username'] ) && $this->options['username'] != "" ) {
 			$this->config_user_name( $this->options['username'] );
 		}
