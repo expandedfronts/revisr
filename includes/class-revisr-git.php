@@ -115,7 +115,7 @@ class Revisr_Git {
 	 * @param  string $url The URL to store.
 	 */
 	public function config_revisr_url( $env, $url = '' ) {
-		$revisr_url = $this->run( "config revisrurl.$env $url" );
+		$revisr_url = $this->run( "config revisr.$env-url $url" );
 		return $revisr_url;
 	}
 
@@ -126,7 +126,7 @@ class Revisr_Git {
 	 * @param  string $path 	The path to store.
 	 */
 	public function config_revisr_path( $service, $path = '' ) {
-		$revisr_path = $this->run( "config revisrpath.$service $path" );
+		$revisr_path = $this->run( "config revisr.$service-path $path" );
 		return $revisr_path;
 	}
 
