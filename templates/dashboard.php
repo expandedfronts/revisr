@@ -15,7 +15,10 @@ $git 		= new Revisr_Git();
 $loader_url = REVISR_URL . 'assets/img/loader.gif';
 wp_enqueue_script( 'revisr_dashboard' );
 wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
-	'ajax_nonce' => wp_create_nonce( 'dashboard_nonce' ),
+	'ajax_nonce' 	=> wp_create_nonce( 'dashboard_nonce' ),
+	'discard_msg' 	=> __( 'Are you sure you want to discard your uncommitted changes?', 'revisr' ),
+	'push_msg' 		=> __( 'Are you sure you want to discard your uncommitted changes and push to the remote?', 'revisr' ),
+	'pull_msg' 		=> __( 'Are you sure you want to discard your uncommitted changes and pull from the remote?', 'revisr' ),
 	)
 );
 ?>
