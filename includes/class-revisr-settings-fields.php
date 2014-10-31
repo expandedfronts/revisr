@@ -183,7 +183,7 @@ class Revisr_Settings_Fields {
 	public function notifications_callback() {
 		printf(
 			'<input type="checkbox" id="notifications" name="revisr_general_settings[notifications]" %s />
-			<span class="description">%s</span>',
+			<label for="notifications"><span class="description">%s</span></span>',
 			isset( $this->options['notifications'] ) ? "checked" : '',
 			__( 'Enabling notifications will send updates about new commits, pulls, and pushes to the email address above.', 'revisr' )
 		);
@@ -207,9 +207,11 @@ class Revisr_Settings_Fields {
 		}
 
 		// Sets the remote name and/or URL if necessary.
-		$add = $this->git->run( "remote add $remote_name {$this->options['remote_url']}" );
-		if ( $add == false ) {
-			$this->git->run( "remote set-url $remote_name {$this->options['remote_url']}" );
+		if ( isset( $this->options['remote_url'] ) ) {
+			$add = $this->git->run( "remote add $remote_name {$this->options['remote_url']}" );
+			if ( $add == false ) {
+				$this->git->run( "remote set-url $remote_name {$this->options['remote_url']}" );
+			}			
 		}
 	}
 
