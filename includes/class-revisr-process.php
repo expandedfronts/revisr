@@ -79,7 +79,7 @@ class Revisr_Process {
 		$this->git->checkout( $branch );
 		
 		if ( isset( $this->options['reset_db'] ) && $new_branch === false ) {
-			$this->db->run( 'import', $this->db->get_tracked_tables() );
+			$this->db->run( 'import', $this->db->get_tracked_tables(), $this->git->config_revisr_url( 'dev' ) );
 		}
 		$url = get_admin_url() . 'admin.php?page=revisr';
 		wp_redirect( $url );
@@ -179,7 +179,7 @@ class Revisr_Process {
 	public function process_merge() {
 		$this->git->merge( $_REQUEST['branch'] );
 		if ( isset( $_REQUEST['import_db'] ) && $_REQUEST['import_db'] == 'on' ) {
-			$this->db->run( 'import', $this->db->get_tracked_tables() );
+			$this->db->run( 'import', $this->db->get_tracked_tables(), $this->git->config_revisr_url( 'dev' ) );
 		}
 	}
 	

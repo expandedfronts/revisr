@@ -314,7 +314,7 @@ class Revisr_DB {
 		if ( $mysql = exec( 'which mysql' ) ) {
 			$conn = $this->build_conn();
 			exec( "{$mysql} {$conn} < revisr_$table.sql" );
-			if ( $replace_url != '' ) {
+			if ( $replace_url !== '' && $replace_url !== false ) {
 				$this->revisr_srdb( $table, $replace_url, $live_url );
 			}
 			return true;
