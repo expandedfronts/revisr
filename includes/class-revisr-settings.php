@@ -123,9 +123,9 @@ class Revisr_Settings {
             'revisr_remote_settings'
         );
         add_settings_field(
-        	'update_url',
-        	__( 'Revisr Update URL', 'revisr' ),
-        	array( $this->settings_fields, 'update_url_callback' ),
+        	'webhook_url',
+        	__( 'Revisr Webhook URL', 'revisr' ),
+        	array( $this->settings_fields, 'webhook_url_callback' ),
         	'revisr_remote_settings',
         	'revisr_remote_settings'
     	);

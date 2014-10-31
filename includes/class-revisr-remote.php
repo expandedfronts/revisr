@@ -76,11 +76,7 @@ class Revisr_Remote extends Revisr_Admin {
 	 */
 	public function send_request() {
 		$body 	= array(
-			'dev_url' 		=> site_url(),
-			'action' 		=> 'revisr_update',
-			'tables' 		=> $this->db->get_tracked_tables(),
-			'import_db' 	=> true,
-			'new_branch' 	=> false
+			'action' 		=> 'revisr_update'
 		);
 		$args 	= array(
 			'method' 		=> 'POST',
@@ -91,12 +87,18 @@ class Revisr_Remote extends Revisr_Admin {
 			'headers'		=> array(),
 			'body'			=> $body
 		);
-		$request = wp_remote_post( $this->url, $args );
 
-		if ( is_wp_error( $request ) ) {
-			Revisr_Admin::log( __( 'Push request to live failed.', 'revisr' ), 'error' );
-		} else {
-			Revisr_Admin::log( __( 'Push request to live successful.', 'revisr' ), 'push' );
+		// Get the URL and send the request.
+		$get_url = $this->git->config_revisr_url( 'webhook' );
+		
+		if ( is_array( $get_url ) ) {
+			$webhook = $get_url[0];
+			$request = wp_remote_post( $this->url, $args );
+			if ( is_wp_error( $request ) ) {
+				Revisr_Admin::log( __( 'Error contacting webhook URL.', 'revisr' ), 'error' );
+			} else {
+				Revisr_Admin::log( __( 'Sent update request to the stored webhook.', 'revisr' ), 'push' );
+			}
 		}
 	}
 }

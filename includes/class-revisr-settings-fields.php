@@ -237,14 +237,30 @@ class Revisr_Settings_Fields {
 	}
 
 	/**
-	 * Displays/updates the "Update URL" settings field.
+	 * Displays/updates the "Revisr Webhook URL" settings field.
 	 * @access public
 	 */
-	public function update_url_callback() {
+	public function webhook_url_callback() {
+		// Allow the user to unset the Webhook URL.
+		if ( isset( $_GET['settings-updated'] ) ) {
+			if ( $this->is_updated( 'webhook_url' ) ) {
+				$this->git->config_revisr_url( 'webhook', $this->options['webhook_url'] );
+			} else {
+				$this->git->run( 'config --unset revisr.webhook-url' );
+			}
+		}
+
+		// Grab the URL from the .git/config as it MAY be replaced in the database.
+		$get_url = $this->git->config_revisr_url( 'webhook' );
+		if ( is_array( $get_url ) ) {
+			$webhook_url = $get_url[0];
+		} else {
+			$webhook_url = '';
+		}
 		printf(
-			'<input type="text" name="revisr_general_settings[live_url]" value="%s" class="regular-text" placeholder="http://www.example.com" /><br><span class="description">%s</span>',
-			isset( $this->options['live_url'] ) ? esc_attr( $this->options['live_url'] ) : '',
-			__( 'If you have Revisr installed on another server using the same repository,<br> you can add the "Revisr Update URL" for that instance here to trigger an update with every push.', 'revisr' )
+			'<input type="text" name="revisr_remote_settings[webhook_url]" value="%s" class="regular-text" /><br><span class="description">%s</span>',
+			$webhook_url,
+			__( 'If you have Revisr installed on another server using the same repository,<br> you can add the Revisr Webhook from that server here to trigger an update when pushing.', 'revisr' )
 		);
 	}
 
@@ -255,9 +271,9 @@ class Revisr_Settings_Fields {
 	public function auto_push_callback() {
 		printf(
 			'<input type="checkbox" id="auto_push" name="revisr_remote_settings[auto_push]" %s />
-			<span class="description">%s</span>',
+			<label for="auto_push">%s</label>',
 			isset( $this->options['auto_push'] ) ? "checked" : '',
-			__( 'If checked, Revisr will automatically push new commits to the remote repository.', 'revisr' )
+			__( 'Check to automatically push new commits to the remote repository.', 'revisr' )
 		);		
 	}
 
@@ -268,19 +284,25 @@ class Revisr_Settings_Fields {
 	public function auto_pull_callback() {
 		printf(
 			'<input type="checkbox" id="auto_pull" name="revisr_remote_settings[auto_pull]" %s />
-			<span class="description">%s</span>',
+			<label for="auto_pull">%s</label>',
 			isset( $this->options['auto_pull'] ) ? "checked" : '',
-			__( 'Check to allow Revisr to automatically pull commits from Bitbucket or Github.', 'revisr' )
+			__( 'Check to allow Revisr to automatically pull commits from a remote repository.', 'revisr' )
 		);
 		$remote 	= new Revisr_Remote();
 		$token 		= $remote->get_token();
 
 		if ( $token ) {
 			$post_hook 	= get_admin_url() . 'admin-post.php?action=revisr_update&token=' . $remote->get_token();
-			printf( 
-				__( '<br><br><span id="post-hook" class="description">You will need to add the following POST hook to Bitbucket/GitHub:<br><input id="post-hook-input" type="text" value="%s" disabled /></span>', 'revisr'), 
-				$post_hook 
-			);	
+
+			// Display the generated webhook.
+			printf(
+				'<br><br><span id="post-hook" class="description">%s<br>
+				<input id="post-hook-input" type="text" value="%s" disabled /><br>
+				<br>%s</span>',
+				__( 'Revisr Webhook:', 'revisr' ),
+				$post_hook,
+				__( 'You can add the above webhook to Bitbucket, GitHub, or another instance of Revisr to automatically update this repository.', 'revisr' )
+			);
 		}
 		else {
 			echo '<p id="post-hook" class="description">' . __( 'There was an error generating the webhook. Please make sure that Revisr has write access to the ".git/config" and try again.', 'revisr' ) . '</p>';
@@ -334,7 +356,7 @@ class Revisr_Settings_Fields {
 			if ( $this->is_updated( 'development_url' ) ) {
 				$this->git->config_revisr_url( 'dev', $this->options['development_url'] );
 			} else {
-				$this->git->run( 'config --unset revisrurl.dev' );
+				$this->git->run( 'config --unset revisr.dev-url' );
 			}
 		}
 
@@ -363,7 +385,7 @@ class Revisr_Settings_Fields {
 			if ( $this->is_updated( 'mysql_path' ) ) {
 				$this->git->config_revisr_path( 'mysql', $this->options['mysql_path'] );
 			} else {
-				$this->git->run( 'config --unset revisrpath.mysql' );
+				$this->git->run( 'config --unset revisr.mysql-path' );
 			}
 		}
 
