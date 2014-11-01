@@ -316,8 +316,15 @@ class Revisr_DB {
 			Revisr_Admin::log( $msg, 'error' );
 			return false;
 		}
-		// Try to pass the file directly to MySQL.
+		// Try to pass the file directly to MySQL, fallback to user-defined path, then to WPDB.
 		if ( $mysql = exec( 'which mysql' ) ) {
+			$conn = $this->build_conn( $table );
+			exec( "{$mysql} {$conn} < revisr_$table.sql" );
+			if ( $replace_url !== '' && $replace_url !== false ) {
+				$this->revisr_srdb( $table, $replace_url, $live_url );
+			}
+			return true;
+		} elseif ( $mysql = exec( "which {$this->path}mysql" ) ) {
 			$conn = $this->build_conn( $table );
 			exec( "{$mysql} {$conn} < revisr_$table.sql" );
 			if ( $replace_url !== '' && $replace_url !== false ) {
