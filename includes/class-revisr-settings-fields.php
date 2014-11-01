@@ -315,8 +315,8 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function tracked_tables_callback() {
-		if ( isset( $this->options['tracked_tables'] ) ) {
-			$db_tracking = $this->options['tracked_tables'];
+		if ( isset( $this->options['db_tracking'] ) ) {
+			$db_tracking = $this->options['db_tracking'];
 		} else {
 			$db_tracking = '';
 		}

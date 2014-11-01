@@ -312,11 +312,13 @@ class Revisr_DB {
 		$live_url = site_url();
 		// Only import if the file exists and is valid.
 		if ( $this->verify_backup( $table ) == false ) {
+			$msg = sprintf( __( 'Backup table not found: %s', 'revisr' ), $table );
+			Revisr_Admin::log( $msg, 'error' );
 			return false;
 		}
 		// Try to pass the file directly to MySQL.
 		if ( $mysql = exec( 'which mysql' ) ) {
-			$conn = $this->build_conn();
+			$conn = $this->build_conn( $table );
 			exec( "{$mysql} {$conn} < revisr_$table.sql" );
 			if ( $replace_url !== '' && $replace_url !== false ) {
 				$this->revisr_srdb( $table, $replace_url, $live_url );
@@ -332,7 +334,7 @@ class Revisr_DB {
 		);
 
 		while( !feof( $fh ) ) {
-			$query = trim( stream_get_line( $fh, $size, ";\n" ) );
+			$query = trim( stream_get_line( $fh, $size, ';' . PHP_EOL ) );
 			if ( empty( $query ) ) {
 				$status['dropped_queries'][] = $query;
 				continue;
