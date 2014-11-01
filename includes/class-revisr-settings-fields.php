@@ -315,11 +315,16 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function tracked_tables_callback() {
+		if ( isset( $this->options['tracked_tables'] ) ) {
+			$db_tracking = $this->options['tracked_tables'];
+		} else {
+			$db_tracking = '';
+		}
 		?>
 		<select id="db-tracking-select" name="revisr_database_settings[db_tracking]">
-			<option value="all_tables" <?php selected( $this->options['db_tracking'], 'all_tables' ); ?>><?php _e( 'All Tables', 'revisr' ); ?></option>
-			<option value="custom" <?php selected( $this->options['db_tracking'], 'custom' ); ?>><?php _e( 'Let me decide...', 'revisr' ); ?></option>
-			<option value="none" <?php selected( $this->options['db_tracking'], 'none' ); ?>><?php _e( 'None', 'revisr' ); ?></option>
+			<option value="all_tables" <?php selected( $db_tracking, 'all_tables' ); ?>><?php _e( 'All Tables', 'revisr' ); ?></option>
+			<option value="custom" <?php selected( $db_tracking, 'custom' ); ?>><?php _e( 'Let me decide...', 'revisr' ); ?></option>
+			<option value="none" <?php selected( $db_tracking, 'none' ); ?>><?php _e( 'None', 'revisr' ); ?></option>
 		</select>
 
 		<?php
