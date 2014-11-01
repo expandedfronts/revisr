@@ -19,7 +19,7 @@ class Revisr_Remote extends Revisr_Admin {
 	/**
 	 * Returns the current token, creating one if it does not exist.
 	 * @access public
-	 * @return string|array The token, or false on complete failure.
+	 * @return string|boolean The token, or false on complete failure.
 	 */
 	public function get_token() {
 		$check = $this->git->run( 'config revisr.token' );
@@ -93,7 +93,7 @@ class Revisr_Remote extends Revisr_Admin {
 		
 		if ( is_array( $get_url ) ) {
 			$webhook = $get_url[0];
-			$request = wp_remote_post( $this->url, $args );
+			$request = wp_remote_post( $webhook, $args );
 			if ( is_wp_error( $request ) ) {
 				Revisr_Admin::log( __( 'Error contacting webhook URL.', 'revisr' ), 'error' );
 			} else {

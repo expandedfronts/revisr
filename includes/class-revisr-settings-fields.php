@@ -81,8 +81,8 @@ class Revisr_Settings_Fields {
 	 */
 	public function username_callback() {
 		printf(
-            '<input type="text" id="username" name="revisr_general_settings[username]" value="%s" class="regular-text" />
-            <br><span class="description">%s</span>',
+            '<input type="text" id="username" name="revisr_general_settings[username]" value="%s" class="regular-text revisr-text" />
+            <p class="description revisr-description">%s</p>',
             isset( $this->options['username'] ) ? esc_attr( $this->options['username']) : '',
             __( 'The username to commit with in Git.', 'revisr' )
         );
@@ -98,8 +98,8 @@ class Revisr_Settings_Fields {
 	 */
 	public function email_callback() {
 		printf(
-            '<input type="text" id="email" name="revisr_general_settings[email]" value="%s" class="regular-text" />
-            <br><span class="description">%s</span>',
+            '<input type="text" id="email" name="revisr_general_settings[email]" value="%s" class="regular-text revisr-text" />
+            <p class="description revisr-description">%s</p>',
             isset( $this->options['email'] ) ? esc_attr( $this->options['email']) : '',
             __( 'The email address associated to your Git username. Also used for notifications (if enabled).', 'revisr' )
         );
@@ -134,7 +134,7 @@ class Revisr_Settings_Fields {
 		}
 		printf(
             '<textarea id="gitignore" name="revisr_general_settings[gitignore]" rows="6" />%s</textarea>
-            <br><span class="description">%s</span>',
+            <p class="description revisr-description">%s</p>',
             $gitignore,
             __( 'Add files or directories that you don\'t want to show up in Git here, one per line.<br>This will update the ".gitignore" file for this repository.', 'revisr' )
 		);
@@ -195,10 +195,10 @@ class Revisr_Settings_Fields {
 	 */
 	public function remote_name_callback() {
 		printf(
-			'<input type="text" id="remote_name" name="revisr_remote_settings[remote_name]" value="%s" class="regular-text" placeholder="origin" />
-			<br><span class="description">%s</span>',
+			'<input type="text" id="remote_name" name="revisr_remote_settings[remote_name]" value="%s" class="regular-text revisr-text" placeholder="origin" />
+			<p class="description revisr-description">%s</p>',
 			isset( $this->options['remote_name'] ) ? esc_attr( $this->options['remote_name']) : '',
-			__( 'Git sets this to "origin" by default when you clone a repository, and this should be sufficient in most cases.<br>If you\'ve changed the remote name or have more than one remote, you can specify that here.', 'revisr' )
+			__( 'Git sets this to "origin" by default when you clone a repository, and this should be sufficient in most cases. If you\'ve changed the remote name or have more than one remote, you can specify that here.', 'revisr' )
 		);
 		if ( $this->is_updated( 'remote_name' ) ) {
 			$remote_name = $this->options['remote_name'];
@@ -231,8 +231,8 @@ class Revisr_Settings_Fields {
 			$remote_url = '';
 		}
 		printf(
-			'<input type="text" id="remote_url" name="revisr_remote_settings[remote_url]" value="%s" class="regular-text" placeholder="https://user:pass@host.com/user/example.git" /><span id="verify-remote"></span>
-			<br><span class="description">%s</span>',
+			'<input type="text" id="remote_url" name="revisr_remote_settings[remote_url]" value="%s" class="regular-text revisr-text" placeholder="https://user:pass@host.com/user/example.git" /><span id="verify-remote"></span>
+			<p class="description revisr-description">%s</p>',
 			$remote_url,
 			__( 'Useful if you need to authenticate over "https://" instead of SSH, or if the remote has not already been set through Git.', 'revisr' )
 		);		
@@ -260,7 +260,7 @@ class Revisr_Settings_Fields {
 			$webhook_url = '';
 		}
 		printf(
-			'<input type="text" name="revisr_remote_settings[webhook_url]" value="%s" class="regular-text" /><br><span class="description">%s</span>',
+			'<input type="text" name="revisr_remote_settings[webhook_url]" value="%s" class="regular-text revisr-text" /><p class="description revisr-description">%s</p>',
 			$webhook_url,
 			__( 'If you have Revisr installed on another server using the same repository,<br> you can add the Revisr Webhook from that server here to trigger an update when pushing.', 'revisr' )
 		);
@@ -296,15 +296,13 @@ class Revisr_Settings_Fields {
 		if ( $token ) {
 			$post_hook 	= get_admin_url() . 'admin-post.php?action=revisr_update&token=' . $remote->get_token();
 
-			// Display the generated webhook.
-			printf(
-				'<br><br><span id="post-hook" class="description">%s<br>
-				<input id="post-hook-input" type="text" value="%s" disabled /><br>
-				<br>%s</span>',
-				__( 'Revisr Webhook:', 'revisr' ),
-				$post_hook,
-				__( 'You can add the above webhook to Bitbucket, GitHub, or another instance of Revisr to automatically update this repository.', 'revisr' )
-			);
+			?>
+			<div id="post-hook">
+				<p class="description revisr-description"><?php _e( 'Revisr Webhook:', 'revisr' ); ?></p>
+				<input id="post-hook-input" type="text" value="<?php echo $post_hook; ?>" disabled />
+				<p class="description revisr-description"><?php _e( 'You can add the above webhook to Bitbucket, GitHub, or another instance of Revisr to automatically update this repository.', 'revisr' ); ?></p>
+			</div>
+			<?php
 		}
 		else {
 			echo '<p id="post-hook" class="description">' . __( 'There was an error generating the webhook. Please make sure that Revisr has write access to the ".git/config" and try again.', 'revisr' ) . '</p>';
@@ -317,24 +315,18 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function tracked_tables_callback() {
-		$selected = '';
-		if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'custom' ) {
-			$selected = ' selected';
-		}
-		printf(
-			'<select id="db-tracking-select" name="revisr_database_settings[db_tracking]">
-				<option value="all_tables">%s</option>
-				<option value="custom"%s>%s</option>
-			</select>',
-			__( 'Track all tables', 'revisr' ),
-			$selected,
-			__( 'Let me decide...', 'revisr' )
-		);
+		?>
+		<select id="db-tracking-select" name="revisr_database_settings[db_tracking]">
+			<option value="all_tables" <?php selected( $this->options['db_tracking'], 'all_tables' ); ?>><?php _e( 'All Tables', 'revisr' ); ?></option>
+			<option value="custom" <?php selected( $this->options['db_tracking'], 'custom' ); ?>><?php _e( 'Let me decide...', 'revisr' ); ?></option>
+			<option value="none" <?php selected( $this->options['db_tracking'], 'none' ); ?>><?php _e( 'None', 'revisr' ); ?></option>
+		</select>
 
+		<?php
 		// Allows the user to select the tables they want to track.
 		$db 	= new Revisr_DB();
 		$tables = $db->get_tables();
-		echo '<div id="advanced-db-tracking"><br><select name="revisr_database_settings[tracked_tables][]" multiple="multiple" style="width:350px;height:250px;">';
+		echo '<div id="advanced-db-tracking"><br><select name="revisr_database_settings[tracked_tables][]" multiple="multiple" style="width:35em;height:250px;">';
 		if ( is_array( $tables ) ) {
 			foreach ( $tables as $table ) {
 				$table_selected = '';
@@ -371,10 +363,10 @@ class Revisr_Settings_Fields {
 		}
 
 		printf(
-			'<input type="text" id="development_url" name="revisr_database_settings[development_url]" class="regular-text" value="%s" />
-			<br><p class="description">%s</p>',
+			'<input type="text" id="development_url" name="revisr_database_settings[development_url]" class="regular-text revisr-text" value="%s" />
+			<p class="description revisr-description">%s</p>',
 			$dev_url,
-			__( 'If you\'re importing the database from a separate environment, enter the URL for the development environment here and it will be replaced in the database during import.', 'revisr' )
+			__( 'If you\'re importing the database from a seperate environment, enter the WordPress Site URL for that environment here to replace all occurrences of that URL with the current Site URL during import.', 'revisr' )
 		);
 	}
 
@@ -398,8 +390,8 @@ class Revisr_Settings_Fields {
 			$mysql_path = '';
 		}
 		printf(
-			'<input type="text" id="mysql_path" name="revisr_database_settings[mysql_path]" value="%s" class="regular-text" placeholder="" />
-			<br><p class="description">%s</p>',
+			'<input type="text" id="mysql_path" name="revisr_database_settings[mysql_path]" value="%s" class="regular-text revisr-text" placeholder="" />
+			<p class="description revisr-description">%s</p>',
 			$mysql_path,
 			__( 'Leave blank if the full path to MySQL has already been set on the server. Some possible settings include:
 			<br><br>For MAMP: /Applications/MAMP/Library/bin/<br>
@@ -415,12 +407,12 @@ class Revisr_Settings_Fields {
 		printf(
 			'<input type="checkbox" id="reset_db" name="revisr_database_settings[reset_db]" %s /><label for="reset_db">%s</label><br><br>
 			<input type="checkbox" id="import_db" name="revisr_database_settings[import_db]" %s /><label for="import_db">%s</label><br><br>
-			<p class="description">%s</p>',
+			<p class="description revisr-description">%s</p>',
 			isset( $this->options['reset_db'] ) ? "checked" : '',
 			__( 'Import database when changing branches?', 'revisr' ),
 			isset( $this->options['import_db'] ) ? "checked" : '',
 			__( 'Import database when pulling commits?', 'revisr' ),
-			__( 'If checked, Revisr will automatically import the tracked tables and run any necessary find/replaces. Useful if using Revisr accross multiple environments.', 'revisr' )
+			__( 'If checked, Revisr will automatically import the above tracked tables while pulling from or checking out a branch. The tracked tables will be backed up beforehand to provide a restore point immediately prior to the import.', 'revisr' )
 		);		
 	}
 }

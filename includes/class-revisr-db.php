@@ -165,11 +165,14 @@ class Revisr_DB {
 	 * @return array
 	 */
 	public function get_tracked_tables() {
-		if ( isset( $this->options['tracked_tables'] ) && is_array( $this->options['tracked_tables'] ) ) {
+		if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'all_tables' ) {
+			$tracked_tables = $this->get_tables();
+		} elseif ( isset( $this->options['tracked_tables'] ) && is_array( $this->options['tracked_tables'] ) ) {
 			$tracked_tables = array_intersect( $this->options['tracked_tables'], $this->get_tables() );
-			return $tracked_tables;
+		} else {
+			$tracked_tables = array();
 		}
-		return array();
+		return $tracked_tables;
 	}
 
 	/**

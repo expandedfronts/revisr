@@ -150,6 +150,13 @@ class Revisr_Settings {
 			'revisr_database_settings',
 			'revisr_database_settings'
 		);
+    	add_settings_field(
+    		'reset_db',
+    		__( 'Import Options', 'revisr' ),
+    		array( $this->settings_fields, 'reset_db_callback' ),
+    		'revisr_database_settings',
+    		'revisr_database_settings'
+		);
 		add_settings_field(
 			'development_url',
 			__( 'Development URL', 'revisr'),
@@ -164,13 +171,6 @@ class Revisr_Settings {
         	'revisr_database_settings',
         	'revisr_database_settings'
     	);
-    	add_settings_field(
-    		'reset_db',
-    		__( 'Import Options', 'revisr' ),
-    		array( $this->settings_fields, 'reset_db_callback' ),
-    		'revisr_database_settings',
-    		'revisr_database_settings'
-		);
 	}
 
 	/**
