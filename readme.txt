@@ -18,7 +18,7 @@ Revisr allows you to manage your WordPress website with a Git repository. With R
 * Backup or restore your entire website in seconds
 * Set up daily or weekly automatic backups
 * Optionally push or pull changes to a remote repository, like Bitbucket or Github
-* Test changes out before deploying them
+* Test changes out before deploying them to another server
 * Revert your website files and/or database to an earlier version
 * Quickly discard any unwanted changes
 
@@ -58,12 +58,10 @@ It is also adviseable to add Revisr to the gitignore file via the settings page 
 
 == Frequently Asked Questions ==
 
-= How do the database backups/restores work? =
-Every time you make a commit and check the box for "Backup database?", Revisr will take a mysqldump of the current database and commit it to the repository. Each backup overwrites the previous, since with Git we can revert to any previous version at any time. 
+= How does Revisr handle the database? =
+You have complete control, and can decide whether you want to track the entire database, just certain tables, or if you don't want to track the database at all. Then, during a backup, the tracked database tables are exported via "mysqldump". When importing or restoring the database to an earlier commit, Revisr first takes a backup of the existing database, creating a restore point from immediately before the import that can be reverted to if needed.
 
-If you have the "Reset Database when Switching Branches" option checked, a few things will happen. When you click the button to toggle to a different branch or create a new branch, Revisr will backup the database and commit it to the repository. 
-
-Then, Revisr switches branches and restores the last available database backup for that new branch. For example, you could create some posts on a branch called "dev", and switch back to the master branch. Once on master, you wouldn't see the posts on the dev branch because the database has essentially been kept seperate. Once you switch back to dev, you'll see your posts just how you left them. A more useful scenario would be testing out plugins or upgrades on a seperate branch without permanently affecting the database.
+You can also set a "Development URL" that will be automatically replaced in the database during import- allowing for backups and restores that work on both your dev and live environments. 
 
 = Why aren't my commits being pushed to Bitbucket/GitHub? =
 This is either an authentication issue or the remote branch is ahead of yours.
