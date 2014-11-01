@@ -55,6 +55,7 @@ class Revisr_Git_Callback extends Revisr_Git {
 			$db->backup();
 			$db_hash = $this->run( "log --pretty=format:'%h' -n 1" );
 			add_post_meta( $id, 'db_hash', $db_hash[0] );
+			add_post_meta( $id, 'backup_method', 'tables' );
 		}
 		// Log the event.
 		$msg = sprintf( __( 'Commmitted <a href="%s">#%s</a> to the local repository.', 'revisr' ), $view_link, $commit_hash );

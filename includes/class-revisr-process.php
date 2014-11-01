@@ -231,6 +231,11 @@ class Revisr_Process {
 				}
 			}
 		}
+		if ( isset( $this->options['import_db'] ) ) {
+			$this->db->backup();
+			$undo_hash = $this->git->current_commit();
+			$this->git->run( "config --add revisr.last-db-backup $undo_hash" );
+		}
 		// Pull the changes or return an error on failure.
 		$this->git->pull();
 	}

@@ -362,7 +362,7 @@ class Revisr_Git {
 	 */
 	public function pull() {
 		$this->reset();
-		$pull = $this->run( "pull {$this->remote} {$this->branch}", __FUNCTION__, $this->count_unpulled( false ) );
+		$pull = $this->run( "pull -Xtheirs --quiet {$this->remote} {$this->branch}", __FUNCTION__, $this->count_unpulled( false ) );
 		return $pull;
 	}
 
@@ -475,18 +475,6 @@ class Revisr_Git {
 	public function status( $args = '--short' ) {
 		$status = $this->run( "status $args" );
 		return $status;
-	}
-
-	/**
-	 * Syncs with a remote branch.
-	 * @access public
-	 */
-	public function sync_remote() {
-		$db 	= new Revisr_DB();
-		$branch = $_REQUEST['branch'];
-		$this->fetch();
-		$this->reset( '--hard', $this->remote . "/$branch" );
-		$db->run( 'import', $db->get_tracked_tables() );
 	}
 
 	/**

@@ -142,16 +142,22 @@ class Revisr_Commits {
 		        $actions['view'] 	= "<a href='{$url}'>" . __( 'View', 'revisr' ) . "</a>";
 		        $branch_meta 		= get_post_custom_values( 'branch', get_the_ID() );
 		        $db_hash_meta 		= get_post_custom_values( 'db_hash', get_the_ID() );
+		        $backup_method 		= get_post_custom_values( 'backup_method', get_the_ID() );
 		        $commit_hash 		= Revisr_Git::get_hash( $id );
 		        $revert_nonce 		= wp_nonce_url( admin_url("admin-post.php?action=process_revert&commit_hash={$commit_hash}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert', 'revert_nonce' );
 		        $actions['revert'] 	= "<a href='" . $revert_nonce . "'>" . __( 'Revert Files', 'revisr' ) . "</a>";
 		        
 		        if ( is_array( $db_hash_meta ) ) {
 		        	$db_hash 			= str_replace( "'", "", $db_hash_meta );
-		        	$revert_db_nonce 	= wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert_db', 'revert_db_nonce' );
+		        	if ( isset( $backup_method ) && $backup_method[0] == 'tables' ) {
+			        	$revert_db_nonce 	= wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&backup_method=tables&post_id=" . get_the_ID()), 'revert_db', 'revert_db_nonce' );
+		        	} else {
+			        	$revert_db_nonce 	= wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert_db', 'revert_db_nonce' );
+		        	}
+
 			        if ( $db_hash[0] != '' ) {
 		          		$actions['revert_db'] = "<a href='" . $revert_db_nonce ."'>" . __( 'Revert Database', 'revisr' ) . "</a>";
-			        }		        	
+			        }	
 		        }        
 			}
 		}
