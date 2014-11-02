@@ -364,7 +364,7 @@ class Revisr_DB {
 		if ( $this->verify_backup( $table ) == false ) {
 			$msg = sprintf( __( 'Backup table not found: %s', 'revisr' ), $table );
 			Revisr_Admin::log( $msg, 'error' );
-			return false;
+			return;
 		}
 		// Try to pass the file directly to MySQL, fallback to user-defined path, then to WPDB.
 		if ( $mysql = exec( 'which mysql' ) ) {

@@ -179,7 +179,7 @@ class Revisr_Process {
 	public function process_merge() {
 		$this->git->merge( $_REQUEST['branch'] );
 		if ( isset( $_REQUEST['import_db'] ) && $_REQUEST['import_db'] == 'on' ) {
-			$this->db->run( 'import', $this->db->get_tracked_tables(), $this->git->config_revisr_url( 'dev' ) );
+			$this->db->import();
 		}
 	}
 	
