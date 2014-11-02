@@ -328,10 +328,10 @@ class Revisr_DB {
 	 * if tracking all_tables, or providing a link to import new tables
 	 * if necessary.
 	 * @access public
-	 * @param  array $tables The tables to import.
+	 * @param  string|array $tables The tables to import.
 	 */
-	public function import( $tables = array() ) {
-		if ( empty( $tables ) ) {
+	public function import( $tables = '' ) {
+		if ( $tables === '' ) {
 			$new_tables = $this->get_tables_not_in_db();
 			$this->run( 'import', $this->get_tracked_tables(), $this->git->config_revisr_url( 'dev' ) );
 			if ( ! empty( $new_tables ) ) {
@@ -368,14 +368,14 @@ class Revisr_DB {
 		}
 		// Try to pass the file directly to MySQL, fallback to user-defined path, then to WPDB.
 		if ( $mysql = exec( 'which mysql' ) ) {
-			$conn = $this->build_conn( $table );
+			$conn = $this->build_conn();
 			exec( "{$mysql} {$conn} < revisr_$table.sql" );
 			if ( $replace_url !== '' && $replace_url !== false ) {
 				$this->revisr_srdb( $table, $replace_url, $live_url );
 			}
 			return true;
 		} elseif ( $mysql = exec( "which {$this->path}mysql" ) ) {
-			$conn = $this->build_conn( $table );
+			$conn = $this->build_conn();
 			exec( "{$mysql} {$conn} < revisr_$table.sql" );
 			if ( $replace_url !== '' && $replace_url !== false ) {
 				$this->revisr_srdb( $table, $replace_url, $live_url );
