@@ -371,7 +371,7 @@ class Revisr_Settings_Fields {
 			'<input type="text" id="development_url" name="revisr_database_settings[development_url]" class="regular-text revisr-text" value="%s" />
 			<p class="description revisr-description">%s</p>',
 			$dev_url,
-			__( 'If you\'re importing the database from a seperate environment, enter the WordPress Site URL for that environment here to replace all occurrences of that URL with the current Site URL during import.', 'revisr' )
+			__( 'If you\'re importing the database from a seperate environment, enter the WordPress Site URL for that environment here to replace all occurrences of that URL with the current Site URL during import. This MUST match the WordPress Site URL of the database being imported.', 'revisr' )
 		);
 	}
 
@@ -417,7 +417,7 @@ class Revisr_Settings_Fields {
 			__( 'Import database when changing branches?', 'revisr' ),
 			isset( $this->options['import_db'] ) ? "checked" : '',
 			__( 'Import database when pulling commits?', 'revisr' ),
-			__( 'If checked, Revisr will automatically import the above tracked tables while pulling from or checking out a branch. The tracked tables will be backed up beforehand to provide a restore point immediately prior to the import.', 'revisr' )
+			__( 'If checked, Revisr will automatically import the above tracked tables while pulling from or checking out a branch. The tracked tables will be backed up beforehand to provide a restore point immediately prior to the import. Use this feature with caution and only after verifying that you have a full backup of your website.', 'revisr' )
 		);		
 	}
 }
