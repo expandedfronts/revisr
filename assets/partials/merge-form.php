@@ -10,14 +10,14 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 $styles_url = REVISR_URL . 'assets/css/thickbox.css';
-$merge_text = sprintf( __( 'This will merge changes from branch %s into the current branch.', 'revisr'), $_GET['branch'] );
+$merge_text = sprintf( __( 'This will merge changes from branch <strong>%s</strong> into the current branch. In the event of conflicts, Revisr will keep the version from the branch being merged in.', 'revisr'), $_GET['branch'] );
 ?>
 <link href="<?php echo $styles_url; ?>" rel="stylesheet" type="text/css">
 <div class="container" style="padding:10px">
 	<form action="<?php echo get_admin_url(); ?>admin-post.php" method="post">
 		<p><?php echo $merge_text; ?></p>
 		<input id="import_db" type="checkbox" name="import_db" />
-		<label for="import_db"><?php _e( 'Import database?', 'revisr' ); ?></label>
+		<label for="import_db"><?php _e( 'Import tracked database tables', 'revisr' ); ?></label>
 		<input type="hidden" name="action" value="process_merge">
 		<input type="hidden" name="branch" value="<?php echo $_GET['branch']; ?>">
 		<p id="merge-branch-submit" style="margin:0;padding:0;text-align:center;">

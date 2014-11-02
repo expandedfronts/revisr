@@ -94,6 +94,7 @@ class Revisr_Git_Callback extends Revisr_Git {
 		$email_msg 	= sprintf( __( 'The branch "%s" on the repository for %s was deleted.', 'revisr' ), $branch, get_bloginfo() );
 		Revisr_Admin::log( $msg, 'branch' );
 		Revisr_Admin::notify( get_bloginfo() . __( ' - Branch Deleted', 'revisr' ), $email_msg );
+		_e( 'Branch deleted successfully. Redirecting...', 'revisr' );
 		echo "<script>
 				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_success&branch={$branch}'
 		</script>";
@@ -173,6 +174,10 @@ class Revisr_Git_Callback extends Revisr_Git {
 		$log_msg 	= sprintf( __( 'Merged branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->branch );
 		Revisr_Admin::alert( $alert_msg );
 		Revisr_Admin::log( $log_msg, 'merge' );
+		_e( 'Merge completed successfully. Redirecting...', 'revisr' );
+		echo "<script>
+				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
+		</script>";
 	}
 
 	/**
@@ -184,8 +189,9 @@ class Revisr_Git_Callback extends Revisr_Git {
 		$alert_msg 	= sprintf( __( 'There was an error merging branch %s into your current branch. The merge was aborted to avoid conflicts.', 'revisr' ), $_REQUEST['branch'] );
 		Revisr_Admin::alert( $alert_msg, true );
 		Revisr_Admin::log( $log_msg, 'error' );
-		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
-		exit();
+		echo "<script>
+				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
+		</script>";
 	}
 
 	/**
