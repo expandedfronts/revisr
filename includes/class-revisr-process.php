@@ -129,6 +129,8 @@ class Revisr_Process {
 			$this->git->checkout( $branch );
 		}
 		if ( $result !== false ) {
+			$msg = sprintf( __( 'Created new branch: %s', 'revisr' ), $branch );
+			Revisr_Admin::log( $msg, 'branch' );
 			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_success&branch=' . $branch );
 		} else {
 			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_error&branch=' . $branch );
