@@ -73,7 +73,7 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function revisr_database_settings_callback() {
-
+		_( 'These settings configure how Revisr interacts with your database, if at all.', 'revisr' );
 	}
 	/**
 	 * Displays/updates the "Username" settings field.
