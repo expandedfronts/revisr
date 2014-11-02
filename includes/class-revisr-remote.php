@@ -80,7 +80,7 @@ class Revisr_Remote extends Revisr_Admin {
 		);
 		$args 	= array(
 			'method' 		=> 'POST',
-			'timeout'		=> '45',
+			'timeout'		=> '15',
 			'redirection'	=> '5',
 			'httpversion'	=> '1.0',
 			'blocking'		=> true,
@@ -97,7 +97,7 @@ class Revisr_Remote extends Revisr_Admin {
 			if ( is_wp_error( $request ) ) {
 				Revisr_Admin::log( __( 'Error contacting webhook URL.', 'revisr' ), 'error' );
 			} else {
-				Revisr_Admin::log( __( 'Sent update request to the stored webhook.', 'revisr' ), 'push' );
+				Revisr_Admin::log( __( 'Sent update request to the webhook.', 'revisr' ), 'push' );
 			}
 		}
 	}
