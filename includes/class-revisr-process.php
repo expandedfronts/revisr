@@ -79,7 +79,7 @@ class Revisr_Process {
 		$this->git->checkout( $branch );
 		
 		if ( isset( $this->options['reset_db'] ) && $new_branch === false ) {
-			$this->db->run( 'import', $this->db->get_tracked_tables(), $this->git->config_revisr_url( 'dev' ) );
+			$this->db->import();
 		}
 		$url = get_admin_url() . 'admin.php?page=revisr';
 		wp_redirect( $url );
@@ -171,7 +171,7 @@ class Revisr_Process {
 		}
 		$this->git->init_repo();
 	}
-	
+
 	/**
 	 * Processes the request to merge a branch into the current branch.
 	 * @access public
@@ -284,13 +284,4 @@ class Revisr_Process {
 			wp_die( __( 'You are not authorized to access this page.', 'revisr' ) );
 		}
 	}
-	
-	/**
-	 * Processes the request to update the Git settings.
-	 * @access public
-	 */
-	public function process_settings() {
-
-	}
-
 }

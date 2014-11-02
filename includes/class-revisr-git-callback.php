@@ -202,7 +202,7 @@ class Revisr_Git_Callback extends Revisr_Git {
 
 			if ( isset( $this->options['import_db'] ) ) {
 				$db = new Revisr_DB();
-				$db->run( 'import', $db->get_tracked_tables(), $this->config_revisr_url( 'dev' ) );
+				$db->import();
 			}
 		}
 	}

@@ -82,7 +82,7 @@ class Revisr_Commits {
 	/**
 	 * Custom messages for commits.
 	 * @access public
-	 * @param array $messages The messages to pass back to the commits.
+	 * @param  array $messages The messages to pass back to the commits.
 	 */
 	public function custom_messages( $messages ) {
 		$post = get_post();
@@ -110,8 +110,8 @@ class Revisr_Commits {
 	/**
 	 * Custom bulk messages for Revisr.
 	 * @access public
-	 * @param array $bulk_messages The messages to display. 
-	 * @param array $bulk_counts   The number of those messages.
+	 * @param  array $bulk_messages The messages to display. 
+	 * @param  array $bulk_counts   The number of those messages.
 	 */
 	public function bulk_messages( $bulk_messages, $bulk_counts ) {
 		$bulk_messages['revisr_commits'] = array(
@@ -127,7 +127,7 @@ class Revisr_Commits {
 	/**
 	 * Adds the custom actions to the Commits list.
 	 * @access public
-	 * @param array $actions The default array of actions.
+	 * @param  array $actions The default array of actions.
 	 */
 	public function custom_actions( $actions ) {
 		if ( get_post_type() == 'revisr_commits' ) {
@@ -167,7 +167,7 @@ class Revisr_Commits {
 	/**
 	 * Filters commits by branch.
 	 * @access public
-	 * @param object $commits The commits query.
+	 * @param  object $commits The commits query.
 	 */
 	public function filters( $commits ) {
 		if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
@@ -183,7 +183,7 @@ class Revisr_Commits {
 	/**
 	 * Unsets unused views, replaced with branches.
 	 * @access public
-	 * @param array $views The global views for the post type.
+	 * @param  array $views The global views for the post type.
 	 */
 	public function custom_views( $views ) {
 
@@ -258,7 +258,7 @@ class Revisr_Commits {
 	/**
 	 * Displays the number of committed files and the commit hash for commits.
 	 * @access public
-	 * @param string $column The column to add.
+	 * @param  string $column The column to add.
 	 */
 	public function custom_columns( $column ) {
 		global $post;

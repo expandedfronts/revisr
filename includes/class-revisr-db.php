@@ -160,6 +160,31 @@ class Revisr_DB {
 	}
 
 	/**
+	 * Returns a list of tables that are in the "revisr-backups" directory,
+	 * but not in the database. Necessary for importing tables that could
+	 * not be added to the tracked tables due to them not existing.
+	 * @access public
+	 * @return array
+	 */
+	public function get_tables_not_in_db() {
+		$dir 			= getcwd();
+		$backup_tables	= array();
+		$db_tables 		= $this->get_tables();
+		foreach ( scandir( $dir ) as $file ) {
+
+			if ( substr( $file, 0, 7 ) !== 'revisr_' ) {
+				continue;
+			}
+
+			$table_temp = substr( $file, 7 );
+	        $backup_tables[] = substr( $table_temp, 0, -4 );
+    	}
+
+    	$new_tables = array_diff( $backup_tables, $db_tables );
+    	return $new_tables;
+	}
+
+	/**
 	 * Returns the array of tables that are to be tracked.
 	 * @access public
 	 * @return array
@@ -296,7 +321,32 @@ class Revisr_DB {
 		}
 		// Push changes if necessary.
 		$this->git->auto_push();
-	}	
+	}
+
+	/**
+	 * Runs an import of all tracked tables, importing any new tables
+	 * if tracking all_tables, or providing a link to import new tables
+	 * if necessary.
+	 * @access public
+	 * @param  array $tables The tables to import.
+	 */
+	public function import( $tables = array() ) {
+		if ( empty( $tables ) ) {
+			$new_tables = $this->get_tables_not_in_db();
+			$this->run( 'import', $this->get_tracked_tables(), $this->git->config_revisr_url( 'dev' ) );
+			if ( ! empty( $new_tables ) ) {
+				if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'all_tables' ) {
+					$this->run( 'import', $new_tables, $this->config_revisr_url( 'dev' ) );
+				} else {
+					$url = wp_nonce_url( get_admin_url() . 'admin-post.php?action=import_tables_form&TB_iframe=true&width=350&height=200', 'import_table_form', 'import_nonce' );
+					$msg = sprintf( __( 'New database tables detected. <a class="thickbox" title="Import Tables" href="%s">Click here</a> to view and import.', 'revisr' ), $url );
+					Revisr_Admin::log( $msg, 'db' );
+				}
+			}			
+		} else {
+			$this->run( 'import', $tables, $this->git->config_revisr_url( 'dev' ) );
+		}
+	}
 
 	/**
 	 * Imports a table from a Revisr .sql file to the database.
@@ -460,12 +510,7 @@ class Revisr_DB {
 	 */
 	private function revert_table( $table, $commit ) {
 		$checkout = $this->git->run( "checkout $commit {$this->upload_dir['basedir']}/revisr-backups/revisr_$table.sql" );
-		if ( $checkout !== false ) {
-			$import = $this->import_table( $table, $this->git->config_revisr_url( 'dev' ) );
-			$this->git->run( "checkout {$this->git->branch} {$this->upload_dir['basedir']}/revisr-backups/revisr_$table.sql" );
-			return $import;
-		}
-		return false;
+		return $checkout;
 	}
 
 	/**
@@ -474,14 +519,12 @@ class Revisr_DB {
 	 * @param  array $status The status of the revert.
 	 */
 	private function revert_callback( $status ) {
-		if ( in_array( false, $status ) ) {
-			$msg = __( 'Error reverting the database.', 'revisr' );
+		if ( in_array( 1, $status ) ) {
+			$msg = __( 'Error reverting one or more database tables.', 'revisr' );
 			Revisr_Admin::log( $msg, 'error' );
 			Revisr_Admin::alert( $msg, true );
 		} else {
-			$msg = __( 'Successfully reverted the database.', 'revisr' );
-			Revisr_Admin::log( $msg, 'revert' );
-			Revisr_Admin::alert( $msg );
+			$this->import();
 		}
 	}
 
@@ -500,7 +543,7 @@ class Revisr_DB {
 
 	/**
 	 * Adapated from interconnect/it's search/replace script.
-	 * Modified to use WordPress wpdb functions instead of PHP's native mysql() functions.
+	 * Modified to use WordPress wpdb functions instead of PHP's native mysql/pdo functions.
 	 * 
 	 * @link https://interconnectit.com/products/search-and-replace-for-wordpress-databases/
 	 * 

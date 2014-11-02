@@ -43,7 +43,7 @@ class Revisr_Cron {
 	/**
 	 * Creates new schedules.
 	 * @access public
-	 * @param array $schedules An array of available schedules.
+	 * @param  array $schedules An array of available schedules.
 	 */
 	public function revisr_schedules( $schedules ) {
 		// Adds weekly backups

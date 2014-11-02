@@ -1,5 +1,4 @@
-function stage_file()
-{
+function stage_file() {
     jQuery("#unstaged > option:selected").each(function () {
         jQuery(this).remove().appendTo("#staged");
     });
@@ -7,8 +6,7 @@ function stage_file()
     jQuery('#count_staged').innerHTML = num_staged;
 }
 
-function unstage_file()
-{
+function unstage_file() {
     jQuery("#staged > option:selected").each(function () {
         jQuery(this).remove().appendTo("#unstaged");
     });
@@ -16,8 +14,7 @@ function unstage_file()
     jQuery('#count_staged').innerHTML = num_staged;
 }
 
-function stage_all()
-{
+function stage_all() {
     jQuery("#unstaged > option").each(function () {
         jQuery(this).remove().appendTo("#staged");
     });
@@ -25,8 +22,7 @@ function stage_all()
     jQuery('#count_staged').innerHTML = num_staged;
 }
 
-function unstage_all()
-{
+function unstage_all() {
     jQuery("#staged > option").each(function () {
         jQuery(this).remove().appendTo("#unstaged");
     });

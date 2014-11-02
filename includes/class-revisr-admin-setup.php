@@ -228,8 +228,8 @@ class Revisr_Setup {
 	 * Displays the form to pull a remote branch.
 	 * @access public
 	 */
-	public function pull_remote_form() {
-		include_once REVISR_PATH . 'assets/partials/pull-remote-form.php';
+	public function import_tables_form() {
+		include_once REVISR_PATH . 'assets/partials/import-tables-form.php';
 	}
 
 	/**
