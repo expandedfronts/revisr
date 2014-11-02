@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Revisr 1.8.0\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/revisr\n"
-"POT-Creation-Date: 2014-11-02 09:04:02+00:00\n"
+"POT-Creation-Date: 2014-11-02 19:41:23+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -650,6 +650,11 @@ msgid ""
 "push your website to a remote repository like Bitbucket or Github."
 msgstr ""
 
+#: includes/class-revisr-settings-fields.php:76
+msgid ""
+"These settings configure how Revisr interacts with your database, if at all."
+msgstr ""
+
 #: includes/class-revisr-settings-fields.php:87
 msgid "The username to commit with in Git."
 msgstr ""
@@ -748,7 +753,8 @@ msgstr ""
 msgid ""
 "If you're importing the database from a seperate environment, enter the "
 "WordPress Site URL for that environment here to replace all occurrences of "
-"that URL with the current Site URL during import."
+"that URL with the current Site URL during import. This MUST match the "
+"WordPress Site URL of the database being imported."
 msgstr ""
 
 #: includes/class-revisr-settings-fields.php:401
@@ -771,7 +777,9 @@ msgstr ""
 msgid ""
 "If checked, Revisr will automatically import the above tracked tables while "
 "pulling from or checking out a branch. The tracked tables will be backed up "
-"beforehand to provide a restore point immediately prior to the import."
+"beforehand to provide a restore point immediately prior to the import. Use "
+"this feature with caution and only after verifying that you have a full "
+"backup of your website."
 msgstr ""
 
 #: includes/class-revisr-settings.php:78

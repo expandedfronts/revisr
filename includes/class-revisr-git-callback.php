@@ -135,11 +135,17 @@ class Revisr_Git_Callback extends Revisr_Git {
 	 */
 	public function success_init_repo() {
 		Revisr_Admin::clear_transients();
+		$user = wp_get_current_user();
+
 		if ( isset( $this->options['username'] ) && $this->options['username'] != "" ) {
 			$this->config_user_name( $this->options['username'] );
+		} else {
+			$this->config_user_name( $user->user_login );
 		}
 		if ( isset( $this->options['email'] ) && $this->options['email'] != "" ) {
 			$this->config_user_email( $this->options['email'] );
+		} else {
+			$this->config_user_email( $user->user_email );
 		}
 		if ( isset( $this->options['remote_name'] ) && $this->options['remote_name'] != "" ) {
 			$remote_name = $this->options['remote_name'];

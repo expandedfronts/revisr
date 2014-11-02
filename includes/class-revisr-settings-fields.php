@@ -73,17 +73,25 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function revisr_database_settings_callback() {
-		_( 'These settings configure how Revisr interacts with your database, if at all.', 'revisr' );
+		_e( 'These settings configure how Revisr interacts with your database, if at all.', 'revisr' );
 	}
 	/**
 	 * Displays/updates the "Username" settings field.
 	 * @access public
 	 */
 	public function username_callback() {
+		$check_username = $this->git->config_user_name();
+		if ( is_array( $check_username ) ) {
+			$username = $check_username[0];
+		} elseif ( isset( $this->options['username'] ) ) {
+			$username = $this->options['username'];
+		} else {
+			$username = '';
+		}
 		printf(
             '<input type="text" id="username" name="revisr_general_settings[username]" value="%s" class="regular-text revisr-text" />
             <p class="description revisr-description">%s</p>',
-            isset( $this->options['username'] ) ? esc_attr( $this->options['username']) : '',
+           $username,
             __( 'The username to commit with in Git.', 'revisr' )
         );
 
@@ -97,10 +105,18 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function email_callback() {
+		$check_email = $this->git->config_user_email();
+		if ( is_array( $check_email ) ) {
+			$email = $check_email[0];
+		} elseif ( isset( $this->options['email'] ) ) {
+			$email = $this->options['email'];
+		} else {
+			$email = '';
+		}
 		printf(
             '<input type="text" id="email" name="revisr_general_settings[email]" value="%s" class="regular-text revisr-text" />
             <p class="description revisr-description">%s</p>',
-            isset( $this->options['email'] ) ? esc_attr( $this->options['email']) : '',
+           	$email,
             __( 'The email address associated to your Git username. Also used for notifications (if enabled).', 'revisr' )
         );
 
