@@ -335,7 +335,7 @@ class Revisr_DB {
 
 			$tracked_tables = $this->get_tracked_tables();
 			$new_tables 	= $this->get_tables_not_in_db();
-			$all_tables		= array_unique( array_merge( $tracked_tables, $new_tables ) );
+			$all_tables		= array_unique( array_merge( $new_tables, $tracked_tables ) );
 
 			if ( ! empty( $new_tables ) ) {
 				// If there are new tables that were imported.
