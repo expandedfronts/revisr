@@ -1,7 +1,7 @@
 === Revisr ===
 Contributors: ExpandedFronts
 Tags: revisr, git, git management, revision tracking, revision, backup, database, database backup, database plugin, deploy, commit, bitbucket, github
-Requires at least: 3.5.1
+Requires at least: 3.7
 Tested up to: 4.0
 Stable tag: trunk
 License: GPLv3
@@ -17,8 +17,8 @@ Revisr allows you to manage your WordPress website with a Git repository. With R
 * Commit changes from within the WordPress dashboard
 * Backup or restore your entire website in seconds
 * Set up daily or weekly automatic backups
-* Optionally push or pull changes to a remote repository, like Bitbucket or Github.
-* Test changes out before deploying them
+* Optionally push or pull changes to a remote repository, like Bitbucket or Github
+* Test changes out before deploying them to another server
 * Revert your website files and/or database to an earlier version
 * Quickly discard any unwanted changes
 
@@ -54,30 +54,14 @@ location ~ path/to/your-repo/.git {
 
 This issue can be avoided entirely by using SSH to authenticate, which is recommended in most cases. If using SSH, you will need to generate a SSH key on the server and add it to the remote repository (Bitbucket and Github both support SSH).
 
-You should also make sure that the .sql backup files aren't publicly accessible. You can do this in Apache by adding the folling to your .htaccess file in the document root:
-
-`
-<FilesMatch "\.sql">
-    Order allow,deny
-    Deny from all
-    Satisfy All
-</FilesMatch>
-`
-If you're using NGINX, something similar to the below should work:
-`
-location ~ \.sql { deny all; }
-`
-
 It is also adviseable to add Revisr to the gitignore file via the settings page to make sure that reverts don't rollback the plugins' functionality. 
 
 == Frequently Asked Questions ==
 
-= How do the database backups/restores work? =
-Every time you make a commit and check the box for "Backup database?", Revisr will take a mysqldump of the current database and commit it to the repository. Each backup overwrites the previous, since with Git we can revert to any previous version at any time. 
+= How does Revisr handle the database? =
+You have complete control, and can decide whether you want to track the entire database, just certain tables, or if you don't want to track the database at all. Then, during a backup, the tracked database tables are exported via "mysqldump". When importing or restoring the database to an earlier commit, Revisr first takes a backup of the existing database, creating a restore point from immediately before the import that can be reverted to if needed.
 
-If you have the "Reset Database when Switching Branches" option checked, a few things will happen. When you click the button to toggle to a different branch or create a new branch, Revisr will backup the database and commit it to the repository. 
-
-Then, Revisr switches branches and restores the last available database backup for that new branch. For example, you could create some posts on a branch called "dev", and switch back to the master branch. Once on master, you wouldn't see the posts on the dev branch because the database has essentially been kept seperate. Once you switch back to dev, you'll see your posts just how you left them. A more useful scenario would be testing out plugins or upgrades on a seperate branch without permanently affecting the database.
+You can also set a "Development URL" that will be automatically replaced in the database during import- allowing for backups and restores that work on both your dev and live environments. 
 
 = Why aren't my commits being pushed to Bitbucket/GitHub? =
 This is either an authentication issue or the remote branch is ahead of yours.
@@ -94,6 +78,18 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 
 == Changelog ==
+
+= 1.8 =
+* Added ability to track individual database tables
+* Added ability to import tracked database tables while pulling changes
+* Added ability to run a safe search/replace on the database during import to support multiple environments (supports serialization)
+* Added unique token to the webhook to improve security (existing webhooks will need to be updated)
+* Added fallback to the WordPress database class if mysqldump is not available
+* Moved backups to 'wp-content/uploads/revisr-backups/' (path may vary) and automatically generate .htaccess
+* Updated pending files count to only show for admins
+* Updated error handling for commits
+* Small UI improvements
+
 = 1.7.2 =
 * Tweaked permissions check to only check permissions if repository exists.
 

@@ -65,7 +65,7 @@ jQuery(document).ready(function() {
 		window.location = "post-new.php?post_type=revisr_commits";
 	});
 	jQuery("#discard-btn").click(function() { 
-	    if (confirm("Are you sure you want to discard your uncommitted changes?") == true) {
+	    if (confirm(dashboard_vars.discard_msg) == true) {
 	    	processing();
 	   		var discard_request = {action: 'discard',security: dashboard_vars.ajax_nonce};
 			jQuery.post(ajaxurl, discard_request, function(response) {
@@ -81,7 +81,7 @@ jQuery(document).ready(function() {
 		});
 	});
 	jQuery("#push-btn").click(function() { 
-	    if (confirm("Are you sure you want to discard your uncommitted changes and push to the remote?") == true) {
+	    if (confirm(dashboard_vars.push_msg) == true) {
 	   		processing();
 	   		var push_request = {action: 'process_push'};
 			jQuery.post(ajaxurl, push_request, function(response) {
@@ -90,7 +90,7 @@ jQuery(document).ready(function() {
 	    } 
 	});
 	jQuery("#pull-btn").click(function() { 
-	    if (confirm("Are you sure you want to discard your uncommitted changes and pull from the remote?") == true) {
+	    if (confirm(dashboard_vars.pull_msg) == true) {
 	    	processing();
 	   		var pull_request = {action: 'process_pull',from_dash: 'true',security: dashboard_vars.ajax_nonce};
 			jQuery.post(ajaxurl, pull_request, function(response) {

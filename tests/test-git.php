@@ -24,12 +24,13 @@ class RevisrGitTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests the current dir with an initialized repository.
+	 * Tests the init function.
 	 */
-	function test_current_dir() {
-		$dir = $this->git->current_dir();
-		$this->assertFileExists( $dir );
-		$this->assertFileExists( $dir . '/.git/config' );
+	function test_init_repo() {
+		if ( ! $this->git->is_repo() ) {
+			$this->git->init_repo();
+		}
+		$this->assertEquals( true, $this->git->is_repo() );
 	}
 
 	/**
@@ -48,6 +49,33 @@ class RevisrGitTest extends WP_UnitTestCase {
 		$this->git->config_user_email( 'support@expandedfronts.com' );
 		$current_email = $this->git->run( 'config user.email' );
 		$this->assertEquals( 'support@expandedfronts.com', $current_email[0] );
+	}
+
+	/**
+	 * Tests setting the dev URL.
+	 */
+	function test_config_revisr_url() {
+		$this->git->config_revisr_url( 'dev', 'http://revisr.io' );
+		$current_url = $this->git->config_revisr_url( 'dev' );
+		$this->assertEquals( 'http://revisr.io', $current_url );
+	}
+
+	/**
+	 * Tests setting a path in the .git/config.
+	 */
+	function test_config_revisr_path() {
+		$this->git->config_revisr_path( 'mysql', '/Applications/MAMP/bin/' );
+		$current_mysql = $this->git->config_revisr_path( 'mysql' );
+		$this->assertEquals( '/Applications/MAMP/bin/', $current_mysql[0] );
+	}
+
+	/**
+	 * Tests the current dir with an initialized repository.
+	 */
+	function test_current_dir() {
+		$dir = $this->git->current_dir();
+		$this->assertFileExists( $dir );
+		$this->assertFileExists( $dir . '/.git/config' );
 	}
 
 	/**
@@ -109,7 +137,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the count_untracked() function.
 	 */
 	function test_count_untracked() {
-		fopen("sample-file2.txt", "w");
+		fopen("sample-file_2.txt", "w");
 		$new_untracked = $this->git->count_untracked();
 		$this->assertEquals( 1, $new_untracked );
 	}
@@ -144,9 +172,8 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the tag() function.
 	 */
 	function test_tag() {
-		$tag 	= $this->git->tag( 'v1.0' );
+		$this->git->tag( 'v1.0' );
 		$tags 	= $this->git->tag();
-		$this->assertNotEquals( false, $tag );
 		$this->assertEquals( 'v1.0', $tags[0] );
 	}
 }

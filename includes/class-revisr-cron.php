@@ -10,6 +10,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Revisr_Cron {
 
 	/**
@@ -40,10 +43,10 @@ class Revisr_Cron {
 	/**
 	 * Creates new schedules.
 	 * @access public
-	 * @param array $schedules An array of available schedules.
+	 * @param  array $schedules An array of available schedules.
 	 */
 	public function revisr_schedules( $schedules ) {
-		//Adds weekly backups
+		// Adds weekly backups
 		$schedules['weekly'] = array(
 			'interval' => 604800,
 			'display'  => __( 'Weekly', 'revisr' )
@@ -60,11 +63,11 @@ class Revisr_Cron {
 		$files 			= $this->git->status();
 		$backup_type 	= ucfirst( $this->options['automatic_backups'] );
 		$commit_msg 	= sprintf( __( '%s backup - %s', 'revisr' ), $backup_type, $date );
-		//In case there are no files to commit.
+		// In case there are no files to commit.
 		if ( $files == false ) {
 			$files = array();
 		}
-		$this->git->run( 'add -A' );
+		$this->git->stage_files( $files );
 		$this->git->commit( $commit_msg );
 		$post = array(
 			'post_title'	=> $commit_msg,
@@ -79,7 +82,7 @@ class Revisr_Cron {
 		add_post_meta( $post_id, 'committed_files', $files );
 		$this->db->backup();
 		add_post_meta( $post_id, 'db_hash', $this->git->current_commit() );
-		$log_msg = sprintf( __( 'The %s backup ran successfully.', 'revisr' ), $this->options['automatic_backups'] );
+		$log_msg = sprintf( __( 'The %s backup was successful.', 'revisr' ), $this->options['automatic_backups'] );
 		Revisr_Admin::log( $log_msg, 'backup' );
 	}
 }

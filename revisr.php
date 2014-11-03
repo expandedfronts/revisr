@@ -8,7 +8,7 @@
  * Plugin Name:       Revisr
  * Plugin URI:        http://revisr.io/
  * Description:       A plugin that allows users to manage WordPress websites with Git repositories.
- * Version:           1.7.2
+ * Version:           1.8
  * Author:            Expanded Fronts, LLC
  * Author URI:        http://expandedfronts.com/
  * License:           GPL-3.0+
@@ -36,14 +36,34 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+/** Defines the plugin root file. */
+if ( ! defined( 'REVISR_FILE' ) ) {
+	define( 'REVISR_FILE', __FILE__ );
+}
+
+/** Defines the plugin path. */
+if ( ! defined( 'REVISR_PATH' ) ) {
+	define( 'REVISR_PATH', plugin_dir_path( REVISR_FILE ) );
+}
+
+/** Defines the plugin URL. */
+if ( ! defined( 'REVISR_URL' ) ) {
+	define( 'REVISR_URL', plugin_dir_url( REVISR_FILE ) );
+}
+
+/** Defines the plugin version. */
+if ( ! defined( 'REVISR_VERSION' ) ) {
+	define( 'REVISR_VERSION', '1.8' );
+}
+
 /** Loads the main plugin class. */
-require plugin_dir_path( __FILE__ ) . 'includes/class-revisr.php';
+require REVISR_PATH . 'includes/class-revisr.php';
 
 /** Begins execution of the plugin. */
 $revisr = new Revisr();
 
 /** Registers the activation hook. */
-register_activation_hook( __FILE__, array( $revisr, 'revisr_install' ) );
+register_activation_hook( REVISR_FILE, array( $revisr, 'revisr_install' ) );
 
 /** Adds the settings link to the WordPress "Plugins" page. */
-add_filter( 'plugin_action_links_'  . plugin_basename(__FILE__), array( $revisr, 'revisr_settings_link' ) );
+add_filter( 'plugin_action_links_'  . plugin_basename( REVISR_FILE ), array( $revisr, 'revisr_settings_link' ) );

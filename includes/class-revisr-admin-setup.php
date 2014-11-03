@@ -10,6 +10,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class Revisr_Setup {
 	
 	/**
@@ -28,11 +31,6 @@ class Revisr_Setup {
 	public $options;
 
 	/**
-	 * The current directory.
-	 */
-	public $dir;
-
-	/**
 	 * Load items necessary for setup.
 	 * @access public
 	 */
@@ -41,7 +39,6 @@ class Revisr_Setup {
 		$this->wpdb 	= $wpdb;
 		$this->options 	= $options;
 		$this->git 		= new Revisr_Git();
-		$this->dir 		= plugin_dir_path( __FILE__ );
 	}
 
 	/**
@@ -50,94 +47,48 @@ class Revisr_Setup {
 	 * @param string $hook The page to enqueue the styles/scripts.
 	 */
 	public function revisr_scripts( $hook ) {
-		wp_register_style( 'revisr_dashboard_css', plugins_url() . '/revisr/assets/css/dashboard.css', array(), '07052014' );
-		wp_register_style( 'revisr_commits_css', plugins_url() . '/revisr/assets/css/commits.css', array(), '08202014' );
-		wp_register_script( 'revisr_dashboard', plugins_url() . '/revisr/assets/js/dashboard.js', 'jquery',  '09232014' );
-		wp_register_script( 'revisr_staging', plugins_url() . '/revisr/assets/js/staging.js', 'jquery', '07052014', false );
-		wp_register_script( 'revisr_committed', plugins_url() . '/revisr/assets/js/committed.js', 'jquery', '07052014', false );
-		wp_register_script( 'revisr_settings', plugins_url() . '/revisr/assets/js/settings.js', 'jquery', '08272014', true );
+		wp_register_style( 'revisr_dashboard_css', REVISR_URL . 'assets/css/dashboard.css', array(), '07052014' );
+		wp_register_style( 'revisr_commits_css', REVISR_URL . 'assets/css/commits.css', array(), '08202014' );
+		wp_register_script( 'revisr_dashboard', REVISR_URL . 'assets/js/dashboard.js', 'jquery',  '09232014' );
+		wp_register_script( 'revisr_staging', REVISR_URL . 'assets/js/staging.js', 'jquery', '07052014', false );
+		wp_register_script( 'revisr_committed', REVISR_URL . 'assets/js/committed.js', 'jquery', '07052014', false );
+		wp_register_script( 'revisr_settings', REVISR_URL . 'assets/js/settings.js', 'jquery', '08272014', true );
+		
 		$allowed_pages = array( 'revisr', 'revisr_settings', 'revisr_branches' );
-		//Enqueue common styles and scripts.
+		// Enqueue common styles and scripts.
 		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
 			wp_enqueue_style( 'revisr_dashboard_css' );
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
 			wp_enqueue_script( 'revisr_settings' );
 		}
-		//Enqueue styles and scripts on the Revisr staging area.
-		if ( $hook == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == "revisr_commits" ) {
+		// Enqueue styles and scripts on the Revisr staging area.
+		if ( $hook == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
 			wp_enqueue_script( 'revisr_staging' );
 			wp_localize_script( 'revisr_staging', 'pending_vars', array(
-				'ajax_nonce' => wp_create_nonce( 'pending_nonce' ),
+				'ajax_nonce' 		=> wp_create_nonce( 'pending_nonce' ),
+				'empty_title_msg' 	=> __( 'Please enter a message for your commit.', 'revisr' ),
+				'empty_commit_msg' 	=> __( 'Nothing was added to the commit. Please use the section below to add files to use in the commit.', 'revisr' ),
+				'error_commit_msg' 	=> __( 'There was an error committing the files. Make sure that your Git username and email is set, and that Revisr has write permissions to the ".git" directory.', 'revisr' ),
+				'view_diff' 		=> __( 'View Diff', 'revisr' ),
 				)
 			);
 		}
-		//Enqueue styles and scripts for viewing a commit.
+		// Enqueue styles and scripts for viewing a commit.
 		if ( $hook == 'post.php' && get_post_type() == 'revisr_commits' ) {
 			wp_enqueue_script( 'revisr_committed' );
 			wp_localize_script( 'revisr_committed', 'committed_vars', array(
-				'post_id' => $_GET['post'],
-				'ajax_nonce' => wp_create_nonce( 'committed_nonce' ),
+				'post_id' 		=> $_GET['post'],
+				'ajax_nonce' 	=> wp_create_nonce( 'committed_nonce' ),
 				)
 			);			
 		}
-		//Add styles and scripts to commits pages.
+		// Add styles and scripts to commits pages.
 		if ( get_post_type() == 'revisr_commits' || isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
 			wp_enqueue_style( 'revisr_commits_css' );
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
 		}
-	}
-
-	/**
-	 * Registers the "revisr_commits" post type.
-	 * @access public
-	 */
-	public function revisr_post_types() {
-		$labels = array(
-			'name'                => __( 'Commits', 'revisr' ),
-			'singular_name'       => __( 'Commit', 'revisr' ),
-			'menu_name'           => __( 'Commits', 'revisr' ),
-			'parent_item_colon'   => '',
-			'all_items'           => __( 'Commits', 'revisr' ),
-			'view_item'           => __( 'View Commit', 'revisr' ),
-			'add_new_item'        => __( 'New Commit', 'revisr' ),
-			'add_new'             => __( 'New Commit', 'revisr' ),
-			'edit_item'           => __( 'Edit Commit', 'revisr' ),
-			'update_item'         => __( 'Update Commit', 'revisr' ),
-			'search_items'        => __( 'Search Commits', 'revisr' ),
-			'not_found'           => __( 'No commits found yet, why not create a new one?', 'revisr' ),
-			'not_found_in_trash'  => __( 'No commits in trash.', 'revisr' ),
-		);
-		$capabilities = array(
-			'edit_post'           => 'activate_plugins',
-			'read_post'           => 'activate_plugins',
-			'delete_post'         => 'activate_plugins',
-			'edit_posts'          => 'activate_plugins',
-			'edit_others_posts'   => 'activate_plugins',
-			'publish_posts'       => 'activate_plugins',
-			'read_private_posts'  => 'activate_plugins',
-		);
-		$args = array(
-			'label'               => 'revisr_commits',
-			'description'         => __( 'Commits made through Revisr', 'revisr' ),
-			'labels'              => $labels,
-			'supports'            => array( 'title', 'author' ),
-			'hierarchical'        => false,
-			'public'              => false,
-			'show_ui'             => true,
-			'show_in_menu'        => 'revisr',
-			'show_in_nav_menus'   => true,
-			'show_in_admin_bar'   => true,
-			'menu_position'       => 5,
-			'menu_icon'           => '',
-			'can_export'          => true,
-			'has_archive'         => true,
-			'exclude_from_search' => true,
-			'publicly_queryable'  => false,
-			'capabilities'        => $capabilities,
-		);
-		register_post_type( 'revisr_commits', $args );
 	}
 
 	/**
@@ -160,8 +111,11 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function add_tag_meta() {
-		echo "<label for='tag_name'><p>" . __( 'Tag Name:', 'revisr' ) . '</p></label>';
-		echo "<input id='tag_name' type='text' name='tag_name' />";
+		printf(
+			'<label for="tag_name"><p>%s</p></label>
+			<input id="tag_name" type="text" name="tag_name" />',
+			__( 'Tag Name:', 'revisr' )
+		);
 	}
 
 	/**
@@ -186,7 +140,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function menus() {
-		$menu = add_menu_page( 'Dashboard', 'Revisr', 'manage_options', 'revisr', array( $this, 'revisr_dashboard' ), plugins_url( 'revisr/assets/img/white_18x20.png' ) );
+		$menu = add_menu_page( 'Dashboard', 'Revisr', 'manage_options', 'revisr', array( $this, 'revisr_dashboard' ), REVISR_URL . 'assets/img/white_18x20.png' );
 		add_submenu_page( 'revisr', 'Revisr - Dashboard', 'Dashboard', 'manage_options', 'revisr', array( $this, 'revisr_dashboard' ) );
 		add_submenu_page( 'revisr', 'Revisr - Branches', 'Branches', 'manage_options', 'revisr_branches', array( $this, 'revisr_branches' ) );
 		add_submenu_page( 'revisr', 'Revisr - Settings', 'Settings', 'manage_options', 'revisr_settings', array( $this, 'revisr_settings' ) );
@@ -217,7 +171,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function revisr_dashboard() {
-		include_once $this->dir . "../templates/dashboard.php";
+		include_once REVISR_PATH . 'templates/dashboard.php';
 	}
 
 	/**
@@ -225,7 +179,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function revisr_branches() {
-		include_once $this->dir . "../templates/branches.php";
+		include_once REVISR_PATH . 'templates/branches.php';
 	}
 
 	/**
@@ -233,125 +187,15 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function revisr_settings() {
-		include_once $this->dir . "../templates/settings.php";
+		include_once REVISR_PATH . 'templates/settings.php';
 	}
 
-	/**
-	 * Adds the custom actions to the Commits list.
-	 * @access public
-	 * @param array $actions The default array of actions.
-	 */
-	public function custom_actions( $actions ) {
-		if ( get_post_type() == 'revisr_commits' ) {
-			if ( isset( $actions ) ) {
-				unset( $actions['edit'] );
-		        unset( $actions['view'] );
-		        unset( $actions['trash'] );
-		        unset( $actions['inline hide-if-no-js'] );
-
-		        $id 				= get_the_ID();
-		        $url 				= get_admin_url() . 'post.php?post=' . get_the_ID() . '&action=edit';
-		        $actions['view'] 	= "<a href='{$url}'>View</a>";
-		        $branch_meta 		= get_post_custom_values( 'branch', get_the_ID() );
-		        $db_hash_meta 		= get_post_custom_values( 'db_hash', get_the_ID() );
-		        $commit_hash 		= Revisr_Git::get_hash( $id );
-		        $revert_nonce 		= wp_nonce_url( admin_url("admin-post.php?action=process_revert&commit_hash={$commit_hash}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert', 'revert_nonce' );
-		        $actions['revert'] 	= "<a href='" . $revert_nonce . "'>" . __( 'Revert Files', 'revisr' ) . "</a>";
-		        
-		        if ( is_array( $db_hash_meta ) ) {
-		        	$db_hash 			= str_replace( "'", "", $db_hash_meta );
-		        	$revert_db_nonce 	= wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&post_id=" . get_the_ID()), 'revert_db', 'revert_db_nonce' );
-			        if ( $db_hash[0] != '') {
-		          		$actions['revert_db'] = "<a href='" . $revert_db_nonce ."'>" . __( 'Revert Database', 'revisr' ) . "</a>";
-			        }		        	
-		        }        
-			}
-		}
-		return $actions;
-	}
-
-	/**
-	 * Filters commits by branch.
-	 * @access public
-	 * @param object $commits The commits query.
-	 */
-	public function filters( $commits ) {
-		if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == "revisr_commits" ) {
-			if ( isset( $_GET['branch'] ) && $_GET['branch'] != "all" ) {
-				$commits->set( 'meta_key', 'branch' );
-				$commits->set( 'meta_value', $_GET['branch'] );
-				$commits->set( 'post_type', 'revisr_commits' );
-			}
-		}
-		return $commits;
-	}
-
-	/**
-	 * Counts the number of commits on a given branch.
-	 * @access public
-	 * @param string $branch The name of the branch to count commits for.
-	 */
-	public function count_commits( $branch ) {
-		if ($branch == "all") {
-			$num_commits = $this->wpdb->get_results( "SELECT * FROM " . $this->wpdb->postmeta . " WHERE meta_key = 'branch'" );
-		} else {
-			$num_commits = $this->wpdb->get_results( "SELECT * FROM " . $this->wpdb->postmeta . " WHERE meta_key = 'branch' AND meta_value = '".$branch."'" );
-		}
-		return count( $num_commits );
-	}
-
-	/**
-	 * Unsets unused views, replaced with branches.
-	 * @access public
-	 * @param array $views The global views for the post type.
-	 */
-	public function custom_views( $views ) {
-
-		$output = $this->git->run( 'branch' );
-
-		global $wp_query;
-
-		if ( is_array( $output ) ) {
-			foreach ( $output as $key => $value ) {
-				$branch = substr( $value, 2 );
-	    	    $class = ( $wp_query->query_vars['meta_value'] == $branch ) ? ' class="current"' : '';
-		    	$views["$branch"] = sprintf( __( '<a href="%s"'. $class .'>' . ucwords( $branch ) . ' <span class="count">(%d)</span></a>' ),
-		        admin_url( 'edit.php?post_type=revisr_commits&branch='.$branch ),
-		        $this->count_commits( $branch ) );
-			}
-			if ( $_GET['branch'] == "all" ) {
-				$class = 'class="current"';
-			} else {
-				$class = '';
-			}
-			$views['all'] = sprintf( __( '<a href="%s"' . $class . '>All Branches <span class="count">(%d)</span></a>', 'revisr' ),
-				admin_url( 'edit.php?post_type=revisr_commits&branch=all' ),
-				$this->count_commits( "all" ));
-			unset( $views['publish'] );
-			unset( $views['draft'] );
-			unset( $views['trash'] );
-			if ( isset( $views ) ) {
-				return $views;
-			}
-		}
-
-	}
-
-	/**
-	 * Sets the default view to the current branch on the commit listing.
-	 * @access public
-	 */
-	public function default_views() {
-		if( !isset($_GET['branch'] ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == "revisr_commits") {
-			$_GET['branch'] = $this->git->branch;
-		}
-	}
 	/**
 	 * Displays the number of files changed in the admin bar.
 	 * @access public
 	 */
 	public function admin_bar( $wp_admin_bar ) {
-		if ( $this->git->count_untracked() != 0 ) {
+		if ( $this->git->count_untracked() != 0 && current_user_can( 'activate_plugins' ) ) {
 			$untracked 	= $this->git->count_untracked();
 			$text 		= sprintf( _n( '%s Untracked File', '%s Untracked Files', $untracked, 'revisr' ), $untracked );
 			$args 		= array(
@@ -365,119 +209,27 @@ class Revisr_Setup {
 	}
 
 	/**
-	 * Disables autodraft when on the new commit page.
-	 * @access public
-	 */
-	public function disable_autodraft() {
-		if ( "revisr_commits" == get_post_type() ) {
-			wp_dequeue_script( 'autosave' );
-		}
-	}
-
-	/**
-	 * Displays custom columns for the commits post type.
-	 * @access public
-	 */
-	public function columns() {
-		$columns = array (
-			'cb' 			=> '<input type="checkbox" />',
-			'hash' 			=> __( 'ID', 'revisr' ),
-			'title' 		=> __( 'Commit', 'revisr' ),
-			'branch' 		=> __( 'Branch', 'revisr' ),
-			'tag' 			=> __( 'Tag', 'revisr' ),
-			'files_changed' => __( 'Files Changed', 'revisr' ),
-			'date' 			=> __( 'Date', 'revisr' ),
-		);
-		return $columns;
-	}
-
-	/**
-	 * Displays the number of committed files and the commit hash for commits.
-	 * @access public
-	 * @param string $column The column to add.
-	 */
-	public function custom_columns( $column ) {
-		global $post;
-
-		$post_id = get_the_ID();
-		switch ( $column ) {
-			case "hash": 
-				echo Revisr_Git::get_hash( $post_id );
-			break;
-			case "branch":
-				$branch_meta = get_post_meta( $post_id, "branch" );
-				if ( isset( $branch_meta[0] ) ) {
-					echo $branch_meta[0];
-				}
-			break;
-			case "tag":
-				$tag_meta = get_post_meta( $post_id, "git_tag" );
-				if ( isset( $tag_meta[0] ) ) {
-					echo $tag_meta[0];
-				}
-			break;
-			case "files_changed":
-				$files_meta = get_post_meta( $post_id, "files_changed" );
-				if ( isset( $files_meta[0] ) ) {
-					echo $files_meta[0];
-				}
-			break;
-		}
-
-	}
-
-	/**
-	 * Custom messages for commits.
-	 * @access public
-	 * @param array $messages The messages to pass back to the commits.
-	 */
-	public function revisr_commits_custom_messages( $messages ) {
-		$post = get_post();
-		$messages['revisr_commits'] = array(
-		0  => '', // Unused. Messages start at index 1.
-		1  => __( 'Commit updated.', 'revisr_commits' ),
-		2  => __( 'Custom field updated.', 'revisr_commits' ),
-		3  => __( 'Custom field deleted.', 'revisr_commits' ),
-		4  => __( 'Commit updated.', 'revisr_commits' ),
-		/* translators: %s: date and time of the revision */
-		5  => isset( $_GET['revision'] ) ? sprintf( __( 'Commit restored to revision from %s', 'revisr_commits' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-		6  => __( 'Committed files on branch <strong>' . $this->git->branch . '</strong>.', 'revisr_commits' ),
-		7  => __( 'Commit saved.', 'revisr_commits' ),
-		8  => __( 'Commit submitted.', 'revisr_commits' ),
-		9  => sprintf(
-			__( 'Commit scheduled for: <strong>%1$s</strong>.', 'revisr_commits' ),
-			// translators: Publish box date format, see http://php.net/date
-			date_i18n( __( 'M j, Y @ G:i', 'revisr_commits' ), strtotime( $post->post_date ) )
-		),
-		10 => __( 'Commit draft updated.', 'revisr_commits' ),
-		);
-
-		return $messages;
-	}
-
-	/**
-	 * Custom bulk messages for Revisr.
-	 * @access public
-	 * @param array $bulk_messages The messages to display. 
-	 * @param array $bulk_counts   The number of those messages.
-	 */
-	public function revisr_commits_bulk_messages( $bulk_messages, $bulk_counts ) {
-		$bulk_messages['revisr_commits'] = array(
-			'updated' 	=> _n( '%s commit updated.', '%s commits updated.', $bulk_counts['updated'] ),
-			'locked'    => _n( '%s commit not updated, somebody is editing it.', '%s commits not updated, somebody is editing them.', $bulk_counts['locked'] ),
-			'deleted'   => _n( '%s commit permanently deleted.', '%s commits permanently deleted.', $bulk_counts['deleted'] ),
-			'trashed'   => _n( '%s commit moved to the Trash.', '%s commits moved to the Trash.', $bulk_counts['trashed'] ),
-        	'untrashed' => _n( '%s commit restored from the Trash.', '%s commits restored from the Trash.', $bulk_counts['untrashed'] )
-        	);
-		return $bulk_messages;
-	}
-
-	/**
 	 * Displays the form to delete a branch.
 	 * @access public
 	 */
 	public function delete_branch_form() {
-		include_once $this->dir . "../assets/partials/delete-branch-form.php";
+		include_once REVISR_PATH . 'assets/partials/delete-branch-form.php';
+	}
+
+	/**
+	 * Displays the form to merge a branch.
+	 * @access public
+	 */
+	public function merge_branch_form() {
+		include_once REVISR_PATH . 'assets/partials/merge-form.php';
+	}
+
+	/**
+	 * Displays the form to pull a remote branch.
+	 * @access public
+	 */
+	public function import_tables_form() {
+		include_once REVISR_PATH . 'assets/partials/import-tables-form.php';
 	}
 
 	/**
@@ -486,8 +238,8 @@ class Revisr_Setup {
 	 */
 	public static function recent_activity() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . 'revisr';
-		$revisr_events = $wpdb->get_results( "SELECT id, time, message FROM $table_name ORDER BY id DESC LIMIT 15", ARRAY_A );
+		$table_name 	= $wpdb->prefix . 'revisr';
+		$revisr_events 	= $wpdb->get_results( "SELECT id, time, message FROM $table_name ORDER BY id DESC LIMIT 15", ARRAY_A );
 		if ( $revisr_events ) {
 			?>
 			<table class="widefat">
@@ -510,7 +262,40 @@ class Revisr_Setup {
 			exit();
 		}
 	}
-	
+
+	/**
+	 * Updates user settings to be compatible with 1.8.
+	 * @access public
+	 */
+	public function do_upgrade() {
+
+		// Check for the "auto_push" option and save it to the config.
+		if ( isset( $this->options['auto_push'] ) ) {
+			$this->git->config_revisr_option( 'auto-push', 'true' );
+		}
+
+		// Check for the "auto_pull" option and save it to the config.
+		if ( isset( $this->options['auto_pull'] ) ) {
+			$this->git->config_revisr_option( 'auto-pull', 'true' );
+		}
+
+		// Check for the "reset_db" option and save it to the config.
+		if ( isset( $this->options['reset_db'] ) ) {
+			$this->git->config_revisr_option( 'import-checkouts', 'true' );
+		}
+
+		// Check for the "mysql_path" option and save it to the config.
+		if ( isset( $this->options['mysql_path'] ) ) {
+			$this->git->config_revisr_path( 'mysql', $this->options['mysql_path'] );
+		}
+
+		// Configure the database tracking to use all tables, as this was how it behaved in 1.7.
+		$this->git->config_revisr_option( 'db_tracking', 'all_tables' );
+
+		// We're done here.
+		update_option( 'revisr_db_version', '1.1' );
+	}
+
 	/**
 	 * Displays the "Sponsored by Site5" logo.
 	 * @access public
@@ -528,7 +313,7 @@ class Revisr_Setup {
 			?>
 			<div id="site5_wrapper">
 				<?php _e( 'Sponsored by', 'revisr' ); ?>
-				<a href="http://www.site5.com/" target="_blank"><img id="site5_logo" src="<?php echo plugins_url( 'revisr/assets/img/site5.png' ); ?>" width="80" /></a>
+				<a href="http://www.site5.com/" target="_blank"><img id="site5_logo" src="<?php echo REVISR_URL . 'assets/img/site5.png'; ?>" width="80" /></a>
 			</div>
 			<?php
 		}

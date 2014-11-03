@@ -9,12 +9,13 @@
  * @link      https://revisr.io
  * @copyright 2014 Expanded Fronts, LLC
  */
-$styles_url = get_admin_url() . "load-styles.php?c=0&dir=ltr&load=dashicons,admin-bar,wp-admin,buttons,wp-auth-check";
+$styles_url 	= REVISR_URL . 'assets/css/thickbox.css';
+$confirmation 	= sprintf( __( 'Are you sure you want to delete this branch?<br>This will delete all local work on branch <strong>%s</strong>', 'revisr' ), $_GET['branch'] );
 ?>
 <link href="<?php echo $styles_url; ?>" rel="stylesheet" type="text/css">
 <div class="container" style="padding:10px">
 	<form action="<?php echo get_admin_url(); ?>admin-post.php" method="post">
-		<p><?php _e( 'Are you sure you want to delete this branch? This will delete all local work on this branch.', 'revisr' ); ?></p>
+		<p style="text-align:center;"><?php echo $confirmation; ?></p>
 		<input type="checkbox" id="delete_remote_branch" name="delete_remote_branch">
 		<label for="delete_remote_branch"><?php _e( 'Also delete this branch from the remote repository.', 'revisr' ); ?></label>
 		<input type="hidden" name="action" value="process_delete_branch">

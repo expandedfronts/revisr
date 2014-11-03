@@ -10,33 +10,38 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
-//Needed for callbacks.
-include_once 'class-revisr-admin.php';
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Revisr_Git {
 
 	/**
 	 * The current branch of the local repository.
+	 * @var string
 	 */
 	public $branch;
 
 	/**
-	 * The top-level Git directory ( '.git/' ).
+	 * The top-level Git directory.
+	 * @var string
 	 */
 	public $dir;
 
 	/**
 	 * The short SHA1 hash of the current state of the repository.
+	 * @var string
 	 */
 	public $hash;
 
 	/**
 	 * User options and preferences.
+	 * @var array
 	 */
 	public $options;
 
 	/**
 	 * The name of the active remote.
+	 * @var string
 	 */
 	public $remote;
 
@@ -57,7 +62,7 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function auto_push() {
-		if ( isset( $this->options['auto_push'] ) && $this->options['auto_push'] == 'on' ) {
+		if ( $this->config_revisr_option( 'auto-push' ) === 'true' ) {
 			$this->push();
 		}
 	}
@@ -74,19 +79,19 @@ class Revisr_Git {
 	/**
 	 * Commits any staged files to the local repository.
 	 * @access public
-	 * @param string $message 	The message to use with the commit.
-	 * @param string $callback 	The callback to run.
+	 * @param  string $message 		The message to use with the commit.
+	 * @param  string $callback 	The callback to run.
 	 */
 	public function commit( $message, $callback = '' ) {
 		$commit_message = escapeshellarg($message);
-		$commit = $this->run( "commit -m$commit_message", $callback );
+		$commit 		= $this->run( "commit -m$commit_message", $callback );
 		return $commit;
 	}
 
 	/**
 	 * Gets or sets the user's email address stored in Git.
 	 * @access public
-	 * @param string $user_email If provided, will update the user's email.
+	 * @param  string $user_email If provided, will update the user's email.
 	 */
 	public function config_user_email( $user_email = '' ) {
 		$email = $this->run( "config user.email $user_email" );
@@ -96,11 +101,64 @@ class Revisr_Git {
 	/**
 	 * Gets or sets the username stored in Git.
 	 * @access public
-	 * @param string $username If provided, will update the username.
+	 * @param  string $username If provided, will update the username.
 	 */
 	public function config_user_name( $username = '' ) {
 		$username = $this->run( "config user.name $username" );
 		return $username;
+	}
+
+	/**
+	 * Stores or retrieves options into the 'revisr' block of the '.git/config'.
+	 * This is necessary for Revisr to be environment agnostic, even if the 'wp_options'
+	 * table is tracked and subsequently imported.
+	 * @access public
+	 * @param  string $option 	The name of the option to store.
+	 * @param  string $value 	The value of the option to store.
+	 */
+	public function config_revisr_option( $option, $value = '' ) {
+		if ( $value != '' ) {
+			$this->run( "config revisr.$option $value" );
+		}
+
+		// Retrieve the data for verification/comparison.
+		$data = $this->run( "config revisr.$option" );
+		if ( is_array( $data ) ) {
+			return $data[0];
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Stores URLs for Revisr to the .git/config (to be environment-agnostic).
+	 * @access public
+	 * @param  string $env The associated environment.
+	 * @param  string $url The URL to store.
+	 */
+	public function config_revisr_url( $env, $url = '' ) {
+		if ( $url != '' ) {
+			$this->run( "config revisr.$env-url $url" );
+		}
+
+		// Retrieve the URL for using elsewhere.
+		$data = $this->run( "config revisr.$env-url" );
+		if ( is_array( $data ) ) {
+			return $data[0];
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Stores environment paths to .git/config (to be environment-agnostic).
+	 * @access public
+	 * @param  string $service 	For ex., git or mysql
+	 * @param  string $path 	The path to store.
+	 */
+	public function config_revisr_path( $service, $path = '' ) {
+		$revisr_path = $this->run( "config revisr.$service-path $path" );
+		return $revisr_path;
 	}
 
 	/**
@@ -142,7 +200,7 @@ class Revisr_Git {
 	/**
 	 * Creates a new branch.
 	 * @access public
-	 * @param string $branch The name of the branch to create.
+	 * @param  string $branch The name of the branch to create.
 	 */
 	public function create_branch( $branch ) {
 		$new_branch = $this->run( "branch $branch" );
@@ -181,9 +239,6 @@ class Revisr_Git {
 		if ( $dir ) {
 			return $dir;
 		} else {
-			$url = get_admin_url() . 'admin-post.php?action=init_repo';
-			$alert = sprintf( __( 'Thanks for installing Revisr! No Git repository was detected, <a href="%s">click here</a> to create one.', 'revisr' ), $url );
-			Revisr_Admin::alert( $alert );
 			return ABSPATH;
 		}
 	}
@@ -203,7 +258,7 @@ class Revisr_Git {
 	/**
 	 * Deletes a branch.
 	 * @access public
-	 * @param string $branch The branch to delete.
+	 * @param  string $branch The branch to delete.
 	 */
 	public function delete_branch( $branch ) {
 		$deletion = $this->run( "branch -D $branch", __FUNCTION__, $branch );
@@ -220,18 +275,23 @@ class Revisr_Git {
 	}
 
 	/**
-	 * Returns available branches on the local repository.
+	 * Returns available branches on the local or remote repository.
 	 * @access public
+	 * @param  boolean $remote If set to true, will retrieve the remote branches.
 	 */
-	public function get_branches() {
-		$branches = $this->run( 'branch' );
+	public function get_branches( $remote = false ) {
+		if ( $remote == true ) {
+			$branches = $this->run( 'branch -r' );
+		} else {
+			$branches = $this->run( 'branch' );
+		}
 		return $branches;
 	}
 
 	/**
 	 * Returns the commit hash for a specific commit.
 	 * @access public
-	 * @param int $post_id The ID of the associated post.
+	 * @param  int $post_id The ID of the associated post.
 	 */
 	public static function get_hash( $post_id ) {
 		$commit_meta = maybe_unserialize( get_post_meta( $post_id, "commit_hash" ) );		
@@ -257,7 +317,7 @@ class Revisr_Git {
 	/**
 	 * Returns the status of a file.
 	 * @access public
-	 * @param string $status The status code returned via 'git status --short'
+	 * @param  string $status The status code returned via 'git status --short'
 	 */
 	public static function get_status( $status ) {
 		if ( strpos( $status, 'M' ) !== false ){
@@ -292,7 +352,7 @@ class Revisr_Git {
 	/**
 	 * Checks if a given branch name exists in the local repository.
 	 * @access public
-	 * @param string $branch The branch to check.
+	 * @param  string $branch The branch to check.
 	 */
 	public function is_branch( $branch ) {
 		$branches = $this->get_branches();
@@ -319,11 +379,11 @@ class Revisr_Git {
 	/**
 	 * Merges a branch into the current branch.
 	 * @access public
-	 * @param string $branch The branch to merge into the current branch.
+	 * @param  string $branch The branch to merge into the current branch.
 	 */
 	public function merge( $branch ) {
 		$this->reset();
-		$merge = $this->run( "merge $branch --strategy-option ours", __FUNCTION__ );
+		$merge = $this->run( "merge $branch --strategy-option theirs", __FUNCTION__ );
 		return $merge;
 	}
 
@@ -333,7 +393,7 @@ class Revisr_Git {
 	 */
 	public function pull() {
 		$this->reset();
-		$pull = $this->run( "pull {$this->remote} {$this->branch}", __FUNCTION__, $this->count_unpulled( false ) );
+		$pull = $this->run( "pull -Xtheirs --quiet {$this->remote} {$this->branch}", __FUNCTION__, $this->count_unpulled( false ) );
 		return $pull;
 	}
 
@@ -350,9 +410,9 @@ class Revisr_Git {
 	/**
 	 * Resets the working directory.
 	 * @access public
-	 * @param string 	$mode	The mode to use for the reset (hard, soft, etc.).
-	 * @param string 	$path 	The path to apply the reset to.
-	 * @param bool 		$clean 	Whether to remove any untracked files.
+	 * @param  string 	$mode	The mode to use for the reset (hard, soft, etc.).
+	 * @param  string 	$path 	The path to apply the reset to.
+	 * @param  bool 	$clean 	Whether to remove any untracked files.
 	 */
 	public function reset( $mode = '--hard', $path = 'HEAD', $clean = false ) {
 		$this->run( "reset $mode $path" );
@@ -364,7 +424,7 @@ class Revisr_Git {
 	/**
 	 * Reverts the working directory to a specified commit.
 	 * @access public
-	 * @param string $commit The hash of the commit to revert to.
+	 * @param  string $commit The hash of the commit to revert to.
 	 */
 	public function revert( $commit ) {
 		$this->reset( '--hard', 'HEAD', true );
@@ -375,16 +435,20 @@ class Revisr_Git {
 	/**
 	 * Executes a Git command.
 	 * @access public
-	 * @param string 	$command 		The git command to execute.
-	 * @param string 	$callback 	    The function to callback on response.
-	 * @param string 	$args 			Optional additional arguements to pass to the callback.
+	 * @param  string 	$command 		The git command to execute.
+	 * @param  string 	$callback 	    The function to callback on response.
+	 * @param  string 	$args 			Optional additional arguements to pass to the callback.
 	 */
 	public function run( $command, $callback = '', $args = '' ) {
+		
+		// Run the actual Git command.
 		$cmd = "git $command";
 		$dir = getcwd();
 		chdir( $this->dir );
 		exec( $cmd, $output, $error );
 		chdir( $dir );
+		
+		// If using a callback, initiate the callback class and call the function.
 		if ( $callback != '' ) {
 			$response 			= new Revisr_Git_Callback;
 			$success_callback 	= 'success_' . $callback;
@@ -395,6 +459,8 @@ class Revisr_Git {
 				return $response->$success_callback( $output, $args );
 			}
 		}
+
+		// If not using a callback, return the output (or false on failure).
 		if ( ! $error ) {
 			return $output;
 		} else {
@@ -405,30 +471,37 @@ class Revisr_Git {
 	/**
 	 * Stages the array of files passed through the New Commit screen.
 	 * @access public
-	 * @param array $staged_files The files to add/remove
+	 * @param  array $staged_files The files to add/remove
 	 */
 	public function stage_files( $staged_files ) {
+		$errors = array();
+		
 		foreach ( $staged_files as $result ) {
-			$file = substr( $result, 3 );
+			$file 	= substr( $result, 3 );
 			$status = Revisr_Git::get_status( substr( $result, 0, 2 ) );
+			
 			if ( $status == __( 'Deleted', 'revisr' ) ) {
 				if ( $this->run( "rm {$file}" ) === false ) {
-					$error = sprintf( __( 'Error removing "%s" from the repository.', 'revisr' ), $file );
-					Revisr_Admin::log( $error, 'error' );
+					$errors[] = $file;
 				}
 			} else {
 				if ( $this->run( "add {$file}" ) === false ) {
-					$error = sprintf( __( 'Error adding "%s" to the repository.', 'revisr' ), $file );
-					Revisr_Admin::log( $error, 'error' );
+					$errors[] = $file;
 				}
 			}
+		}
+
+		if ( ! empty( $errors ) ) {
+			$msg = __( 'There was an error staging the files. Please check the settings and try again.', 'revisr' );
+			Revisr_Admin::alert( $msg, true );
+			Revisr_Admin::log( __( 'Error staging files.', 'revisr' ), 'error' );
 		}
 	}	
 
 	/**
 	 * Returns the current status.
 	 * @access public
-	 * @param string $args Defaults to "--short".
+	 * @param  string $args Defaults to "--short".
 	 */
 	public function status( $args = '--short' ) {
 		$status = $this->run( "status $args" );
@@ -438,7 +511,7 @@ class Revisr_Git {
 	/**
 	 * Adds a tag to the repository, or returns a list of tags if no parameters are passed.
 	 * @access public
-	 * @param string $tag 		The tag to add.
+	 * @param  string $tag 		The tag to add.
 	 */
 	public function tag( $tag = '' ) {
 		$tag = $this->run( "tag $tag" );
@@ -448,7 +521,7 @@ class Revisr_Git {
 	/**
 	 * Pings a remote repository to verify that it exists and is reachable.
 	 * @access public
-	 * @param string $remote The remote to ping.
+	 * @param  string $remote The remote to ping.
 	 */
 	public function verify_remote( $remote = '' ) {
 		if ( $remote != '' ) {

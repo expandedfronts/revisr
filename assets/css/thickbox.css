@@ -1,0 +1,12 @@
+/* Thickbox Styles */
+html {
+	background-color: #f1f1f1;
+	color: #444;
+	font-family: "Open Sans",sans-serif;
+	font-size: 13px;
+	line-height: 1.4em;
+}
+input[type="text"] {
+	height: 25px;
+	font-size: 13px;
+}
