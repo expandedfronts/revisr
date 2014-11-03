@@ -10,7 +10,7 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 $styles_url = REVISR_URL . 'assets/css/thickbox.css';
-$merge_text = sprintf( __( 'This will merge changes from branch <strong>%s</strong> into the current branch. In the event of conflicts, Revisr will keep the version from the branch being merged in.', 'revisr'), $_GET['branch'] );
+$merge_text = sprintf( __( 'This will merge changes from branch <strong>%s</strong> into the current branch. In the event of conflicts, Revisr will keep the version from the branch being merged in.', 'revisr' ), $_GET['branch'] );
 ?>
 <link href="<?php echo $styles_url; ?>" rel="stylesheet" type="text/css">
 <div class="container" style="padding:10px">

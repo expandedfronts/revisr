@@ -175,6 +175,20 @@ class Revisr_Process {
 	}
 
 	/**
+	 * Processes the import of additional (new) tables.
+	 * @access public
+	 */
+	public function process_import() {
+		if ( isset( $_REQUEST['revisr_import_untracked'] ) && is_array( $_REQUEST['revisr_import_untracked'] ) ) {
+			$this->db->import( $_REQUEST['revisr_import_untracked'] );
+			_e( 'Importing...', 'revisr' );
+			echo "<script>
+					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_success&branch={$branch}'
+			</script>";
+		}
+	}
+
+	/**
 	 * Processes the request to merge a branch into the current branch.
 	 * @access public
 	 */
