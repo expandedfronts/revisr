@@ -20,7 +20,7 @@ $tables 	= $db->get_tables_not_in_db();
 		<p><?php _e( 'The following new tables were added to the repository, but not automatically imported due to your tracking settings. Check any tables that you\'d like to import and click "Import" to continue.', 'revisr' ); ?></p>
 		<?php
 			foreach ( $tables as $table ) {
-				echo "<input id='$table' type='checkbox' name='revisr_import_untracked[]' /><label for='$table'>$table</label><br />";
+				echo "<input id='$table' type='checkbox' name='revisr_import_untracked[]' value='$table' /><label for='$table'>$table</label><br />";
 			}
 		?>
 		<input type="hidden" name="action" value="process_import">
