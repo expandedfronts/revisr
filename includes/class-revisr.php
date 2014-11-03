@@ -126,6 +126,7 @@ class Revisr {
 		add_action( 'admin_post_process_create_branch', array( $revisr_process, 'process_create_branch' ) );
 		add_action( 'admin_post_process_delete_branch', array( $revisr_process, 'process_delete_branch' ) );
 		add_action( 'admin_post_process_merge', array( $revisr_process, 'process_merge' ) );
+		add_action( 'admin_post_process_import', array( $revisr_process, 'process_import' ) );
 		add_action( 'admin_post_init_repo', array( $revisr_process, 'process_init' ) );
 		add_action( 'admin_post_process_revert', array( $revisr_process, 'process_revert' ) );
 		add_action( 'admin_post_process_view_diff', array( $revisr_process, 'process_view_diff' ) );
