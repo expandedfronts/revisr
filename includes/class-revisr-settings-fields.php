@@ -287,11 +287,13 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function auto_push_callback() {
-		if ( isset( $_GET['settings-updated'] ) && isset( $this->options['auto_push'] ) ) {
-			$this->git->config_revisr_option( 'auto-push', 'true' );
-		} else {
-			$this->git->run( 'config --unset-all revisr.auto-push' );
-		}
+		if ( isset( $_GET['settings-updated'] ) ) {
+			if ( isset( $this->options['auto_push'] ) ) {
+				$this->git->config_revisr_option( 'auto-push', 'true' );
+			} else {
+				$this->git->run( 'config --unset revisr.auto-push' );
+			}
+		} 
 		
 		if ( $this->git->config_revisr_option( 'auto-push' ) === 'true' ) {
 			$checked = 'checked';
@@ -312,10 +314,12 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function auto_pull_callback() {
-		if ( isset( $_GET['settings-updated'] ) && isset( $this->options['auto_pull'] ) ) {
-			$this->git->config_revisr_option( 'auto-pull', 'true' );
-		} else {
-			$this->git->run( 'config --unset-all revisr.auto-pull' );
+		if ( isset( $_GET['settings-updated'] ) ) {
+			if ( isset( $this->options['auto_pull'] ) ) {
+				$this->git->config_revisr_option( 'auto-pull', 'true' );
+			} else {
+				$this->git->run( 'config --unset revisr.auto-pull' );
+			}
 		}
 
 		if ( $this->git->config_revisr_option( 'auto-pull' ) === 'true' ) {

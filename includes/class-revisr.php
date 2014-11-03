@@ -154,7 +154,7 @@ class Revisr {
 		add_action( 'wp_ajax_recent_activity', array( $revisr_setup, 'recent_activity' ) );
 		$revisr_settings = new Revisr_Settings( $this->options );
 
-		if ( get_option( 'revisr_db_version') === '1.0' ) {
+		if ( get_option( 'revisr_db_version' ) === '1.0' ) {
 			add_action( 'admin_init', array( $revisr_setup, 'do_upgrade' ) );
 		}
 	}
