@@ -8,8 +8,8 @@ Revisr allows you to manage your WordPress website with a Git repository. With R
 * Commit changes from within the WordPress dashboard
 * Backup or restore your entire website in seconds
 * Set up daily or weekly automatic backups
-* Optionally push or pull changes to a remote repository, like Bitbucket or Github.
-* Test changes out before deploying them
+* Optionally push or pull changes to a remote repository, like Bitbucket or Github
+* Test changes out before deploying them to another server
 * Revert your website files and/or database to an earlier version
 * Quickly discard any unwanted changes
 
@@ -38,7 +38,6 @@ content: Deny from all
 `
 
 If you're using NGINX, you'll have to update your configuration file with something similar to the following:
-
 `
 location ~ path/to/your-repo/.git {
         deny  all;
@@ -47,23 +46,20 @@ location ~ path/to/your-repo/.git {
 
 This issue can be avoided entirely by using SSH to authenticate, which is recommended in most cases. If using SSH, you will need to generate a SSH key on the server and add it to the remote repository (Bitbucket and Github both support SSH).
 
-You should also make sure that the .sql backup files aren't publicly accessible. You can do this in Apache by adding the folling to your .htaccess file in the document root:
-
-`
-<FilesMatch "\.sql">
-    Order allow,deny
-    Deny from all
-    Satisfy All
-</FilesMatch>
-`
-If you're using NGINX, something similar to the below should work:
-`
-location ~ \.sql { deny all; }
-`
-
 It is also adviseable to add Revisr to the gitignore file via the settings page to make sure that reverts don't rollback the plugins' functionality. 
 
 ## Changelog ##
+
+#### 1.8 ####
+* Added ability to track individual database tables
+* Added ability to import tracked database tables while pulling changes
+* Added ability to run a safe search/replace on the database during import to support multiple environments (supports serialization)
+* Added unique token to the webhook to improve security (existing webhooks will need to be updated)
+* Added fallback to the WordPress database class if mysqldump is not available
+* Moved backups to 'wp-content/uploads/revisr-backups/' (path may vary) and automatically generate .htaccess
+* Updated pending files count to only show for admins
+* Updated error handling for commits
+* Small UI improvements
 
 #### 1.7.2 ####
 * Tweaked permissions check to only check permissions if repository exists.
