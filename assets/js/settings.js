@@ -26,6 +26,12 @@
 	}
 
 	jQuery( '#post-hook' ).hide();
+
+	if ( jQuery("#auto_pull").prop('checked') === true ) {
+		jQuery( '#post-hook').show();
+	}
+
+
 	jQuery( '#auto_pull' ).change( function() {
   		if ( this.checked ) {
     		jQuery( '#post-hook' ).fadeIn( 'fast' );
