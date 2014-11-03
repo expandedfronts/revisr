@@ -190,10 +190,11 @@ class Revisr_DB {
 	 * @return array
 	 */
 	public function get_tracked_tables() {
+		$stored_tables = $this->git->run( 'config --get-all revisr.tracked-tables' );
 		if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'all_tables' ) {
 			$tracked_tables = $this->get_tables();
-		} elseif ( isset( $this->options['tracked_tables'] ) && is_array( $this->options['tracked_tables'] ) ) {
-			$tracked_tables = array_intersect( $this->options['tracked_tables'], $this->get_tables() );
+		} elseif ( is_array( $stored_tables ) ) {
+			$tracked_tables = array_intersect( $stored_tables, $this->get_tables() );
 		} else {
 			$tracked_tables = array();
 		}
@@ -458,7 +459,7 @@ class Revisr_DB {
 	 * @access public
 	 */
 	public function restore() {
-		if ( isset($_GET['revert_db_nonce']) && wp_verify_nonce( $_GET['revert_db_nonce'], 'revert_db' ) ) {
+		if ( isset( $_GET['revert_db_nonce'] ) ) {
 
 			$branch = $_GET['branch'];
 			

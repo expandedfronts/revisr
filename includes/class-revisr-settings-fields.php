@@ -287,10 +287,22 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function auto_push_callback() {
+		if ( isset( $_GET['settings-updated'] ) && isset( $this->options['auto_push'] ) ) {
+			$this->git->config_revisr_option( 'auto-push', 'true' );
+		} else {
+			$this->git->run( 'config --unset-all revisr.auto-push' );
+		}
+		
+		if ( $this->git->config_revisr_option( 'auto-push' ) === 'true' ) {
+			$checked = 'checked';
+		} else {
+			$checked = '';
+		}
+
 		printf(
 			'<input type="checkbox" id="auto_push" name="revisr_remote_settings[auto_push]" %s />
 			<label for="auto_push">%s</label>',
-			isset( $this->options['auto_push'] ) ? "checked" : '',
+			$checked,
 			__( 'Check to automatically push new commits to the remote repository.', 'revisr' )
 		);		
 	}
@@ -300,10 +312,22 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function auto_pull_callback() {
+		if ( isset( $_GET['settings-updated'] ) && isset( $this->options['auto_pull'] ) ) {
+			$this->git->config_revisr_option( 'auto-pull', 'true' );
+		} else {
+			$this->git->run( 'config --unset-all revisr.auto-pull' );
+		}
+
+		if ( $this->git->config_revisr_option( 'auto-pull' ) === 'true' ) {
+			$checked = 'checked';
+		} else {
+			$checked = '';
+		}
+
 		printf(
 			'<input type="checkbox" id="auto_pull" name="revisr_remote_settings[auto_pull]" %s />
 			<label for="auto_pull">%s</label>',
-			isset( $this->options['auto_pull'] ) ? "checked" : '',
+			$checked,
 			__( 'Check to allow Revisr to automatically pull commits from a remote repository.', 'revisr' )
 		);
 		$remote 	= new Revisr_Remote();
@@ -331,11 +355,28 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function tracked_tables_callback() {
-		if ( isset( $this->options['db_tracking'] ) ) {
-			$db_tracking = $this->options['db_tracking'];
+		if ( $this->is_updated( 'db_tracking' ) ) {
+			$this->git->config_revisr_option( 'db-tracking', $this->options['db_tracking'] );
+		}
+
+		$check_tracking = $this->git->run( 'config revisr.db-tracking' );
+		if ( is_array( $check_tracking ) ) {
+			$db_tracking = $check_tracking[0];
+			if ( $db_tracking == 'custom' ) {
+				if ( $this->is_updated( 'tracked_tables' ) ) {
+					$this->git->run( 'config --unset-all revisr.tracked-tables' );
+					$tables = $this->options['tracked_tables'];
+					foreach ( $tables as $table ) {
+						$this->git->run( "config --add revisr.tracked-tables $table" );
+					}
+				}
+			} else {
+				$this->git->run( 'config --unset-all revisr.tracked-tables' );
+			}
 		} else {
 			$db_tracking = '';
 		}
+
 		?>
 		<select id="db-tracking-select" name="revisr_database_settings[db_tracking]">
 			<option value="all_tables" <?php selected( $db_tracking, 'all_tables' ); ?>><?php _e( 'All Tables', 'revisr' ); ?></option>
@@ -425,13 +466,31 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function reset_db_callback() {
+		if ( isset( $_GET['settings-updated'] ) ) {
+			
+			if ( isset( $this->options['reset_db'] ) ) {
+				$this->git->config_revisr_option( 'import-checkouts', 'true' );
+			} else {
+				$this->git->run( 'config --unset-all revisr.import-checkouts' );
+			}
+
+			if ( isset( $this->options['import_db'] ) ) {
+				$this->git->config_revisr_option( 'import-pulls', 'true' );
+			} else {
+				$this->git->run( 'config --unset-all revisr.import-pulls' );
+			}
+		}
+
+		$get_reset 	= $this->git->run( 'config revisr.import-checkouts' );
+		$get_import = $this->git->run( 'config revisr.import-pulls' );
+
 		printf(
 			'<input type="checkbox" id="reset_db" name="revisr_database_settings[reset_db]" %s /><label for="reset_db">%s</label><br><br>
 			<input type="checkbox" id="import_db" name="revisr_database_settings[import_db]" %s /><label for="import_db">%s</label><br><br>
 			<p class="description revisr-description">%s</p>',
-			isset( $this->options['reset_db'] ) ? "checked" : '',
+			is_array( $get_reset ) ? "checked" : '',
 			__( 'Import database when changing branches?', 'revisr' ),
-			isset( $this->options['import_db'] ) ? "checked" : '',
+			is_array( $get_import ) ? "checked" : '',
 			__( 'Import database when pulling commits?', 'revisr' ),
 			__( 'If checked, Revisr will automatically import the above tracked tables while pulling from or checking out a branch. The tracked tables will be backed up beforehand to provide a restore point immediately prior to the import. Use this feature with caution and only after verifying that you have a full backup of your website.', 'revisr' )
 		);		

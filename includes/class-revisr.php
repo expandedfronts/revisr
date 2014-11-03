@@ -132,10 +132,7 @@ class Revisr {
 		add_action( 'wp_ajax_discard', array( $revisr_process, 'process_discard' ) );
 		add_action( 'wp_ajax_process_push', array( $revisr_process, 'process_push' ) );
 		add_action( 'wp_ajax_process_pull', array( $revisr_process, 'process_pull' ) );
-
-		if ( isset( $this->options['auto_pull'] ) ) {
-			add_action( 'admin_post_nopriv_revisr_update', array( $revisr_process, 'process_pull' ) );
-		}
+		add_action( 'admin_post_nopriv_revisr_update', array( $revisr_process, 'process_pull' ) );
 	}
 
 	/**
@@ -268,6 +265,8 @@ class Revisr {
 		
 	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	   	dbDelta( $sql );
-	   	add_option( 'revisr_db_version', '1.0' );
-	}	
+	   	if ( get_option( 'revisr_db_version' ) === false ) {
+	   		add_option( 'revisr_db_version', '1.1' );
+	   	}
+	}
 }

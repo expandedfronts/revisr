@@ -65,7 +65,7 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_checkout( $args = '', $new_branch = false ) {
-		if ( isset( $this->options['reset_db'] ) ) {
+		if ( $this->git->config_revisr_option( 'import-checkouts' ) === 'true' ) {
 			$this->db->backup();
 		}
 
@@ -78,7 +78,7 @@ class Revisr_Process {
 		$this->git->reset();
 		$this->git->checkout( $branch );
 		
-		if ( isset( $this->options['reset_db'] ) && $new_branch === false ) {
+		if ( $this->git->config_revisr_option( 'import-checkouts' ) === 'true' && $new_branch === false ) {
 			$this->db->import();
 		}
 		$url = get_admin_url() . 'admin.php?page=revisr';
@@ -193,9 +193,11 @@ class Revisr_Process {
 		// Determine whether this is a request from the dashboard or a POST request.
 		$from_dash = check_ajax_referer( 'dashboard_nonce', 'security', false );
 		if ( $from_dash == false ) {
-			if ( ! isset( $this->options['auto_pull'] ) ) {
+
+			if ( $this->git->config_revisr_option( 'import-pulls' ) !== 'true' ) {
 				wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 			}
+
 			$remote = new Revisr_Remote();
 			$remote->check_token();
 		}
@@ -233,7 +235,7 @@ class Revisr_Process {
 				}
 			}
 		}
-		if ( isset( $this->options['import_db'] ) ) {
+		if ( $this->git->config_revisr_option( 'import-pulls' ) === 'true' ) {
 			$this->db->backup();
 			$undo_hash = $this->git->current_commit();
 			$this->git->run( "config --add revisr.last-db-backup $undo_hash" );

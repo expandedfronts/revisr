@@ -62,7 +62,7 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function auto_push() {
-		if ( isset( $this->options['auto_push'] ) && $this->options['auto_push'] == 'on' ) {
+		if ( $this->config_revisr_option( 'auto-push' ) === 'true' ) {
 			$this->push();
 		}
 	}
@@ -106,6 +106,28 @@ class Revisr_Git {
 	public function config_user_name( $username = '' ) {
 		$username = $this->run( "config user.name $username" );
 		return $username;
+	}
+
+	/**
+	 * Stores or retrieves options into the 'revisr' block of the '.git/config'.
+	 * This is necessary for Revisr to be environment agnostic, even if the 'wp_options'
+	 * table is tracked and subsequently imported.
+	 * @access public
+	 * @param  string $option 	The name of the option to store.
+	 * @param  string $value 	The value of the option to store.
+	 */
+	public function config_revisr_option( $option, $value = '' ) {
+		if ( $value != '' ) {
+			$this->run( "config revisr.$option $value" );
+		}
+
+		// Retrieve the data for verification/comparison.
+		$data = $this->run( "config revisr.$option" );
+		if ( is_array( $data ) ) {
+			return $data[0];
+		} else {
+			return false;
+		}
 	}
 
 	/**
