@@ -153,6 +153,10 @@ class Revisr {
 		add_filter( 'custom_menu_order', array( $revisr_setup, 'revisr_commits_submenu_order' ) );
 		add_action( 'wp_ajax_recent_activity', array( $revisr_setup, 'recent_activity' ) );
 		$revisr_settings = new Revisr_Settings( $this->options );
+
+		if ( get_option( 'revisr_db_version') === '1.0' ) {
+			add_action( 'admin_init', array( $revisr_setup, 'do_upgrade' ) );
+		}
 	}
 
 	/**
