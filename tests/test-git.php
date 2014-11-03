@@ -57,7 +57,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	function test_config_revisr_url() {
 		$this->git->config_revisr_url( 'dev', 'http://revisr.io' );
 		$current_url = $this->git->config_revisr_url( 'dev' );
-		$this->assertEquals( 'http://revisr.io', $current_url[0] );
+		$this->assertEquals( 'http://revisr.io', $current_url );
 	}
 
 	/**

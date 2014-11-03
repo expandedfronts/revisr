@@ -270,8 +270,8 @@ class Revisr_Settings_Fields {
 
 		// Grab the URL from the .git/config as it MAY be replaced in the database.
 		$get_url = $this->git->config_revisr_url( 'webhook' );
-		if ( is_array( $get_url ) ) {
-			$webhook_url = $get_url[0];
+		if ( $get_url !== false ) {
+			$webhook_url = $get_url;
 		} else {
 			$webhook_url = '';
 		}
@@ -422,8 +422,8 @@ class Revisr_Settings_Fields {
 
 		// Grab the URL from the .git/config as it will be replaced in the database.
 		$get_url = $this->git->config_revisr_url( 'dev' );
-		if ( is_array( $get_url ) ) {
-			$dev_url = $get_url[0];
+		if ( $get_url !== false ) {
+			$dev_url = $get_url;
 		} else {
 			$dev_url = '';
 		}

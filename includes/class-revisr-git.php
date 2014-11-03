@@ -137,8 +137,17 @@ class Revisr_Git {
 	 * @param  string $url The URL to store.
 	 */
 	public function config_revisr_url( $env, $url = '' ) {
-		$revisr_url = $this->run( "config revisr.$env-url $url" );
-		return $revisr_url;
+		if ( $url != '' ) {
+			$this->run( "config revisr.$env-url $url" );
+		}
+
+		// Retrieve the URL for using elsewhere.
+		$data = $this->run( "config revisr.$env-url" );
+		if ( is_array( $data ) ) {
+			return $data[0];
+		} else {
+			return false;
+		}
 	}
 
 	/**

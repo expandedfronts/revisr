@@ -239,8 +239,7 @@ class Revisr_Git_Callback extends Revisr_Git {
 		$msg = sprintf( _n( 'Successfully pushed %s commit to %s/%s.', 'Successfully pushed %s commits to %s/%s.', $args, 'revisr' ), $args, $this->remote, $this->branch );
 		Revisr_Admin::alert( $msg );
 		Revisr_Admin::log( $msg, 'push' );
-		$get_webhook = $this->config_revisr_url( 'webhook' );
-		if ( is_array( $get_webhook ) ) {
+		if ( $this->config_revisr_url( 'webhook' ) !== false ) {
 			$remote = new Revisr_Remote();
 			$remote->send_request();
 		}
