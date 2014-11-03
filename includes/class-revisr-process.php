@@ -183,7 +183,7 @@ class Revisr_Process {
 			$this->db->import( $_REQUEST['revisr_import_untracked'] );
 			_e( 'Importing...', 'revisr' );
 			echo "<script>
-					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_success&branch={$branch}'
+					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
 			</script>";
 		}
 	}
