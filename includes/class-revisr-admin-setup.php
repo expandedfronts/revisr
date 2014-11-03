@@ -294,7 +294,6 @@ class Revisr_Setup {
 
 		// We're done here.
 		update_option( 'revisr_db_version', '1.1' );
-		Revisr_Admin::log( __( 'Upgraded to Revisr 1.8', 'revisr' ), 'upgrade' );
 	}
 
 	/**
