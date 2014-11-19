@@ -199,7 +199,7 @@ class Revisr_Settings_Fields {
 	public function notifications_callback() {
 		printf(
 			'<input type="checkbox" id="notifications" name="revisr_general_settings[notifications]" %s />
-			<label for="notifications"><span class="description">%s</span></span>',
+			<label for="notifications"><span class="description">%s</span></label>',
 			isset( $this->options['notifications'] ) ? "checked" : '',
 			__( 'Enabling notifications will send updates about new commits, pulls, and pushes to the email address above.', 'revisr' )
 		);
