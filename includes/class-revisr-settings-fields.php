@@ -262,7 +262,7 @@ class Revisr_Settings_Fields {
 		// Allow the user to unset the Webhook URL.
 		if ( isset( $_GET['settings-updated'] ) ) {
 			if ( $this->is_updated( 'webhook_url' ) ) {
-				$this->git->config_revisr_url( 'webhook', esc_url( $this->options['webhook_url'] ) );
+				$this->git->config_revisr_url( 'webhook', $this->options['webhook_url'] );
 			} else {
 				$this->git->run( 'config --unset revisr.webhook-url' );
 			}
@@ -271,7 +271,7 @@ class Revisr_Settings_Fields {
 		// Grab the URL from the .git/config as it MAY be replaced in the database.
 		$get_url = $this->git->config_revisr_url( 'webhook' );
 		if ( $get_url !== false ) {
-			$webhook_url = $get_url;
+			$webhook_url = urldecode($get_url);
 		} else {
 			$webhook_url = '';
 		}

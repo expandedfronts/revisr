@@ -92,7 +92,7 @@ class Revisr_Remote extends Revisr_Admin {
 		$get_url = $this->git->config_revisr_url( 'webhook' );
 
 		if ( $get_url !== false ) {
-			$webhook = $get_url;
+			$webhook = urldecode( $get_url );
 			$request = wp_remote_post( $webhook, $args );
 			if ( is_wp_error( $request ) ) {
 				Revisr_Admin::log( __( 'Error contacting webhook URL.', 'revisr' ), 'error' );

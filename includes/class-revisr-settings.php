@@ -184,11 +184,25 @@ class Revisr_Settings {
 		);
 		register_setting(
 			'revisr_remote_settings',
-			'revisr_remote_settings'
+			'revisr_remote_settings',
+			array( $this, 'sanitize_remote' )
 		);
 		register_setting(
 			'revisr_database_settings',
 			'revisr_database_settings'
 		);
+	}
+
+	/**
+	 * Sanitizes the "Remote Settings" fields so that URL's can be stored.
+	 * @access public
+	 * @param  array $input The data from the form.
+	 * @return array
+	 */
+	public function sanitize_remote( $input ) {
+		if ( isset( $input['webhook_url'] ) ) {
+			$input['webhook_url'] = urlencode( $input['webhook_url'] );
+		}
+		return $input;
 	}
 }
