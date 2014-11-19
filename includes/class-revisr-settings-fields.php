@@ -332,7 +332,7 @@ class Revisr_Settings_Fields {
 			'<input type="checkbox" id="auto_pull" name="revisr_remote_settings[auto_pull]" %s />
 			<label for="auto_pull">%s</label>',
 			$checked,
-			__( 'Check to allow Revisr to automatically pull commits from a remote repository.', 'revisr' )
+			__( 'Check to generate the Revisr Webhook and allow Revisr to automatically pull commits from a remote repository.', 'revisr' )
 		);
 		$remote 	= new Revisr_Remote();
 		$token 		= $remote->get_token();
