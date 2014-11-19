@@ -264,7 +264,7 @@ class Revisr_Admin {
 		$commit_hash	 = get_post_custom_values( 'commit_hash', $_POST['id'] );
 		if ( is_array( $committed_files ) ) {
 			foreach ( $committed_files as $file ) {
-				$output = unserialize( $file );
+				$output = maybe_unserialize( $file );
 			}
 		}
 		if ( isset( $output ) ) {

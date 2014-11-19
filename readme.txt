@@ -1,6 +1,6 @@
 === Revisr ===
 Contributors: ExpandedFronts
-Tags: revisr, git, git management, revision tracking, revision, backup, database, database backup, database plugin, deploy, commit, bitbucket, github
+Tags: revisr, git, git management, revision tracking, revision, backup, database, database backup, database plugin, deploy, commit, bitbucket, github, version control
 Requires at least: 3.7
 Tested up to: 4.0
 Stable tag: trunk
@@ -33,8 +33,8 @@ A must have plugin for deploying and managing WordPress using Git repositories.
 
 = Instructions =
 * Unzip the plugin folder and upload it to the plugins directory of your WordPress installation.
-* If the WordPress installation is not already in a Git repository, you will be prompted to initialize a new one.
-* Configure the plugin settings.
+* If the WordPress installation is not already in a Git repository, you will be able to create a new one in the Revisr Dashboard.
+* Go to the Revisr settings page and adjust any settings as needed.
 
 = Notes =
 Please verify that database backups are working before attempting to revert the database, especially if attempting to do so on a production website. Backups use the mysqldump command, supported by most hosts/environments.
@@ -78,6 +78,10 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 
 == Changelog ==
+
+= 1.8.1 =
+* Fixed bug resulting from changes in WordPress 4.1
+* Fixed bug with storing webhook URL in some environments
 
 = 1.8 =
 * Added ability to track individual database tables
