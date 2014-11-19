@@ -208,7 +208,7 @@ class Revisr_Process {
 		$from_dash = check_ajax_referer( 'dashboard_nonce', 'security', false );
 		if ( $from_dash == false ) {
 
-			if ( $this->git->config_revisr_option( 'import-pulls' ) !== 'true' ) {
+			if ( $this->git->config_revisr_option( 'auto-pull' ) !== 'true' ) {
 				wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 			}
 
