@@ -50,6 +50,10 @@ It is also adviseable to add Revisr to the gitignore file via the settings page 
 
 ## Changelog ##
 
+#### 1.8.1 ####
+* Fixed bug resulting from changes in WordPress 4.1
+* Fixed bug with storing webhook URL in some environments
+
 #### 1.8 ####
 * Added ability to track individual database tables
 * Added ability to import tracked database tables while pulling changes
