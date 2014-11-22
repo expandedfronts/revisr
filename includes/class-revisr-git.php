@@ -402,7 +402,6 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function push() {
-		$this->reset();
 		$push = $this->run( "push {$this->remote} HEAD --quiet", __FUNCTION__, $this->count_unpushed( false ) );
 		return $push;
 	}
