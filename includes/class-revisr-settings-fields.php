@@ -32,8 +32,9 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function __construct() {
-		$this->git 		= new Revisr_Git();
+		$revisr 		= Revisr::get_instance();
 		$this->options 	= Revisr::get_options();
+		$this->git 		= $revisr->git;
 	}
 
 	/**

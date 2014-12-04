@@ -64,8 +64,9 @@ class Revisr_DB {
 	 */
 	public function __construct( $path = '' ) {
 		global $wpdb;
+		$revisr 			= Revisr::get_instance();
 		$this->wpdb 		= $wpdb;
-		$this->git 			= new Revisr_Git();
+		$this->git 			= $revisr->git;
 		$this->current_dir 	= getcwd();
 		$this->upload_dir 	= wp_upload_dir();
 		$this->options 		= Revisr::get_options();

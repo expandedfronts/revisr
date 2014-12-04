@@ -35,8 +35,9 @@ class Revisr_Cron {
 	 * @access public
 	 */
 	public function __construct() {
-		$this->db 		= new Revisr_DB();
-		$this->git 		= new Revisr_Git();
+		$revisr 		= Revisr::get_instance();
+		$this->db 		= $revisr->db;
+		$this->git 		= $revisr->git;
 		$this->options 	= Revisr::get_options();
 	}
 

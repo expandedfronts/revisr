@@ -25,7 +25,8 @@ class Revisr_Commits {
 	 * @access public
 	 */
 	public function __construct() {
-		$this->git = new Revisr_Git();
+		$revisr 	= Revisr::get_instance();
+		$this->git 	= $revisr->git;
 	}
 
 	/**

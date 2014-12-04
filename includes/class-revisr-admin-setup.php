@@ -38,7 +38,8 @@ class Revisr_Setup {
 		global $wpdb;
 		$this->wpdb 	= $wpdb;
 		$this->options 	= $options;
-		$this->git 		= new Revisr_Git();
+		$revisr 		= Revisr::get_instance();
+		$this->git 		= $revisr->git;
 	}
 
 	/**
