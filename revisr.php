@@ -79,6 +79,12 @@ class Revisr {
 	public $plugin_name;
 
 	/**
+	 * The name of the database table.
+	 * @var string
+	 */
+	public $table_name;
+
+	/**
 	 * The "Revisr_Admin_Setup" object.
 	 * @var object
 	 */
@@ -148,18 +154,19 @@ class Revisr {
 	 */
 	public static function get_instance() {
 		if ( null == self::$instance ) {
-			self::$instance = new self;
-			self::$instance->plugin_name = 'revisr';
+			self::$instance 				= new self;
+			self::$instance->plugin_name 	= 'revisr';
+			self::$instance->table_name 	= self::$instance->get_table_name();
+			self::$instance->options 		= self::$instance->get_options();
+			
 			self::$instance->define_constants();
 			self::$instance->load_dependencies();
 			self::$instance->set_locale();
-			self::$instance->options = self::$instance->get_options();
 			self::$instance->load_public_hooks();
 
 			if ( is_admin() ) {
 				self::$instance->load_admin_hooks();
 			}
-
 		}
 		return self::$instance;
 	}
@@ -232,7 +239,7 @@ class Revisr {
 		self::$instance->admin 		= new Revisr_Admin();
 		self::$instance->db 		= new Revisr_DB();
 		self::$instance->commits 	= new Revisr_Commits();
-		self::$instance->settings 	= new Revisr_Settings( self::$instance->options );
+		self::$instance->settings 	= new Revisr_Settings();
 		self::$instance->cron 		= new Revisr_Cron();
 
 		// Register the "revisr_commits" custom post type.
@@ -286,7 +293,6 @@ class Revisr {
 		add_action( 'admin_bar_menu', array( self::$instance->admin_setup, 'admin_bar' ), 999 );
 		add_filter( 'custom_menu_order', array( self::$instance->admin_setup, 'revisr_commits_submenu_order' ) );
 		add_action( 'wp_ajax_recent_activity', array( self::$instance->admin_setup, 'recent_activity' ) );
-		$revisr_settings = new Revisr_Settings( $this->options );
 
 		if ( get_option( 'revisr_db_version' ) === '1.0' ) {
 			add_action( 'admin_init', array( self::$instance->admin_setup, 'do_upgrade' ) );
@@ -307,7 +313,6 @@ class Revisr {
 		add_action( 'wp_ajax_process_push', array( self::$instance->process, 'process_push' ) );
 		add_action( 'wp_ajax_process_pull', array( self::$instance->process, 'process_pull' ) );
 		add_action( 'admin_post_nopriv_revisr_update', array( self::$instance->process, 'process_pull' ) );
-
 	}
 
 	/**

@@ -135,6 +135,7 @@ class Revisr_Git {
 	 * @access public
 	 * @param  string $env The associated environment.
 	 * @param  string $url The URL to store.
+	 * @return string|boolean
 	 */
 	public function config_revisr_url( $env, $url = '' ) {
 		if ( $url != '' ) {
