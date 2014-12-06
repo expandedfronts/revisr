@@ -269,7 +269,7 @@ class Revisr {
 		self::$instance->admin_setup 	= new Revisr_Setup( self::$instance->options );
 		self::$instance->process 		= new Revisr_Process();
 
-		// Quick actions
+		// Quick actions.
 		add_action( 'wp_ajax_render_alert', array( self::$instance->admin, 'render_alert' ) );
 		add_action( 'wp_ajax_ajax_button_count', array( self::$instance->admin, 'ajax_button_count' ) );
 		add_action( 'wp_ajax_pending_files', array( self::$instance->admin, 'pending_files' ) );
@@ -277,7 +277,7 @@ class Revisr {
 		add_action( 'wp_ajax_view_diff', array( self::$instance->admin, 'view_diff' ) );
 		add_action( 'wp_ajax_verify_remote', array( self::$instance->git, 'verify_remote' ) );
 
-		// Database backups
+		// Database backups.
 		add_action( 'wp_ajax_backup_db', array( self::$instance->db, 'backup' ) );
 		add_action( 'admin_post_revert_db', array( self::$instance->db, 'restore' ) );
 
@@ -321,25 +321,19 @@ class Revisr {
 	 * @return array $options The array of user-stored options.
 	 */
 	public static function get_options() {
-		$old	 	= get_option( 'revisr_settings' );
-		if ( ! $old ) {
-			$old = array();
-		}
+		$old 		= get_option( 'revisr_settings' );
 		$general 	= get_option( 'revisr_general_settings' );
-		if ( ! $general ) {
-			$general = array();
-		}
 		$remote 	= get_option( 'revisr_remote_settings' );
-		if ( ! $remote ) {
-			$remote = array();
-		}
 		$database 	= get_option( 'revisr_database_settings' );
-		if ( ! $database ) {
-			$database = array();
-		}
+
+		if ( ! $old ) { $old = array(); }
+		if ( ! $general ) { $general = array(); }
+		if ( ! $remote ) { $remote = array(); }
+		if ( ! $database ) { $database = array(); }
+
 		$options = array_merge( $old, $general, $remote, $database );
 		return $options;
-	}	
+	}
 
 	/**
 	 * Returns the name of the plugin.

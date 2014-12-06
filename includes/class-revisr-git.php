@@ -442,7 +442,7 @@ class Revisr_Git {
 	public function run( $command, $callback = '', $args = '' ) {
 		
 		// Run the actual Git command.
-		$cmd = "git $command";
+		$cmd = escapeshellcmd( "git $command" );
 		$dir = getcwd();
 		chdir( $this->dir );
 		exec( $cmd, $output, $error );
