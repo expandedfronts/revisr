@@ -364,7 +364,25 @@ class Revisr {
 		$settings_link = '<a href="admin.php?page=revisr_settings">' . __( 'Settings', 'revisr' ) . '</a>'; 
   		array_unshift( $links, $settings_link ); 
   		return $links; 
-	}	
+	}
+
+	/**
+	 * Makes sure that Revisr is compatible in the current environment.
+	 * @access public
+	 */
+	public static function check_compatibility() {
+		if ( ! function_exists( 'exec' ) ) {
+			Revisr_Admin::alert( __( 'It appears that you don\'t have the PHP exec() function enabled on your server. This can be enabled in your php.ini.
+				Check with your web host if you\'re not sure what this means.', 'revisr'), true );
+			return false;
+		}
+		$git = self::$instance->git;
+		if ( is_dir( $git->dir . '/.git/' ) && !is_writeable( $git->dir . '/.git/' ) ) {
+			Revisr_Admin::alert( __( 'Revisr requires write permissions to the repository. The recommended settings are 755 for directories, and 644 for files.', 'revisr' ), true );
+			return false;
+		}
+		return true;
+	}
 
 	/**
 	 * Installs the database table.

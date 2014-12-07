@@ -58,19 +58,6 @@ class Revisr_Remote extends Revisr_Admin {
 	}
 
 	/**
-	 * Gets the live URL, exits the script if one does not exist.
-	 * @access private
-	 * @return string
-	 */
-	private function get_live_url() {
-		if ( isset( $this->options['live_url'] ) && $this->options['live_url'] != '' ) {
-			return $this->options['live_url'];
-		} else {
-			wp_die( __( 'Live URL not set.', 'revisr' ) );
-		}
-	}
-
-	/**
 	 * Sends a new HTTP request to the live site.
 	 * @access public
 	 */
