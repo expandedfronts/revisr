@@ -371,7 +371,8 @@ class Revisr {
 	 * @access public
 	 */
 	public function revisr_install() {
-		$sql = "CREATE TABLE IF NOT EXISTS {$this->table_name} (
+		$table_name = self::$instance->table_name;
+		$sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			message TEXT,
@@ -400,3 +401,9 @@ function revisr() {
 
 // Runs the plugin.
 $revisr = revisr();
+
+// Registers the activation hook.
+register_activation_hook( REVISR_FILE, array( 'Revisr', 'revisr_install' ) );
+
+// Adds the settings link to the plugins page.
+add_filter( 'plugin_action_links_'  . plugin_basename( REVISR_FILE ), array( 'Revisr', 'revisr_settings_link' ) );
