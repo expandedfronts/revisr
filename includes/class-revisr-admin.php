@@ -106,7 +106,7 @@ class Revisr_Admin {
 	 */
 	public static function log( $message, $event ) {
 		global $wpdb;
-		$time  = current_time( 'mysql', 1 );
+		$time  = current_time( 'mysql' );
 		$table = $wpdb->prefix . 'revisr';
 		$wpdb->insert(
 			"$table",
