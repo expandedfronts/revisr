@@ -247,8 +247,9 @@ class Revisr_Setup {
 				<tbody id="activity_content">
 				<?php
 					foreach ($revisr_events as $revisr_event) {
-						$timestamp = strtotime($revisr_event['time']);
-						$time  	   = sprintf( __( '%s ago', 'revisr' ), human_time_diff( $timestamp ) );
+						$timestamp 	= strtotime($revisr_event['time']);
+						$current 	= strtotime( current_time( 'mysql' ) );
+						$time  	   	= sprintf( __( '%s ago', 'revisr' ), human_time_diff( $timestamp, $current ) );
 						echo "<tr><td>{$revisr_event['message']}</td><td>{$time}</td></tr>";
 					}
 				?>
