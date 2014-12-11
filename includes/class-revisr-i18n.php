@@ -33,7 +33,7 @@ class Revisr_i18n {
 		load_plugin_textdomain(
 			$this->domain,
 			false,
-			REVISR_PATH . 'languages/'
+			$this->domain . '/languages/'
 		);
 	}
 
