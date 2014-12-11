@@ -22,6 +22,12 @@ class Revisr_DB {
 	protected $conn;
 
 	/**
+	 * Stores the backup directory.
+	 * @var string
+	 */
+	protected $backup_dir;
+
+	/**
 	 * Stores the current working directory.
 	 * @var string
 	 */
@@ -69,6 +75,7 @@ class Revisr_DB {
 		$this->git 			= $revisr->git;
 		$this->current_dir 	= getcwd();
 		$this->upload_dir 	= wp_upload_dir();
+		$this->backup_dir	= $this->upload_dir['basedir'] . '/revisr-backups/';
 		$this->options 		= Revisr::get_options();
 
 		$get_path = $this->git->config_revisr_path( 'mysql' );
@@ -123,30 +130,30 @@ class Revisr_DB {
 	 * Creates the backup folder and adds the .htaccess if necessary.
 	 * @access private
 	 */
-	public function setup_env() {
-		// Create the backups directory if it doesn't exist.
-		$backup_dir = $this->upload_dir['basedir'] . '/revisr-backups/';
-		if ( is_dir( $backup_dir ) ) {
-			chdir( $backup_dir );
+	private function setup_env() {
+		// Check if the backups directory has already been created.
+		if ( is_dir( $this->backup_dir ) ) {
+			return true;
 		} else {
-			mkdir( $backup_dir );
-			chdir( $backup_dir );
-		}
 
-		// Prevent '.sql' files from public access.
-		if ( ! file_exists( '.htaccess' ) ) {
+			// Make the backups directory.
+			mkdir( $this->backup_dir );
+			chdir( $this->backup_dir );
+
+			// Add .htaccess to prevent direct access.
 			$htaccess_content = '<FilesMatch "\.sql">' .
 			PHP_EOL . 'Order allow,deny' .
 			PHP_EOL . 'Deny from all' .
 			PHP_EOL . 'Satisfy All' .
 			PHP_EOL . '</FilesMatch>';
 			file_put_contents( '.htaccess', $htaccess_content );
-		}
 
-		// Prevent directory listing.
-		if ( ! file_exists( 'index.php' ) ) {
+			// Add index.php to prevent directory listing.
 			$index_content = '<?php // Silence is golden' . PHP_EOL;
 			file_put_contents( 'index.php', $index_content );
+
+			// Return back to original directory.
+			chdir( $this->current_dir );
 		}
 	}
 
@@ -168,10 +175,9 @@ class Revisr_DB {
 	 * @return array
 	 */
 	public function get_tables_not_in_db() {
-		$dir 			= getcwd();
 		$backup_tables	= array();
 		$db_tables 		= $this->get_tables();
-		foreach ( scandir( $dir ) as $file ) {
+		foreach ( scandir( $this->backup_dir) as $file ) {
 
 			if ( substr( $file, 0, 7 ) !== 'revisr_' ) {
 				continue;
@@ -211,8 +217,9 @@ class Revisr_DB {
 	 * @return boolean
 	 */
 	public function run( $action, $tables = array(), $args = '' ) {
-		// Initialize the response array.
+		// Get ready for the loop.
 		$status = array();
+		chdir( $this->backup_dir );
 
 		// Iterate through the tables and perform the action.
 		foreach ( $tables as $table ) {
@@ -232,6 +239,7 @@ class Revisr_DB {
 		}
 
 		// Process the results and alert the user.
+		chdir( $this->current_dir );
 		$callback = $action . '_callback';
 		$this->$callback( $status );
 	}
@@ -242,7 +250,7 @@ class Revisr_DB {
 	 * @param  string $table The table to add.
 	 */
 	private function add_table( $table ) {
-		$this->git->run( "add {$this->upload_dir['basedir']}/revisr-backups/revisr_$table.sql" );
+		$this->git->run( "add {$this->backup_dir}revisr_$table.sql" );
 	}
 
 	/**
