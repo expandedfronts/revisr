@@ -28,12 +28,6 @@ class Revisr_DB {
 	protected $backup_dir;
 
 	/**
-	 * Stores the current working directory.
-	 * @var string
-	 */
-	protected $current_dir;
-
-	/**
 	 * Stores the upload directory.
 	 * @var string
 	 */
@@ -72,7 +66,6 @@ class Revisr_DB {
 		$revisr 			= Revisr::get_instance();
 		$this->wpdb 		= $wpdb;
 		$this->git 			= $revisr->git;
-		$this->current_dir 	= getcwd();
 		$this->upload_dir 	= wp_upload_dir();
 		$this->backup_dir	= $this->upload_dir['basedir'] . '/revisr-backups/';
 		$this->options 		= Revisr::get_options();
@@ -176,8 +169,8 @@ class Revisr_DB {
 				continue;
 			}
 
-			$table_temp = substr( $file, 7 );
-	        $backup_tables[] = substr( $table_temp, 0, -4 );
+			$table_temp 		= substr( $file, 7 );
+	        $backup_tables[] 	= substr( $table_temp, 0, -4 );
     	}
 
     	$new_tables = array_diff( $backup_tables, $db_tables );
@@ -379,8 +372,9 @@ class Revisr_DB {
 			Revisr_Admin::log( $msg, 'error' );
 			return;
 		}
-		// Try to pass the file directly to MySQL, fallback to user-defined path, then to WPDB.
+
 		if ( $mysql = exec( 'which mysql' ) ) {
+			// Try to pass the file directly to MySQL.
 			$conn = $this->build_conn();
 			exec( "{$mysql} {$conn} < {$this->backup_dir}revisr_$table.sql" );
 			if ( $replace_url !== '' && $replace_url !== false ) {
@@ -388,45 +382,47 @@ class Revisr_DB {
 			}
 			return true;
 		} elseif ( $mysql = exec( "which {$this->path}mysql" ) ) {
+			// Fallback to the user-defined path.
 			$conn = $this->build_conn();
 			exec( "{$mysql} {$conn} < {$this->backup_dir}revisr_$table.sql" );
 			if ( $replace_url !== '' && $replace_url !== false ) {
 				$this->revisr_srdb( $table, $replace_url, $live_url );
 			}
 			return true;
-		}
-		// Fallback on manually querying the file.
-		$fh 	= fopen( "{$this->backup_dir}revisr_$table.sql", 'r' );
-		$size	= filesize( "{$this->backup_dir}revisr_$table.sql" );
-		$status = array(
-			'errors' 	=> 0,
-			'updates' 	=> 0
-		);
+		} else {
+			// Fallback on manually querying the file.
+			$fh 	= fopen( "{$this->backup_dir}revisr_$table.sql", 'r' );
+			$size	= filesize( "{$this->backup_dir}revisr_$table.sql" );
+			$status = array(
+				'errors' 	=> 0,
+				'updates' 	=> 0
+			);
 
-		while( !feof( $fh ) ) {
-			$query = trim( stream_get_line( $fh, $size, ';' . PHP_EOL ) );
-			if ( empty( $query ) ) {
-				$status['dropped_queries'][] = $query;
-				continue;
+			while( !feof( $fh ) ) {
+				$query = trim( stream_get_line( $fh, $size, ';' . PHP_EOL ) );
+				if ( empty( $query ) ) {
+					$status['dropped_queries'][] = $query;
+					continue;
+				}
+				if ( $this->wpdb->query( $query ) === false ) {
+					$status['errors']++;
+					$status['bad_queries'][] = $query;
+				} else {
+					$status['updates']++;
+					$status['good_queries'][] = $query;
+				}
 			}
-			if ( $this->wpdb->query( $query ) === false ) {
-				$status['errors']++;
-				$status['bad_queries'][] = $query;
-			} else {
-				$status['updates']++;
-				$status['good_queries'][] = $query;
+			fclose( $fh );
+
+			if ( $replace_url != '' ) {
+				$this->revisr_srdb( $table, $replace_url, $live_url );
 			}
-		}
-		fclose( $fh );
 
-		if ( $replace_url != '' ) {
-			$this->revisr_srdb( $table, $replace_url, $live_url );
+			if ( $status['errors'] !== 0 ) {
+				return false;
+			}
+			return true;			
 		}
-
-		if ( $status['errors'] !== 0 ) {
-			return false;
-		}
-		return true;
 	}
 
 	/**
