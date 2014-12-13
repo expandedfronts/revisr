@@ -81,7 +81,7 @@ class Revisr_DB {
 	}
 
 	/**
-	 * Close any pending connections and switch back to the previous directory.
+	 * Close any pending connections.
 	 * @access public
 	 */
 	public function __destruct() {
@@ -330,27 +330,28 @@ class Revisr_DB {
 			$tracked_tables = $this->get_tracked_tables();
 			$new_tables 	= $this->get_tables_not_in_db();
 			$all_tables		= array_unique( array_merge( $new_tables, $tracked_tables ) );
+			$replace_url 	= $this->git->config_revisr_url( 'dev' ) ? $this->config_revisr_url( 'dev' ) : '';
 
 			if ( ! empty( $new_tables ) ) {
 				// If there are new tables that were imported.
 				if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'all_tables' ) {
 					// If the user is tracking all tables, import all tables.
-					$this->run( 'import', $all_tables, $this->git->config_revisr_url( 'dev' ) );
+					$this->run( 'import', $all_tables, $replace_url );
 				} else {
 					// Import only tracked tables, but provide a warning and import link.
-					$this->run( 'import', $tracked_tables, $this->git->config_revisr_url( 'dev' ) );
+					$this->run( 'import', $tracked_tables, $replace_url );
 					$url = wp_nonce_url( get_admin_url() . 'admin-post.php?action=import_tables_form&TB_iframe=true&width=350&height=200', 'import_table_form', 'import_nonce' );
 					$msg = sprintf( __( 'New database tables detected. <a class="thickbox" title="Import Tables" href="%s">Click here</a> to view and import.', 'revisr' ), $url );
 					Revisr_Admin::log( $msg, 'db' );
 				}
 			} else {
 				// If there are no new tables, go ahead and import the tracked tables.
-				$this->run( 'import', $tracked_tables, $this->git->config_revisr_url( 'dev' ) );
+				$this->run( 'import', $tracked_tables, $replace_url );
 			}
 
 		} else {
 			// Import the provided tables.
-			$this->run( 'import', $tables, $this->git->config_revisr_url( 'dev' ) );
+			$this->run( 'import', $tables, $replace_url );
 		}
 	}
 

@@ -318,20 +318,14 @@ class Revisr {
 	/**
 	 * Returns user options as a single array.
 	 * @access public
-	 * @return array $options The array of user-stored options.
+	 * @return array $options An array of user-stored options.
 	 */
 	public static function get_options() {
-		$old 		= get_option( 'revisr_settings' );
-		$general 	= get_option( 'revisr_general_settings' );
-		$remote 	= get_option( 'revisr_remote_settings' );
-		$database 	= get_option( 'revisr_database_settings' );
-
-		if ( ! $old ) { $old = array(); }
-		if ( ! $general ) { $general = array(); }
-		if ( ! $remote ) { $remote = array(); }
-		if ( ! $database ) { $database = array(); }
-
-		$options = array_merge( $old, $general, $remote, $database );
+		$old 		= get_option( 'revisr_settings' ) ? get_option( 'revisr_settings' ) : array();
+		$general 	= get_option( 'revisr_general_settings' ) ? get_option( 'revisr_general_settings' ) : array();
+		$remote 	= get_option( 'revisr_remote_settings' ) ? get_option( 'revisr_remote_settings' ) : array();
+		$database 	= get_option( 'revisr_database_settings' ) ? get_option( 'revisr_database_settings' ) : array();
+		$options 	= array_merge( $old, $general, $remote, $database );
 		return $options;
 	}
 
