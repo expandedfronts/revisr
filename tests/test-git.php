@@ -66,7 +66,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	function test_config_revisr_path() {
 		$this->git->config_revisr_path( 'mysql', '/Applications/MAMP/Library/bin/' );
 		$current_mysql = $this->git->config_revisr_path( 'mysql' );
-		$this->assertEquals( '/Applications/MAMP/bin/', $current_mysql[0] );
+		$this->assertEquals( '/Applications/MAMP/Library/bin/', $current_mysql[0] );
 	}
 
 	/**
