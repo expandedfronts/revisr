@@ -557,7 +557,7 @@ class Revisr_DB {
 	 * @return boolean
 	 */
 	public function verify_backup( $table ) {
-		if ( ! file_exists( "revisr_$table.sql" ) || filesize( "revisr_$table.sql" ) < 1000 ) {
+		if ( ! file_exists( "{$this->backup_dir}revisr_$table.sql" ) || filesize( "{$this->backup_dir}revisr_$table.sql" ) < 1000 ) {
 			return false;
 		}
 		return true;
