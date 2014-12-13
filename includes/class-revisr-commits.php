@@ -52,7 +52,7 @@ class Revisr_Commits {
 		$capabilities = array(
 			'edit_post'           => 'activate_plugins',
 			'read_post'           => 'activate_plugins',
-			'delete_post'         => 'activate_plugins',
+			'delete_posts'        => 'activate_plugins',
 			'edit_posts'          => 'activate_plugins',
 			'edit_others_posts'   => 'activate_plugins',
 			'publish_posts'       => 'activate_plugins',
