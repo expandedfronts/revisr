@@ -205,15 +205,15 @@ class Revisr {
 		require_once REVISR_PATH . 'includes/class-revisr-i18n.php';
 		require_once REVISR_PATH . 'includes/class-revisr-git.php';
 		require_once REVISR_PATH . 'includes/class-revisr-admin.php';
-		require_once REVISR_PATH . 'includes/class-revisr-commits.php';
 		require_once REVISR_PATH . 'includes/class-revisr-remote.php';
 		require_once REVISR_PATH . 'includes/class-revisr-db.php';
 		require_once REVISR_PATH . 'includes/class-revisr-git-callback.php';
 		require_once REVISR_PATH . 'includes/class-revisr-cron.php';
-		require_once REVISR_PATH . 'includes/class-revisr-settings.php';
-		require_once REVISR_PATH . 'includes/class-revisr-settings-fields.php';	
 
 		if ( is_admin() ) {
+			require_once REVISR_PATH . 'includes/class-revisr-commits.php';
+			require_once REVISR_PATH . 'includes/class-revisr-settings.php';
+			require_once REVISR_PATH . 'includes/class-revisr-settings-fields.php';	
 			require_once REVISR_PATH . 'includes/class-revisr-admin-setup.php';
 			require_once REVISR_PATH . 'includes/class-revisr-process.php';
 		}
@@ -238,21 +238,7 @@ class Revisr {
 		self::$instance->git 		= new Revisr_Git();
 		self::$instance->admin 		= new Revisr_Admin();
 		self::$instance->db 		= new Revisr_DB();
-		self::$instance->commits 	= new Revisr_Commits();
-		self::$instance->settings 	= new Revisr_Settings();
 		self::$instance->cron 		= new Revisr_Cron();
-
-		// Register the "revisr_commits" custom post type.
-		add_action( 'init', array( self::$instance->commits, 'post_types' ) );
-		add_action( 'pre_get_posts', array( self::$instance->commits, 'filters' ) );
-		add_action( 'views_edit-revisr_commits', array( self::$instance->commits, 'custom_views' ) );
-		add_action( 'load-edit.php', array( self::$instance->commits, 'default_views' ) );
-		add_action( 'post_row_actions', array( self::$instance->commits, 'custom_actions' ) );
-		add_action( 'manage_edit-revisr_commits_columns', array( self::$instance->commits, 'columns' ) );
-		add_action( 'manage_revisr_commits_posts_custom_column', array( self::$instance->commits, 'custom_columns' ) );	
-		add_action( 'admin_enqueue_scripts', array( self::$instance->commits, 'disable_autodraft' ) );
-		add_filter( 'post_updated_messages', array( self::$instance->commits, 'custom_messages' ) );
-		add_filter( 'bulk_post_updated_messages', array( self::$instance->commits, 'bulk_messages' ), 10, 2 );
 
 		// Allows the cron to run with no admin login.
 		add_filter( 'cron_schedules', array( self::$instance->cron, 'revisr_schedules' ) );
@@ -266,8 +252,22 @@ class Revisr {
 	private function load_admin_hooks() {
 
 		// Initialize the necessary classes.
+		self::$instance->commits 		= new Revisr_Commits();
+		self::$instance->settings 		= new Revisr_Settings();
 		self::$instance->admin_setup 	= new Revisr_Setup( self::$instance->options );
 		self::$instance->process 		= new Revisr_Process();
+
+		// Register the "revisr_commits" custom post type.
+		add_action( 'init', array( self::$instance->commits, 'post_types' ) );
+		add_action( 'pre_get_posts', array( self::$instance->commits, 'filters' ) );
+		add_action( 'views_edit-revisr_commits', array( self::$instance->commits, 'custom_views' ) );
+		add_action( 'load-edit.php', array( self::$instance->commits, 'default_views' ) );
+		add_action( 'post_row_actions', array( self::$instance->commits, 'custom_actions' ) );
+		add_action( 'manage_edit-revisr_commits_columns', array( self::$instance->commits, 'columns' ) );
+		add_action( 'manage_revisr_commits_posts_custom_column', array( self::$instance->commits, 'custom_columns' ) );	
+		add_action( 'admin_enqueue_scripts', array( self::$instance->commits, 'disable_autodraft' ) );
+		add_filter( 'post_updated_messages', array( self::$instance->commits, 'custom_messages' ) );
+		add_filter( 'bulk_post_updated_messages', array( self::$instance->commits, 'bulk_messages' ), 10, 2 );
 
 		// Quick actions.
 		add_action( 'wp_ajax_render_alert', array( self::$instance->admin, 'render_alert' ) );
