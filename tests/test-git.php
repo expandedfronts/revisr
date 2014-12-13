@@ -64,7 +64,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests setting a path in the .git/config.
 	 */
 	function test_config_revisr_path() {
-		$this->git->config_revisr_path( 'mysql', '/Applications/MAMP/bin/' );
+		$this->git->config_revisr_path( 'mysql', '/Applications/MAMP/Library/bin/' );
 		$current_mysql = $this->git->config_revisr_path( 'mysql' );
 		$this->assertEquals( '/Applications/MAMP/bin/', $current_mysql[0] );
 	}
@@ -92,17 +92,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 */
 	function test_branches() {
 		$branches = $this->git->get_branches();
-		$this->assertContains( 'master', $branches[0] );
-	}
-
-	/**
-	 * Tests the is_branch function.
-	 */
-	function test_is_branch() {
-		$real_branch = $this->git->is_branch( 'master' );
-		$fake_branch = $this->git->is_branch( 'fakebranch' );
-		$this->assertEquals( true, $real_branch );
-		$this->assertEquals( false, $fake_branch );
+		$this->assertContains( '* ', $branches[0] );
 	}
 
 	/**
@@ -113,6 +103,16 @@ class RevisrGitTest extends WP_UnitTestCase {
 		$this->git->create_branch( 'deletethisbranch' );
 		$this->assertEquals( true, $this->git->is_branch( 'testbranch' ) );
 		$this->assertEquals( true, $this->git->is_branch( 'deletethisbranch' ) );
+	}
+
+	/**
+	 * Tests the is_branch function.
+	 */
+	function test_is_branch() {
+		$real_branch = $this->git->is_branch( 'testbranch' );
+		$fake_branch = $this->git->is_branch( 'fakebranch' );
+		$this->assertEquals( true, $real_branch );
+		$this->assertEquals( false, $fake_branch );
 	}
 
 	/**
