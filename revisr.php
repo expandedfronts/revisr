@@ -360,7 +360,7 @@ class Revisr {
 	 * @access public
 	 * @param array $links The links assigned to Revisr.
 	 */
-	public function revisr_settings_link( $links ) {
+	public static function revisr_settings_link( $links ) {
 		$settings_link = '<a href="admin.php?page=revisr_settings">' . __( 'Settings', 'revisr' ) . '</a>'; 
   		array_unshift( $links, $settings_link ); 
   		return $links; 
@@ -388,7 +388,7 @@ class Revisr {
 	 * Installs the database table.
 	 * @access public
 	 */
-	public function revisr_install() {
+	public static function revisr_install() {
 		$table_name = self::$instance->table_name;
 		$sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
