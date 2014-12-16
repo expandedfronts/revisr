@@ -2,7 +2,7 @@
 Contributors: ExpandedFronts
 Tags: revisr, git, git management, revision tracking, revision, backup, database, database backup, database plugin, deploy, commit, bitbucket, github, version control
 Requires at least: 3.7
-Tested up to: 4.0.1
+Tested up to: 4.1
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -78,6 +78,13 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 
 == Changelog ==
+
+= 1.8.2 =
+* Improved plugin performance
+* Fixed bug with timezone on some sites
+* Fixed bug with loading translation file
+* Changed "Commit Changes" to read "Save Changes"
+* Improved Remote URL validation
 
 = 1.8.1 =
 * Fixed bug resulting from changes in WordPress 4.1
