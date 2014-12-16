@@ -257,6 +257,9 @@ class Revisr {
 		self::$instance->commits 		= new Revisr_Commits();
 		self::$instance->settings 		= new Revisr_Settings();
 		self::$instance->admin_setup 	= new Revisr_Setup( self::$instance->options );
+
+		// Check for compatibility.
+		self::$instance->check_compatibility();
 		
 		// Register the "revisr_commits" custom post type.
 		add_action( 'init', array( self::$instance->commits, 'post_types' ) );
@@ -364,7 +367,7 @@ class Revisr {
 	 * Makes sure that Revisr is compatible in the current environment.
 	 * @access public
 	 */
-	public static function check_compatibility() {
+	public function check_compatibility() {
 		if ( ! function_exists( 'exec' ) ) {
 			Revisr_Admin::alert( __( 'It appears that you don\'t have the PHP exec() function enabled on your server. This can be enabled in your php.ini.
 				Check with your web host if you\'re not sure what this means.', 'revisr'), true );
