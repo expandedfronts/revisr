@@ -209,13 +209,13 @@ class Revisr {
 		require_once REVISR_PATH . 'includes/class-revisr-db.php';
 		require_once REVISR_PATH . 'includes/class-revisr-git-callback.php';
 		require_once REVISR_PATH . 'includes/class-revisr-cron.php';
+		require_once REVISR_PATH . 'includes/class-revisr-process.php';
 
 		if ( is_admin() ) {
 			require_once REVISR_PATH . 'includes/class-revisr-commits.php';
 			require_once REVISR_PATH . 'includes/class-revisr-settings.php';
 			require_once REVISR_PATH . 'includes/class-revisr-settings-fields.php';	
 			require_once REVISR_PATH . 'includes/class-revisr-admin-setup.php';
-			require_once REVISR_PATH . 'includes/class-revisr-process.php';
 		}
 	}
 
@@ -239,10 +239,12 @@ class Revisr {
 		self::$instance->admin 		= new Revisr_Admin();
 		self::$instance->db 		= new Revisr_DB();
 		self::$instance->cron 		= new Revisr_Cron();
+		self::$instance->process 	= new Revisr_Process();
 
 		// Allows the cron to run with no admin login.
 		add_filter( 'cron_schedules', array( self::$instance->cron, 'revisr_schedules' ) );
 		add_action( 'revisr_cron', array( self::$instance->cron, 'run_automatic_backup' ) );
+		add_action( 'admin_post_nopriv_revisr_update', array( self::$instance->process, 'process_pull' ) );
 	}
 
 	/**
@@ -255,8 +257,7 @@ class Revisr {
 		self::$instance->commits 		= new Revisr_Commits();
 		self::$instance->settings 		= new Revisr_Settings();
 		self::$instance->admin_setup 	= new Revisr_Setup( self::$instance->options );
-		self::$instance->process 		= new Revisr_Process();
-
+		
 		// Register the "revisr_commits" custom post type.
 		add_action( 'init', array( self::$instance->commits, 'post_types' ) );
 		add_action( 'pre_get_posts', array( self::$instance->commits, 'filters' ) );
@@ -312,7 +313,6 @@ class Revisr {
 		add_action( 'wp_ajax_discard', array( self::$instance->process, 'process_discard' ) );
 		add_action( 'wp_ajax_process_push', array( self::$instance->process, 'process_push' ) );
 		add_action( 'wp_ajax_process_pull', array( self::$instance->process, 'process_pull' ) );
-		add_action( 'admin_post_nopriv_revisr_update', array( self::$instance->process, 'process_pull' ) );
 	}
 
 	/**

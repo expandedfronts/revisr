@@ -52,9 +52,12 @@ class Revisr_Git {
 	public function __construct() {
 		$this->dir 		= $this->current_dir();
 		$this->options  = Revisr::get_options();
-		$this->branch 	= $this->current_branch();
-		$this->remote 	= $this->current_remote();
-		$this->hash 	= $this->current_commit();
+
+		if ( $this->is_repo() ) {
+			$this->branch 	= $this->current_branch();
+			$this->remote 	= $this->current_remote();
+			$this->hash 	= $this->current_commit();			
+		}
 	}
 
 	/**
