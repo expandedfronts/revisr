@@ -415,7 +415,7 @@ class Revisr_DB {
 			}
 			fclose( $fh );
 
-			if ( $replace_url != '' ) {
+			if ( $replace_url !== '' ) {
 				$this->revisr_srdb( $table, $replace_url, $live_url );
 			}
 
