@@ -50,6 +50,9 @@ It is also adviseable to add Revisr to the gitignore file via the settings page 
 
 ## Changelog ##
 
+#### 1.8.3 ####
+* Fixed bug with spaces in filename
+
 #### 1.8.2 ####
 * Improved plugin performance
 * Fixed bug with timezone on some sites
