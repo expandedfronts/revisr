@@ -484,11 +484,11 @@ class Revisr_Git {
 			$status = Revisr_Git::get_status( substr( $result, 0, 2 ) );
 			
 			if ( $status == __( 'Deleted', 'revisr' ) ) {
-				if ( $this->run( "rm {$file}" ) === false ) {
+				if ( $this->run( 'rm "' . $file . '"' ) === false ) {
 					$errors[] = $file;
 				}
 			} else {
-				if ( $this->run( "add {$file}" ) === false ) {
+				if ( $this->run( 'add "' . $file . '"' ) === false ) {
 					$errors[] = $file;
 				}
 			}
