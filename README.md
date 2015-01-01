@@ -1,4 +1,4 @@
-#Revisr [![Build Status](https://travis-ci.org/ExpandedFronts/revisr.svg?branch=master)](https://travis-ci.org/ExpandedFronts/revisr) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ExpandedFronts/revisr/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ExpandedFronts/revisr/?branch=master)
+#Revisr [![Build Status](https://travis-ci.org/ExpandedFronts/revisr.svg?branch=master)](https://travis-ci.org/ExpandedFronts/revisr) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ExpandedFronts/revisr/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ExpandedFronts/Revisr/?branch=master)
 
 ##Description##
 
