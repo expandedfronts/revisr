@@ -1,7 +1,7 @@
 # .scrutinizer.yml
 tools:
-	external_code_coverage: true
-	sensiolabs_security_checker: true
+    external_code_coverage: true
+    sensiolabs_security_checker: true
     php_mess_detector: true
     php_code_sniffer: true
     php_code_coverage: true
@@ -9,4 +9,4 @@ tools:
     php_analyzer: true
     php_pdepend: true
 checks:
-	avoid_superglobals: false
+    avoid_superglobals: false
