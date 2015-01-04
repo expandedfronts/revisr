@@ -8,5 +8,3 @@ tools:
     php_sim: true
     php_analyzer: true
     php_pdepend: true
-checks:
-    avoid_superglobals: false
