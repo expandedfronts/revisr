@@ -15,6 +15,15 @@ class RevisrGitTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Restore the Git object.
+	 */
+	function tearDown() {
+		if ( $this->git->current_branch() != 'master' ) {
+			$this->git->checkout( 'master' );
+		}
+	}
+
+	/**
 	 * Tests for the current Git version.
 	 * Expects string containing "git".
 	 */
@@ -128,6 +137,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests deleting a branch.
 	 */
 	function test_delete_branch() {
+		$this->git->delete_branch( 'testbranch' );
 		$this->git->delete_branch( 'deletethisbranch' );
 		$is_branch = $this->git->is_branch( 'deletethisbranch' );
 		$this->assertEquals( false, $is_branch );
@@ -175,5 +185,6 @@ class RevisrGitTest extends WP_UnitTestCase {
 		$this->git->tag( 'v1.0' );
 		$tags 	= $this->git->tag();
 		$this->assertEquals( 'v1.0', $tags[0] );
+		$this->git->tag( '-d v1.0' );
 	}
 }
