@@ -50,6 +50,7 @@ class Revisr_Setup {
 	public function revisr_scripts( $hook ) {
 		wp_register_style( 'revisr_dashboard_css', REVISR_URL . 'assets/css/dashboard.css', array(), '07052014' );
 		wp_register_style( 'revisr_commits_css', REVISR_URL . 'assets/css/commits.css', array(), '08202014' );
+		wp_register_style( 'revisr_octicons_css', REVISR_URL . 'assets/octicons/octicons.css', array(), '01152015' );
 		wp_register_script( 'revisr_dashboard', REVISR_URL . 'assets/js/dashboard.js', 'jquery',  '09232014' );
 		wp_register_script( 'revisr_staging', REVISR_URL . 'assets/js/staging.js', 'jquery', '07052014', false );
 		wp_register_script( 'revisr_committed', REVISR_URL . 'assets/js/committed.js', 'jquery', '07052014', false );
