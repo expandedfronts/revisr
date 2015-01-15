@@ -88,23 +88,27 @@ class Revisr_Setup {
 		// Add styles and scripts to commits pages.
 		if ( get_post_type() == 'revisr_commits' || isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
 			wp_enqueue_style( 'revisr_commits_css' );
+			wp_enqueue_style( 'revisr_octicons_css' );
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
 		}
 	}
 
 	/**
-	 * Adds custom meta boxes to the "revisr_commits" post type.
+	 * Adds/removes meta boxes for the "revisr_commits" post type.
 	 * @access public
 	 */
 	public function meta() {
 		if ( isset( $_GET['action'] ) ) {
 			if ( 'edit' == $_GET['action'] ) {
 				add_meta_box( 'revisr_committed_files', __( 'Committed Files', 'revisr' ), array( $this, 'committed_files_meta' ), 'revisr_commits', 'normal', 'high' );
+				remove_meta_box( 'submitdiv', 'revisr_commits', 'side' );
 			}			
 		} else {
 			add_meta_box( 'revisr_pending_files', __( 'Stage Changes', 'revisr' ), array( $this, 'pending_files_meta' ), 'revisr_commits', 'normal', 'high' );
 			add_meta_box( 'revisr_add_tag', __( 'Add Tag', 'revisr' ), array( $this, 'add_tag_meta' ), 'revisr_commits', 'side', 'default' );
+			add_meta_box( 'revisr_save_commit', __( 'Save Commit', 'revisr' ), array( $this, 'save_commit_meta' ), 'revisr_commits', 'side', 'core' );
+			remove_meta_box( 'submitdiv', 'revisr_commits', 'side' );
 		}
 	}
 
@@ -118,6 +122,51 @@ class Revisr_Setup {
 			<input id="tag_name" type="text" name="tag_name" />',
 			__( 'Tag Name:', 'revisr' )
 		);
+	}
+
+	/**
+	 * Displays the "Save Commit" meta box in the sidebar.
+	 * @access public
+	 */
+	public function save_commit_meta() {
+		?>
+
+		<div id="minor-publishing">
+			<div id="misc-publishing-actions">
+
+				<div class="misc-pub-section revisr-pub-status">
+					<label for="post_status"><?php _e( 'Status:', 'revisr' ); ?></label>
+					<span><strong>Pending</strong></span>
+				</div>
+
+				<div class="misc-pub-section revisr-pub-branch">
+					<label for="revisr-branch"><?php _e( 'Branch:', 'revisr' ); ?></label>
+					<span><strong><?php echo $this->git->branch; ?></strong></span>
+				</div>
+
+				<div class="misc-pub-section revisr-backup-cb">
+					<span><input id="revisr-backup-cb" type="checkbox" name="backup_db" /></span>
+					<label for="revisr-backup-cb"><?php _e( 'Backup database?', 'revisr' ); ?></label>
+				</div>
+
+				<div class="misc-pub-section revisr-push-cb">
+					<span><input id="revisr-push-cb" type="checkbox" name="push_immediately" /></span>
+					<label for="revisr-push-cb"><?php _e( 'Push Immediately?', 'revisr' ); ?></label>
+				</div>
+
+			</div><!-- /#misc-publishing-actions -->
+		</div>
+
+		<div id="major-publishing-actions">
+			<div id="delete-action"></div>
+			<div id="publishing-action">
+				<span class="spinner"></span>
+				<input type="submit" name="publish" id="commit" class="button button-primary button-large" value="Commit Changes" onclick="commit_files();" accesskey="p">
+			</div>
+			<div class="clear"></div>
+		</div>
+
+		<?php
 	}
 
 	/**

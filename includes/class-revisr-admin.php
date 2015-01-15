@@ -208,10 +208,9 @@ class Revisr_Admin {
 		check_ajax_referer('pending_nonce', 'security');
 		$output 		= $this->git->status();
 		$total_pending 	= count( $output );
-		$text 			= sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit on branch <strong>%s</strong>.', 'revisr' ), $total_pending, $this->git->branch );
+		$text 			= sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit.', 'revisr' ), $total_pending, $this->git->branch );
 		echo "<br>" . $text . "<br><br>";
 		_e( 'Use the boxes below to select the files to include in this commit. Only files in the "Staged Files" section will be included.<br>Double-click files marked as "Modified" to view the changes to the file.<br><br>', 'revisr' );
-		echo "<input id='backup_db_cb' type='checkbox' name='backup_db'><label for='backup_db_cb'>" . __( 'Backup database?', 'revisr' ) . "</label><br><br>";
 
 		if ( is_array( $output ) ) {
 				?>
