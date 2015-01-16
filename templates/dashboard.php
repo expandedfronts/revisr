@@ -107,7 +107,7 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 					<div class="postbox">
 						<h3><span><?php _e( 'Documentation', 'revisr' ); ?></span></h3>
 						<div class="inside">
-							<?php printf( __( 'Need help? Checkout the improved documentation at %s.', 'revisr' ),  ' <a href="http://docs.revisr.io/" target="_blank">http://docs.revisr.io</a>' ); ?>
+							<?php printf( __( 'Need help? Check out the improved documentation at %s.', 'revisr' ),  ' <a href="http://docs.revisr.io/" target="_blank">http://docs.revisr.io</a>' ); ?>
 							<br><br>
 							&copy; 2014 Expanded Fronts, LLC
 						</div> <!-- .inside -->

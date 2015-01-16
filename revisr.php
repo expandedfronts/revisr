@@ -272,20 +272,18 @@ class Revisr {
 		add_action( 'admin_enqueue_scripts', array( self::$instance->commits, 'disable_autodraft' ) );
 		add_filter( 'post_updated_messages', array( self::$instance->commits, 'custom_messages' ) );
 		add_filter( 'bulk_post_updated_messages', array( self::$instance->commits, 'bulk_messages' ), 10, 2 );
-
-		// Quick actions.
-		add_action( 'wp_ajax_render_alert', array( self::$instance->admin, 'render_alert' ) );
-		add_action( 'wp_ajax_ajax_button_count', array( self::$instance->admin, 'ajax_button_count' ) );
-		add_action( 'wp_ajax_pending_files', array( self::$instance->admin, 'pending_files' ) );
-		add_action( 'wp_ajax_committed_files', array( self::$instance->admin, 'committed_files' ) );
-		add_action( 'wp_ajax_view_diff', array( self::$instance->admin, 'view_diff' ) );
-		add_action( 'wp_ajax_verify_remote', array( self::$instance->git, 'verify_remote' ) );
+		add_action( 'wp_ajax_pending_files', array( self::$instance->commits, 'pending_files' ) );
+		add_action( 'wp_ajax_committed_files', array( self::$instance->commits, 'committed_files' ) );
 
 		// Database backups.
 		add_action( 'wp_ajax_backup_db', array( self::$instance->db, 'backup' ) );
 		add_action( 'admin_post_revert_db', array( self::$instance->db, 'restore' ) );
 
 		// General admin customizations.
+		add_action( 'wp_ajax_render_alert', array( self::$instance->admin, 'render_alert' ) );
+		add_action( 'wp_ajax_ajax_button_count', array( self::$instance->admin, 'ajax_button_count' ) );
+		add_action( 'wp_ajax_view_diff', array( self::$instance->admin, 'view_diff' ) );
+		add_action( 'wp_ajax_verify_remote', array( self::$instance->git, 'verify_remote' ) );
 		add_action( 'admin_notices', array( self::$instance->admin_setup, 'site5_notice' ) );
 		add_action( 'load-post.php', array( self::$instance->admin_setup, 'meta' ) );
 		add_action( 'load-post-new.php', array( self::$instance->admin_setup, 'meta' ) );

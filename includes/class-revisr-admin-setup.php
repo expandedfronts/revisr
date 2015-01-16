@@ -63,6 +63,7 @@ class Revisr_Setup {
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
 			wp_enqueue_script( 'revisr_settings' );
+			wp_enqueue_style( 'revisr_octicons_css' );
 		}
 		// Enqueue styles and scripts on the Revisr staging area.
 		if ( $hook == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
@@ -88,9 +89,9 @@ class Revisr_Setup {
 		// Add styles and scripts to commits pages.
 		if ( get_post_type() == 'revisr_commits' || isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
 			wp_enqueue_style( 'revisr_commits_css' );
-			wp_enqueue_style( 'revisr_octicons_css' );
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
+			wp_enqueue_style( 'revisr_octicons_css' );
 		}
 	}
 
