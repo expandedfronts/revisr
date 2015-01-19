@@ -137,6 +137,50 @@ class Revisr_Setup {
 
 				<div class="misc-pub-section revisr-pub-status">
 					<label for="post_status"><?php _e( 'Status:', 'revisr' ); ?></label>
+					<span><strong><?php _e( 'Pending', 'revisr' ); ?></strong></span>
+				</div>
+
+				<div class="misc-pub-section revisr-pub-branch">
+					<label for="revisr-branch"><?php _e( 'Branch:', 'revisr' ); ?></label>
+					<span><strong><?php echo $this->git->branch; ?></strong></span>
+				</div>
+
+				<div class="misc-pub-section revisr-backup-cb">
+					<span><input id="revisr-backup-cb" type="checkbox" name="backup_db" /></span>
+					<label for="revisr-backup-cb"><?php _e( 'Backup database?', 'revisr' ); ?></label>
+				</div>
+
+				<div class="misc-pub-section revisr-push-cb">
+					<span><input id="revisr-push-cb" type="checkbox" name="auto_push" /></span>
+					<label for="revisr-push-cb"><?php _e( 'Push Immediately?', 'revisr' ); ?></label>
+				</div>
+
+			</div><!-- /#misc-publishing-actions -->
+		</div>
+
+		<div id="major-publishing-actions">
+			<div id="delete-action"></div>
+			<div id="publishing-action">
+				<span class="spinner"></span>
+				<input type="submit" name="publish" id="commit" class="button button-primary button-large" value="<?php _e( 'Commit Changes', 'revisr' ); ?>" onclick="commit_files();" accesskey="p">
+			</div>
+			<div class="clear"></div>
+		</div>
+
+		<?php
+	}
+
+	/**
+	 * Displays the "Commit Details" meta box on a previous commit.
+	 * @access public
+	 */
+	public function view_commit_meta() {
+		?>
+		<div id="minor-publishing">
+			<div id="misc-publishing-actions">
+
+				<div class="misc-pub-section revisr-pub-status">
+					<label for="post_status"><?php _e( 'Status:', 'revisr' ); ?></label>
 					<span><strong>Pending</strong></span>
 				</div>
 
@@ -166,7 +210,6 @@ class Revisr_Setup {
 			</div>
 			<div class="clear"></div>
 		</div>
-
 		<?php
 	}
 

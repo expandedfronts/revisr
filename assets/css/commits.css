@@ -1,7 +1,10 @@
 
 /* === STAGING/COMMITTED === */
-#revisr_save_commit .inside {
+#revisr_save_commit .inside, #revisr_view_commit .inside {
 	padding: 0;
+}
+.revisr-timestamp:before {
+	margin-right: 3px;
 }
 #misc-publishing-actions label[for=revisr-branch]:before {
 	content: '\f020';
