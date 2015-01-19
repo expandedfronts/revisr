@@ -1,3 +1,7 @@
+function revert() {
+
+}
+
 jQuery(document).ready(function($) {
 
 	var data = {

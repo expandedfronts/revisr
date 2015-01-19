@@ -115,13 +115,6 @@ class Revisr {
 	private $cron;
 
 	/**
-	 * The "Revisr_Remote" object.
-	 * @var object
-	 */
-	private $remote;
-
-
-	/**
 	 * Empty construct, use get_instance() instead.
 	 * @access private
 	 */
@@ -285,15 +278,15 @@ class Revisr {
 		add_action( 'wp_ajax_view_diff', array( self::$instance->admin, 'view_diff' ) );
 		add_action( 'wp_ajax_verify_remote', array( self::$instance->git, 'verify_remote' ) );
 		add_action( 'admin_notices', array( self::$instance->admin_setup, 'site5_notice' ) );
-		add_action( 'load-post.php', array( self::$instance->admin_setup, 'meta' ) );
-		add_action( 'load-post-new.php', array( self::$instance->admin_setup, 'meta' ) );
+		add_action( 'load-post.php', array( self::$instance->commits, 'post_meta' ) );
+		add_action( 'load-post-new.php', array( self::$instance->commits, 'post_meta' ) );
 		add_action( 'admin_menu', array( self::$instance->admin_setup, 'menus' ), 2 );
 		add_action( 'admin_post_delete_branch_form', array( self::$instance->admin_setup, 'delete_branch_form' ) );
 		add_action( 'admin_post_merge_branch_form', array ( self::$instance->admin_setup, 'merge_branch_form' ) );
 		add_action( 'admin_post_import_tables_form', array( self::$instance->admin_setup, 'import_tables_form' ) );
 		add_action( 'admin_enqueue_scripts', array( self::$instance->admin_setup, 'revisr_scripts' ) );
 		add_action( 'admin_bar_menu', array( self::$instance->admin_setup, 'admin_bar' ), 999 );
-		add_filter( 'custom_menu_order', array( self::$instance->admin_setup, 'revisr_commits_submenu_order' ) );
+		add_filter( 'custom_menu_order', array( self::$instance->admin_setup, 'revisr_submenu_order' ) );
 		add_action( 'wp_ajax_recent_activity', array( self::$instance->admin_setup, 'recent_activity' ) );
 
 		if ( get_option( 'revisr_db_version' ) === '1.0' ) {
