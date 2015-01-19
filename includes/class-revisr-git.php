@@ -293,32 +293,6 @@ class Revisr_Git {
 	}
 
 	/**
-	 * Returns the commit hash for a specific commit.
-	 * @access public
-	 * @param  int $post_id The ID of the associated post.
-	 */
-	public static function get_hash( $post_id ) {
-		$commit_meta = maybe_unserialize( get_post_meta( $post_id, "commit_hash" ) );		
-		if ( isset( $commit_meta[0] ) ) {
-			if ( ! is_array( $commit_meta[0] ) && strlen( $commit_meta[0] ) == "1" ) {
-				$commit_hash = $commit_meta;
-			}
-			else {
-				$commit_hash = $commit_meta[0];
-			}
-		}
-		if ( empty( $commit_hash ) ) {
-			return __( 'Unknown', 'revisr' );
-		} else {
-			if ( is_array( $commit_hash ) ) {
-				return $commit_hash[0];
-			} else {
-				return $commit_hash;
-			}
-		}
-	}
-
-	/**
 	 * Returns the status of a file.
 	 * @access public
 	 * @param  string $status The status code returned via 'git status --short'

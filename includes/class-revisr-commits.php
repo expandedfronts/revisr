@@ -150,37 +150,32 @@ class Revisr_Commits {
 	 * @param  array $actions The default array of actions.
 	 */
 	public function custom_actions( $actions ) {
-		if ( get_post_type() == 'revisr_commits' ) {
-			if ( isset( $actions ) ) {
-				unset( $actions['edit'] );
-		        unset( $actions['view'] );
-		        unset( $actions['trash'] );
-		        unset( $actions['inline hide-if-no-js'] );
+		
+		if ( 'revisr_commits' === get_post_type() && isset( $actions ) ) {
 
-		        $id 				= get_the_ID();
-		        $url 				= get_admin_url() . 'post.php?post=' . $id . '&action=edit';
-		        $actions['view'] 	= "<a href='{$url}'>" . __( 'View', 'revisr' ) . "</a>";
-		        $branch_meta 		= get_post_custom_values( 'branch', $id );
-		        $db_hash_meta 		= get_post_custom_values( 'db_hash', $id );
-		        $backup_method 		= get_post_custom_values( 'backup_method', $id );
-		        $commit_hash 		= Revisr_Git::get_hash( $id );
-		        $revert_nonce 		= wp_nonce_url( admin_url("admin-post.php?action=process_revert&commit_hash={$commit_hash}&branch={$branch_meta[0]}&post_id=" . $id ), 'revert', 'revert_nonce' );
-		        $actions['revert'] 	= "<a href='" . $revert_nonce . "'>" . __( 'Revert Files', 'revisr' ) . "</a>";
-		        
-		        if ( is_array( $db_hash_meta ) ) {
-		        	$db_hash 			= str_replace( "'", "", $db_hash_meta );
-		        	if ( isset( $backup_method ) && $backup_method[0] == 'tables' ) {
-			        	$revert_db_nonce 	= wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&backup_method=tables&post_id=" . $id ), 'revert_db', 'revert_db_nonce' );
-		        	} else {
-			        	$revert_db_nonce 	= wp_nonce_url( admin_url("admin-post.php?action=revert_db&db_hash={$db_hash[0]}&branch={$branch_meta[0]}&post_id=" . $id ), 'revert_db', 'revert_db_nonce' );
-		        	}
+			// Unset the default WordPress actions
+			unset( $actions['edit'] );
+	        unset( $actions['view'] );
+	        unset( $actions['trash'] );
+	        unset( $actions['inline hide-if-no-js'] );
 
-			        if ( $db_hash[0] != '' ) {
-		          		$actions['revert_db'] = "<a href='" . $revert_db_nonce ."'>" . __( 'Revert Database', 'revisr' ) . "</a>";
-			        }	
-		        }        
-			}
+	        // Display the View and Revert links
+	        $id 				= get_the_ID();
+	        $commit 			= Revisr_Admin::get_commit_details( $id );
+	        $url 				= get_admin_url() . 'post.php?post=' . $id . '&action=edit';
+	        $actions['view'] 	= "<a href='{$url}'>" . __( 'View', 'revisr' ) . "</a>";
+	        $revert_nonce 		= wp_nonce_url( admin_url( 'admin-post.php?action=process_revert&commit_hash=' . $commit['commit_hash'] . '&branch=' . $commit['branch'] . '&post_id=' . $id ), 'revert', 'revert_nonce' );
+	        $actions['revert'] 	= "<a href='" . $revert_nonce . "'>" . __( 'Revert Files', 'revisr' ) . "</a>";
+
+	        // If there is a database backup available to revert to, display the revert link.
+	        if ( $commit['db_hash'] !== '' ) {
+	        	$revert_db_nonce = wp_nonce_url( admin_url( 'admin-post.php?action=revert_db&db_hash=' . $commit['db_hash'] . '&branch=' . $commit['branch'] . '&backup_method=' . $commit['db_backup_method'] . '&post_id=' . $id ), 'revert_db', 'revert_db_nonce' );
+	        	$actions['revert_db'] = '<a href="' . $revert_db_nonce . '">' . __( 'Revert Database', 'revisr' ) . '</a>';
+	        }
+
 		}
+
+		// Return the actions for display.
 		return $actions;
 	}
 
@@ -278,32 +273,25 @@ class Revisr_Commits {
 	/**
 	 * Displays the number of committed files and the commit hash for commits.
 	 * @access public
-	 * @param  string $column The column to add.
+	 * @param  string 	$column 	The name of the column to display.
+	 * @param  int 		$post_id 	The ID of the current post.
 	 */
-	public function custom_columns( $column ) {
-		global $post;
-		$post_id = get_the_ID();
-		switch ( $column ) {
+	public function custom_columns( $column_name, $post_id ) {
+
+		$commit = Revisr_Admin::get_commit_details( $post_id );
+
+		switch ( $column_name ) {
 			case "hash": 
-				echo Revisr_Git::get_hash( $post_id );
+				echo $commit['commit_hash'];
 				break;
 			case "branch":
-				$branch_meta = get_post_meta( $post_id, "branch" );
-				if ( isset( $branch_meta[0] ) ) {
-					echo $branch_meta[0];
-				}
+				echo $commit['branch'];
 				break;
 			case "tag":
-				$tag_meta = get_post_meta( $post_id, "git_tag" );
-				if ( isset( $tag_meta[0] ) ) {
-					echo $tag_meta[0];
-				}
+				echo $commit['tag'];
 				break;
 			case "files_changed":
-				$files_meta = get_post_meta( $post_id, "files_changed" );
-				if ( isset( $files_meta[0] ) ) {
-					echo $files_meta[0];
-				}
+				echo $commit['files_changed'];
 				break;
 		}
 	}
@@ -370,25 +358,28 @@ class Revisr_Commits {
 		}
 
 		check_ajax_referer( 'committed_nonce', 'security' );
-		$committed_files = get_post_custom_values( 'committed_files', $_POST['id'] );
-		$commit_hash	 = get_post_custom_values( 'commit_hash', $_POST['id'] );
-		
-		if ( is_array( $committed_files ) ) {
-			foreach ( $committed_files as $file ) {
+
+		$commit = Revisr_Admin::get_commit_details( $_POST['id'] );
+
+		if ( count( $commit['committed_files'] ) !== 0 ) {
+			foreach ( $commit['committed_files']  as $file ) {
 				$output = maybe_unserialize( $file );
 			}
 		}
 		
 		if ( isset( $output ) ) {
-			printf( __('<br><strong>%s</strong> files were included in this commit. Double-click files marked as "Modified" to view the changes in a diff.', 'revisr' ), count( $output ) );
-			echo "<input id='commit_hash' name='commit_hash' value='{$commit_hash[0]}' type='hidden' />";
+			printf( __('<br><strong>%s</strong> files were included in this commit. Double-click files marked as "Modified" to view the changes in a diff.', 'revisr' ), $commit['files_changed'] );
+			echo '<input id="commit_hash" name="commit_hash" value="' . $commit['commit_hash'] . '" type="hidden" />';
 			echo '<br><br><select id="committed" multiple="multiple" size="6">';
+				
+				// Display the files that were included in the commit.
 				foreach ( $output as $result ) {
-					$short_status = substr( $result, 0, 3 );
-					$file = substr($result, 2);
-					$status = Revisr_Git::get_status( $short_status );
+					$short_status 	= substr( $result, 0, 3 );
+					$file 			= substr( $result, 2 );
+					$status 		= Revisr_Git::get_status( $short_status );
 					printf( '<option class="committed" value="%s">%s [%s]</option>', $result, $file, $status );	
 				}
+
 			echo '</select>';
 		} else {
 			_e( 'No files were included in this commit.', 'revisr' );
@@ -458,14 +449,12 @@ class Revisr_Commits {
 	 * @access public
 	 */
 	public function view_commit_meta() {
-		$id = get_the_ID();
-		$branch 		 = get_post_custom_values( 'branch', $id );
-		$committed_files = get_post_custom_values( 'committed_files', $id );
-		$commit_hash	 = get_post_custom_values( 'commit_hash', $id );
-		$time_format 	 = __( 'M j, Y @ G:i' );
-		$timestamp 		 = sprintf( __( 'Committed on: <strong>%s</strong>', 'revisr' ), date_i18n( $time_format, get_the_time( 'U' ) ) );
 
-		if ( $committed_files && $commit_hash ) {
+		$commit 			= Revisr_Admin::get_commit_details( get_the_ID() );
+		$time_format 	 	= __( 'M j, Y @ G:i' );
+		$timestamp 		 	= sprintf( __( 'Committed on: <strong>%s</strong>', 'revisr' ), date_i18n( $time_format, get_the_time( 'U' ) ) );
+
+		if ( $commit['committed_files'] && $commit['commit_hash'] ) {
 			$status = __( 'Committed', 'revisr' );
 		} else {
 			$status = __( 'Error', 'revisr' );
@@ -482,7 +471,7 @@ class Revisr_Commits {
 
 				<div class="misc-pub-section revisr-pub-branch">
 					<label for="revisr-branch"><?php _e( 'Branch:', 'revisr' ); ?></label>
-					<span><strong><?php echo $branch[0]; ?></strong></span>
+					<span><strong><?php echo $commit['branch']; ?></strong></span>
 				</div>
 
 				<div class="misc-pub-section curtime misc-pub-curtime">

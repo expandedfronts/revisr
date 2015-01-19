@@ -99,6 +99,38 @@ class Revisr_Admin {
 	}
 
 	/**
+	 * Gets an array of details on a saved commit.
+	 * @access public
+	 * @param  string $id The WordPress Post ID associated with the commit.
+	 * @return array
+	 */
+	public static function get_commit_details( $id ) {
+
+		// Grab the values from the post meta.
+		$branch 			= get_post_meta( $id, 'branch', true );
+		$hash 				= get_post_meta( $id, 'commit_hash', true );
+		$db_hash 			= get_post_meta( $id, 'db_hash', true );
+		$db_backup_method	= get_post_meta( $id, 'backup_method', true );
+		$files_changed 		= get_post_meta( $id, 'files_changed', true );
+		$committed_files 	= get_post_meta( $id, 'committed_files' );
+		$git_tag 			= get_post_meta( $id, 'git_tag', true );
+
+		// Store the values in an array.
+		$commit_details = array(
+			'branch' 			=> $branch ? $branch : __( 'Unknown', 'revisr' ),
+			'commit_hash' 		=> $hash ? $hash : __( 'Unknown', 'revisr' ),
+			'db_hash' 			=> $db_hash ? $db_hash : '',
+			'db_backup_method'	=> $db_backup_method ? $db_backup_method : '',
+			'files_changed' 	=> $files_changed ? $files_changed : 0,
+			'committed_files' 	=> $committed_files ? $committed_files : array(),
+			'tag'				=> $git_tag ? $git_tag : ''
+		);
+
+		// Return the array.
+		return $commit_details;
+	}
+
+	/**
 	 * Logs an event to the database.
 	 * @access public
 	 * @param  string $message The message to show in the Recent Activity. 
@@ -190,7 +222,7 @@ class Revisr_Admin {
 					if ( substr( $line, 0, 1 ) === '+' ) {
 						echo '<span class="diff_added" style="background-color:#cfc;">' . htmlspecialchars( $line ) . '</span><br>';
 					} else if ( substr( $line, 0, 1 ) === '-' ) {
-						echo '<span class="diff_removed" style="background-color:#fdd;">' . htmlspecialchars($line) . '</span><br>';
+						echo '<span class="diff_removed" style="background-color:#fdd;">' . htmlspecialchars( $line ) . '</span><br>';
 					} else {
 						echo htmlspecialchars( $line ) . '<br>';
 					}	

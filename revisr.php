@@ -261,7 +261,7 @@ class Revisr {
 		add_action( 'load-edit.php', array( self::$instance->commits, 'default_views' ) );
 		add_action( 'post_row_actions', array( self::$instance->commits, 'custom_actions' ) );
 		add_action( 'manage_edit-revisr_commits_columns', array( self::$instance->commits, 'columns' ) );
-		add_action( 'manage_revisr_commits_posts_custom_column', array( self::$instance->commits, 'custom_columns' ) );	
+		add_action( 'manage_revisr_commits_posts_custom_column', array( self::$instance->commits, 'custom_columns' ), 10, 2 );	
 		add_action( 'admin_enqueue_scripts', array( self::$instance->commits, 'disable_autodraft' ) );
 		add_filter( 'post_updated_messages', array( self::$instance->commits, 'custom_messages' ) );
 		add_filter( 'bulk_post_updated_messages', array( self::$instance->commits, 'bulk_messages' ), 10, 2 );
