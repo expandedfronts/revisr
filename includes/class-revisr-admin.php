@@ -171,27 +171,33 @@ class Revisr_Admin {
 	public function view_diff() {
 		?>
 		<html>
-		<head><title><?php _e( 'View Diff', 'revisr' ); ?></title>
+		<head>
+			<title><?php _e( 'View Diff', 'revisr' ); ?></title>
 		</head>
 		<body>
 		<?php
+
 			if ( isset( $_REQUEST['commit'] ) ) {
-				$diff = $this->git->run("show {$_REQUEST['commit']} {$_REQUEST['file']}");
+				$diff = $this->git->run( "show {$_REQUEST['commit']} {$_REQUEST['file']}" );
 			} else {
-				$diff = $this->git->run("diff {$_REQUEST['file']}");
+				$diff = $this->git->run( "diff {$_REQUEST['file']}" );
 			}
+
 			if ( is_array( $diff ) ) {
+
+				// Loop through the diff and echo the output.
 				foreach ( $diff as $line ) {
-					if (substr( $line, 0, 1 ) === "+") {
-						echo "<span class='diff_added' style='background-color:#cfc;'>" . htmlspecialchars($line) . "</span><br>";
-					} else if (substr( $line, 0, 1 ) === "-") {
-						echo "<span class='diff_removed' style='background-color:#fdd;'>" . htmlspecialchars($line) . "</span><br>";
+					if ( substr( $line, 0, 1 ) === '+' ) {
+						echo '<span class="diff_added" style="background-color:#cfc;">' . htmlspecialchars( $line ) . '</span><br>';
+					} else if ( substr( $line, 0, 1 ) === '-' ) {
+						echo '<span class="diff_removed" style="background-color:#fdd;">' . htmlspecialchars($line) . '</span><br>';
 					} else {
-						echo htmlspecialchars($line) . "<br>";
+						echo htmlspecialchars( $line ) . '<br>';
 					}	
-				}			
+				}
+
 			} else {
-				_e( 'Failed to render the diff.', 'revisr' );
+				_e( 'Oops! Revisr ran into an error rendering the diff.', 'revisr' );
 			}
 		?>
 		</body>
