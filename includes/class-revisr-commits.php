@@ -2,7 +2,7 @@
 /**
  * class-revisr-commits.php
  * 
- * Configures the "revisr_commits" custom post type.
+ * Configures the 'revisr_commits' custom post type.
  * @package   Revisr
  * @license   GPLv3
  * @link      https://revisr.io
@@ -238,7 +238,7 @@ class Revisr_Commits {
 	 * @access public
 	 */
 	public function default_views() {
-		if( !isset($_GET['branch'] ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
+		if( !isset( $_GET['branch'] ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
 			$_GET['branch'] = $this->git->branch;
 		}
 	}
@@ -271,16 +271,16 @@ class Revisr_Commits {
 		$commit = Revisr_Admin::get_commit_details( $post_id );
 
 		switch ( $column_name ) {
-			case "hash": 
+			case 'hash': 
 				echo $commit['commit_hash'];
 				break;
-			case "branch":
+			case 'branch':
 				echo $commit['branch'];
 				break;
-			case "tag":
+			case 'tag':
 				echo $commit['tag'];
 				break;
-			case "files_changed":
+			case 'files_changed':
 				echo $commit['files_changed'];
 				break;
 		}
@@ -291,7 +291,7 @@ class Revisr_Commits {
 	 * @access public
 	 */
 	public function pending_files() {
-		check_ajax_referer('pending_nonce', 'security');
+		check_ajax_referer( 'pending_nonce', 'security' );
 		$output 		= $this->git->status();
 		$total_pending 	= count( $output );
 		$text 			= sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit.', 'revisr' ), $total_pending, $this->git->branch );
