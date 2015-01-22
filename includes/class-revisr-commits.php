@@ -485,7 +485,7 @@ class Revisr_Commits {
 			<div id="delete-action"></div>
 			<div id="publishing-action">
 				<span class="spinner"></span>
-				<input type="submit" name="publish" id="commit" class="button button-primary button-large" value="Commit Changes" onclick="commit_files();" accesskey="p">
+				<input type="submit" name="publish" id="commit" class="button button-primary button-large" value="Revert to Commit" onclick="();" accesskey="p">
 			</div>
 			<div class="clear"></div>
 		</div>
