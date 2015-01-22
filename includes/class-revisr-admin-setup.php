@@ -48,6 +48,8 @@ class Revisr_Setup {
 	 * @param string $hook The page to enqueue the styles/scripts.
 	 */
 	public function revisr_scripts( $hook ) {
+		
+		// Registers the stylesheets and javascript files used by Revisr.
 		wp_register_style( 'revisr_dashboard_css', REVISR_URL . 'assets/css/dashboard.css', array(), '07052014' );
 		wp_register_style( 'revisr_commits_css', REVISR_URL . 'assets/css/commits.css', array(), '08202014' );
 		wp_register_style( 'revisr_octicons_css', REVISR_URL . 'assets/octicons/octicons.css', array(), '01152015' );
@@ -56,43 +58,55 @@ class Revisr_Setup {
 		wp_register_script( 'revisr_committed', REVISR_URL . 'assets/js/committed.js', 'jquery', '07052014', false );
 		wp_register_script( 'revisr_settings', REVISR_URL . 'assets/js/settings.js', 'jquery', '08272014', true );
 		
+		// An array of pages that most scripts can be allowed on.
 		$allowed_pages = array( 'revisr', 'revisr_settings', 'revisr_branches' );
-		// Enqueue common styles and scripts.
+		
+		// Enqueue common scripts and styles.
 		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
+
 			wp_enqueue_style( 'revisr_dashboard_css' );
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
 			wp_enqueue_script( 'revisr_settings' );
 			wp_enqueue_style( 'revisr_octicons_css' );
-		}
-		// Enqueue styles and scripts on the Revisr staging area.
-		if ( $hook == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
-			wp_enqueue_script( 'revisr_staging' );
-			wp_localize_script( 'revisr_staging', 'pending_vars', array(
-				'ajax_nonce' 		=> wp_create_nonce( 'pending_nonce' ),
-				'empty_title_msg' 	=> __( 'Please enter a message for your commit.', 'revisr' ),
-				'empty_commit_msg' 	=> __( 'Nothing was added to the commit. Please use the section below to add files to use in the commit.', 'revisr' ),
-				'error_commit_msg' 	=> __( 'There was an error committing the files. Make sure that your Git username and email is set, and that Revisr has write permissions to the ".git" directory.', 'revisr' ),
-				'view_diff' 		=> __( 'View Diff', 'revisr' ),
-				)
-			);
-		}
-		// Enqueue styles and scripts for viewing a commit.
-		if ( $hook == 'post.php' && get_post_type() == 'revisr_commits' ) {
-			wp_enqueue_script( 'revisr_committed' );
-			wp_localize_script( 'revisr_committed', 'committed_vars', array(
-				'post_id' 		=> $_GET['post'],
-				'ajax_nonce' 	=> wp_create_nonce( 'committed_nonce' ),
-				)
-			);			
-		}
-		// Add styles and scripts to commits pages.
-		if ( get_post_type() == 'revisr_commits' || isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
+
+		} 
+
+		// Enqueue scripts and styles for the 'revisr_commits' custom post type.
+		if ( 'revisr_commits' === get_post_type() ) {
+
+			if ( 'post-new.php' === $hook ) {
+
+				// Enqueue scripts for the "New Commit" screen.
+				wp_enqueue_script( 'revisr_staging' );
+				wp_localize_script( 'revisr_staging', 'pending_vars', array(
+					'ajax_nonce' 		=> wp_create_nonce( 'pending_nonce' ),
+					'empty_title_msg' 	=> __( 'Please enter a message for your commit.', 'revisr' ),
+					'empty_commit_msg' 	=> __( 'Nothing was added to the commit. Please use the section below to add files to use in the commit.', 'revisr' ),
+					'error_commit_msg' 	=> __( 'There was an error committing the files. Make sure that your Git username and email is set, and that Revisr has write permissions to the ".git" directory.', 'revisr' ),
+					'view_diff' 		=> __( 'View Diff', 'revisr' ),
+					)
+				);
+
+			} elseif ( 'post.php' === $hook ) {
+
+				// Enqueue scripts for the "View Commit" screen.
+				wp_enqueue_script( 'revisr_committed' );
+				wp_localize_script( 'revisr_committed', 'committed_vars', array(
+					'post_id' 		=> $_GET['post'],
+					'ajax_nonce' 	=> wp_create_nonce( 'committed_nonce' ),
+					)
+				);
+
+			}
+
 			wp_enqueue_style( 'revisr_commits_css' );
 			wp_enqueue_style( 'thickbox' );
-			wp_enqueue_script( 'thickbox' );
 			wp_enqueue_style( 'revisr_octicons_css' );
+			wp_enqueue_script( 'thickbox' );
+			wp_dequeue_script( 'autosave' );
 		}
+
 	}
 	
 	/**

@@ -244,16 +244,6 @@ class Revisr_Commits {
 	}
 
 	/**
-	 * Disables autodraft when on the new commit page.
-	 * @access public
-	 */
-	public function disable_autodraft() {
-		if ( 'revisr_commits' == get_post_type() ) {
-			wp_dequeue_script( 'autosave' );
-		}
-	}
-
-	/**
 	 * Displays custom columns for the commits post type.
 	 * @access public
 	 */
