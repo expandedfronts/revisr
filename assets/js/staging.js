@@ -66,7 +66,7 @@ jQuery(document).ready(function($) {
 
 });
 
-jQuery(document).on("dblclick", ".pending", function () {
+jQuery(document).on("dblclick", ".pending", function (event) {
     var pending = event.target.value;
     var status  = pending.substr(0, 3);
     if ( status === " M " ) {
