@@ -244,7 +244,7 @@ class Revisr_Git {
 	 * @param  string $path 	The path to store.
 	 */
 	public function config_revisr_path( $service, $path = '' ) {
-		$revisr_path = $this->run( 'config', array( "revisr.$service-path $path" ) );
+		$revisr_path = $this->run( 'config', array( "revisr.$service-path", $path ) );
 		return $revisr_path;
 	}
 
