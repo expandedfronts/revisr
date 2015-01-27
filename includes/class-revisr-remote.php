@@ -22,11 +22,11 @@ class Revisr_Remote extends Revisr_Admin {
 	 * @return string|boolean The token, or false on complete failure.
 	 */
 	public function get_token() {
-		$check = $this->git->run( 'config revisr.token' );
+		$check = $this->git->run( 'config', array( 'revisr.token' ) );
 
 		if ( $check === false ) {
 			$token = wp_generate_password( 16, false, false );
-			$save  = $this->git->run( "config revisr.token $token" );
+			$save  = $this->git->run( 'config', array( 'revisr.token', $token ) );
 
 			if ( $save !== false ) {
 				return $token;
@@ -47,7 +47,7 @@ class Revisr_Remote extends Revisr_Admin {
 	 */
 	public function check_token() {
 		if ( isset( $_REQUEST['token'] ) ) {
-			$safe_token = $this->git->run( 'config revisr.token' );
+			$safe_token = $this->git->run( 'config', array( 'revisr.token' ) );
 			if ( is_array( $safe_token ) ) {
 				if ( $safe_token[0] === $_REQUEST['token'] ) {
 					return true;

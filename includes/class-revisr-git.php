@@ -2,61 +2,143 @@
 /**
  * class-revisr-git.php
  *
- * Processes Git functions.
+ * Processes interactions with Git.
  *
- * @package   Revisr
- * @license   GPLv3
- * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts, LLC
+ * @package 	Revisr
+ * @license 	GPLv3
+ * @link 		https://revisr.io
+ * @copyright 	2014 Expanded Fronts, LLC
  */
 
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+// The main Git class.
 class Revisr_Git {
 
 	/**
-	 * The current branch of the local repository.
+	 * Stores the current branch in Git.
 	 * @var string
 	 */
 	public $branch;
 
 	/**
-	 * The top-level Git directory.
-	 * @var string
-	 */
-	public $dir;
-
-	/**
-	 * The short SHA1 hash of the current state of the repository.
-	 * @var string
-	 */
-	public $hash;
-
-	/**
-	 * User options and preferences.
-	 * @var array
-	 */
-	public $options;
-
-	/**
-	 * The name of the active remote.
+	 * Stores the current remote used by Git.
 	 * @var string
 	 */
 	public $remote;
 
 	/**
-	 * Initiate the class properties.
+	 * Stores the ID of the current commit.
+	 * @var string
+	 */
+	public $current_commit;
+
+	/**
+	 * Stores the current directory during runtime.
+	 * @var string
+	 */
+	public $current_dir;
+
+	/**
+	 * Stores the top-level git directory.
+	 * @var string
+	 */
+	public $git_dir;
+
+	/**
+	 * Stores the path to Git.
+	 * @var string
+	 */
+	public $git_path;
+
+	/**
+	 * Stores the state of the repository
+	 * @var boolean
+	 */
+	public $is_repo;
+
+	/**
+	 * Initiates the class and it's properties.
 	 * @access public
 	 */
 	public function __construct() {
-		$this->dir 		= $this->current_dir();
-		$this->options  = Revisr::get_options();
+		
+		// Necessary for execution of Revisr.
+		$this->current_dir 	= getcwd();
+		$this->is_repo 		= true;
+		$this->git_path 	= $this->get_git_path();
+		$this->git_dir 		= $this->get_git_dir();
 
-		if ( $this->is_repo() ) {
-			$this->branch 	= $this->current_branch();
-			$this->remote 	= $this->current_remote();
-			$this->hash 	= $this->current_commit();			
+		// Load up information about the current repository.
+		if ( $this->is_repo ) {
+			$this->branch 			= $this->current_branch();
+			$this->remote 			= $this->current_remote();
+			$this->current_commit 	= $this->current_commit();
+		}
+	}
+
+	/**
+	 * Runs a Git command and fires the given callback.
+	 * @access 	public
+	 * @param 	string 			$command 	The command to use.
+	 * @param 	array 			$args 		Arguements provided by user.
+	 * @param 	string 			$callback 	The callback to use.
+	 * @param 	string|array 	$info 		Additional info to pass to the callback
+	 */
+	public function run( $command, $args, $callback = '', $info = '' ) {
+		// Setup the command for safe usage.
+		$current_dir 	= getcwd();
+		$safe_path 		= escapeshellarg( $this->git_path );
+		$safe_cmd 		= escapeshellarg( $command );
+		$safe_args 		= join( ' ', array_map( 'escapeshellarg', $args ) );
+
+		// Run the command.
+		chdir( $this->git_dir );
+		exec( "$safe_path $safe_cmd $safe_args", $output, $error );
+		chdir( $this->current_dir );
+
+		// Process the response.
+		$response 			= new Revisr_Git_Callback();
+		$success_callback 	= 'success_' . $callback;
+		$failure_callback 	= 'null_' . $callback;
+
+		if ( $error ) {
+			return $response->$failure_callback( $error, $info );
+		} else {
+			return $response->$success_callback( $output, $info );
+		}
+	}
+
+	/**
+	 * Returns the path to the top-level Git directory.
+	 * @access public
+	 * @return string The path to the top-level Git directory.
+	 */
+	public function get_git_dir() {
+		$dir = exec( "$this->git_path rev-parse --show-toplevel" );
+		if ( $dir ) {
+			return $dir;
+		} else {
+			$this->is_repo = false;
+			return ABSPATH;
+		}
+	}
+
+	/**
+	 * Returns the current path to Git.
+	 * @access public
+	 * @return string The path to the installation of Git.
+	 */
+	public function get_git_path() {
+		$options = Revisr::get_options();
+		if ( isset( $options['git_path'] ) ) {
+			return $options['git_path'];
+		} else {
+			// This is surprisingly still the best option
+			// given the huge amount of possible install paths,
+			// and ~90% of the time this will work anyway.
+			return 'git';
 		}
 	}
 
@@ -76,7 +158,7 @@ class Revisr_Git {
 	 * @param string $branch The branch to checkout.
 	 */
 	public function checkout( $branch ) {
-		$this->run( "checkout $branch", __FUNCTION__ );
+		$this->run( 'checkout', array( $branch ), __FUNCTION__ );
 	}
 
 	/**
@@ -86,18 +168,18 @@ class Revisr_Git {
 	 * @param  string $callback 	The callback to run.
 	 */
 	public function commit( $message, $callback = '' ) {
-		$commit_message = escapeshellarg($message);
-		$commit 		= $this->run( "commit -m$commit_message", $callback );
+		$current_user 	= wp_get_current_user();
+		$author 	 	= "$current_user->user_login <$current_user->user_email>";
+		$commit 		= $this->run( 'commit', array( '-m', $message, '--author', $author ), $callback );
 		return $commit;
 	}
-
 	/**
 	 * Gets or sets the user's email address stored in Git.
 	 * @access public
 	 * @param  string $user_email If provided, will update the user's email.
 	 */
 	public function config_user_email( $user_email = '' ) {
-		$email = $this->run( "config user.email $user_email" );
+		$email = $this->run( 'config user.email', array( $user_email ) );
 		return $email;
 	}
 
@@ -107,7 +189,7 @@ class Revisr_Git {
 	 * @param  string $username If provided, will update the username.
 	 */
 	public function config_user_name( $username = '' ) {
-		$username = $this->run( "config user.name $username" );
+		$username = $this->run( 'config user.name', array( $username ) );
 		return $username;
 	}
 
@@ -121,11 +203,11 @@ class Revisr_Git {
 	 */
 	public function config_revisr_option( $option, $value = '' ) {
 		if ( $value != '' ) {
-			$this->run( "config revisr.$option $value" );
+			$this->run( 'config', array( "revisr.$option", "$value" ) );
 		}
 
 		// Retrieve the data for verification/comparison.
-		$data = $this->run( "config revisr.$option" );
+		$data = $this->run( 'config', array( "revisr.$option" ) );
 		if ( is_array( $data ) ) {
 			return $data[0];
 		} else {
@@ -142,11 +224,12 @@ class Revisr_Git {
 	 */
 	public function config_revisr_url( $env, $url = '' ) {
 		if ( $url != '' ) {
-			$this->run( "config revisr.$env-url $url" );
+			$this->run( 'config', array( "revisr.$env-url",  $url ) );
 		}
 
 		// Retrieve the URL for using elsewhere.
-		$data = $this->run( "config revisr.$env-url" );
+		$data = $this->run( 'config', array( "revisr.$env-url" ) );
+
 		if ( is_array( $data ) ) {
 			return $data[0];
 		} else {
@@ -161,7 +244,7 @@ class Revisr_Git {
 	 * @param  string $path 	The path to store.
 	 */
 	public function config_revisr_path( $service, $path = '' ) {
-		$revisr_path = $this->run( "config revisr.$service-path $path" );
+		$revisr_path = $this->run( 'config', array( "revisr.$service-path $path" ) );
 		return $revisr_path;
 	}
 
@@ -172,9 +255,9 @@ class Revisr_Git {
 	public function count_unpulled( $ajax_btn = true ) {
 		$this->fetch();
 		if ( $ajax_btn == true ) {
-			$this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline", 'count_ajax_btn' );
+			$this->run( 'log', array( $this->branch . '..' . $this->remote . '/' . $this->branch, '--pretty=oneline' ), 'count_ajax_btn' );
 		} else {
-			$unpulled = $this->run( "log {$this->branch}..{$this->remote}/{$this->branch} --pretty=oneline" );
+			$unpulled = $this->run( 'log', array( $this->branch . '..' . $this->remote . '/' . $this->branch, '--pretty=oneline') );
 			return count( $unpulled );
 		}
 	}
@@ -185,9 +268,9 @@ class Revisr_Git {
 	 */
 	public function count_unpushed( $ajax_btn = true ) {
 		if ( $ajax_btn == true ) {
-			$this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline", 'count_ajax_btn' );
+			$this->run( 'log', array( $this->remote . '/' . $this->branch . '..' . $this->branch, '--pretty=oneline' ), 'count_ajax_btn' );
 		} else {
-			$unpushed = $this->run("log {$this->remote}/{$this->branch}..{$this->branch} --pretty=oneline" );
+			$unpushed = $this->run( 'log', array( $this->remote . '/' . $this->branch . '..' . $this->branch, '--pretty=oneline' ) );
 			return count( $unpushed );
 		}
 	}
@@ -197,7 +280,7 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function count_untracked() {
-		$untracked = $this->run( 'status --short' );
+		$untracked = $this->run( 'status', array( '--short' ) );
 		return count( $untracked );
 	}
 
@@ -207,7 +290,7 @@ class Revisr_Git {
 	 * @param  string $branch The name of the branch to create.
 	 */
 	public function create_branch( $branch ) {
-		$new_branch = $this->run( "branch $branch" );
+		$new_branch = $this->run( 'branch', array( $branch ) );
 		return $new_branch;
 	}	
 
@@ -216,7 +299,7 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function current_branch() {
-		$current_branch = $this->run( 'rev-parse --abbrev-ref HEAD' );
+		$current_branch = $this->run( 'rev-parse', array( '--abbrev-ref', 'HEAD' ) );
 		if ( $current_branch != false ) {
 			return $current_branch[0];
 		}
@@ -227,23 +310,9 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function current_commit() {
-		$commit_hash = $this->run( 'rev-parse --short HEAD' );
+		$commit_hash = $this->run( 'rev-parse', array( '--short',  'HEAD' ) );
 		if ( is_array( $commit_hash ) ) {
 			return $commit_hash[0];
-		}
-	}
-
-	/**
-	 * Returns the path to the top-level git directory.
-	 * @access public
-	 * @return string The path to the top-level Git directory.
-	 */
-	public function current_dir() {
-		$dir = exec( 'git rev-parse --show-toplevel' );
-		if ( $dir ) {
-			return $dir;
-		} else {
-			return ABSPATH;
 		}
 	}
 
@@ -265,7 +334,7 @@ class Revisr_Git {
 	 * @param  string $branch The branch to delete.
 	 */
 	public function delete_branch( $branch ) {
-		$deletion = $this->run( "branch -D $branch", __FUNCTION__, $branch );
+		$deletion = $this->run( 'branch', array( '-D', $branch ), __FUNCTION__, $branch );
 		return $deletion;
 	}
 
@@ -274,7 +343,7 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function fetch() {
-		$fetch = $this->run( 'fetch' );
+		$fetch = $this->run( 'fetch', array() );
 		return $fetch;
 	}
 
@@ -285,9 +354,9 @@ class Revisr_Git {
 	 */
 	public function get_branches( $remote = false ) {
 		if ( $remote == true ) {
-			$branches = $this->run( 'branch -r' );
+			$branches = $this->run( 'branch', array( '-r' ) );
 		} else {
-			$branches = $this->run( 'branch' );
+			$branches = $this->run( 'branch', array() );
 		}
 		return $branches;
 	}
@@ -323,14 +392,15 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function init_repo() {
-		$init = $this->run( 'init .', __FUNCTION__ );
+		$init = $this->run( 'init .', array(), __FUNCTION__ );
 		return $init;
 	}
 
 	/**
-	 * Checks if a given branch name exists in the local repository.
+	 * Checks if the provided branch is an existing branch.
 	 * @access public
-	 * @param  string $branch The branch to check.
+	 * @param  string $branch The name of the branch to check.
+	 * @return boolean
 	 */
 	public function is_branch( $branch ) {
 		$branches = $this->get_branches();
@@ -338,20 +408,7 @@ class Revisr_Git {
 			return true;
 		} else {
 			return false;
-		}
-	}
-
-	/**
-	 * Checks if the WordPress install is in a Git repository.
-	 * @access public
-	 */
-	public function is_repo() {
-		exec( 'git rev-parse --show-toplevel', $output, $error );
-		if ( $error ) {
-			return false;
-		} else {
-			return true;
-		}
+		}		
 	}
 
 	/**
@@ -361,7 +418,7 @@ class Revisr_Git {
 	 */
 	public function merge( $branch ) {
 		$this->reset();
-		$merge = $this->run( "merge $branch --strategy-option theirs", __FUNCTION__ );
+		$merge = $this->run( 'merge', array( $branch, '--strategy-option', 'theirs' ), __FUNCTION__ );
 		return $merge;
 	}
 
@@ -371,7 +428,7 @@ class Revisr_Git {
 	 */
 	public function pull() {
 		$this->reset();
-		$pull = $this->run( "pull -Xtheirs --quiet {$this->remote} {$this->branch}", __FUNCTION__, $this->count_unpulled( false ) );
+		$pull = $this->run( 'pull', array( '-Xtheirs', '--quiet', $this->remote, $this->branch ), __FUNCTION__, $this->count_unpulled( false ) );
 		return $pull;
 	}
 
@@ -380,7 +437,7 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function push() {
-		$push = $this->run( "push {$this->remote} HEAD --quiet", __FUNCTION__, $this->count_unpushed( false ) );
+		$push = $this->run( 'push', array( $this->remote, 'HEAD', '--quiet' ), __FUNCTION__, $this->count_unpushed( false ) );
 		return $push;
 	}
 
@@ -392,9 +449,9 @@ class Revisr_Git {
 	 * @param  bool 	$clean 	Whether to remove any untracked files.
 	 */
 	public function reset( $mode = '--hard', $path = 'HEAD', $clean = false ) {
-		$this->run( "reset $mode $path" );
+		$this->run( 'reset', array( $mode, $path ) );
 		if ( $clean === true ) {
-			$this->run( 'clean -f -d' );
+			$this->run( 'clean', array( '-f', '-d' ) );
 		}
 	}
 
@@ -410,42 +467,6 @@ class Revisr_Git {
 	}
 
 	/**
-	 * Executes a Git command.
-	 * @access public
-	 * @param  string 	$command 		The git command to execute.
-	 * @param  string 	$callback 	    The function to callback on response.
-	 * @param  string 	$args 			Optional additional arguements to pass to the callback.
-	 */
-	public function run( $command, $callback = '', $args = '' ) {
-		
-		// Run the actual Git command.
-		$cmd = escapeshellcmd( "git $command" );
-		$dir = getcwd();
-		chdir( $this->dir );
-		exec( $cmd, $output, $error );
-		chdir( $dir );
-		
-		// If using a callback, initiate the callback class and call the function.
-		if ( $callback != '' ) {
-			$response 			= new Revisr_Git_Callback;
-			$success_callback 	= 'success_' . $callback;
-			$failure_callback 	= 'null_' . $callback;
-			if ( $error ) {
-				return $response->$failure_callback( $error, $args );
-			} else {
-				return $response->$success_callback( $output, $args );
-			}
-		}
-
-		// If not using a callback, return the output (or false on failure).
-		if ( ! $error ) {
-			return $output;
-		} else {
-			return false;
-		}
-	}
-
-	/**
 	 * Stages the array of files passed through the New Commit screen.
 	 * @access public
 	 * @param  array $staged_files The files to add/remove
@@ -458,11 +479,11 @@ class Revisr_Git {
 			$status = Revisr_Git::get_status( substr( $result, 0, 2 ) );
 			
 			if ( $status == __( 'Deleted', 'revisr' ) ) {
-				if ( $this->run( 'rm "' . $file . '"' ) === false ) {
+				if ( $this->run( 'rm', array( $file ) ) === false ) {
 					$errors[] = $file;
 				}
 			} else {
-				if ( $this->run( 'add "' . $file . '"' ) === false ) {
+				if ( $this->run( 'add', array( $file ) ) === false ) {
 					$errors[] = $file;
 				}
 			}
@@ -481,7 +502,7 @@ class Revisr_Git {
 	 * @param  string $args Defaults to "--short".
 	 */
 	public function status( $args = '--short' ) {
-		$status = $this->run( "status $args" );
+		$status = $this->run( 'status', array( $args ) );
 		return $status;
 	}
 
@@ -491,7 +512,7 @@ class Revisr_Git {
 	 * @param  string $tag 		The tag to add.
 	 */
 	public function tag( $tag = '' ) {
-		$tag = $this->run( "tag $tag" );
+		$tag = $this->run( 'tag', array( $tag ) );
 		return $tag;
 	}
 
@@ -502,9 +523,9 @@ class Revisr_Git {
 	 */
 	public function verify_remote( $remote = '' ) {
 		if ( $remote != '' ) {
-			$ping = $this->run( "ls-remote $remote HEAD", __FUNCTION__ );
+			$ping = $this->run( 'ls-remote', array( $remote, 'HEAD' ), __FUNCTION__ );
 		} else {
-			$ping = $this->run( "ls-remote " . $_REQUEST['remote'] . " HEAD", __FUNCTION__ );
+			$ping = $this->run( 'ls-remote', array( $_REQUEST['remote'], 'HEAD' ), __FUNCTION__ );
 		}
 		return $ping;
 	}
@@ -514,7 +535,7 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function version() {
-		$version = $this->run( 'version', __FUNCTION__ );
+		$version = $this->run( 'version', array(), __FUNCTION__ );
 		return $version;
 	}
 }

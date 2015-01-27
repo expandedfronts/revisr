@@ -51,7 +51,7 @@ class Revisr_Process {
 	 * @return boolean
 	 */
 	public function process_is_repo() {
-		if ( $this->git->is_repo() ) {
+		if ( $this->git->is_repo ) {
 			return true;
 		} else {
 			$init_url 	= wp_nonce_url( get_admin_url() . 'admin-post.php?action=init_repo', 'init_repo', 'revisr_init_nonce' );
@@ -71,7 +71,7 @@ class Revisr_Process {
 		}
 
 		if ( $args == '' ) {
-			$branch = escapeshellarg( $_REQUEST['branch'] );
+			$branch = $_REQUEST['branch'];
 		} else {
 			$branch = $args;
 		}

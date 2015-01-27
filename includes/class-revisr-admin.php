@@ -210,9 +210,9 @@ class Revisr_Admin {
 		<?php
 
 			if ( isset( $_REQUEST['commit'] ) ) {
-				$diff = $this->git->run( "show {$_REQUEST['commit']} {$_REQUEST['file']}" );
+				$diff = $this->git->run( 'show', array( $_REQUEST['commit'], $_REQUEST['file'] ) );
 			} else {
-				$diff = $this->git->run( "diff {$_REQUEST['file']}" );
+				$diff = $this->git->run( 'diff', array( $_REQUEST['file'] ) );
 			}
 
 			if ( is_array( $diff ) ) {

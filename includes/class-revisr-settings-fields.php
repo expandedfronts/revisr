@@ -225,9 +225,9 @@ class Revisr_Settings_Fields {
 
 		// Sets the remote name and/or URL if necessary.
 		if ( isset( $this->options['remote_url'] ) ) {
-			$add = $this->git->run( "remote add $remote_name {$this->options['remote_url']}" );
+			$add = $this->git->run( 'remote',  array( 'add', $remote_name, $this->options['remote_url'] ) );
 			if ( $add == false ) {
-				$this->git->run( "remote set-url $remote_name {$this->options['remote_url']}" );
+				$this->git->run( 'remote', array( 'set-url', $remote_name, $this->options['remote_url'] ) );
 			}			
 		}
 	}
@@ -238,7 +238,7 @@ class Revisr_Settings_Fields {
 	 */
 	public function remote_url_callback() {
 
-		$check_remote 	= $this->git->run( 'config --get remote.origin.url' );
+		$check_remote 	= $this->git->run( 'config', array( '--get', 'remote.origin.url' ) );
 		
 		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != '' ) {
 			$remote_url = esc_attr( $this->options['remote_url'] );
@@ -265,7 +265,7 @@ class Revisr_Settings_Fields {
 			if ( $this->is_updated( 'webhook_url' ) ) {
 				$this->git->config_revisr_url( 'webhook', $this->options['webhook_url'] );
 			} else {
-				$this->git->run( 'config --unset revisr.webhook-url' );
+				$this->git->run( 'config', array( '--unset', 'revisr.webhook-url' ) );
 			}
 		}
 
@@ -292,7 +292,7 @@ class Revisr_Settings_Fields {
 			if ( isset( $this->options['auto_push'] ) ) {
 				$this->git->config_revisr_option( 'auto-push', 'true' );
 			} else {
-				$this->git->run( 'config --unset revisr.auto-push' );
+				$this->git->run( 'config', array( '--unset', 'revisr.auto-push' ) );
 			}
 		} 
 		
@@ -319,7 +319,7 @@ class Revisr_Settings_Fields {
 			if ( isset( $this->options['auto_pull'] ) ) {
 				$this->git->config_revisr_option( 'auto-pull', 'true' );
 			} else {
-				$this->git->run( 'config --unset revisr.auto-pull' );
+				$this->git->run( 'config', array( '--unset', 'revisr.auto-pull' ) );
 			}
 		}
 
@@ -364,7 +364,7 @@ class Revisr_Settings_Fields {
 			$this->git->config_revisr_option( 'db-tracking', $this->options['db_tracking'] );
 		}
 
-		$check_tracking = $this->git->run( 'config revisr.db-tracking' );
+		$check_tracking = $this->git->run( 'config', array( 'revisr.db-tracking' ) );
 		if ( is_array( $check_tracking ) ) {
 			$db_tracking = $check_tracking[0];
 			if ( $db_tracking == 'custom' ) {
@@ -376,7 +376,7 @@ class Revisr_Settings_Fields {
 					}
 				}
 			} else {
-				$this->git->run( 'config --unset-all revisr.tracked-tables' );
+				$this->git->run( 'config', array( '--unset-all', 'revisr.tracked-tables' ) );
 			}
 		} else {
 			$db_tracking = '';
@@ -417,7 +417,7 @@ class Revisr_Settings_Fields {
 			if ( $this->is_updated( 'development_url' ) ) {
 				$this->git->config_revisr_url( 'dev', $this->options['development_url'] );
 			} else {
-				$this->git->run( 'config --unset revisr.dev-url' );
+				$this->git->run( 'config', array( '--unset', 'revisr.dev-url' ) );
 			}
 		}
 
@@ -446,7 +446,7 @@ class Revisr_Settings_Fields {
 			if ( $this->is_updated( 'mysql_path' ) ) {
 				$this->git->config_revisr_path( 'mysql', $this->options['mysql_path'] );
 			} else {
-				$this->git->run( 'config --unset revisr.mysql-path' );
+				$this->git->run( 'config', array( '--unset', 'revisr.mysql-path' ) );
 			}
 		}
 
@@ -476,18 +476,18 @@ class Revisr_Settings_Fields {
 			if ( isset( $this->options['reset_db'] ) ) {
 				$this->git->config_revisr_option( 'import-checkouts', 'true' );
 			} else {
-				$this->git->run( 'config --unset-all revisr.import-checkouts' );
+				$this->git->run( 'config', array( '--unset-all', 'revisr.import-checkouts' ) );
 			}
 
 			if ( isset( $this->options['import_db'] ) ) {
 				$this->git->config_revisr_option( 'import-pulls', 'true' );
 			} else {
-				$this->git->run( 'config --unset-all revisr.import-pulls' );
+				$this->git->run( 'config',  array( '--unset-all', 'revisr.import-pulls' ) );
 			}
 		}
 
-		$get_reset 	= $this->git->run( 'config revisr.import-checkouts' );
-		$get_import = $this->git->run( 'config revisr.import-pulls' );
+		$get_reset 	= $this->git->run( 'config', array( 'revisr.import-checkouts' ) );
+		$get_import = $this->git->run( 'config', array( 'revisr.import-pulls' ) );
 
 		printf(
 			'<input type="checkbox" id="reset_db" name="revisr_database_settings[reset_db]" %s /><label for="reset_db">%s</label><br><br>
