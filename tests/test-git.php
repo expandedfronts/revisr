@@ -36,10 +36,10 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the init function.
 	 */
 	function test_init_repo() {
-		if ( ! $this->git->is_repo() ) {
+		if ( ! $this->git->is_repo ) {
 			$this->git->init_repo();
 		}
-		$this->assertEquals( true, $this->git->is_repo() );
+		$this->assertEquals( true, $this->git->is_repo );
 	}
 
 	/**
@@ -47,7 +47,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 */
 	function test_config_user_name() {
 		$this->git->config_user_name( 'revisr' );
-		$current_user = $this->git->run( 'config user.name' );
+		$current_user = $this->git->run( 'config', array( 'user.name' ) );
 		$this->assertEquals( 'revisr', $current_user[0] );
 	}
 
@@ -56,7 +56,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 */
 	function test_config_user_email() {
 		$this->git->config_user_email( 'support@expandedfronts.com' );
-		$current_email = $this->git->run( 'config user.email' );
+		$current_email = $this->git->run( 'config', array( 'user.email' ) );
 		$this->assertEquals( 'support@expandedfronts.com', $current_email[0] );
 	}
 
@@ -91,7 +91,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests a commit.
 	 */
 	function test_commit() {
-		$this->git->run( 'add -A' );
+		$this->git->run( 'add', array( '-A' ) );
 		$this->git->commit( 'Committed pending files' );
 		$this->assertEquals( 0, $this->git->count_untracked() );
 	}
