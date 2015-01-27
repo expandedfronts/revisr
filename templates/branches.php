@@ -10,6 +10,10 @@
 
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+$revisr = Revisr::get_instance();
+$git 	= $revisr->git;
+
 ?>
 
 <div class="wrap">
@@ -23,6 +27,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					break;
 				case "create_error":
 					$msg = __( 'Failed to create the new branch.', 'revisr' );
+					if ( $git->is_branch( $_GET['branch'] ) ) {
+						$msg = sprintf( __( 'Failed to create branch: %s (branch already exists).', 'revisr' ), $_GET['branch'] );
+					}
+					echo '<div id="revisr-alert" class="error" style="margin-top:20px;"><p>' . $msg . '</p></div>';
 					break;
 				case "delete_success":
 					$msg = sprintf( __( 'Successfully deleted branch: %s.', 'revisr' ), $_GET['branch'] );
@@ -45,7 +53,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					</tr>
 				</thead>
 					<?php
-						$git = new Revisr_Git;
 						$output = $git->get_branches();
 						
 						if ( is_array( $output ) ) {
