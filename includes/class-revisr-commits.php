@@ -202,7 +202,7 @@ class Revisr_Commits {
 	 */
 	public function custom_views( $views ) {
 
-		$output = $this->git->run( 'branch' );
+		$output = $this->git->get_branches();
 
 		global $wp_query;
 
@@ -297,7 +297,6 @@ class Revisr_Commits {
 		$text 			= sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit.', 'revisr' ), $total_pending, $this->git->branch );
 		echo "<br>" . $text . "<br><br>";
 		_e( 'Use the boxes below to select the files to include in this commit. Only files in the "Staged Files" section will be included.<br>Double-click files marked as "Modified" to view the changes to the file.<br><br>', 'revisr' );
-
 		if ( is_array( $output ) ) {
 				?>
 				<!-- Staging -->
@@ -307,6 +306,7 @@ class Revisr_Commits {
 					<?php
 					// Clean up output from git status and echo the results.
 					foreach ( $output as $result ) {
+						$result = str_replace( '"', '', $result );
 						$short_status = substr( $result, 0, 3 );
 						$file = substr( $result, 3 );
 						$status = Revisr_Git::get_status( $short_status );
@@ -364,6 +364,7 @@ class Revisr_Commits {
 				
 				// Display the files that were included in the commit.
 				foreach ( $output as $result ) {
+					$result 		= str_replace( '"', '', $result );
 					$short_status 	= substr( $result, 0, 3 );
 					$file 			= substr( $result, 2 );
 					$status 		= Revisr_Git::get_status( $short_status );
@@ -441,6 +442,8 @@ class Revisr_Commits {
 	public function view_commit_meta() {
 
 		$commit 			= Revisr_Admin::get_commit_details( get_the_ID() );
+		$revert_url 		= get_admin_url() . "admin-post.php?action=revert_form&commit_id=" . get_the_ID() . "&TB_iframe=true&width=350&height=200";
+
 		$time_format 	 	= __( 'M j, Y @ G:i' );
 		$timestamp 		 	= sprintf( __( 'Committed on: <strong>%s</strong>', 'revisr' ), date_i18n( $time_format, get_the_time( 'U' ) ) );
 
@@ -475,7 +478,7 @@ class Revisr_Commits {
 			<div id="delete-action"></div>
 			<div id="publishing-action">
 				<span class="spinner"></span>
-				<input type="submit" name="publish" id="commit" class="button button-primary button-large" value="Revert to Commit" onclick="();" accesskey="p">
+				<a class="button button-primary thickbox" href="<?php echo $revert_url; ?>">Revert to this Commit</a>
 			</div>
 			<div class="clear"></div>
 		</div>

@@ -283,6 +283,7 @@ class Revisr {
 		add_action( 'admin_post_delete_branch_form', array( self::$instance->admin_setup, 'delete_branch_form' ) );
 		add_action( 'admin_post_merge_branch_form', array ( self::$instance->admin_setup, 'merge_branch_form' ) );
 		add_action( 'admin_post_import_tables_form', array( self::$instance->admin_setup, 'import_tables_form' ) );
+		add_action( 'admin_post_revert_form', array( self::$instance->admin_setup, 'revert_form' ) );
 		add_action( 'admin_enqueue_scripts', array( self::$instance->admin_setup, 'revisr_scripts' ) );
 		add_action( 'admin_bar_menu', array( self::$instance->admin_setup, 'admin_bar' ), 999 );
 		add_filter( 'custom_menu_order', array( self::$instance->admin_setup, 'revisr_submenu_order' ) );

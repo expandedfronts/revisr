@@ -207,6 +207,14 @@ class Revisr_Setup {
 	}
 
 	/**
+	 * Displays the form to revert a commit.
+	 * @access public
+	 */
+	public function revert_form() {
+		include_once REVISR_PATH . 'assets/partials/revert-form.php';
+	}
+
+	/**
 	 * Displays the recent activity box on the dashboard.
 	 * @access public
 	 */
