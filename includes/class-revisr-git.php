@@ -189,7 +189,7 @@ class Revisr_Git {
 	 * @param  string $username If provided, will update the username.
 	 */
 	public function config_user_name( $username = '' ) {
-		$username = $this->run( 'config' array( 'user.name', $username ) );
+		$username = $this->run( 'config', array( 'user.name', $username ) );
 		return $username;
 	}
 
