@@ -126,16 +126,21 @@ class Revisr_Process {
 	public function process_create_branch() {
 		$branch = $_REQUEST['branch_name'];
 		$result = $this->git->create_branch( $branch );
-		if ( isset( $_REQUEST['checkout_new_branch'] ) ) {
-			$this->git->checkout( $branch );
-		}
+
 		if ( $result !== false ) {
 			$msg = sprintf( __( 'Created new branch: %s', 'revisr' ), $branch );
 			Revisr_Admin::log( $msg, 'branch' );
+
+			if ( isset( $_REQUEST['checkout_new_branch'] ) ) {
+				$this->git->checkout( $branch );
+			}
+
 			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_success&branch=' . $branch );
 		} else {
 			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_error&branch=' . $branch );
 		}
+
+		exit();
 	}
 	
 	/**

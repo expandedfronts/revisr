@@ -51,11 +51,11 @@ class Revisr_Git_Callback {
 	 * @access public
 	 */
 	public function success_checkout( $output = '', $args = '' ) {
-		$branch 	= $this->git->branch;
+		$branch 	= $this->git->current_branch();
 		$msg 		= sprintf( __( 'Checked out branch: %s.', 'revisr' ), $branch );
 		$email_msg 	= sprintf( __( '%s was switched to branch %s.', 'revisr' ), get_bloginfo(), $branch );
 		Revisr_Admin::alert( $msg );
-		Revisr_Admin::log( $msg, "branch" );
+		Revisr_Admin::log( $msg, 'branch' );
 		Revisr_Admin::notify(get_bloginfo() . __( ' - Branch Changed', 'revisr'), $email_msg );
 	}
 
