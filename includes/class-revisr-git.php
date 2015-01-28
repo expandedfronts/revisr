@@ -179,7 +179,7 @@ class Revisr_Git {
 	 * @param  string $user_email If provided, will update the user's email.
 	 */
 	public function config_user_email( $user_email = '' ) {
-		$email = $this->run( 'config user.email', array( $user_email ) );
+		$email = $this->run( 'config', array( 'user.email', $user_email ) );
 		return $email;
 	}
 
@@ -189,7 +189,7 @@ class Revisr_Git {
 	 * @param  string $username If provided, will update the username.
 	 */
 	public function config_user_name( $username = '' ) {
-		$username = $this->run( 'config user.name', array( $username ) );
+		$username = $this->run( 'config' array( 'user.name', $username ) );
 		return $username;
 	}
 
