@@ -82,7 +82,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the current dir with an initialized repository.
 	 */
 	function test_current_dir() {
-		$dir = $this->git->current_dir();
+		$dir = $this->git->current_dir;
 		$this->assertFileExists( $dir );
 		$this->assertFileExists( $dir . '/.git/config' );
 	}
