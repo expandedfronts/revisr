@@ -13,15 +13,6 @@
 $commit 	= Revisr_Admin::get_commit_details( $_GET['commit_id'] );
 $styles_url = REVISR_URL . 'assets/css/thickbox.css';
 
-$revert_nonce 		= wp_nonce_url( admin_url( 'admin-post.php?action=process_revert&commit_hash=' . $commit . '&branch=' . $commit_branch . '&post_id=' . $id ), 'revert', 'revert_nonce' );
-$actions['revert'] 	= "<a href='" . $revert_nonce . "'>" . __( 'Revert Files', 'revisr' ) . "</a>";
-
-// If there is a database backup available to revert to, display the revert link.
-if ( isset( $_GET['db_hash'] ) && $_GET['db_hash'] != '' ) {
-	$revert_db_nonce = wp_nonce_url( admin_url( 'admin-post.php?action=revert_db&db_hash=' . $commit['db_hash'] . '&branch=' . $commit['branch'] . '&backup_method=' . $commit['db_backup_method'] . '&post_id=' . $id ), 'revert_db', 'revert_db_nonce' );
-	$actions['revert_db'] = '<a href="' . $revert_db_nonce . '">' . __( 'Revert Database', 'revisr' ) . '</a>';
-}
-
 ?>
 	<form action="<?php echo get_admin_url() . 'admin-post.php'; ?>" method="post">
 

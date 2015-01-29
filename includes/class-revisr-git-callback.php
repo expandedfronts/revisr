@@ -207,8 +207,8 @@ class Revisr_Git_Callback {
 	 * @access public
 	 */
 	public function success_merge( $output = '', $args = '' ) {
-		$alert_msg 	= sprintf( __( 'Successfully merged changes from branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->branch );
-		$log_msg 	= sprintf( __( 'Merged branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->branch );
+		$alert_msg 	= sprintf( __( 'Successfully merged changes from branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->git->branch );
+		$log_msg 	= sprintf( __( 'Merged branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->git->branch );
 		Revisr_Admin::alert( $alert_msg );
 		Revisr_Admin::log( $log_msg, 'merge' );
 		_e( 'Merge completed successfully. Redirecting...', 'revisr' );
@@ -222,7 +222,7 @@ class Revisr_Git_Callback {
 	 * @access public
 	 */
 	public function null_merge( $output = '', $args = '' ) {
-		$log_msg 	= sprintf( __( 'Error merging branch %s into %s.', 'revisr'), $_REQUEST['branch'], $this->branch );
+		$log_msg 	= sprintf( __( 'Error merging branch %s into %s.', 'revisr'), $_REQUEST['branch'], $this->git->branch );
 		$alert_msg 	= sprintf( __( 'There was an error merging branch %s into your current branch. The merge was aborted to avoid conflicts.', 'revisr' ), $_REQUEST['branch'] );
 		Revisr_Admin::alert( $alert_msg, true );
 		Revisr_Admin::log( $log_msg, 'error' );
@@ -240,7 +240,7 @@ class Revisr_Git_Callback {
 			$msg = __( 'The local repository is already up-to-date with the remote repository.', 'revisr' );
 			Revisr_Admin::alert( $msg );
 		} else {
-			$msg = sprintf( _n( 'Successfully pulled %s commit from %s/%s.', 'Successfully pulled %s commits from %s/%s.', $args, 'revisr' ), $args, $this->remote, $this->branch );
+			$msg = sprintf( _n( 'Successfully pulled %s commit from %s/%s.', 'Successfully pulled %s commits from %s/%s.', $args, 'revisr' ), $args, $this->git->remote, $this->git->branch );
 			Revisr_Admin::alert( $msg );
 
 			if ( $this->git->config_revisr_option( 'import-pulls' ) === 'true' ) {
@@ -267,7 +267,7 @@ class Revisr_Git_Callback {
 	 * @access public
 	 */
 	public function success_push( $output = '', $args = '' ) {
-		$msg = sprintf( _n( 'Successfully pushed %s commit to %s/%s.', 'Successfully pushed %s commits to %s/%s.', $args, 'revisr' ), $args, $this->remote, $this->branch );
+		$msg = sprintf( _n( 'Successfully pushed %s commit to %s/%s.', 'Successfully pushed %s commits to %s/%s.', $args, 'revisr' ), $args, $this->git->remote, $this->git->branch );
 		Revisr_Admin::alert( $msg );
 		Revisr_Admin::log( $msg, 'push' );
 		if ( $this->git->config_revisr_url( 'webhook' ) !== false ) {

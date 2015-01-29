@@ -53,6 +53,12 @@ class Revisr_Git {
 	public $git_path;
 
 	/**
+	 * Stores an array of user options/preferences.
+	 * @var array
+	 */
+	public $options;
+
+	/**
 	 * Stores the state of the repository
 	 * @var boolean
 	 */
@@ -67,6 +73,7 @@ class Revisr_Git {
 		// Necessary for execution of Revisr.
 		$this->current_dir 	= getcwd();
 		$this->is_repo 		= true;
+		$this->options 		= Revisr::get_options();
 		$this->git_path 	= $this->get_git_path();
 		$this->git_dir 		= $this->get_git_dir();
 
@@ -88,7 +95,6 @@ class Revisr_Git {
 	 */
 	public function run( $command, $args, $callback = '', $info = '' ) {
 		// Setup the command for safe usage.
-		$current_dir 	= getcwd();
 		$safe_path 		= escapeshellarg( $this->git_path );
 		$safe_cmd 		= escapeshellarg( $command );
 		$safe_args 		= join( ' ', array_map( 'escapeshellarg', $args ) );
@@ -244,8 +250,10 @@ class Revisr_Git {
 	 * @param  string $path 	The path to store.
 	 */
 	public function config_revisr_path( $service, $path = '' ) {
-		$revisr_path = $this->run( 'config', array( "revisr.$service-path", $path ) );
-		return $revisr_path;
+		if ( $path !== '' ) {
+			$this->run( 'config', array( "revisr.$service-path", $path ) );
+		}
+		return $this->run( 'config', array( '--get', "revisr.$service-path" ) );
 	}
 
 	/**

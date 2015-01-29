@@ -70,9 +70,8 @@ class Revisr_DB {
 		$this->backup_dir	= $this->upload_dir['basedir'] . '/revisr-backups/';
 		$this->options 		= Revisr::get_options();
 
-		$get_path = $this->git->config_revisr_path( 'mysql' );
-		if ( is_array( $get_path ) ) {
-			$this->path = $get_path[0];
+		if ( $this->git->config_revisr_path( 'mysql' ) ) {
+			$this->path = $this->git->config_revisr_path( 'mysql' );
 		} else {
 			$this->path = '';
 		}

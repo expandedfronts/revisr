@@ -263,8 +263,8 @@ class Revisr_Commits {
 	/**
 	 * Displays the number of committed files and the commit hash for commits.
 	 * @access public
-	 * @param  string 	$column 	The name of the column to display.
-	 * @param  int 		$post_id 	The ID of the current post.
+	 * @param  string 	$column_name 	The name of the column to display.
+	 * @param  int 		$post_id 		The ID of the current post.
 	 */
 	public function custom_columns( $column_name, $post_id ) {
 

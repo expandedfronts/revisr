@@ -45,15 +45,29 @@ class Revisr_Remote extends Revisr_Admin {
 	 * @access public
 	 * @return boolean
 	 */
-	public function check_token() {
-		if ( isset( $_REQUEST['token'] ) ) {
+	public function check_token( $token = '' ) {
+
+		// Allow testing of this function.
+		if ( $token !== '' ) {
+			$token_to_check = $token;
+		}
+
+		// This is set in the Webhook URL.
+		if ( isset( $_REQUEST['token'] ) && $_REQUEST['token'] !== '' ) {
+			$token_to_check = $_REQUEST['token'];
+		}
+
+		// Return true if the token is a complete match.
+		if ( isset( $token_to_check ) ) {
 			$safe_token = $this->git->run( 'config', array( 'revisr.token' ) );
 			if ( is_array( $safe_token ) ) {
-				if ( $safe_token[0] === $_REQUEST['token'] ) {
+				if ( $safe_token[0] === $token_to_check ) {
 					return true;
 				}
-			}			
+			}
 		}
+
+		// Die if not.
 		wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 	}
 
