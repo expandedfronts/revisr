@@ -169,7 +169,7 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function admin_bar( $wp_admin_bar ) {
-		if ( $this->git->count_untracked() != 0 && current_user_can( 'activate_plugins' ) ) {
+		if ( $this->git->count_untracked() != 0 ) {
 			$untracked 	= $this->git->count_untracked();
 			$text 		= sprintf( _n( '%s Untracked File', '%s Untracked Files', $untracked, 'revisr' ), $untracked );
 			$args 		= array(

@@ -11,7 +11,7 @@
  */
 
 $styles_url 	= REVISR_URL . 'assets/css/thickbox.css';
-$confirmation 	= sprintf( __( 'Are you sure you want to delete this branch?<br>This will delete all local work on branch <strong>%s</strong>.', 'revisr' ), $_GET['branch'] );
+$confirmation 	= sprintf( __( 'Are you sure you want to delete this branch?<br>This will delete all local work on branch <strong>%s</strong>.', 'revisr' ), esc_html( $_GET['branch'] ) );
 
 ?>
 
@@ -27,7 +27,7 @@ $confirmation 	= sprintf( __( 'Are you sure you want to delete this branch?<br>T
 
 	<div class="revisr-tb-submit">
 		<input type="hidden" name="action" value="process_delete_branch">
-		<input type="hidden" name="branch" value="<?php echo $_GET['branch']; ?>">
+		<input type="hidden" name="branch" value="<?php echo esc_html( $_GET['branch'] ); ?>">
 		<button id="confirm-delete-branch-btn" class="revisr-tb-btn revisr-tb-danger"><?php _e( 'Delete Branch', 'revisr' ); ?></button><button class="revisr-tb-btn revisr-btn-cancel"><?php _e( 'Cancel', 'revisr' ); ?></button>
 	</div>
 

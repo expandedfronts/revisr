@@ -11,7 +11,7 @@
  */
 
 $styles_url = REVISR_URL . 'assets/css/thickbox.css';
-$merge_text = sprintf( __( 'This will merge changes from branch <strong>%s</strong> into the current branch. In the event of conflicts, Revisr will keep the version from the branch being merged in.', 'revisr' ), $_GET['branch'] );
+$merge_text = sprintf( __( 'This will merge changes from branch <strong>%s</strong> into the current branch. In the event of conflicts, Revisr will keep the version from the branch being merged in.', 'revisr' ), esc_html( $_GET['branch'] ) );
 
 ?>
 
@@ -27,7 +27,7 @@ $merge_text = sprintf( __( 'This will merge changes from branch <strong>%s</stro
 
 	<div class="revisr-tb-submit">
 		<input type="hidden" name="action" value="process_merge">
-		<input type="hidden" name="branch" value="<?php echo $_GET['branch']; ?>">
+		<input type="hidden" name="branch" value="<?php echo esc_html( $_GET['branch'] ); ?>">
 		<button id="merge-btn" class="revisr-tb-btn revisr-tb-danger"><?php _e( 'Merge Branch', 'revisr' ); ?></button><button class="revisr-tb-btn revisr-btn-cancel"><?php _e( 'Cancel', 'revisr' ); ?></button>
 	</div>
 

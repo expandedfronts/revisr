@@ -153,7 +153,7 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function auto_push() {
-		if ( $this->config_revisr_option( 'auto-push' ) === 'true' || isset( $_REQUEST['auto_push'] ) ) {
+		if ( $this->get_config( 'revisr', 'auto-push' ) === 'true' || isset( $_REQUEST['auto_push'] ) ) {
 			$this->push();
 		}
 	}

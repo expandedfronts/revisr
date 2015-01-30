@@ -22,18 +22,18 @@ $git 	= $revisr->git;
 		if ( isset( $_GET['status'] ) && isset( $_GET['branch'] ) ) {
 			switch ( $_GET['status'] ) {
 				case "create_success":
-					$msg = sprintf( __( 'Successfully created branch: %s.', 'revisr' ), $_GET['branch'] );
+					$msg = sprintf( esc_html__( 'Successfully created branch: %s.', 'revisr' ), $_GET['branch'] );
 					echo '<div id="revisr-alert" class="updated" style="margin-top:20px;"><p>' . $msg . '</p></div>';
 					break;
 				case "create_error":
 					$msg = __( 'Failed to create the new branch.', 'revisr' );
 					if ( $git->is_branch( $_GET['branch'] ) ) {
-						$msg = sprintf( __( 'Failed to create branch: %s (branch already exists).', 'revisr' ), $_GET['branch'] );
+						$msg = sprintf( esc_html__( 'Failed to create branch: %s (branch already exists).', 'revisr' ), $_GET['branch'] );
 					}
 					echo '<div id="revisr-alert" class="error" style="margin-top:20px;"><p>' . $msg . '</p></div>';
 					break;
 				case "delete_success":
-					$msg = sprintf( __( 'Successfully deleted branch: %s.', 'revisr' ), $_GET['branch'] );
+					$msg = sprintf( esc_html__( 'Successfully deleted branch: %s.', 'revisr' ), $_GET['branch'] );
 					echo '<div id="revisr-alert" class="updated" style="margin-top:20px;"><p>' . $msg . '</p></div>';
 					break;
 				default:

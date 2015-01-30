@@ -157,7 +157,7 @@ class Revisr {
 			self::$instance->set_locale();
 			self::$instance->load_public_hooks();
 
-			if ( is_admin() ) {
+			if ( current_user_can( 'install_plugins' ) && is_admin() ) {
 				self::$instance->load_admin_hooks();
 			}
 		}
@@ -204,7 +204,7 @@ class Revisr {
 		require_once REVISR_PATH . 'includes/class-revisr-cron.php';
 		require_once REVISR_PATH . 'includes/class-revisr-process.php';
 
-		if ( is_admin() ) {
+		if ( current_user_can( 'install_plugins' ) && is_admin() ) {
 			require_once REVISR_PATH . 'includes/class-revisr-commits.php';
 			require_once REVISR_PATH . 'includes/class-revisr-settings.php';
 			require_once REVISR_PATH . 'includes/class-revisr-settings-fields.php';	
@@ -307,6 +307,9 @@ class Revisr {
 		add_action( 'wp_ajax_discard', array( self::$instance->process, 'process_discard' ) );
 		add_action( 'wp_ajax_process_push', array( self::$instance->process, 'process_push' ) );
 		add_action( 'wp_ajax_process_pull', array( self::$instance->process, 'process_pull' ) );
+
+		// Load the settings page.
+		add_action( 'admin_init', array( self::$instance->settings, 'init_settings' ) );
 	}
 
 	/**
@@ -406,10 +409,10 @@ function revisr() {
 }
 
 // Runs the plugin.
-$revisr = revisr();
+add_action( 'plugins_loaded', 'revisr' );
 
 // Registers the activation hook.
-register_activation_hook( REVISR_FILE, array( 'Revisr', 'revisr_install' ) );
+register_activation_hook( __FILE__, array( 'Revisr', 'revisr_install' ) );
 
 // Adds the settings link to the plugins page.
-add_filter( 'plugin_action_links_'  . plugin_basename( REVISR_FILE ), array( 'Revisr', 'revisr_settings_link' ) );
+add_filter( 'plugin_action_links_'  . plugin_basename( __FILE__ ), array( 'Revisr', 'revisr_settings_link' ) );

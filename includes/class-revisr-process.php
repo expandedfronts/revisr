@@ -294,7 +294,7 @@ class Revisr_Process {
 			$this->git->reset( '--hard', 'HEAD', true );
 			$this->git->reset( '--hard', $commit );
 			$this->git->reset( '--soft', 'HEAD@{1}' );
-			$this->git->run( 'add' array( '-A' ) );
+			$this->git->run( 'add', array( '-A' ) );
 			$this->git->commit( $commit_msg );
 			$this->git->auto_push();
 			

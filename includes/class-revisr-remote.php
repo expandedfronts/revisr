@@ -27,7 +27,7 @@ class Revisr_Remote extends Revisr_Admin {
 		if ( $check === false ) {
 			// If there is no token, generate a new one.
 			$token 	= wp_generate_password( 16, false, false );
-			$save 	= $this->git->set_config( 'revisr', 'token' $token );
+			$save 	= $this->git->set_config( 'revisr', 'token', $token );
 
 			if ( $save !== false ) {
 				return $token;
@@ -59,7 +59,7 @@ class Revisr_Remote extends Revisr_Admin {
 		// Compare the tokens and return true if a complete match.
 		if ( isset( $token_to_check ) ) {
 			$safe_token = $this->git->get_config( 'revisr', 'token' );
-			if ( $safe_token === $token_to_check ) {
+			if ( hash_equals( $safe_token, $token_to_check ) ) {
 				return true;
 			}
 		}
