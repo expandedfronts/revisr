@@ -81,9 +81,9 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function username_callback() {
-		$check_username = $this->git->config_user_name();
-		if ( is_array( $check_username ) ) {
-			$username = $check_username[0];
+		$check_username = $this->git->get_config( 'user', 'name' );
+		if ( $check_username ) {
+			$username = $check_username;
 		} elseif ( isset( $this->options['username'] ) ) {
 			$username = $this->options['username'];
 		} else {
@@ -106,9 +106,9 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function email_callback() {
-		$check_email = $this->git->config_user_email();
-		if ( is_array( $check_email ) ) {
-			$email = $check_email[0];
+		$check_email = $this->git->get_config( 'user', 'email' );
+		if ( $check_email ) {
+			$email = $check_email;
 		} elseif ( isset( $this->options['email'] ) ) {
 			$email = $this->options['email'];
 		} else {
@@ -135,7 +135,7 @@ class Revisr_Settings_Fields {
 		if ( $this->is_updated( 'gitignore' ) ) {
 			chdir( ABSPATH );
 			file_put_contents( '.gitignore', $this->options['gitignore'] );
-			$this->git->run( 'add .gitignore' );
+			$this->git->run( 'add' array( '.gitignore' ) );
 			$commit_msg = __( 'Updated .gitignore.', 'revisr' );
 			$this->git->run("commit -m \"$commit_msg\"");
 			$this->git->auto_push();
@@ -238,11 +238,11 @@ class Revisr_Settings_Fields {
 	 */
 	public function remote_url_callback() {
 
-		$check_remote 	= $this->git->run( 'config', array( '--get', 'remote.origin.url' ) );
+		$check_remote = $this->git->get_config( 'remote', 'origin.url' );
 		
 		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != '' ) {
 			$remote_url = esc_attr( $this->options['remote_url'] );
-		} elseif ( $check_remote !== false ) {
+		} elseif ( $check_remote ) {
 			$remote_url = $check_remote[0];
 		} else {
 			$remote_url = '';
@@ -263,15 +263,15 @@ class Revisr_Settings_Fields {
 		// Allow the user to unset the Webhook URL.
 		if ( isset( $_GET['settings-updated'] ) ) {
 			if ( $this->is_updated( 'webhook_url' ) ) {
-				$this->git->config_revisr_url( 'webhook', $this->options['webhook_url'] );
+				$this->git->set_config( 'revisr', 'webhook-url', $this->options['webhook_url'] );
 			} else {
 				$this->git->run( 'config', array( '--unset', 'revisr.webhook-url' ) );
 			}
 		}
 
 		// Grab the URL from the .git/config as it MAY be replaced in the database.
-		$get_url = $this->git->config_revisr_url( 'webhook' );
-		if ( $get_url !== false ) {
+		$get_url = $this->git->get_config( 'revisr', 'webhook-url' );
+		if ( $get_url ) {
 			$webhook_url = urldecode($get_url);
 		} else {
 			$webhook_url = '';
@@ -290,13 +290,13 @@ class Revisr_Settings_Fields {
 	public function auto_push_callback() {
 		if ( isset( $_GET['settings-updated'] ) ) {
 			if ( isset( $this->options['auto_push'] ) ) {
-				$this->git->config_revisr_option( 'auto-push', 'true' );
+				$this->git->set_config( 'revisr', 'auto-push', 'true' );
 			} else {
 				$this->git->run( 'config', array( '--unset', 'revisr.auto-push' ) );
 			}
 		} 
 		
-		if ( $this->git->config_revisr_option( 'auto-push' ) === 'true' ) {
+		if ( $this->git->get_config( 'revisr', 'auto-push' ) === 'true' ) {
 			$checked = 'checked';
 		} else {
 			$checked = '';
@@ -317,7 +317,7 @@ class Revisr_Settings_Fields {
 	public function auto_pull_callback() {
 		if ( isset( $_GET['settings-updated'] ) ) {
 			if ( isset( $this->options['auto_pull'] ) ) {
-				$this->git->config_revisr_option( 'auto-pull', 'true' );
+				$this->git->set_config( 'revisr', 'auto-pull', 'true' );
 			} else {
 				$this->git->run( 'config', array( '--unset', 'revisr.auto-pull' ) );
 			}
@@ -361,10 +361,10 @@ class Revisr_Settings_Fields {
 	 */
 	public function tracked_tables_callback() {
 		if ( $this->is_updated( 'db_tracking' ) ) {
-			$this->git->config_revisr_option( 'db-tracking', $this->options['db_tracking'] );
+			$this->git->set_config( 'revisr', 'db-tracking', $this->options['db_tracking'] );
 		}
 
-		$check_tracking = $this->git->run( 'config', array( 'revisr.db-tracking' ) );
+		$check_tracking = $this->git->get_config( 'revisr', 'db-tracking' );
 		if ( is_array( $check_tracking ) ) {
 			$db_tracking = $check_tracking[0];
 			if ( $db_tracking == 'custom' ) {

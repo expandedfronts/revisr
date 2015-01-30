@@ -179,81 +179,40 @@ class Revisr_Git {
 		$commit 		= $this->run( 'commit', array( '-m', $message, '--author', $author ), $callback );
 		return $commit;
 	}
-	/**
-	 * Gets or sets the user's email address stored in Git.
-	 * @access public
-	 * @param  string $user_email If provided, will update the user's email.
-	 */
-	public function config_user_email( $user_email = '' ) {
-		$email = $this->run( 'config', array( 'user.email', $user_email ) );
-		return $email;
-	}
 
 	/**
-	 * Gets or sets the username stored in Git.
+	 * Sets a value in the .git/config.
 	 * @access public
-	 * @param  string $username If provided, will update the username.
+	 * @param  string 	$section 	The section to store/update the value for.
+	 * @param  string 	$key 		The key for the value which is being updated.
+	 * @param  string 	$value 		The value to set.
+	 * @return boolean
 	 */
-	public function config_user_name( $username = '' ) {
-		$username = $this->run( 'config', array( 'user.name', $username ) );
-		return $username;
-	}
-
-	/**
-	 * Stores or retrieves options into the 'revisr' block of the '.git/config'.
-	 * This is necessary for Revisr to be environment agnostic, even if the 'wp_options'
-	 * table is tracked and subsequently imported.
-	 * @access public
-	 * @param  string $option 	The name of the option to store.
-	 * @param  string $value 	The value of the option to store.
-	 */
-	public function config_revisr_option( $option, $value = '' ) {
-		if ( $value != '' ) {
-			$this->run( 'config', array( "revisr.$option", "$value" ) );
-		}
-
-		// Retrieve the data for verification/comparison.
-		$data = $this->run( 'config', array( "revisr.$option" ) );
-		if ( is_array( $data ) ) {
-			return $data[0];
+	public function set_config( $section, $key, $value ) {
+		$update = $this->run( 'config', array( "$section.$key", $value ) );
+		if ( $update !== false ) {
+			return true;
 		} else {
 			return false;
 		}
 	}
 
 	/**
-	 * Stores URLs for Revisr to the .git/config (to be environment-agnostic).
+	 * Gets a value from the config.
 	 * @access public
-	 * @param  string $env The associated environment.
-	 * @param  string $url The URL to store.
+	 * @param  string $section 	The section to check from.
+	 * @param  string $key 		The key who's value to grab.
 	 * @return string|boolean
 	 */
-	public function config_revisr_url( $env, $url = '' ) {
-		if ( $url != '' ) {
-			$this->run( 'config', array( "revisr.$env-url",  $url ) );
-		}
-
-		// Retrieve the URL for using elsewhere.
-		$data = $this->run( 'config', array( "revisr.$env-url" ) );
-
-		if ( is_array( $data ) ) {
-			return $data[0];
+	public function get_config( $section, $key ) {
+		$result = $this->run( 'config', array( '--get', "$section.$key" ) );
+		if ( is_array( $result ) ) {
+			return $result[0];
+		} elseif ( is_string( $result ) ) {
+			return $result;
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * Stores environment paths to .git/config (to be environment-agnostic).
-	 * @access public
-	 * @param  string $service 	For ex., git or mysql
-	 * @param  string $path 	The path to store.
-	 */
-	public function config_revisr_path( $service, $path = '' ) {
-		if ( $path !== '' ) {
-			$this->run( 'config', array( "revisr.$service-path", $path ) );
-		}
-		return $this->run( 'config', array( '--get', "revisr.$service-path" ) );
 	}
 
 	/**

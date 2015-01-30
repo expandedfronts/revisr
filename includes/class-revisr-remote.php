@@ -22,21 +22,20 @@ class Revisr_Remote extends Revisr_Admin {
 	 * @return string|boolean The token, or false on complete failure.
 	 */
 	public function get_token() {
-		$check = $this->git->run( 'config', array( 'revisr.token' ) );
+		$check = $this->git->get_config( 'revisr', 'token' );
 
 		if ( $check === false ) {
-			$token = wp_generate_password( 16, false, false );
-			$save  = $this->git->run( 'config', array( 'revisr.token', $token ) );
+			// If there is no token, generate a new one.
+			$token 	= wp_generate_password( 16, false, false );
+			$save 	= $this->git->set_config( 'revisr', 'token' $token );
 
 			if ( $save !== false ) {
 				return $token;
 			} else {
 				return false;
 			}
-		} elseif ( is_array( $check ) ) {
-			return $check[0];
 		} else {
-			return false;
+			return $check;
 		}
 	}
 
@@ -57,13 +56,11 @@ class Revisr_Remote extends Revisr_Admin {
 			$token_to_check = $_REQUEST['token'];
 		}
 
-		// Return true if the token is a complete match.
+		// Compare the tokens and return true if a complete match.
 		if ( isset( $token_to_check ) ) {
-			$safe_token = $this->git->run( 'config', array( 'revisr.token' ) );
-			if ( is_array( $safe_token ) ) {
-				if ( $safe_token[0] === $token_to_check ) {
-					return true;
-				}
+			$safe_token = $this->git->get_config( 'revisr', 'token' );
+			if ( $safe_token === $token_to_check ) {
+				return true;
 			}
 		}
 
@@ -90,7 +87,7 @@ class Revisr_Remote extends Revisr_Admin {
 		);
 
 		// Get the URL and send the request.
-		$get_url = $this->git->config_revisr_url( 'webhook' );
+		$get_url = $this->git->get_config( 'revisr', 'webhook-url' );
 
 		if ( $get_url !== false ) {
 			$webhook = urldecode( $get_url );

@@ -70,8 +70,8 @@ class Revisr_DB {
 		$this->backup_dir	= $this->upload_dir['basedir'] . '/revisr-backups/';
 		$this->options 		= Revisr::get_options();
 
-		if ( $this->git->config_revisr_path( 'mysql' ) ) {
-			$this->path = $this->git->config_revisr_path( 'mysql' );
+		if ( $this->git->get_config( 'revisr', 'mysql-path' ) ) {
+			$this->path = $this->git->get_config( 'revisr', 'mysql-path' );
 		} else {
 			$this->path = '';
 		}
@@ -329,8 +329,8 @@ class Revisr_DB {
 			$tracked_tables = $this->get_tracked_tables();
 			$new_tables 	= $this->get_tables_not_in_db();
 			$all_tables		= array_unique( array_merge( $new_tables, $tracked_tables ) );
-			$replace_url 	= $this->git->config_revisr_url( 'dev' ) ? $this->git->config_revisr_url( 'dev' ) : '';
-
+			$replace_url 	= $this->git->get_config( 'revisr', 'dev-url' ) ? $this->git->get_config( 'revisr', 'dev-url' ) : '';
+			
 			if ( ! empty( $new_tables ) ) {
 				// If there are new tables that were imported.
 				if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'all_tables' ) {

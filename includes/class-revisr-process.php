@@ -66,7 +66,8 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_checkout( $args = '', $new_branch = false ) {
-		if ( $this->git->config_revisr_option( 'import-checkouts' ) === 'true' ) {
+
+		if ( $this->git->get_config( 'revisr', 'import-checkouts' ) === 'true' ) {
 			$this->db->backup();
 		}
 
@@ -79,7 +80,7 @@ class Revisr_Process {
 		$this->git->reset();
 		$this->git->checkout( $branch );
 		
-		if ( $this->git->config_revisr_option( 'import-checkouts' ) === 'true' && $new_branch === false ) {
+		if ( $this->git->get_config( 'revisr', 'import-checkouts' ) === 'true' && $new_branch === false ) {
 			$this->db->import();
 		}
 		$url = get_admin_url() . 'admin.php?page=revisr';
@@ -212,9 +213,10 @@ class Revisr_Process {
 	public function process_pull() {
 		// Determine whether this is a request from the dashboard or a POST request.
 		$from_dash = check_ajax_referer( 'dashboard_nonce', 'security', false );
+		
 		if ( $from_dash == false ) {
 
-			if ( $this->git->config_revisr_option( 'auto-pull' ) !== 'true' ) {
+			if ( $this->git->get_config( 'revisr', 'auto-pull' ) !== 'true' ) {
 				wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 			}
 
@@ -225,7 +227,7 @@ class Revisr_Process {
 		$this->git->reset();
 		$this->git->fetch();
 
-		$commits_since  = $this->git->run( "log {$this->git->branch}..{$this->git->remote}/{$this->git->branch} --pretty=oneline" );
+		$commits_since = $this->git->run( 'log', array( $this->git->branch . '..' . $this->git->remote . '/' . $this->git->branch, '--pretty=oneline' ) );
 
 		if ( is_array( $commits_since ) ) {
 			// Iterate through the commits to pull and add them to the database.
@@ -255,7 +257,8 @@ class Revisr_Process {
 				}
 			}
 		}
-		if ( $this->git->config_revisr_option( 'import-pulls' ) === 'true' ) {
+
+		if ( $this->git->get_config( 'revisr', 'import-pulls' ) === 'true' ) {
 			$this->db->backup();
 			$undo_hash = $this->git->current_commit();
 			$this->git->run( "config --add revisr.last-db-backup $undo_hash" );
@@ -291,7 +294,7 @@ class Revisr_Process {
 			$this->git->reset( '--hard', 'HEAD', true );
 			$this->git->reset( '--hard', $commit );
 			$this->git->reset( '--soft', 'HEAD@{1}' );
-			$this->git->run( 'add -A' );
+			$this->git->run( 'add' array( '-A' ) );
 			$this->git->commit( $commit_msg );
 			$this->git->auto_push();
 			

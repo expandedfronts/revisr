@@ -161,33 +161,34 @@ class Revisr_Git_Callback {
 	}
 
 	/**
-	 * Returns if the repo initialization was successful.
+	 * Called if the repo initialization was successful.
+	 * Sets up the '.git/config' file for the first time.
 	 * @access public
 	 */
 	public function success_init_repo() {
 		Revisr_Admin::clear_transients();
 		$user = wp_get_current_user();
 
-		if ( isset( $this->options['username'] ) && $this->options['username'] != "" ) {
-			$this->git->config_user_name( $this->options['username'] );
+		if ( isset( $this->options['username'] ) && $this->options['username'] != '' ) {
+			$this->git->set_config( 'user', 'name', $this->options['username'] );
 		} else {
-			$this->git->config_user_name( $user->user_login );
+			$this->git->set_config( 'user', 'name', $user->user_login );
 		}
-		if ( isset( $this->options['email'] ) && $this->options['email'] != "" ) {
-			$this->git->config_user_email( $this->options['email'] );
+		if ( isset( $this->options['email'] ) && $this->options['email'] != '' ) {
+			$this->git->set_config( 'user', 'email', $this->options['email'] );
 		} else {
-			$this->git->config_user_email( $user->user_email );
+			$this->git->set_config( 'user', 'email', $user->user_email );
 		}
-		if ( isset( $this->options['remote_name'] ) && $this->options['remote_name'] != "" ) {
+		if ( isset( $this->options['remote_name'] ) && $this->options['remote_name'] != '' ) {
 			$remote_name = $this->git->options['remote_name'];
 		} else {
 			$remote_name = 'origin';
 		}
-		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != "" ) {
-			$this->git->run("remote add $remote_name {$this->options['remote_url']}");
+		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != '' ) {
+			$this->git->run( 'remote', array( 'add', $remote_name, $this->options['remote_url'] ) );
 		}
-		$msg = sprintf( __( 'Successfully created a new repository.', 'revisr' ) );
-		Revisr_Admin::log( $msg, 'init' );
+
+		Revisr_Admin::log( __( 'Successfully created a new repository.', 'revisr' ), 'init' );
 		wp_redirect( get_admin_url() . 'admin.php?page=revisr_settings&init=success' );
 		exit();
 	}
@@ -243,7 +244,7 @@ class Revisr_Git_Callback {
 			$msg = sprintf( _n( 'Successfully pulled %s commit from %s/%s.', 'Successfully pulled %s commits from %s/%s.', $args, 'revisr' ), $args, $this->git->remote, $this->git->branch );
 			Revisr_Admin::alert( $msg );
 
-			if ( $this->git->config_revisr_option( 'import-pulls' ) === 'true' ) {
+			if ( $this->git->get_config( 'revisr', 'import-pulls' ) === 'true' ) {
 				$db = new Revisr_DB();
 				$db->import();
 			}
@@ -270,7 +271,7 @@ class Revisr_Git_Callback {
 		$msg = sprintf( _n( 'Successfully pushed %s commit to %s/%s.', 'Successfully pushed %s commits to %s/%s.', $args, 'revisr' ), $args, $this->git->remote, $this->git->branch );
 		Revisr_Admin::alert( $msg );
 		Revisr_Admin::log( $msg, 'push' );
-		if ( $this->git->config_revisr_url( 'webhook' ) !== false ) {
+		if ( $this->git->get_config( 'revisr', 'webhook-url' ) !== false ) {
 			$remote = new Revisr_Remote();
 			$remote->send_request();
 		}
