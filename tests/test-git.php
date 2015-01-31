@@ -45,37 +45,10 @@ class RevisrGitTest extends WP_UnitTestCase {
 	/**
 	 * Tests setting the Git username.
 	 */
-	function test_config_user_name() {
-		$this->git->config_user_name( 'revisr' );
-		$current_user = $this->git->run( 'config', array( 'user.name' ) );
-		$this->assertEquals( 'revisr', $current_user[0] );
-	}
-
-	/**
-	 * Tests setting the Git email address.
-	 */
-	function test_config_user_email() {
-		$this->git->config_user_email( 'support@expandedfronts.com' );
-		$current_email = $this->git->run( 'config', array( 'user.email' ) );
-		$this->assertEquals( 'support@expandedfronts.com', $current_email[0] );
-	}
-
-	/**
-	 * Tests setting the dev URL.
-	 */
-	function test_config_revisr_url() {
-		$this->git->config_revisr_url( 'dev', 'http://revisr.io' );
-		$current_url = $this->git->config_revisr_url( 'dev' );
-		$this->assertEquals( 'http://revisr.io', $current_url );
-	}
-
-	/**
-	 * Tests setting a path in the .git/config.
-	 */
-	function test_config_revisr_path() {
-		$this->git->config_revisr_path( 'mysql', '/Applications/MAMP/Library/bin/' );
-		$current_mysql = $this->git->config_revisr_path( 'mysql' );
-		$this->assertEquals( '/Applications/MAMP/Library/bin/', $current_mysql[0] );
+	function test_config() {
+		$this->git->set_config( 'user', 'name', 'revisr' );
+		$current_user = $this->git->get_config( 'user', 'name' );
+		$this->assertEquals( 'revisr', $current_user );
 	}
 
 	/**
