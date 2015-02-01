@@ -169,23 +169,23 @@ class Revisr_Git_Callback {
 		Revisr_Admin::clear_transients();
 		$user = wp_get_current_user();
 
-		if ( isset( $this->options['username'] ) && $this->options['username'] != '' ) {
-			$this->git->set_config( 'user', 'name', $this->options['username'] );
+		if ( isset( $this->git->options['username'] ) && $this->git->options['username'] != '' ) {
+			$this->git->set_config( 'user', 'name', $this->git->options['username'] );
 		} else {
 			$this->git->set_config( 'user', 'name', $user->user_login );
 		}
-		if ( isset( $this->options['email'] ) && $this->options['email'] != '' ) {
-			$this->git->set_config( 'user', 'email', $this->options['email'] );
+		if ( isset( $this->git->options['email'] ) && $this->git->options['email'] != '' ) {
+			$this->git->set_config( 'user', 'email', $this->git->options['email'] );
 		} else {
 			$this->git->set_config( 'user', 'email', $user->user_email );
 		}
-		if ( isset( $this->options['remote_name'] ) && $this->options['remote_name'] != '' ) {
+		if ( isset( $this->git->options['remote_name'] ) && $this->git->options['remote_name'] != '' ) {
 			$remote_name = $this->git->options['remote_name'];
 		} else {
 			$remote_name = 'origin';
 		}
-		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != '' ) {
-			$this->git->run( 'remote', array( 'add', $remote_name, $this->options['remote_url'] ) );
+		if ( isset( $this->git->options['remote_url'] ) && $this->git->options['remote_url'] != '' ) {
+			$this->git->run( 'remote', array( 'add', $remote_name, $this->git->options['remote_url'] ) );
 		}
 
 		Revisr_Admin::log( __( 'Successfully created a new repository.', 'revisr' ), 'init' );
