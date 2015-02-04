@@ -16,14 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Revisr_Cron {
 
 	/**
-	 * The Revisr database class.
+	 * A reference back to the main Revisr instance.
+	 * @var object
 	 */
-	protected $db;
-
-	/**
-	 * The main Git class.
-	 */
-	protected $git;
+	protected $revisr;
 
 	/**
 	 * User options and preferences.
@@ -35,9 +31,7 @@ class Revisr_Cron {
 	 * @access public
 	 */
 	public function __construct() {
-		$revisr 		= Revisr::get_instance();
-		$this->db 		= $revisr->db;
-		$this->git 		= $revisr->git;
+		$this->revisr 	= Revisr::get_instance();
 		$this->options 	= Revisr::get_options();
 	}
 
@@ -61,15 +55,15 @@ class Revisr_Cron {
 	 */
 	public function run_automatic_backup() {
 		$date 			= date("F j, Y");
-		$files 			= $this->git->status();
+		$files 			= $this->revisr->git->status();
 		$backup_type 	= ucfirst( $this->options['automatic_backups'] );
 		$commit_msg 	= sprintf( __( '%s backup - %s', 'revisr' ), $backup_type, $date );
 		// In case there are no files to commit.
 		if ( $files == false ) {
 			$files = array();
 		}
-		$this->git->stage_files( $files );
-		$this->git->commit( $commit_msg );
+		$this->revisr->git->stage_files( $files );
+		$this->revisr->git->commit( $commit_msg );
 		$post = array(
 			'post_title'	=> $commit_msg,
 			'post_content'	=> '',
@@ -77,12 +71,12 @@ class Revisr_Cron {
 			'post_status'	=> 'publish',
 		);
 		$post_id = wp_insert_post( $post );
-		add_post_meta( $post_id, 'branch', $this->git->branch );
-		add_post_meta( $post_id, 'commit_hash', $this->git->current_commit() );
+		add_post_meta( $post_id, 'branch', $this->revisr->git->branch );
+		add_post_meta( $post_id, 'commit_hash', $this->revisr->git->current_commit() );
 		add_post_meta( $post_id, 'files_changed', count( $files ) );
 		add_post_meta( $post_id, 'committed_files', $files );
-		$this->db->backup();
-		add_post_meta( $post_id, 'db_hash', $this->git->current_commit() );
+		$this->revisr->db->backup();
+		add_post_meta( $post_id, 'db_hash', $this->revisr->git->current_commit() );
 		$log_msg = sprintf( __( 'The %s backup was successful.', 'revisr' ), $this->options['automatic_backups'] );
 		Revisr_Admin::log( $log_msg, 'backup' );
 	}

@@ -16,16 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Revisr_Admin {
 
 	/**
-	 * The main database class.
-	 * @var Revisr_DB()
+	 * A reference back to the main Revisr instance.
+	 * @var object
 	 */
-	protected $db;
-
-	/**
-	 * The main Git class.
-	 * @var Revisr_Git()
-	 */
-	protected $git;
+	protected $revisr;
 
 	/**
 	 * User options and preferences.
@@ -38,9 +32,7 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function __construct() {
-		$revisr 		= Revisr::get_instance();
-		$this->db 		= $revisr->db;
-		$this->git 		= $revisr->git;
+		$this->revisr 	= Revisr::get_instance();
 		$this->options 	= Revisr::get_options();
 	}
 
@@ -64,9 +56,9 @@ class Revisr_Admin {
 	 */
 	public function ajax_button_count() {
 		if ( $_REQUEST['data'] == 'unpulled' ) {
-			echo $this->git->count_unpulled();
+			echo $this->revisr->git->count_unpulled();
 		} else {
-			echo $this->git->count_unpushed();
+			echo $this->revisr->git->count_unpushed();
 		}
 		exit();
 	}
@@ -186,11 +178,11 @@ class Revisr_Admin {
 		} else if ( $alert ) {
 			echo "<div class='revisr-alert updated'>" . wpautop( $alert ) . "</div>";
 		} else {
-			if ( $this->git->count_untracked() == '0' ) {
-				printf( __( '<div class="revisr-alert updated"><p>There are currently no untracked files on branch %s.', 'revisr' ), $this->git->branch );
+			if ( $this->revisr->git->count_untracked() == '0' ) {
+				printf( __( '<div class="revisr-alert updated"><p>There are currently no untracked files on branch %s.', 'revisr' ), $this->revisr->git->branch );
 			} else {
 				$commit_link = get_admin_url() . 'post-new.php?post_type=revisr_commits';
-				printf( __('<div class="revisr-alert updated"><p>There are currently %s untracked files on branch %s. <a href="%s">Commit</a> your changes to save them.</p></div>', 'revisr' ), $this->git->count_untracked(), $this->git->branch, $commit_link );
+				printf( __('<div class="revisr-alert updated"><p>There are currently %s untracked files on branch %s. <a href="%s">Commit</a> your changes to save them.</p></div>', 'revisr' ), $this->revisr->git->count_untracked(), $this->revisr->git->branch, $commit_link );
 			}
 		}
 		exit();
@@ -210,9 +202,9 @@ class Revisr_Admin {
 		<?php
 
 			if ( isset( $_REQUEST['commit'] ) ) {
-				$diff = $this->git->run( 'show', array( $_REQUEST['commit'], $_REQUEST['file'] ) );
+				$diff = $this->revisr->git->run( 'show', array( $_REQUEST['commit'], $_REQUEST['file'] ) );
 			} else {
-				$diff = $this->git->run( 'diff', array( $_REQUEST['file'] ) );
+				$diff = $this->revisr->git->run( 'diff', array( $_REQUEST['file'] ) );
 			}
 
 			if ( is_array( $diff ) ) {

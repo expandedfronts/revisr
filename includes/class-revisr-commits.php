@@ -15,18 +15,17 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Revisr_Commits {
 
 	/**
-	 * The main Git class.
-	 * @var Revisr_Git()
+	 * A reference back to the main Revisr instance.
+	 * @var object
 	 */
-	protected $git;
+	protected $revisr;
 
 	/**
 	 * Initialize the class.
 	 * @access public
 	 */
 	public function __construct() {
-		$revisr 	= Revisr::get_instance();
-		$this->git 	= $revisr->git;
+		$this->revisr = Revisr::get_instance();
 	}
 
 	/**
@@ -114,7 +113,7 @@ class Revisr_Commits {
 			4  => __( 'Commit updated.', 'revisr' ),
 			/* translators: %s: date and time of the revision */
 			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Commit restored to revision from %s', 'revisr' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => sprintf( __( 'Committed files on branch <strong>%s</strong>.', 'revisr' ), $this->git->branch ),
+			6  => sprintf( __( 'Committed files on branch <strong>%s</strong>.', 'revisr' ), $this->revisr->git->branch ),
 			7  => __( 'Commit saved.', 'revisr' ),
 			8  => __( 'Commit submitted.', 'revisr' ),
 			9  => sprintf(
@@ -202,7 +201,7 @@ class Revisr_Commits {
 	 */
 	public function custom_views( $views ) {
 
-		$output = $this->git->get_branches();
+		$output = $this->revisr->git->get_branches();
 
 		global $wp_query;
 
@@ -239,7 +238,7 @@ class Revisr_Commits {
 	 */
 	public function default_views() {
 		if( !isset( $_GET['branch'] ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
-			$_GET['branch'] = $this->git->branch;
+			$_GET['branch'] = $this->revisr->git->branch;
 		}
 	}
 
@@ -292,9 +291,9 @@ class Revisr_Commits {
 	 */
 	public function pending_files() {
 		check_ajax_referer( 'pending_nonce', 'security' );
-		$output 		= $this->git->status();
+		$output 		= $this->revisr->git->status();
 		$total_pending 	= count( $output );
-		$text 			= sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit.', 'revisr' ), $total_pending, $this->git->branch );
+		$text 			= sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit.', 'revisr' ), $total_pending, $this->revisr->git->branch );
 		echo "<br>" . $text . "<br><br>";
 		_e( 'Use the boxes below to select the files to include in this commit. Only files in the "Staged Files" section will be included.<br>Double-click files marked as "Modified" to view the changes to the file.<br><br>', 'revisr' );
 		if ( is_array( $output ) ) {
@@ -407,7 +406,7 @@ class Revisr_Commits {
 
 				<div class="misc-pub-section revisr-pub-branch">
 					<label for="revisr-branch"><?php _e( 'Branch:', 'revisr' ); ?></label>
-					<span><strong><?php echo $this->git->branch; ?></strong></span>
+					<span><strong><?php echo $this->revisr->git->branch; ?></strong></span>
 				</div>
 
 				<div class="misc-pub-section revisr-backup-cb">

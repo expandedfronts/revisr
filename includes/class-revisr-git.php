@@ -122,13 +122,25 @@ class Revisr_Git {
 	 * @return string The path to the top-level Git directory.
 	 */
 	public function get_git_dir() {
-		$dir = exec( "$this->git_path rev-parse --show-toplevel" );
-		if ( $dir ) {
-			return $dir;
+
+		// Allow users to set a custom path for the .git directory.
+		if ( defined( 'REVISR_GIT_DIR' ) ) {
+			chdir( REVISR_GIT_DIR );
 		} else {
-			$this->is_repo = false;
-			return ABSPATH;
+			chdir( ABSPATH );
 		}
+
+		$git_toplevel = exec( "$this->git_path rev-parse --show-toplevel" );
+
+		if ( !$git_toplevel ) {
+			$git_dir 		= getcwd();
+			$this->is_repo 	= false;
+		} else {
+			$git_dir = $git_toplevel;
+		}
+
+		chdir( $this->current_dir );
+		return $git_dir;
 	}
 
 	/**

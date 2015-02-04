@@ -17,18 +17,21 @@ class Revisr_Setup {
 	
 	/**
 	 * The WordPress database object.
+	 * @var object
 	 */
-	public $wpdb;
+	protected $wpdb;
 
 	/**
-	 * The main Git class.
+	 * A reference back to the main Revisr instance.
+	 * @var object
 	 */
-	public $git;
+	protected $revisr;
 
 	/**
-	 * User options and preferences. 
+	 * User options and preferences.
+	 * @var array
 	 */
-	public $options;
+	protected $options;
 
 	/**
 	 * Load items necessary for setup.
@@ -38,8 +41,7 @@ class Revisr_Setup {
 		global $wpdb;
 		$this->wpdb 	= $wpdb;
 		$this->options 	= $options;
-		$revisr 		= Revisr::get_instance();
-		$this->git 		= $revisr->git;
+		$this->revisr 	= Revisr::get_instance();
 	}
 
 	/**
@@ -169,8 +171,8 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function admin_bar( $wp_admin_bar ) {
-		if ( $this->git->count_untracked() != 0 ) {
-			$untracked 	= $this->git->count_untracked();
+		if ( $this->revisr->git->count_untracked() != 0 ) {
+			$untracked 	= $this->revisr->git->count_untracked();
 			$text 		= sprintf( _n( '%s Untracked File', '%s Untracked Files', $untracked, 'revisr' ), $untracked );
 			$args 		= array(
 				'id'    => 'revisr',
@@ -254,26 +256,26 @@ class Revisr_Setup {
 
 		// Check for the "auto_push" option and save it to the config.
 		if ( isset( $this->options['auto_push'] ) ) {
-			$this->git->set_config( 'revisr', 'auto-push', 'true' );
+			$this->revisr->git->set_config( 'revisr', 'auto-push', 'true' );
 		}
 
 		// Check for the "auto_pull" option and save it to the config.
 		if ( isset( $this->options['auto_pull'] ) ) {
-			$this->git->set_config( 'revisr', 'auto-pull', 'true' );
+			$this->revisr->git->set_config( 'revisr', 'auto-pull', 'true' );
 		}
 
 		// Check for the "reset_db" option and save it to the config.
 		if ( isset( $this->options['reset_db'] ) ) {
-			$this->git->set_config( 'revisr', 'import-checkouts', 'true' );
+			$this->revisr->git->set_config( 'revisr', 'import-checkouts', 'true' );
 		}
 
 		// Check for the "mysql_path" option and save it to the config.
 		if ( isset( $this->options['mysql_path'] ) ) {
-			$this->git->set_config( 'revisr', 'mysql-path', $this->options['mysql_path'] );
+			$this->revisr->git->set_config( 'revisr', 'mysql-path', $this->options['mysql_path'] );
 		}
 
 		// Configure the database tracking to use all tables, as this was how it behaved in 1.7.
-		$this->git->set_config( 'revisr', 'db_tracking', 'all_tables' );
+		$this->revisr->git->set_config( 'revisr', 'db_tracking', 'all_tables' );
 
 		// We're done here.
 		update_option( 'revisr_db_version', '1.1' );
