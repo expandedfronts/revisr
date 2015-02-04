@@ -186,7 +186,7 @@ class Revisr {
 
 		// Defines the plugin version.
 		if ( ! defined( 'REVISR_VERSION' ) ) {
-			define( 'REVISR_VERSION', '1.8' );
+			define( 'REVISR_VERSION', '1.9' );
 		}
 	}
 

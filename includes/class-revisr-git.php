@@ -137,9 +137,8 @@ class Revisr_Git {
 	 * @return string The path to the installation of Git.
 	 */
 	public function get_git_path() {
-		$options = Revisr::get_options();
-		if ( isset( $options['git_path'] ) ) {
-			return $options['git_path'];
+		if ( isset( $this->options['git_path'] ) ) {
+			return $this->options['git_path'];
 		} else {
 			// This is surprisingly still the best option
 			// given the huge amount of possible install paths,

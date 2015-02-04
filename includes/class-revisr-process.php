@@ -93,13 +93,14 @@ class Revisr_Process {
 	 */
 	public function process_commit() {
 		if ( isset( $_REQUEST['_wpnonce'] ) && isset( $_REQUEST['_wp_http_referer'] ) ) {
+			
+			$id 			= get_the_ID();
 			$commit_msg 	= $_REQUEST['post_title'];
 			$post_new 		= get_admin_url() . 'post-new.php?post_type=revisr_commits';
 			
 			// Require a message to be entered for the commit.
 			if ( $commit_msg == 'Auto Draft' || $commit_msg == '' ) {
-				$url = $post_new . '&message=42';
-				wp_redirect( $url );
+				wp_redirect( $post_new . '&message=42' );
 				exit();
 			}
 
@@ -108,14 +109,13 @@ class Revisr_Process {
 				$this->git->stage_files( $_POST['staged_files'] );
 				$staged_files = $_POST['staged_files'];
 			} else {
-				$url = $post_new . '&message=43';
-				wp_redirect( $url );
+				wp_redirect( $post_new . '&message=43' );
 				exit();
 			}
 
 			// Add the necessary post meta and make the commit in Git.
-			add_post_meta( get_the_ID(), 'committed_files', $staged_files );
-			add_post_meta( get_the_ID(), 'files_changed', count( $staged_files ) );
+			add_post_meta( $id, 'committed_files', $staged_files );
+			add_post_meta( $id, 'files_changed', count( $staged_files ) );
 			$this->git->commit( $commit_msg, 'commit' );	
 		}
 	}
