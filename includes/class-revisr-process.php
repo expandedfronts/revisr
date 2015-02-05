@@ -156,10 +156,12 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_discard() {
-		$this->revisr->git->reset( '--hard', 'HEAD', true );
-		Revisr_Admin::log( __('Discarded all uncommitted changes.', 'revisr'), 'discard' );
-		Revisr_Admin::alert( __('Successfully discarded any uncommitted changes.', 'revisr') );
-		exit();
+		if ( wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
+			$this->revisr->git->reset( '--hard', 'HEAD', true );
+			Revisr_Admin::log( __('Discarded all uncommitted changes.', 'revisr'), 'discard' );
+			Revisr_Admin::alert( __('Successfully discarded any uncommitted changes.', 'revisr') );
+			exit();
+		}
 	}
 
 	/**
@@ -203,15 +205,15 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_pull() {
-		// Determine whether this is a request from the dashboard or a POST request.
-		$from_dash = check_ajax_referer( 'dashboard_nonce', 'security', false );
 		
-		if ( $from_dash == false ) {
+		if ( !wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
 
+			// If auto-pull isn't enabled, we definitely don't want to do this.
 			if ( $this->revisr->git->get_config( 'revisr', 'auto-pull' ) !== 'true' ) {
 				wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 			}
 
+			// If it is enabled, authenticate the token.
 			$remote = new Revisr_Remote();
 			$remote->check_token();
 		}
@@ -264,8 +266,10 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_push() {
-		$this->revisr->git->reset();
-		$this->revisr->git->push();
+		if ( wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
+			$this->revisr->git->reset();
+			$this->revisr->git->push();
+		}
 	}
 	
 	/**
