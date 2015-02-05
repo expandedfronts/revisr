@@ -12,3 +12,10 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 require $_tests_dir . '/includes/bootstrap.php';
 
+// Activate & install the plugin
+activate_plugin( 'revisr/revisr.php' );
+Revisr::revisr_install();
+
+// Initialize a fresh repo.
+$revisr = Revisr::get_instance();
+$revisr->git->init_repo();

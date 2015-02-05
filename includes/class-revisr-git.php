@@ -370,7 +370,7 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function init_repo() {
-		$init = $this->run( 'init .', array(), __FUNCTION__ );
+		$init = $this->run( 'init', array( '.' ), __FUNCTION__ );
 		return $init;
 	}
 
