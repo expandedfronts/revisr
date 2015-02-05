@@ -50,11 +50,11 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 					<div class="postbox">
 						<h3><span><?php _e('Quick Actions', 'revisr'); ?></span> <div id='loader'><img src="<?php echo $loader_url; ?>"/></div></h3>
 						<div class="inside">
-							<button id="commit-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span class="qb-text">| <?php _e( 'Save Changes', 'revisr' ); ?></span></button>
+							<button id="commit-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Save Changes', 'revisr' ); ?></span></button>
 							<button id="discard-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Discard Changes', 'revisr' ); ?></span></button>
 							<button id="backup-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Backup Database', 'revisr' ); ?></span></button>
-							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;"><span id="push-text" class="qb-text">| <?php _e( 'Push Changes ', 'revisr' ); ?> <span id="unpushed"></span></span></button>
-							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span id="pull-text" class="qb-text">| <?php _e( 'Pull Changes', 'revisr' ); ?>  <span id="unpulled"></span></span></button>
+							<button id="push-btn" class="button button-primary quick-action-btn"><span id="push-text" class="qb-text">| <?php _e( 'Push Changes ', 'revisr' ); ?> <span id="unpushed"></span></span></button>
+							<button id="pull-btn" class="button button-primary quick-action-btn"><span id="pull-text" class="qb-text">| <?php _e( 'Pull Changes', 'revisr' ); ?>  <span id="unpulled"></span></span></button>
 						</div> <!-- .inside -->
 					</div> <!-- .postbox -->
 					<!-- END QUICK ACTIONS -->
