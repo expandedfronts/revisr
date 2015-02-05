@@ -340,15 +340,9 @@ class Revisr_Commits {
 	 * Shows the files that were added in a given commit.
 	 * @access public
 	 */
-	public function committed_files() {
+	public function committed_files_meta() {
 
-		if ( 'revisr_commits' !== get_post_type( $_POST['id'] ) ) {
-			exit();
-		}
-
-		check_ajax_referer( 'committed_nonce', 'security' );
-
-		$commit = Revisr_Admin::get_commit_details( $_POST['id'] );
+		$commit = Revisr_Admin::get_commit_details( get_the_ID() );
 
 		if ( count( $commit['committed_files'] ) !== 0 ) {
 			foreach ( $commit['committed_files']  as $file ) {
@@ -356,6 +350,8 @@ class Revisr_Commits {
 			}
 		}
 		
+		echo '<div id="committed_files_result">';
+
 		if ( isset( $output ) ) {
 			printf( __('<br><strong>%s</strong> files were included in this commit. Double-click files marked as "Modified" to view the changes in a diff.', 'revisr' ), $commit['files_changed'] );
 			echo '<input id="commit_hash" name="commit_hash" value="' . $commit['commit_hash'] . '" type="hidden" />';
@@ -374,7 +370,8 @@ class Revisr_Commits {
 		} else {
 			_e( 'No files were included in this commit.', 'revisr' );
 		}
-		exit();
+
+		echo '</div>';
 	}
 
 	/**
@@ -482,14 +479,6 @@ class Revisr_Commits {
 			<div class="clear"></div>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Displays the files changed in a commit.
-	 * @access public
-	 */
-	public function committed_files_meta() {
-		echo "<div id='committed_files_result'></div>";
 	}
 
 	/**

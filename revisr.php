@@ -265,7 +265,6 @@ class Revisr {
 		add_filter( 'post_updated_messages', array( self::$instance->commits, 'custom_messages' ) );
 		add_filter( 'bulk_post_updated_messages', array( self::$instance->commits, 'bulk_messages' ), 10, 2 );
 		add_action( 'wp_ajax_pending_files', array( self::$instance->commits, 'pending_files' ) );
-		add_action( 'wp_ajax_committed_files', array( self::$instance->commits, 'committed_files' ) );
 
 		// Database backups.
 		add_action( 'wp_ajax_backup_db', array( self::$instance->db, 'backup' ) );
