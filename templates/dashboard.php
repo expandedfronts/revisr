@@ -12,16 +12,17 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $revisr 	= Revisr::get_instance();
-$git 		= $revisr->git;
 $loader_url = REVISR_URL . 'assets/img/loader.gif';
+
 wp_enqueue_script( 'revisr_dashboard' );
-wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
-	'ajax_nonce' 	=> wp_create_nonce( 'dashboard_nonce' ),
+wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
+	'ajax_nonce' 	=> wp_create_nonce( 'revisr_dashboard_nonce' ),
 	'discard_msg' 	=> __( 'Are you sure you want to discard your uncommitted changes?', 'revisr' ),
 	'push_msg' 		=> __( 'Are you sure you want to push all committed changes to the remote?', 'revisr' ),
 	'pull_msg' 		=> __( 'Are you sure you want to discard your uncommitted changes and pull from the remote?', 'revisr' ),
 	)
 );
+
 ?>
 <div class="wrap">
 	<div id="icon-options-general" class="icon32"></div>
@@ -70,7 +71,7 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 								<div id="branches" class="tabs-panel" style="display: block;">
 									<table id="branches_table" class="widefat">
 										<?php
-											$output = $git->get_branches();
+											$output = $revisr->git->get_branches();
 											if ( is_array( $output ) ) {
 												foreach ($output as $key => $value){
 													$branch = substr($value, 2);
@@ -88,7 +89,7 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 								<div id="tags" class="tabs-panel" style="display: none;">
 									<ul id="tags-list">
 										<?php
-											$tags = $git->tag();
+											$tags = $revisr->git->tag();
 											if ( is_array( $tags ) ) {
 												foreach ( $tags as $tag ) {
 													echo "<li>$tag</li>";
