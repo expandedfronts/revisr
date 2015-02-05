@@ -83,9 +83,10 @@ class Revisr_Admin {
 	public static function count_commits( $branch ) {
 		global $wpdb;
 		if ( $branch == 'all' ) {
-			$num_commits = $wpdb->get_results( "SELECT * FROM " . $wpdb->postmeta . " WHERE meta_key = 'branch'" );
+
+			$num_commits = $wpdb->get_results( "SELECT meta_id FROM $wpdb->postmeta WHERE meta_key = 'branch'" );
 		} else {
-			$num_commits = $wpdb->get_results( "SELECT * FROM " . $wpdb->postmeta . " WHERE meta_key = 'branch' AND meta_value = '".$branch."'" );
+			$num_commits = $wpdb->get_results( $wpdb->prepare( "SELECT meta_id FROM $wpdb->postmeta WHERE meta_key = 'branch' AND meta_value = %s", $branch ) );
 		}
 		return count( $num_commits );
 	}
