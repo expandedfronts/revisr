@@ -116,10 +116,10 @@ class Revisr_Setup {
 	 * @access public
 	 */
 	public function menus() {
-		$menu = add_menu_page( 'Dashboard', 'Revisr', 'manage_options', 'revisr', array( $this, 'revisr_dashboard' ), REVISR_URL . 'assets/img/white_18x20.png' );
-		add_submenu_page( 'revisr', 'Revisr - Dashboard', 'Dashboard', 'manage_options', 'revisr', array( $this, 'revisr_dashboard' ) );
-		add_submenu_page( 'revisr', 'Revisr - Branches', 'Branches', 'manage_options', 'revisr_branches', array( $this, 'revisr_branches' ) );
-		add_submenu_page( 'revisr', 'Revisr - Settings', 'Settings', 'manage_options', 'revisr_settings', array( $this, 'revisr_settings' ) );
+		$menu = add_menu_page( __( 'Dashboard', 'revisr' ), 'Revisr', 'manage_options', 'revisr', array( $this, 'revisr_dashboard' ), REVISR_URL . 'assets/img/white_18x20.png' );
+		add_submenu_page( 'revisr', __( 'Revisr - Dashboard', 'revisr' ), __( 'Dashboard', 'revisr' ), 'manage_options', 'revisr', array( $this, 'revisr_dashboard' ) );
+		add_submenu_page( 'revisr', __( 'Revisr - Branches', 'revisr' ), __( 'Branches', 'revisr' ), 'manage_options', 'revisr_branches', array( $this, 'revisr_branches' ) );
+		add_submenu_page( 'revisr', __( 'Revisr - Settings', 'revisr' ), __( 'Settings', 'revisr' ), 'manage_options', 'revisr_settings', array( $this, 'revisr_settings' ) );
 		add_action( 'admin_print_scripts-' . $menu, array( $this, 'revisr_scripts' ) );
 		remove_meta_box( 'authordiv', 'revisr_commits', 'normal' );
 	}
