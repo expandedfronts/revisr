@@ -306,10 +306,10 @@ class Revisr_Commits {
 					<?php
 					// Clean up output from git status and echo the results.
 					foreach ( $output as $result ) {
-						$result = str_replace( '"', '', $result );
-						$short_status = substr( $result, 0, 3 );
-						$file = substr( $result, 3 );
-						$status = Revisr_Git::get_status( $short_status );
+						$result 		= str_replace( '"', '', $result );
+						$short_status 	= substr( $result, 0, 3 );
+						$file 			= substr( $result, 3 );
+						$status 		= Revisr_Git::get_status( $short_status );
 						echo "<option class='pending' value='{$result}'>{$file} [{$status}]</option>";
 					}
 					?>
