@@ -10,6 +10,9 @@
  * @copyright 	Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 $commit 	= Revisr_Admin::get_commit_details( $_GET['commit_id'] );
 $styles_url = REVISR_URL . 'assets/css/thickbox.css';
 

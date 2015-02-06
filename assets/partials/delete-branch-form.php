@@ -10,6 +10,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 $styles_url 	= REVISR_URL . 'assets/css/thickbox.css';
 $confirmation 	= sprintf( __( 'Are you sure you want to delete this branch?<br>This will delete all local work on branch <strong>%s</strong>.', 'revisr' ), esc_html( $_GET['branch'] ) );
 

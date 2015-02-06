@@ -10,6 +10,9 @@
  * @copyright 2014 Expanded Fronts, LLC
  */
 
+// Disallow direct access.
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 $styles_url 	= REVISR_URL . "assets/css/thickbox.css";
 $revisr 		= Revisr::get_instance();
 $db 			= $revisr->db;
