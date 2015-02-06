@@ -17,6 +17,9 @@ $commit 	= Revisr_Admin::get_commit_details( $_GET['commit_id'] );
 $styles_url = REVISR_URL . 'assets/css/thickbox.css';
 
 ?>
+	
+	<link href="<?php echo $styles_url; ?>" rel="stylesheet" type="text/css">
+
 	<form action="<?php echo get_admin_url() . 'admin-post.php'; ?>" method="post">
 
 		<div class="revisr-tb-description">
