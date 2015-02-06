@@ -9,7 +9,7 @@
  * @copyright 	Expanded Fronts, LLC
  */
 
- (function( $ ) {
+(function( $ ) {
 	'use strict';
 
 	/**

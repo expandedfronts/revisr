@@ -4,10 +4,10 @@
  *
  * Displays (and updates) the settings fields.
  *
- * @package   Revisr
- * @license   GPLv3
- * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts, LLC
+ * @package   	Revisr
+ * @license   	GPLv3
+ * @link      	https://revisr.io
+ * @copyright 	Expanded Fronts, LLC
  */
 
 // Disallow direct access.
