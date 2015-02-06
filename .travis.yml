@@ -13,16 +13,14 @@ env:
     - WP_VERSION=3.9.2 WP_MULTISITE=0
     - WP_VERSION=3.9.2 WP_MULTISITE=1
 
-before_install:
-    - sudo apt-get update -qq
-    - sudo apt-get install git-core
-
 before_script:
     - bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION 
     - cd /tmp/wordpress/
     - git init .
+    - cd /home/travis/build/ExpandedFronts/Revisr/
     - git config user.name "revisr"
     - git config user.email "support@expandedfronts.com"
+    - git config -l
 
 script: phpunit --coverage-clover=coverage.clover
 
