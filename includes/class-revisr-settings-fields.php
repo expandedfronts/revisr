@@ -136,7 +136,7 @@ class Revisr_Settings_Fields {
 			file_put_contents( '.gitignore', $this->options['gitignore'] );
 			$this->revisr->git->run( 'add', array( '.gitignore' ) );
 			$commit_msg = __( 'Updated .gitignore.', 'revisr' );
-			$this->revisr->git->run("commit -m \"$commit_msg\"");
+			$this->revisr->git->run('commit', array( '-m', $commit_msg ) );
 			$this->revisr->git->auto_push();
 		}
 		
@@ -216,6 +216,7 @@ class Revisr_Settings_Fields {
 			isset( $this->options['remote_name'] ) ? esc_attr( $this->options['remote_name']) : '',
 			__( 'Git sets this to "origin" by default when you clone a repository, and this should be sufficient in most cases. If you\'ve changed the remote name or have more than one remote, you can specify that here.', 'revisr' )
 		);
+		
 		if ( $this->is_updated( 'remote_name' ) ) {
 			$remote_name = $this->options['remote_name'];
 		} else {

@@ -185,9 +185,14 @@ class Revisr_Git {
 	 * @param  string $callback 	The callback to run.
 	 */
 	public function commit( $message, $callback = '' ) {
-		$current_user 	= wp_get_current_user();
-		$author 	 	= "$current_user->user_login <$current_user->user_email>";
-		$commit 		= $this->run( 'commit', array( '-m', $message, '--author', $author ), $callback );
+		if ( is_user_logged_in() ) {
+			$current_user 	= wp_get_current_user();
+			$author 	 	= "$current_user->user_login <$current_user->user_email>";
+			$commit 		= $this->run( 'commit', array( '-m', $message, '--author', $author ), $callback );		
+		} else {
+			$commit = $this->run( 'commit', array( '-m', $message ), $callback );
+		}
+
 		return $commit;
 	}
 
@@ -209,7 +214,7 @@ class Revisr_Git {
 	}
 
 	/**
-	 * Gets a value from the config.
+	 * Gets a single value from the config.
 	 * @access public
 	 * @param  string $section 	The section to check from.
 	 * @param  string $key 		The key who's value to grab.

@@ -53,9 +53,11 @@ $git 	= $revisr->git;
 					</tr>
 				</thead>
 					<?php
-						$output = $git->get_branches();
-						
+						$output 	= $git->get_branches();
+						$admin_url 	= get_admin_url();
+
 						if ( is_array( $output ) ) {
+
 							foreach ($output as $key => $value){
 								
 								$branch 		= substr($value, 2);
@@ -71,17 +73,17 @@ $git 	= $revisr->git;
 										<a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Delete</a>
 									</td></tr>";
 								} else {
-									$checkout_url 		= get_admin_url() . "admin-post.php?action=process_checkout&branch={$branch}";
-									$merge_url 			= get_admin_url() . "admin-post.php?action=merge_branch_form&branch={$branch}&TB_iframe=true&width=350&height=200";
-									$delete_url 		= get_admin_url() . "admin-post.php?action=delete_branch_form&branch={$branch}&TB_iframe=true&width=350&height=200";
-									$pull_remote_url 	= get_admin_url() . "admin-post.php?action=pull_remote_form&remote_branch={$branch}&TB_iframe=true&width=350&height=200";
+									$checkout_url 		= $admin_url . "admin-post.php?action=process_checkout&branch={$branch}";
+									$merge_url 			= $admin_url . "admin-post.php?action=merge_branch_form&branch={$branch}&TB_iframe=true&width=350&height=200";
+									$delete_url 		= $admin_url . "admin-post.php?action=delete_branch_form&branch={$branch}&TB_iframe=true&width=350&height=200";
+									$pull_remote_url 	= $admin_url . "admin-post.php?action=pull_remote_form&remote_branch={$branch}&TB_iframe=true&width=350&height=200";
 									?>
 									<tr>
 										<td><?php echo $branch; ?></td>
 										<td style='text-align:center;'><?php echo $num_commits; ?></td>
 										<td class="center-td">
 											<a class='button branch-btn' href='<?php echo $checkout_url; ?>'><?php _e( 'Checkout', 'revisr' ); ?></a>
-											<a class='button branch-btn merge-btn thickbox' href="<?php echo $merge_url; ?>" title="<?php _e( 'Merge Branch', 'revisr' ); ?>">Merge</a>
+											<a class='button branch-btn merge-btn thickbox' href="<?php echo $merge_url; ?>" title="<?php _e( 'Merge Branch', 'revisr' ); ?>"><?php _e( 'Merge', 'revisr' ); ?></a>
 											<a class='button branch-btn delete-branch-btn thickbox' href='<?php echo $delete_url; ?>' title='<?php _e( 'Delete Branch', 'revisr' ); ?>'><?php _e( 'Delete', 'revisr' ); ?></a>
 										</td>
 									</tr>
