@@ -96,7 +96,7 @@ class Revisr_Settings_Fields {
         );
 
         if ( $this->is_updated( 'username' ) ) {
-        	$this->revisr->git->config_user_name( $this->options['username'] );
+        	$this->revisr->git->set_config(  'user', 'email', $this->options['username'] );
         }
 	}
 
@@ -121,7 +121,7 @@ class Revisr_Settings_Fields {
         );
 
         if ( $this->is_updated( 'email' ) ) {
-        	$this->revisr->git->config_user_email( $this->options['email'] );
+        	$this->revisr->git->set_configl( 'user', 'email',  $this->options['email'] );
         }
 	}
 
@@ -322,7 +322,7 @@ class Revisr_Settings_Fields {
 			}
 		}
 
-		if ( $this->revisr->git->config_revisr_option( 'auto-pull' ) === 'true' ) {
+		if ( $this->revisr->git->get_config( 'revisr', 'auto-pull' ) === 'true' ) {
 			$checked = 'checked';
 		} else {
 			$checked = '';
@@ -364,19 +364,17 @@ class Revisr_Settings_Fields {
 		}
 
 		$check_tracking = $this->revisr->git->get_config( 'revisr', 'db-tracking' );
-		if ( is_array( $check_tracking ) ) {
-			$db_tracking = $check_tracking[0];
-			if ( $db_tracking == 'custom' ) {
-				if ( $this->is_updated( 'tracked_tables' ) ) {
-					$this->revisr->git->run( 'config --unset-all revisr.tracked-tables' );
-					$tables = $this->options['tracked_tables'];
-					foreach ( $tables as $table ) {
-						$this->revisr->git->run( "config --add revisr.tracked-tables $table" );
-					}
-				}
-			} else {
+		
+		if ( $db_tracking = $this->revisr->git->get_config( 'revisr', 'db-tracking' ) ) {
+			if ( $db_tracking == 'custom' && $this->is_updated( 'tracked_tables' ) ) {
 				$this->revisr->git->run( 'config', array( '--unset-all', 'revisr.tracked-tables' ) );
-			}
+				$tables = $this->options['tracked_tables'];
+				foreach ( $tables as $table ) {
+					$this->revisr->git->run( 'config', array( '--add', 'revisr.tracked-tables', $table ) );
+				}
+			} elseif ( $db_tracking != 'custom' ) {
+				$this->revisr->git->run( 'config', array( '--unset-all', 'revisr.tracked-tables' ) );
+			} 
 		} else {
 			$db_tracking = '';
 		}
@@ -392,7 +390,7 @@ class Revisr_Settings_Fields {
 		// Allows the user to select the tables they want to track.
 		$db 	= new Revisr_DB();
 		$tables = $db->get_tables();
-		echo '<div id="advanced-db-tracking"><br><select name="revisr_database_settings[tracked_tables][]" multiple="multiple" style="width:35em;height:250px;">';
+		echo '<div id="advanced-db-tracking" style="display:none;"><br><select name="revisr_database_settings[tracked_tables][]" multiple="multiple" style="width:35em;height:250px;">';
 		if ( is_array( $tables ) ) {
 			foreach ( $tables as $table ) {
 				$table_selected = '';
@@ -414,14 +412,14 @@ class Revisr_Settings_Fields {
 		// Allow the user to unset the dev URL.
 		if ( isset( $_GET['settings-updated'] ) ) {
 			if ( $this->is_updated( 'development_url' ) ) {
-				$this->revisr->git->config_revisr_url( 'dev', $this->options['development_url'] );
+				$this->revisr->git->set_config( 'revisr', 'dev-url', $this->options['development_url'] );
 			} else {
 				$this->revisr->git->run( 'config', array( '--unset', 'revisr.dev-url' ) );
 			}
 		}
 
 		// Grab the URL from the .git/config as it will be replaced in the database.
-		$get_url = $this->revisr->git->config_revisr_url( 'dev' );
+		$get_url = $this->revisr->git->get_config( 'revisr', 'dev-url' );
 		if ( $get_url !== false ) {
 			$dev_url = $get_url;
 		} else {
@@ -443,18 +441,18 @@ class Revisr_Settings_Fields {
 	public function mysql_path_callback() {
 		if ( isset( $_GET['settings-updated'] ) ) {
 			if ( $this->is_updated( 'mysql_path' ) ) {
-				$this->revisr->git->config_revisr_path( 'mysql', $this->options['mysql_path'] );
+				$this->revisr->git->set_config( 'revisr', 'mysql-path', $this->options['mysql_path'] );
 			} else {
 				$this->revisr->git->run( 'config', array( '--unset', 'revisr.mysql-path' ) );
 			}
 		}
 
-		$get_path = $this->revisr->git->config_revisr_path( 'mysql' );
-		if ( is_array( $get_path) ) {
-			$mysql_path = $get_path[0];
+		if ( $get_path = $this->revisr->git->get_config( 'revisr', 'mysql-path' ) ) {
+			$mysql_path = $get_path;
 		} else {
 			$mysql_path = '';
 		}
+
 		printf(
 			'<input type="text" id="mysql_path" name="revisr_database_settings[mysql_path]" value="%s" class="regular-text revisr-text" placeholder="" />
 			<p class="description revisr-description">%s</p>',
@@ -473,13 +471,13 @@ class Revisr_Settings_Fields {
 		if ( isset( $_GET['settings-updated'] ) ) {
 			
 			if ( isset( $this->options['reset_db'] ) ) {
-				$this->revisr->git->config_revisr_option( 'import-checkouts', 'true' );
+				$this->revisr->git->set_config( 'revisr', 'import-checkouts', 'true' );
 			} else {
 				$this->revisr->git->run( 'config', array( '--unset-all', 'revisr.import-checkouts' ) );
 			}
 
 			if ( isset( $this->options['import_db'] ) ) {
-				$this->revisr->git->config_revisr_option( 'import-pulls', 'true' );
+				$this->revisr->git->set_config( 'revisr', 'import-pulls', 'true' );
 			} else {
 				$this->revisr->git->run( 'config',  array( '--unset-all', 'revisr.import-pulls' ) );
 			}
@@ -492,9 +490,9 @@ class Revisr_Settings_Fields {
 			'<input type="checkbox" id="reset_db" name="revisr_database_settings[reset_db]" %s /><label for="reset_db">%s</label><br><br>
 			<input type="checkbox" id="import_db" name="revisr_database_settings[import_db]" %s /><label for="import_db">%s</label><br><br>
 			<p class="description revisr-description">%s</p>',
-			is_array( $get_reset ) ? "checked" : '',
+			checked( $this->revisr->git->get_config( 'revisr', 'import-checkouts' ), 'true', false ),
 			__( 'Import database when changing branches?', 'revisr' ),
-			is_array( $get_import ) ? "checked" : '',
+			checked( $this->revisr->git->get_config( 'revisr', 'import-checkouts' ), 'true', false ),
 			__( 'Import database when pulling commits?', 'revisr' ),
 			__( 'If checked, Revisr will automatically import the above tracked tables while pulling from or checking out a branch. The tracked tables will be backed up beforehand to provide a restore point immediately prior to the import. Use this feature with caution and only after verifying that you have a full backup of your website.', 'revisr' )
 		);		
