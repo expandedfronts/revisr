@@ -31,7 +31,7 @@ $merge_text = sprintf( __( 'This will merge changes from branch <strong>%s</stro
 	<div class="revisr-tb-submit">
 		<input type="hidden" name="action" value="process_merge">
 		<input type="hidden" name="branch" value="<?php echo esc_html( $_GET['branch'] ); ?>">
-		<button id="merge-btn" class="revisr-tb-btn revisr-tb-danger"><?php _e( 'Merge Branch', 'revisr' ); ?></button><button class="revisr-tb-btn revisr-btn-cancel"><?php _e( 'Cancel', 'revisr' ); ?></button>
+		<button id="merge-btn" class="revisr-tb-btn revisr-tb-danger"><?php _e( 'Merge Branch', 'revisr' ); ?></button><button class="revisr-tb-btn revisr-btn-cancel" onclick="self.parent.tb_remove();return false"><?php _e( 'Cancel', 'revisr' ); ?></button>
 	</div>
 
 </form>
