@@ -21,6 +21,21 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+#misc-publishing-actions label[for=revisr-tag]:before {
+	content: '\f015';
+	color: #888;
+	display: inline-block;
+	font: 400 20px/1 octicons;
+	speak: none;
+	left: -1px;
+	padding: 0 5px 0 3px;
+	position: relative;
+	top: 0;
+	text-decoration: none!important;
+	vertical-align: top;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
 .stage-container {
 	width: 100%;
 	display: inline-block;

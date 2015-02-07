@@ -468,6 +468,13 @@ class Revisr_Commits {
 					<span id="timestamp" class="revisr-timestamp"><?php echo $timestamp; ?></span>
 				</div>
 
+				<?php if ( $commit['tag'] !== '' ): ?>
+				<div class="misc-pub-section revisr-git-tag">
+					<label for="revisr-tag"><?php _e( 'Tagged:', 'revisr' ); ?></label>
+					<span><strong><?php echo $commit['tag']; ?></strong></span>
+				</div>
+				<?php endif; ?>
+
 			</div><!-- /#misc-publishing-actions -->
 		</div>
 
