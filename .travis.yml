@@ -17,10 +17,13 @@ before_script:
     - bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION 
     - cd /tmp/wordpress/
     - git init .
-    - cd /home/travis/build/ExpandedFronts/Revisr/
     - git config user.name "revisr"
     - git config user.email "support@expandedfronts.com"
     - git config -l
+    - ls
+    - cd /home/travis/build/ExpandedFronts/Revisr/
+    - git config -l
+    - ls
 
 script: phpunit --coverage-clover=coverage.clover
 
