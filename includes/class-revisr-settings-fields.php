@@ -121,7 +121,7 @@ class Revisr_Settings_Fields {
         );
 
         if ( $this->is_updated( 'email' ) ) {
-        	$this->revisr->git->set_configl( 'user', 'email',  $this->options['email'] );
+        	$this->revisr->git->set_config( 'user', 'email',  $this->options['email'] );
         }
 	}
 
@@ -130,21 +130,19 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function gitignore_callback() {
-		// Write the updated setting to the .gitignore.
+		chdir( $this->revisr->git->git_dir );
 		if ( $this->is_updated( 'gitignore' ) ) {
-			chdir( ABSPATH );
-			file_put_contents( '.gitignore', $this->options['gitignore'] );
+			file_put_contents( $this->revisr->git->git_dir . '/.gitignore', $this->options['gitignore'] );
 			$this->revisr->git->run( 'add', array( '.gitignore' ) );
 			$commit_msg = __( 'Updated .gitignore.', 'revisr' );
 			$this->revisr->git->run('commit', array( '-m', $commit_msg ) );
 			$this->revisr->git->auto_push();
 		}
 		
-		chdir( ABSPATH );
 		if ( isset( $this->options['gitignore'] ) ) {
 			$gitignore = $this->options['gitignore'];
-		} elseif ( file_exists( '.gitignore' ) ) {
-			$gitignore = file_get_contents( '.gitignore' );
+		} elseif ( file_exists( $this->revisr->git->git_dir . '/.gitignore' ) ) {
+			$gitignore = file_get_contents( $this->revisr->git->git_dir . '/.gitignore' );
 		} else {
 			$gitignore = '';
 		}
