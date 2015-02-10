@@ -267,7 +267,6 @@ class Revisr_Process {
 	 */
 	public function process_push() {
 		if ( wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
-			$this->revisr->git->reset();
 			$this->revisr->git->push();
 		}
 	}
