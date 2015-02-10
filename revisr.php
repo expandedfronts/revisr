@@ -67,6 +67,12 @@ class Revisr {
 	public $admin;
 
 	/**
+	 * The "Revisr_List_Table" object.
+	 * @var object
+	 */
+	public $list_table;
+
+	/**
 	 * An array of user options and preferences.
 	 * @var array
 	 */
@@ -205,6 +211,8 @@ class Revisr {
 		require_once REVISR_PATH . 'includes/class-revisr-process.php';
 
 		if ( current_user_can( 'install_plugins' ) && is_admin() ) {
+			require_once REVISR_PATH . 'includes/class-revisr-list-table.php';
+			require_once REVISR_PATH . 'includes/class-revisr-list-table.php';
 			require_once REVISR_PATH . 'includes/class-revisr-commits.php';
 			require_once REVISR_PATH . 'includes/class-revisr-settings.php';
 			require_once REVISR_PATH . 'includes/class-revisr-settings-fields.php';	
@@ -250,6 +258,7 @@ class Revisr {
 		self::$instance->commits 		= new Revisr_Commits();
 		self::$instance->settings 		= new Revisr_Settings();
 		self::$instance->admin_setup 	= new Revisr_Setup( self::$instance->options );
+		self::$instance->list_table 	= new Revisr_List_Table;
 
 		// Check for compatibility.
 		self::$instance->check_compatibility();
@@ -286,7 +295,7 @@ class Revisr {
 		add_action( 'admin_enqueue_scripts', array( self::$instance->admin_setup, 'revisr_scripts' ) );
 		add_action( 'admin_bar_menu', array( self::$instance->admin_setup, 'admin_bar' ), 999 );
 		add_filter( 'custom_menu_order', array( self::$instance->admin_setup, 'revisr_submenu_order' ) );
-		add_action( 'wp_ajax_recent_activity', array( self::$instance->admin_setup, 'recent_activity' ) );
+		add_action( 'wp_ajax_revisr_get_custom_list', array( self::$instance->list_table, 'ajax_callback' ) );
 
 		if ( get_option( 'revisr_db_version' ) === '1.0' ) {
 			add_action( 'admin_init', array( self::$instance->admin_setup, 'do_upgrade' ) );
@@ -306,7 +315,7 @@ class Revisr {
 		add_action( 'wp_ajax_discard', array( self::$instance->process, 'process_discard' ) );
 		add_action( 'wp_ajax_process_push', array( self::$instance->process, 'process_push' ) );
 		add_action( 'wp_ajax_process_pull', array( self::$instance->process, 'process_pull' ) );
-
+		
 		// Load the settings page.
 		add_action( 'admin_init', array( self::$instance->settings, 'init_settings' ) );
 	}

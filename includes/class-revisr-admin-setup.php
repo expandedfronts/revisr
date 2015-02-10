@@ -57,7 +57,7 @@ class Revisr_Setup {
 		wp_register_style( 'revisr_octicons_css', REVISR_URL . 'assets/octicons/octicons.css', array(), '01152015' );
 		
 		// Register all JS files used by Revisr.
-		wp_register_script( 'revisr_dashboard', REVISR_URL . 'assets/js/revisr-dashboard.js', 'jquery',  '09232014' );
+		wp_register_script( 'revisr_dashboard', REVISR_URL . 'assets/js/revisr-dashboard.js', 'jquery',  '09232014', true );
 		wp_register_script( 'revisr_staging', REVISR_URL . 'assets/js/revisr-staging.js', 'jquery', '07052014', false );
 		wp_register_script( 'revisr_committed', REVISR_URL . 'assets/js/revisr-committed.js', 'jquery', '07052014', false );
 		wp_register_script( 'revisr_settings', REVISR_URL . 'assets/js/revisr-settings.js', 'jquery', '08272014', true );
@@ -216,38 +216,6 @@ class Revisr_Setup {
 	 */
 	public function revert_form() {
 		include_once REVISR_PATH . 'assets/partials/revert-form.php';
-	}
-
-	/**
-	 * Displays the recent activity box on the dashboard.
-	 * @access public
-	 */
-	public static function recent_activity() {
-		global $wpdb;
-		$table_name 	= $wpdb->prefix . 'revisr';
-		$revisr_events 	= $wpdb->get_results( "SELECT id, time, message FROM $table_name ORDER BY id DESC LIMIT 15", ARRAY_A );
-		if ( $revisr_events ) {
-			?>
-			<table class="widefat">
-				<tbody id="activity_content">
-				<?php
-					foreach ($revisr_events as $revisr_event) {
-						$timestamp 	= strtotime($revisr_event['time']);
-						$current 	= strtotime( current_time( 'mysql' ) );
-						$time  	   	= sprintf( __( '%s ago', 'revisr' ), human_time_diff( $timestamp, $current ) );
-						echo "<tr><td>{$revisr_event['message']}</td><td>{$time}</td></tr>";
-					}
-				?>
-				</tbody>
-			</table>
-			<?php		
-		} else {
-			_e( '<p id="revisr_activity_no_results">Your recent activity will show up here.</p>', 'revisr' );
-		}
-
-		if ( defined( 'DOING_AJAX' ) ) {
-			exit();
-		}
 	}
 
 	/**

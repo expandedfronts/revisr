@@ -11,9 +11,11 @@
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+// Grab the instance 
 $revisr 	= Revisr::get_instance();
 $loader_url = REVISR_URL . 'assets/img/loader.gif';
 
+// Enqueue any necessary scripts (Already registered in "Revisr_Admin_Setup").
 wp_enqueue_script( 'revisr_dashboard' );
 wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
 	'ajax_nonce' 	=> wp_create_nonce( 'revisr_dashboard_nonce' ),
@@ -22,6 +24,9 @@ wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
 	'pull_msg' 		=> __( 'Are you sure you want to discard your uncommitted changes and pull from the remote?', 'revisr' ),
 	)
 );
+
+// Prepares the Revisr custom list table.
+$revisr->list_table->prepare_items();
 
 ?>
 <div class="wrap">
@@ -36,12 +41,10 @@ wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
 			<!-- main content -->
 			<div id="post-body-content">
 				<div class="meta-box-sortables ui-sortable">
-					<div class="postbox">
-						<h3><span><?php _e('Recent Activity', 'revisr'); ?></span></h3>
-						<div class="inside" id="revisr_activity">
-							<?php Revisr_Setup::recent_activity(); ?>
-						</div><!-- .inside -->
-					</div><!-- .postbox -->
+					<form id="revisr-list-table">
+						<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+						<?php $revisr->list_table->display(); ?>
+					</form>
 				</div><!-- .meta-box-sortables .ui-sortable -->
 			</div><!-- post-body-content -->
 			<!-- sidebar -->
@@ -89,7 +92,7 @@ wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
 								<div id="tags" class="tabs-panel" style="display: none;">
 									<ul id="tags-list">
 										<?php
-											$tags = $revisr->git->run->( 'tag', array() );
+											$tags = $revisr->git->run( 'tag', array() );
 											if ( is_array( $tags ) ) {
 												foreach ( $tags as $tag ) {
 													echo "<li>$tag</li>";
