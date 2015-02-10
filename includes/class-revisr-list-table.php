@@ -111,7 +111,7 @@ class Revisr_List_Table extends WP_List_Table {
         $this->_column_headers = array( $columns, $hidden, $sortable );
 
         // Get the data to populate into the table.
-        $data = $wpdb->get_results( "SELECT message, time FROM wp_revisr", ARRAY_A );
+        $data = $wpdb->get_results( "SELECT message, time FROM {$wpdb->prefix}revisr", ARRAY_A );
 
         // Handle sorting of the data.
         function usort_reorder($a,$b){
