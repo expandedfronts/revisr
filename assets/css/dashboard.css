@@ -84,17 +84,12 @@
 }
 
 /* === Recent Activity === */
-#revisr_activity {
-	padding: 0;
-	margin-top: 0px !important;
+.tablenav.top {
+	display: none !important;
 }
-#revisr_activity table {
-	border: 0px;
+th[id=message] {
+	width: 75%;
 }
-#revisr_activity tr:nth-child(odd) {
-	background-color: #f9f9f9;
-}
-
 /* === Branches === */
 .revisr_col_container {
 	margin-top: 25px !important;
