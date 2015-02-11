@@ -230,12 +230,13 @@ class Revisr {
 	 */
 	private function load_admin_hooks() {
 		// Load necessary classes into the instance.
-		self::$instance->git 		= new Revisr_Git();
-		self::$instance->commits 	= new Revisr_Commits();
-		self::$instance->admin 		= new Revisr_Admin();
-		self::$instance->process 	= new Revisr_Process();
-		self::$instance->settings 	= new Revisr_Settings();
-		self::$instance->list_table = new Revisr_List_Table();
+		self::$instance->git 			= new Revisr_Git();
+		self::$instance->commits 		= new Revisr_Commits();
+		self::$instance->admin 			= new Revisr_Admin();
+		self::$instance->db 			= new Revisr_DB();
+		self::$instance->process 		= new Revisr_Process();
+		self::$instance->settings 		= new Revisr_Settings();
+		self::$instance->list_table 	= new Revisr_List_Table();
 
 		// Create and configure the "revisr_commits" custom post type.
 		add_action( 'init', array( self::$instance->commits, 'post_types' ) );
@@ -294,7 +295,9 @@ class Revisr {
 		add_action( 'wp_ajax_discard', array( self::$instance->process, 'process_discard' ) );
 		add_action( 'wp_ajax_process_push', array( self::$instance->process, 'process_push' ) );
 		add_action( 'wp_ajax_process_pull', array( self::$instance->process, 'process_pull' ) );
-		
+		add_action( 'wp_ajax_backup_db', array( self::$instance->db, 'backup' ) );
+		add_action( 'admin_post_revert_db', array( self::$instance->db, 'restore' ) );
+
 		// Load the settings page.
 		add_action( 'admin_init', array( self::$instance->settings, 'init_settings' ) );
 	}
