@@ -3,24 +3,25 @@
 class RevisrDBTest extends WP_UnitTestCase {
 
 	/**
-	 * The Revisr database object.
+	 * The Revisr instance.
 	 */
-	protected $db;
+	protected $revisr;
 
 	/**
 	 * Initialize the database object.
 	 */
 	function setUp() {
-		$this->db = new Revisr_DB();
+		$this->revisr = Revisr::get_instance();
+		$this->revisr->db = new Revisr_DB();
 	}
 
 	/**
 	 * Tests the check_port() function.
 	 */
 	function test_check_port() {
-		$port 		= $this->db->check_port( 'localhost' );
-		$new_port 	= $this->db->check_port( 'http://example.com:8080' );
-		$no_port 	= $this->db->check_port( 'http://example.com/' );
+		$port 		= $this->revisr->db->check_port( 'localhost' );
+		$new_port 	= $this->revisr->db->check_port( 'http://example.com:8080' );
+		$no_port 	= $this->revisr->db->check_port( 'http://example.com/' );
 
 		$this->assertEquals( false, $port );
 		$this->assertNotEquals( false, $new_port );
@@ -32,7 +33,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Tests the build_connection() function.
 	 */
 	function test_build_connection() {
-		$conn = $this->db->build_conn();
+		$conn = $this->revisr->db->build_conn();
 		$this->assertNotEquals( null, $conn );
 		$this->assertContains( '--host', $conn );
 	}
@@ -41,7 +42,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Tests a database backup.
 	 */
 	function test_backup() {
-		$this->db->backup();
+		$this->revisr->db->backup();
 		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/.htaccess' );
 		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/index.php' );
 		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/revisr_wptests_posts.sql' );
@@ -51,7 +52,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Tests a database import.
 	 */
 	function test_import() {
-		$import = $this->db->import_table( 'wptests_users' );
+		$import = $this->revisr->db->import_table( 'wptests_users' );
 		$this->assertEquals( true, $import );
 	}
 
@@ -59,7 +60,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Tests the verify_backup() function.
 	 */
 	function test_verify_backup() {
-		$verify = $this->db->verify_backup( 'wptests_posts' );
+		$verify = $this->revisr->db->verify_backup( 'wptests_posts' );
 		$this->assertEquals( true, $verify );
 	}
 }

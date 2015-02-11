@@ -11,8 +11,8 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Initialize the Git object.
 	 */
     function setUp() {
-
 		$this->revisr = Revisr::get_instance();
+		$this->revisr->git = new Revisr_Git();
 	}
 
 	/**
