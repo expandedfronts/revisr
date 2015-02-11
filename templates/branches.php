@@ -58,20 +58,23 @@ $git 	= $revisr->git;
 
 						if ( is_array( $output ) ) {
 
-							foreach ($output as $key => $value){
+							foreach ( $output as $key => $value ) {
 								
-								$branch 		= substr($value, 2);
+								$branch 		= substr( $value, 2 );
 								$num_commits 	= Revisr_Admin::count_commits( $branch );
 								
 								if ( substr( $value, 0, 1 ) === "*" ){
-									echo "<tr>
-									<td><strong>$branch (current branch)</strong></td>
-									<td class='center-td'>$num_commits</td>
-									<td class='center-td'>
-										<a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Checkout</a>
-										<a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Merge</a>
-										<a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Delete</a>
-									</td></tr>";
+									?>
+									<tr>
+										<td><strong><?php printf( __( '%s (current branch)', 'revisr' ), $branch ); ?></strong></td>
+										<td class='center-td'><?php echo $num_commits; ?></td>
+										<td class="center-td">
+											<a class="button disabled branch-btn" onclick="preventDefault()" href="#"><?php _e( 'Checkout', 'revisr' ); ?></a>
+											<a class="button disabled branch-btn" onclick="preventDefault()" href="#"><?php _e( 'Merge', 'revisr' ); ?></a>
+											<a class="button disabled branch-btn" onclick="preventDefault()" href="#"><?php _e( 'Delete', 'revisr' ); ?></a>
+										</td>
+									</tr>
+									<?
 								} else {
 									$checkout_url 		= $admin_url . "admin-post.php?action=process_checkout&branch={$branch}";
 									$merge_url 			= $admin_url . "admin-post.php?action=merge_branch_form&branch={$branch}&TB_iframe=true&width=350&height=200";
