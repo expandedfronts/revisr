@@ -321,7 +321,7 @@ class Revisr {
 	 */
 	public static function get_table_name() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . self::$instance->plugin_name;
+		$table_name = $wpdb->prefix . 'revisr';
 		return $table_name;
 	}
 

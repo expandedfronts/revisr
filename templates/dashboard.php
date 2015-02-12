@@ -113,7 +113,7 @@ $revisr->list_table->prepare_items();
 						<div class="inside">
 							<?php printf( __( 'Need help? Check out the improved documentation at %s.', 'revisr' ),  ' <a href="http://docs.revisr.io/" target="_blank">http://docs.revisr.io</a>' ); ?>
 							<br><br>
-							&copy; 2014 Expanded Fronts, LLC
+							<?php printf( __( '&copy; %d Expanded Fronts, LLC', 'revisr' ), date( 'Y' ) ); ?>
 						</div> <!-- .inside -->
 					</div> <!-- .postbox -->				
 				</div> <!-- .meta-box-sortables -->		
