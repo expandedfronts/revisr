@@ -34,6 +34,12 @@ class Revisr_DB {
 	protected $upload_dir;
 
 	/**
+	 * Stores a reference to the main Revisr instance.
+	 * @var Revisr
+	 */
+	protected $revisr;
+
+	/**
 	 * Stores user options and preferences.
 	 * @var array
 	 */
@@ -44,12 +50,6 @@ class Revisr_DB {
 	 * @var string
 	 */
 	protected $path;
-
-	/**
-	 * The main Git class.
-	 * @var Revisr_Git
-	 */
-	protected $git;
 
 	/**
 	 * The WordPress database class.
@@ -63,9 +63,9 @@ class Revisr_DB {
 	 */
 	public function __construct() {
 		global $wpdb;
-		$revisr 			= Revisr::get_instance();
+		$this->revisr 		= Revisr::get_instance();
 		$this->wpdb 		= $wpdb;
-		$this->git 			= $revisr->git;
+		$this->git 			= $this->revisr->git;
 		$this->upload_dir 	= wp_upload_dir();
 		$this->backup_dir	= $this->upload_dir['basedir'] . '/revisr-backups/';
 		$this->options 		= Revisr::get_options();
