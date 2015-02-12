@@ -366,7 +366,7 @@ class Revisr {
  * @return 	object
  */
 function revisr() {
-	//return Revisr::get_instance();
+	return Revisr::get_instance();
 }
 
 // Runs the plugin.
