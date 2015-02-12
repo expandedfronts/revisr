@@ -362,7 +362,7 @@ class Revisr_DB {
 	 * 
 	 * @access public
 	 * @param  string $table 		The table to import.
-	 * @param  string $replace_url 	Replace this URL in the database with the live URL. 
+	 * @param  string $replace_url 	Replace this URL in the database with the live URL.
 	 */
 	public function import_table( $table, $replace_url = '' ) {
 		$live_url = site_url();
@@ -446,7 +446,7 @@ class Revisr_DB {
 			$msg = sprintf( __( 'Successfully imported the database. %s', 'revisr'), $revert_url );
 			Revisr_Admin::log( $msg, 'import' );
 			Revisr_Admin::alert( $msg );
-		}		
+		}
 	}
 
 	/**
@@ -455,58 +455,59 @@ class Revisr_DB {
 	 * @access public
 	 */
 	public function restore() {
-		if ( isset( $_GET['revert_db_nonce'] ) ) {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
 
-			$branch = $_GET['branch'];
-			
-			if ( $branch != $this->git->branch ) {
-				$this->git->checkout( $branch );
-			}
+		$commit = $_REQUEST['db_hash'];
+		$branch = $_REQUEST['branch'];
+		if ( $branch != $this->git->branch ) {
+			$this->git->checkout( $branch );
+		}
 
-			$this->backup();
+		/**
+		 * Backup the database and store the resulting commit hash
+		 * in memory so we can use it to create the revert link later.
+		 */
+		$this->backup();
+		$current_temp = $this->git->current_commit();
 
-			$commit 		= escapeshellarg( $_GET['db_hash'] );
-			$current_temp	= $this->git->run( 'log', array( "--pretty=format:'%h'",  '-n 1' ) );
-
-			if ( isset( $_GET['backup_method'] ) && $_GET['backup_method'] == 'tables' ) {
-				// Import the tables, one by one, running a search/replace if necessary.
-				$this->run( 'revert', $this->get_tracked_tables(), $commit );
-				$backup_method = 'tables';
-			} else {
-				// Import the old revisr_db_backup.sql file.
-				$backup_method 	= 'old';
-
-				// Make sure the SQL file exists and is not empty.
-				if ( ! file_exists( $this->upload_dir['basedir'] . '/revisr_db_backup.sql' ) || filesize( $this->upload_dir['basedir'] . '/revisr_db_backup.sql' ) < 1000 ) {
-					wp_die( __( 'The backup file does not exist or has been corrupted.', 'revisr' ) );
-				}
-				clearstatcache();
-
-				$checkout = $this->git->run( 'checkout', array( "$commit} {$this->upload_dir['basedir']}/revisr_db_backup.sql" ) );
-
-				if ( $checkout !== 1 ) {
-					exec( "{$this->path}mysql {$this->conn} < {$this->upload_dir['basedir']}/revisr_db_backup.sql" );
-					$this->git->run( 'checkout', array( "{$this->git->branch} {$this->upload_dir['basedir']}/revisr_db_backup.sql" ) );
-				} else {
-					wp_die( __( 'Failed to revert the database to an earlier commit.', 'revisr' ) );
-				}
-			}
-
-			if ( is_array( $current_temp ) ) {
-				$current_commit = str_replace( "'", "", $current_temp );
-				$undo_nonce 	= wp_nonce_url( admin_url( "admin-post.php?action=revert_db&db_hash={$current_commit[0]}&branch={$_GET['branch']}&backup_method=$backup_method" ), 'revert_db', 'revert_db_nonce' );
-				$msg = sprintf( __( 'Successfully reverted the database to a previous commit. <a href="%s">Undo</a>', 'revisr' ), $undo_nonce );
-				Revisr_Admin::log( $msg, 'revert' );
-				Revisr_Admin::alert( $msg );
-				$redirect = get_admin_url() . "admin.php?page=revisr";
-				wp_redirect( $redirect );			
-			} else {
-				wp_die( __( 'Something went wrong. Check your settings and try again.', 'revisr' ) );
-			}
-
+		if ( isset( $_REQUEST['backup_method'] ) && $_REQUEST['backup_method'] == 'tables' ) {
+			// Import the tables, one by one, running a search/replace if necessary.
+			$this->run( 'revert', $this->get_tracked_tables(), $commit );
+			$backup_method = 'tables';
 		} else {
-			wp_die( 'Cheatin&#8217; uh?', 'revisr' );
-		}	
+			// Import the old revisr_db_backup.sql file.
+			$backup_method 	= 'old';
+
+			// Make sure the SQL file exists and is not empty.
+			if ( ! file_exists( $this->upload_dir['basedir'] . '/revisr_db_backup.sql' ) || filesize( $this->upload_dir['basedir'] . '/revisr_db_backup.sql' ) < 1000 ) {
+				wp_die( __( 'The backup file does not exist or has been corrupted.', 'revisr' ) );
+			}
+			clearstatcache();
+
+			// Checkout the old SQL file and import it.
+			$checkout = $this->git->run( 'checkout', array( $commit, "{$this->upload_dir['basedir']}/revisr_db_backup.sql" ) );
+			if ( $checkout !== 1 ) {
+				exec( "{$this->path}mysql {$this->conn} < {$this->upload_dir['basedir']}/revisr_db_backup.sql" );
+				$this->git->run( 'checkout', array( "{$this->git->branch} {$this->upload_dir['basedir']}/revisr_db_backup.sql" ) );
+			} else {
+				wp_die( __( 'Failed to revert the database to an earlier commit.', 'revisr' ) );
+			}
+		}
+
+		if ( $current_temp ) {
+			// Create a link to undo the revert if necessary.
+			$undo_nonce = wp_nonce_url( admin_url( "admin-post.php?action=process_revert&revert_type=db&db_hash=" . $current_temp . "&branch=" . $_REQUEST['branch'] . "&backup_method=" . $backup_method ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
+			$undo_msg 	= sprintf( __( 'Successfully reverted the database to a previous commit. <a href="%s">Undo</a>', 'revisr' ), $undo_nonce );
+			// Store the undo link and alert the user.
+			Revisr_Admin::log( $undo_msg, 'revert' );
+			Revisr_Admin::alert( $undo_msg );
+			wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
+			exit();
+		} else {
+			wp_die( __( 'Something went wrong. Check your settings and try again.', 'revisr' ) );
+		}
 	}
 
 	/**
@@ -517,7 +518,7 @@ class Revisr_DB {
 	 * @return boolean
 	 */
 	private function revert_table( $table, $commit ) {
-		$checkout = $this->git->run( 'checkout', array( "$commit {$this->backup_dir}revisr_$table.sql" ) );
+		$checkout = $this->git->run( 'checkout', array( $commit, "{$this->backup_dir}revisr_$table.sql" ) );
 		return $checkout;
 	}
 
@@ -640,7 +641,7 @@ class Revisr_DB {
 	 * 
 	 * @access private
 	 * @param  string $from       String we're looking to replace.
-	 * @param  string $to         What we want it to be replaced with
+	 * @param  string $to         What we want it to be replaced with.
 	 * @param  array  $data       Used to pass any subordinate arrays back to in.
 	 * @param  bool   $serialised Does the array passed via $data need serialising.
 	 *

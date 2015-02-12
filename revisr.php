@@ -296,7 +296,6 @@ class Revisr {
 		add_action( 'wp_ajax_process_push', array( self::$instance->process, 'process_push' ) );
 		add_action( 'wp_ajax_process_pull', array( self::$instance->process, 'process_pull' ) );
 		add_action( 'wp_ajax_backup_db', array( self::$instance->db, 'backup' ) );
-		add_action( 'admin_post_revert_db', array( self::$instance->db, 'restore' ) );
 
 		// Load the settings page.
 		add_action( 'admin_init', array( self::$instance->settings, 'init_settings' ) );

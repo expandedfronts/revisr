@@ -283,7 +283,7 @@ class Revisr_Git {
 	 */
 	public function current_branch() {
 		$current_branch = $this->run( 'rev-parse', array( '--abbrev-ref', 'HEAD' ) );
-		if ( $current_branch != false ) {
+		if ( $current_branch != false && is_array( $current_branch ) ) {
 			return $current_branch[0];
 		}
 	}

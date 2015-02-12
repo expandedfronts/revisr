@@ -164,12 +164,12 @@ class Revisr_Commits {
 	        $commit 			= Revisr_Admin::get_commit_details( $id );
 	        $url 				= get_admin_url() . 'post.php?post=' . $id . '&action=edit';
 	        $actions['view'] 	= "<a href='{$url}'>" . __( 'View', 'revisr' ) . "</a>";
-	        $revert_nonce 		= wp_nonce_url( admin_url( 'admin-post.php?action=process_revert&commit_hash=' . $commit['commit_hash'] . '&branch=' . $commit['branch'] . '&post_id=' . $id ), 'revert', 'revert_nonce' );
+	        $revert_nonce 		= wp_nonce_url( admin_url( 'admin-post.php?action=process_revert&revert_type=files&commit_hash=' . $commit['commit_hash'] . '&branch=' . $commit['branch'] . '&post_id=' . $id ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
 	        $actions['revert'] 	= "<a href='" . $revert_nonce . "'>" . __( 'Revert Files', 'revisr' ) . "</a>";
 
 	        // If there is a database backup available to revert to, display the revert link.
 	        if ( $commit['db_hash'] !== '' ) {
-	        	$revert_db_nonce = wp_nonce_url( admin_url( 'admin-post.php?action=revert_db&db_hash=' . $commit['db_hash'] . '&branch=' . $commit['branch'] . '&backup_method=' . $commit['db_backup_method'] . '&post_id=' . $id ), 'revert_db', 'revert_db_nonce' );
+	        	$revert_db_nonce = wp_nonce_url( admin_url( 'admin-post.php?action=process_revert&revert_type=db&db_hash=' . $commit['db_hash'] . '&branch=' . $commit['branch'] . '&backup_method=' . $commit['db_backup_method'] . '&post_id=' . $id ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
 	        	$actions['revert_db'] = '<a href="' . $revert_db_nonce . '">' . __( 'Revert Database', 'revisr' ) . '</a>';
 	        }
 
@@ -482,7 +482,7 @@ class Revisr_Commits {
 			<div id="delete-action"></div>
 			<div id="publishing-action">
 				<span class="spinner"></span>
-				<a class="button button-primary thickbox" href="<?php echo $revert_url; ?>">Revert to this Commit</a>
+				<a class="button button-primary thickbox" href="<?php echo $revert_url; ?>" title="<?php _e( 'Revert', 'revisr' ); ?>"><?php _e( 'Revert to this Commit', 'revisr' ); ?></a>
 			</div>
 			<div class="clear"></div>
 		</div>

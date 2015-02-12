@@ -82,8 +82,7 @@ class Revisr_Git_Callback {
 		// Backup the database if necessary
 		if ( isset( $_REQUEST['backup_db'] ) && $_REQUEST['backup_db'] == 'on' ) {
 			$this->revisr->db->backup();
-			$db_hash = $this->revisr->git->run( "log --pretty=format:'%h' -n 1" );
-			add_post_meta( $id, 'db_hash', $db_hash[0] );
+			add_post_meta( $id, 'db_hash', $this->revisr->git->current_commit() );
 			add_post_meta( $id, 'backup_method', 'tables' );
 		}
 		// Log the event.

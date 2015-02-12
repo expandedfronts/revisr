@@ -26,17 +26,28 @@ $styles_url = REVISR_URL . 'assets/css/thickbox.css';
 
 		<p><?php _e( 'Are you sure you want to revert to this commit?', 'revisr' ); ?></p>
 
-		<p>
-			<select name="revert_type">
-				<option><?php _e( 'Revert files', 'revisr' ); ?></option>
-				<option><?php _e( 'Revert database', 'revisr' ); ?></option>
-				<option><?php _e( 'Revert files and database', 'revisr' ); ?></option>
-			</select>
-		</p>
+		<?php if ( $commit['db_hash'] !== '' ): ?>
+			<p>
+				<select name="revert_type">
+					<option value="files"><?php _e( 'Revert files', 'revisr' ); ?></option>
+					<option value="db"><?php _e( 'Revert database', 'revisr' ); ?></option>
+					<option value="files_and_db"><?php _e( 'Revert files and database', 'revisr' ); ?></option>
+				</select>
+			</p>
+			<input type="hidden" name="db_hash" value="<?php echo $commit['db_hash']; ?>" />
+			<input type="hidden" name="backup_method" value="<?php echo $commit['db_backup_method']; ?>" />
+
+		<?php else: ?>
+			<input type="hidden" name="revert_type" value="files" />
+		<?php endif; ?>
 
 		</div>
 
 		<div class="revisr-tb-submit">
+			<input type="hidden" name="branch" value="<?php echo $commit['branch']; ?>" />
+			<input type="hidden" name="commit_hash" value="<?php echo $commit['commit_hash']; ?>" />
+			<input type="hidden" name="action" value="process_revert" />
+			<?php wp_nonce_field( 'revisr_revert_nonce', 'revisr_revert_nonce' ); ?>
 			<button class="revisr-tb-btn revisr-tb-danger" type="submit"><?php _e( 'Revert', 'revisr' ); ?></button><button class="revisr-tb-btn revisr-btn-cancel" onclick="self.parent.tb_remove();return false"><?php _e( 'Cancel', 'revisr' ); ?></button>
 		</div>
 

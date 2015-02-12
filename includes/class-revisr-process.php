@@ -206,7 +206,7 @@ class Revisr_Process {
 	 */
 	public function process_pull() {
 		
-		if ( !wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
 
 			// If auto-pull isn't enabled, we definitely don't want to do this.
 			if ( $this->revisr->git->get_config( 'revisr', 'auto-pull' ) !== 'true' ) {
@@ -270,40 +270,75 @@ class Revisr_Process {
 			$this->revisr->git->push();
 		}
 	}
-	
+
+	/**
+	 * Processes a request to revert, routing to the necessary functions.
+	 * @access public
+	 * @param  string $type What to revert
+	 * @return null
+	 */
+	public function process_revert( $type = '' ) {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
+
+		// Determine how to handle the request.
+		if ( isset( $_REQUEST['revert_type'] ) && $_REQUEST['revert_type'] !== '' ) {
+			$revert_type = $_REQUEST['revert_type'];
+		} else {
+			$revert_type = $type;
+		}
+
+		// Run the action.
+		switch ( $revert_type ) {
+			case 'files':
+				$this->process_revert_files();
+				break;
+			case 'db':
+				$this->revisr->db->restore();
+				break;
+			case 'files_and_db':
+				$this->process_revert_files( false );
+				$this->revisr->db->restore();
+				break;
+			default:
+		}
+	}
+
 	/**
 	 * Processes the request to revert to an earlier commit.
 	 * @access public
 	 */
-	public function process_revert() {
-	    if ( isset( $_GET['revert_nonce'] ) && wp_verify_nonce( $_GET['revert_nonce'], 'revert' ) ) {
+	public function process_revert_files( $redirect = true ) {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
 			
-			$branch 	= $_GET['branch'];
-			$commit 	= $_GET['commit_hash'];			
-			$commit_msg = sprintf( __( 'Reverted to commit: #%s.', 'revisr' ), $commit );
+		$branch 	= $_REQUEST['branch'];
+		$commit 	= $_REQUEST['commit_hash'];			
+		$commit_msg = sprintf( __( 'Reverted to commit: #%s.', 'revisr' ), $commit );
 
-			if ( $branch != $this->revisr->git->branch ) {
-				$this->revisr->git->checkout( $branch );
-			}
+		if ( $branch != $this->revisr->git->branch ) {
+			$this->revisr->git->checkout( $branch );
+		}
 
-			$this->revisr->git->reset( '--hard', 'HEAD', true );
-			$this->revisr->git->reset( '--hard', $commit );
-			$this->revisr->git->reset( '--soft', 'HEAD@{1}' );
-			$this->revisr->git->run( 'add', array( '-A' ) );
-			$this->revisr->git->commit( $commit_msg );
-			$this->revisr->git->auto_push();
-			
-			$post_url = get_admin_url() . "post.php?post=" . $_GET['post_id'] . "&action=edit";
+		$this->revisr->git->reset( '--hard', 'HEAD', true );
+		$this->revisr->git->reset( '--hard', $commit );
+		$this->revisr->git->reset( '--soft', 'HEAD@{1}' );
+		$this->revisr->git->run( 'add', array( '-A' ) );
+		$this->revisr->git->commit( $commit_msg );
+		$this->revisr->git->auto_push();
+		
+		$post_url = get_admin_url() . "post.php?post=" . $_GET['post_id'] . "&action=edit";
 
-			$msg = sprintf( __( 'Reverted to commit <a href="%s">#%s</a>.', 'revisr' ), $post_url, $commit );
-			$email_msg = sprintf( __( '%s was reverted to commit #%s', 'revisr' ), get_bloginfo(), $commit );
-			Revisr_Admin::log( $msg, 'revert' );
-			Revisr_Admin::notify( get_bloginfo() . __( ' - Commit Reverted', 'revisr' ), $email_msg );
+		$msg = sprintf( __( 'Reverted to commit <a href="%s">#%s</a>.', 'revisr' ), $post_url, $commit );
+		$email_msg = sprintf( __( '%s was reverted to commit #%s', 'revisr' ), get_bloginfo(), $commit );
+		Revisr_Admin::log( $msg, 'revert' );
+		Revisr_Admin::notify( get_bloginfo() . __( ' - Commit Reverted', 'revisr' ), $email_msg );
+		
+		if ( true === $redirect ) {
 			$redirect = get_admin_url() . "admin.php?page=revisr";
 			wp_redirect( $redirect );
-		}
-		else {
-			wp_die( __( 'You are not authorized to access this page.', 'revisr' ) );
 		}
 	}
 }
