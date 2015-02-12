@@ -252,6 +252,7 @@ class Revisr_Commits {
 			'cb' 			=> '<input type="checkbox" />',
 			'hash' 			=> __( 'ID', 'revisr' ),
 			'title' 		=> __( 'Commit', 'revisr' ),
+			'author'		=> __( 'Author', 'revisr' ),
 			'branch' 		=> __( 'Branch', 'revisr' ),
 			'tag' 			=> __( 'Tag', 'revisr' ),
 			'files_changed' => __( 'Files Changed', 'revisr' ),
