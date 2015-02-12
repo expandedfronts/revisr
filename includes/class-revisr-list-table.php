@@ -16,29 +16,38 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // Prevent PHP notices from breaking AJAX.
 error_reporting( ~E_NOTICE );
 
-/**
- * Includes WP_List_Table if not already loaded. If it's not,
- * then we also probably need template.php and screen.php.
- */
+// Include WP_List_Table if it isn't already loaded.
 if ( ! class_exists( 'WP_List_Table' ) ) {
-	if( ! class_exists( 'WP_Screen' ) ) {
-		require_once( ABSPATH . '/wp-admin/includes/template.php' );
-		require_once( ABSPATH . '/wp-admin/includes/screen.php' );
-	}
 	require_once( ABSPATH . '/wp-admin/includes/class-wp-list-table.php' );
 }
 
 class Revisr_List_Table extends WP_List_Table {
 
 	/**
-	 * Initiate the class and the WP_List_Table parent class.
+	 * The main Revisr instance.
+	 * @var Revisr
+	 */
+	protected $revisr;
+
+	/**
+	 * Initiate the class and add necessary action hooks.
 	 * @access public
 	 */
-	public function __construct() {
+	public function __construct(){
+		$this->revisr = Revisr::get_instance();
+		add_action( 'load-' . $this->revisr->admin->page_hooks['dashboard'], array( $this, 'load' ) );
+		add_action( 'wp_ajax_revisr_get_custom_list', array( $this, 'ajax_callback' ) );
+	}
+
+	/**
+	 * Construct the parent class.
+	 * @access public
+	 */
+	public function load() {
 		global $status, $page;
 
 		parent::__construct( array(
-			'singular'	=> 'activity',
+			'singular' 	=> 'activity',
 			'plural'	=> 'activity',
 			'ajax'		=> true
 		) );
@@ -201,6 +210,7 @@ class Revisr_List_Table extends WP_List_Table {
 	 * @access public
 	 */
 	public function ajax_callback() {
+		$this->load();
 		$this->ajax_response();
 	}
 

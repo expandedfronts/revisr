@@ -97,6 +97,7 @@ class Revisr_Commits {
 			add_meta_box( 'revisr_save_commit', __( 'Save Commit', 'revisr' ), array( $this, 'save_commit_meta' ), 'revisr_commits', 'side', 'core' );
 			remove_meta_box( 'submitdiv', 'revisr_commits', 'side' );
 		}
+		remove_meta_box( 'authordiv', 'revisr_commits', 'normal' );
 	}
 
 	/**

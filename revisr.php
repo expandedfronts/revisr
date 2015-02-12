@@ -265,7 +265,6 @@ class Revisr {
 		add_action( 'wp_ajax_ajax_button_count', array( self::$instance->admin, 'ajax_button_count' ) );
 		add_action( 'wp_ajax_view_diff', array( self::$instance->admin, 'view_diff' ) );
 		add_action( 'wp_ajax_verify_remote', array( self::$instance->git, 'verify_remote' ) );
-		add_action( 'wp_ajax_revisr_get_custom_list', array( self::$instance->list_table, 'ajax_callback' ) );
 
 		// Load the thickbox forms used by Revisr.
 		add_action( 'admin_post_delete_branch_form', array( self::$instance->admin, 'delete_branch_form' ) );
@@ -367,7 +366,7 @@ class Revisr {
  * @return 	object
  */
 function revisr() {
-	return Revisr::get_instance();
+	//return Revisr::get_instance();
 }
 
 // Runs the plugin.
