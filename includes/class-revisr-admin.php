@@ -38,8 +38,6 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function __construct() {
-		global $wpdb;
-		$this->wpdb 	= $wpdb;
 		$this->options 	= Revisr::get_options();
 		$this->revisr 	= Revisr::get_instance();
 	}

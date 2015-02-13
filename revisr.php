@@ -139,7 +139,7 @@ class Revisr {
 			if ( function_exists( 'spl_autoload_register' ) ) {
 				spl_autoload_register( array( __CLASS__, 'autoload' ) );
 			} else {
-				self::$instance->load_dependancies();
+				self::$instance->load_dependencies();
 			}
 			
 			self::$instance->set_locale();
