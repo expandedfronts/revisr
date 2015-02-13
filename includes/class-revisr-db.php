@@ -65,13 +65,12 @@ class Revisr_DB {
 		global $wpdb;
 		$this->revisr 		= Revisr::get_instance();
 		$this->wpdb 		= $wpdb;
-		$this->git 			= $this->revisr->git;
 		$this->upload_dir 	= wp_upload_dir();
 		$this->backup_dir	= $this->upload_dir['basedir'] . '/revisr-backups/';
 		$this->options 		= Revisr::get_options();
 
-		if ( $this->git->get_config( 'revisr', 'mysql-path' ) ) {
-			$this->path = $this->git->get_config( 'revisr', 'mysql-path' );
+		if ( $this->revisr->git->get_config( 'revisr', 'mysql-path' ) ) {
+			$this->path = $this->revisr->git->get_config( 'revisr', 'mysql-path' );
 		} else {
 			$this->path = '';
 		}
@@ -182,7 +181,7 @@ class Revisr_DB {
 	 * @return array
 	 */
 	public function get_tracked_tables() {
-		$stored_tables = $this->git->run( 'config', array( '--get-all', 'revisr.tracked-tables' ) );
+		$stored_tables = $this->revisr->git->run( 'config', array( '--get-all', 'revisr.tracked-tables' ) );
 		if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'all_tables' ) {
 			$tracked_tables = $this->get_tables();
 		} elseif ( is_array( $stored_tables ) ) {
@@ -233,7 +232,7 @@ class Revisr_DB {
 	 * @param  string $table The table to add.
 	 */
 	private function add_table( $table ) {
-		$this->git->run( 'add', array( $this->backup_dir . 'revisr_' . $table. '.sql' ) );
+		$this->revisr->git->run( 'add', array( $this->backup_dir . 'revisr_' . $table. '.sql' ) );
 	}
 
 	/**
@@ -294,7 +293,7 @@ class Revisr_DB {
 	 */
 	public function commit_db( $insert_post = false ) {
 		$commit_msg  = __( 'Backed up the database with Revisr.', 'revisr' );
-		$this->git->commit( $commit_msg );
+		$this->revisr->git->commit( $commit_msg );
 		// Insert the corresponding post if necessary.
 		if ( $insert_post === true ) {
 			$post = array(
@@ -304,16 +303,16 @@ class Revisr_DB {
 				'post_status' 	=> 'publish',
 			);
 			$post_id 		= wp_insert_post( $post );
-			$commit_hash 	= $this->git->current_commit();
+			$commit_hash 	= $this->revisr->git->current_commit();
 			add_post_meta( $post_id, 'commit_hash', $commit_hash );
 			add_post_meta( $post_id, 'db_hash', $commit_hash );
 			add_post_meta( $post_id, 'backup_method', 'tables' );
-			add_post_meta( $post_id, 'branch', $this->git->branch );
+			add_post_meta( $post_id, 'branch', $this->revisr->git->branch );
 			add_post_meta( $post_id, 'files_changed', '0' );
 			add_post_meta( $post_id, 'committed_files', array() );
 		}
 		// Push changes if necessary.
-		$this->git->auto_push();
+		$this->revisr->git->auto_push();
 	}
 
 	/**
@@ -329,7 +328,7 @@ class Revisr_DB {
 			$tracked_tables = $this->get_tracked_tables();
 			$new_tables 	= $this->get_tables_not_in_db();
 			$all_tables		= array_unique( array_merge( $new_tables, $tracked_tables ) );
-			$replace_url 	= $this->git->get_config( 'revisr', 'dev-url' ) ? $this->git->get_config( 'revisr', 'dev-url' ) : '';
+			$replace_url 	= $this->revisr->git->get_config( 'revisr', 'dev-url' ) ? $this->revisr->git->get_config( 'revisr', 'dev-url' ) : '';
 			
 			if ( ! empty( $new_tables ) ) {
 				// If there are new tables that were imported.
@@ -436,12 +435,12 @@ class Revisr_DB {
 			Revisr_Admin::log( $msg, 'error' );
 			Revisr_Admin::alert( $msg, true );
 		} else {
-			$get_hash 	= $this->git->run( 'config', array( 'revisr.last-db-backup' ) );
+			$get_hash 	= $this->revisr->git->run( 'config', array( 'revisr.last-db-backup' ) );
 			$revert_url = '';
 			if ( is_array( $get_hash ) ) {
 				$undo_hash 	= $get_hash[0];
-				$revert_url = '<a href="' .wp_nonce_url( admin_url( "admin-post.php?action=revert_db&db_hash=$undo_hash&branch={$this->git->branch}&backup_method=tables" ), 'revert_db', 'revert_db_nonce' ) . '">' . __( 'Undo', 'revisr') . '</a>';
-				$this->git->run( 'config', array( '--unset', 'revisr.last-db-backup' ) );
+				$revert_url = '<a href="' .wp_nonce_url( admin_url( "admin-post.php?action=revert_db&db_hash=$undo_hash&branch={$this->revisr->git->branch}&backup_method=tables" ), 'revert_db', 'revert_db_nonce' ) . '">' . __( 'Undo', 'revisr') . '</a>';
+				$this->revisr->git->run( 'config', array( '--unset', 'revisr.last-db-backup' ) );
 			}
 			$msg = sprintf( __( 'Successfully imported the database. %s', 'revisr'), $revert_url );
 			Revisr_Admin::log( $msg, 'import' );
@@ -461,8 +460,8 @@ class Revisr_DB {
 
 		$commit = $_REQUEST['db_hash'];
 		$branch = $_REQUEST['branch'];
-		if ( $branch != $this->git->branch ) {
-			$this->git->checkout( $branch );
+		if ( $branch != $this->revisr->git->branch ) {
+			$this->revisr->git->checkout( $branch );
 		}
 
 		/**
@@ -470,7 +469,7 @@ class Revisr_DB {
 		 * in memory so we can use it to create the revert link later.
 		 */
 		$this->backup();
-		$current_temp = $this->git->current_commit();
+		$current_temp = $this->revisr->git->current_commit();
 
 		if ( isset( $_REQUEST['backup_method'] ) && $_REQUEST['backup_method'] == 'tables' ) {
 			// Import the tables, one by one, running a search/replace if necessary.
@@ -487,10 +486,10 @@ class Revisr_DB {
 			clearstatcache();
 
 			// Checkout the old SQL file and import it.
-			$checkout = $this->git->run( 'checkout', array( $commit, "{$this->upload_dir['basedir']}/revisr_db_backup.sql" ) );
+			$checkout = $this->revisr->git->run( 'checkout', array( $commit, "{$this->upload_dir['basedir']}/revisr_db_backup.sql" ) );
 			if ( $checkout !== 1 ) {
 				exec( "{$this->path}mysql {$this->conn} < {$this->upload_dir['basedir']}/revisr_db_backup.sql" );
-				$this->git->run( 'checkout', array( "{$this->git->branch} {$this->upload_dir['basedir']}/revisr_db_backup.sql" ) );
+				$this->revisr->git->run( 'checkout', array( "{$this->revisr->git->branch} {$this->upload_dir['basedir']}/revisr_db_backup.sql" ) );
 			} else {
 				wp_die( __( 'Failed to revert the database to an earlier commit.', 'revisr' ) );
 			}
@@ -518,7 +517,7 @@ class Revisr_DB {
 	 * @return boolean
 	 */
 	private function revert_table( $table, $commit ) {
-		$checkout = $this->git->run( 'checkout', array( $commit, "{$this->backup_dir}revisr_$table.sql" ) );
+		$checkout = $this->revisr->git->run( 'checkout', array( $commit, "{$this->backup_dir}revisr_$table.sql" ) );
 		return $checkout;
 	}
 

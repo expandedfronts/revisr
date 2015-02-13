@@ -54,14 +54,19 @@ class Revisr_Cron {
 	 * @access public
 	 */
 	public function run_automatic_backup() {
-		$date 			= date("F j, Y");
-		$files 			= $this->revisr->git->status();
-		$backup_type 	= ucfirst( $this->options['automatic_backups'] );
-		$commit_msg 	= sprintf( __( '%s backup - %s', 'revisr' ), $backup_type, $date );
+		$this->revisr->git 	= new Revisr_Git();
+		$this->revisr->db 	= new Revisr_DB();
+		
+		$date 				= date("F j, Y");
+		$files 				= $this->revisr->git->status();
+		$backup_type 		= ucfirst( $this->options['automatic_backups'] );
+		$commit_msg 		= sprintf( __( '%s backup - %s', 'revisr' ), $backup_type, $date );
+		
 		// In case there are no files to commit.
 		if ( $files == false ) {
 			$files = array();
 		}
+		
 		$this->revisr->git->stage_files( $files );
 		$this->revisr->git->commit( $commit_msg );
 		$post = array(

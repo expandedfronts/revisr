@@ -26,14 +26,6 @@ class RevisrTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests check_compatibility().
-	 */
-	function test_check_compatibility() {
-		$compatibility = $this->revisr->check_compatibility();
-		$this->assertEquals( true, $compatibility );
-	}
-
-	/**
 	 * Tests get_table_name().
 	 */
 	function test_get_table_name() {
