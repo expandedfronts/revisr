@@ -25,15 +25,6 @@ class RevisrGitTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests for the current Git version.
-	 * Expects string containing "git".
-	 */
-	function test_version() {
-		$version = $this->revisr->git->version();
-		$this->assertStringStartsWith( 'git', $version );
-	}
-
-	/**
 	 * Tests the init function.
 	 */
 	function test_init_repo() {
@@ -47,9 +38,26 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests setting the Git username.
 	 */
 	function test_config() {
+		// Set the Git username and email address.
 		$this->revisr->git->set_config( 'user', 'name', 'revisr' );
-		$current_user = $this->revisr->git->get_config( 'user', 'name' );
+		$this->revisr->git->set_config( 'user', 'email', 'support@expandedfronts.com' );
+		
+		// Grab the values via get_config().
+		$current_user 	= $this->revisr->git->get_config( 'user', 'name' );
+		$current_email 	= $this->revisr->git->get_config( 'user', 'email' );
+		
 		$this->assertEquals( 'revisr', $current_user );
+		$this->assertEquals( 'support@expandedfronts.com', $current_email );
+	}
+
+
+	/**
+	 * Tests for the current Git version.
+	 * Expects string containing "git".
+	 */
+	function test_version() {
+		$version = $this->revisr->git->version();
+		$this->assertStringStartsWith( 'git', $version );
 	}
 
 	/**

@@ -19,11 +19,7 @@ before_script:
     - git init .
     - git config user.name "revisr"
     - git config user.email "support@expandedfronts.com"
-    - git config -l
-    - ls
     - cd /home/travis/build/ExpandedFronts/Revisr/
-    - git config -l
-    - ls
 
 script: phpunit --coverage-clover=coverage.clover
 
