@@ -111,8 +111,8 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests deleting a branch.
 	 */
 	function test_delete_branch() {
-		$this->revisr->git->delete_branch( 'testbranch' );
-		$this->revisr->git->delete_branch( 'deletethisbranch' );
+		$this->revisr->git->delete_branch( 'testbranch', false );
+		$this->revisr->git->delete_branch( 'deletethisbranch', false );
 		$is_branch = $this->revisr->git->is_branch( 'deletethisbranch' );
 		$this->assertEquals( false, $is_branch );
 	}
@@ -154,12 +154,41 @@ class RevisrGitTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test the current_remote() method. Expects origin since we haven't changed it.
+	 */
+	function test_current_remote() {
+		$remote = $this->revisr->git->current_remote();
+		$this->assertEquals( 'origin', $remote );
+	}
+
+	/**
+	 * Tests the get_status() method.
+	 */
+	function test_get_status() {
+		$test_modified 	= Revisr_Git::get_status( 'MM' );
+		$test_deleted 	= Revisr_Git::get_status( 'DD' );
+		$test_added 	= Revisr_Git::get_status( 'AA' );
+		$test_renamed 	= Revisr_Git::get_status( 'RR' );
+		$test_untracked = Revisr_Git::get_status( '??' );
+		$test_invalid 	= Revisr_Git::get_status( '$$' );
+		
+		$this->assertEquals( 'Modified', $test_modified );
+		$this->assertEquals( 'Deleted', $test_deleted );
+		$this->assertEquals( 'Added', $test_added );
+		$this->assertEquals( 'Renamed', $test_renamed );
+		$this->assertEquals( 'Untracked', $test_untracked );
+		$this->assertFalse( $test_invalid );
+
+	}
+
+	/**
 	 * Tests the tag() function.
 	 */
 	function test_tag() {
-		$this->revisr->git->tag( 'v1.0' );
-		$tags 	= $this->revisr->git->run( 'tag', array() );
-		$this->assertContains( 'v', $tags[0] );
-		$this->revisr->git->tag( '-d v1.0' );
+		$time = time();
+		$this->revisr->git->tag( $time );
+		$tags = serialize( $this->revisr->git->run( 'tag', array() ) );
+		$this->assertContains( "$time", $tags );
+		$this->revisr->git->run( 'tag', array( '-d', $time ) );
 	}
 }

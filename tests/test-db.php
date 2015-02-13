@@ -40,12 +40,37 @@ class RevisrDBTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests the setup_env() method.
+	 */
+	function test_setup_env() {
+		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/.htaccess' );
+		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/index.php' );
+	}
+
+	/**
+	 * Tests the get_tables() method.
+	 */
+	function test_get_tables() {
+		$tables = serialize( $this->revisr->db->get_tables() );
+		$this->assertContains( '_posts', $tables );
+		$this->assertContains( '_revisr', $tables );
+
+	}
+
+	/**
+	 * Tests the get_tables_not_in_db() method.
+	 */
+	function test_get_tables_not_in_db() {
+		file_put_contents( ABSPATH . 'wp-content/uploads/revisr-backups/revisr_faketable.sql', 'test' );
+		$tables = serialize( $this->revisr->db->get_tables_not_in_db() );
+		$this->assertContains( 'faketable', $tables );
+	}
+
+	/**
 	 * Tests a database backup.
 	 */
 	function test_backup() {
 		$this->revisr->db->backup();
-		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/.htaccess' );
-		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/index.php' );
 		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/revisr_wptests_posts.sql' );
 	}
 

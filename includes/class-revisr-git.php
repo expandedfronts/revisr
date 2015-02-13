@@ -175,7 +175,7 @@ class Revisr_Git {
 	 * @param string $branch The branch to checkout.
 	 */
 	public function checkout( $branch ) {
-		$this->run( 'checkout', array( $branch ), __FUNCTION__ );
+		$this->run( 'checkout', array( $branch, '-q' ), __FUNCTION__ );
 	}
 
 	/**
@@ -314,10 +314,15 @@ class Revisr_Git {
 	/**
 	 * Deletes a branch.
 	 * @access public
-	 * @param  string $branch The branch to delete.
+	 * @param  string 	$branch 	The branch to delete.
+	 * @param  boolean 	$redirect 	Whether or not to redirect on completion.
 	 */
-	public function delete_branch( $branch ) {
-		$deletion = $this->run( 'branch', array( '-D', $branch ), __FUNCTION__, $branch );
+	public function delete_branch( $branch, $redirect = true ) {
+		if ( $redirect === false ) {
+			$deletion = $this->run( 'branch', array( '-D', $branch ) );
+		} else {
+			$deletion = $this->run( 'branch', array( '-D', $branch ), __FUNCTION__, $branch );
+		}
 		return $deletion;
 	}
 
