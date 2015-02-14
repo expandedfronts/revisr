@@ -99,7 +99,22 @@ class Revisr_Commits {
 		}
 		remove_meta_box( 'authordiv', 'revisr_commits', 'normal' );
 	}
+	
+	/**
+	 * Custom title message for the revisr_commits custom post type.
+	 * @access public
+	 * @return string
+	 */
+	public function custom_enter_title( $input ) {
+	    global $post_type;
 
+	    if ( is_admin() && 'revisr_commits' == $post_type ) {
+	        return __( 'Enter a message for your commit', 'revisr' );
+	    }
+
+	    return $input;
+	}
+	
 	/**
 	 * Custom messages for commits.
 	 * @access public

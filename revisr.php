@@ -251,6 +251,7 @@ class Revisr {
 		add_action( 'wp_ajax_pending_files', array( self::$instance->commits, 'pending_files' ) );
 		add_action( 'load-post.php', array( self::$instance->commits, 'post_meta' ) );
 		add_action( 'load-post-new.php', array( self::$instance->commits, 'post_meta' ) );
+		add_filter( 'enter_title_here', array( self::$instance->commits, 'custom_enter_title' ) );
 
 		// Enqueue styles and scripts.
 		add_action( 'admin_enqueue_scripts', array( self::$instance->admin, 'revisr_scripts' ) );
