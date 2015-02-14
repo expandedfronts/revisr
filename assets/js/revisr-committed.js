@@ -1,7 +1,3 @@
-function revert() {
-
-}
-
 jQuery(document).on("dblclick", ".committed", function (event) {
     var pending = event.target.value;
     var commit 	= document.getElementById('commit_hash').value;
