@@ -354,6 +354,36 @@ class Revisr_Admin {
 	}
 
 	/**
+	 * Processes a view status request.
+	 * @access public
+	 */
+	public function view_status() {
+		?>
+		<html>
+		<head>
+		<title><?php _e( 'View Status', 'revisr' ); ?></title>
+		</head>
+		<body>
+		<?php
+			$status = $this->revisr->git->run( 'status', array() );
+
+			if ( is_array( $status ) ) {
+				echo '<pre>';
+				foreach ( $status as $line ) {
+					echo $line . PHP_EOL;
+				}
+				echo '</pre>';
+			} else {
+				_e( 'Error retrieving the status of the repository.', 'revisr' );
+			}
+		?>
+		</body>
+		</html>
+		<?php
+		exit();
+	}
+
+	/**
 	 * Updates user settings to be compatible with 1.8.
 	 * @access public
 	 */

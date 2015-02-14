@@ -199,3 +199,6 @@ th[id=message] {
 #post-hook-input {
 	width: 35em;
 }
+#revisr-debug-table {
+	max-width: 750px;
+}

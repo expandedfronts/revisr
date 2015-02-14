@@ -51,7 +51,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		            settings_fields( 'revisr_database_settings' );   
 	            	do_settings_sections( 'revisr_database_settings' );
 	            }
-	            submit_button(); 
+
+	            if ( $active_tab !== 'help' ) {
+	            	submit_button(); 
+	            }
 		    ?>
 		</form>
 	</div>
