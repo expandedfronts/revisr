@@ -177,14 +177,15 @@ class Revisr {
 		require_once REVISR_PATH . 'includes/class-revisr-db.php';
 		require_once REVISR_PATH . 'includes/class-revisr-git-callback.php';
 		require_once REVISR_PATH . 'includes/class-revisr-cron.php';
-		require_once REVISR_PATH . 'includes/class-revisr-process.php';
 		
 		// Classes that should only be loaded for admins.
 		if ( current_user_can( 'install_plugins' ) && is_admin() ) {
+			require_once REVISR_PATH . 'includes/class-revisr-compatibility.php';
+			require_once REVISR_PATH . 'includes/class-revisr-process.php';
 			require_once REVISR_PATH . 'includes/class-revisr-list-table.php';
 			require_once REVISR_PATH . 'includes/class-revisr-commits.php';
 			require_once REVISR_PATH . 'includes/class-revisr-settings.php';
-			require_once REVISR_PATH . 'includes/class-revisr-settings-fields.php';	
+			require_once REVISR_PATH . 'includes/class-revisr-settings-fields.php';
 		}
 	}
 
@@ -221,7 +222,7 @@ class Revisr {
 		$cron = new Revisr_Cron();
 		add_filter( 'cron_schedules', array( $cron, 'revisr_schedules' ) );
 		add_action( 'revisr_cron', array( $cron, 'run_automatic_backup' ) );
-		add_action( 'admin_post_nopriv_revisr_update', array( self::$instance->process, 'process_pull' ) );
+		add_action( 'admin_post_nopriv_revisr_update', array( $cron, 'run_autopull' ) );
 	}
 
 	/**

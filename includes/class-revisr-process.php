@@ -205,17 +205,8 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_pull() {
-		
 		if ( ! wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
-
-			// If auto-pull isn't enabled, we definitely don't want to do this.
-			if ( $this->revisr->git->get_config( 'revisr', 'auto-pull' ) !== 'true' ) {
-				wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-			}
-
-			// If it is enabled, authenticate the token.
-			$remote = new Revisr_Remote();
-			$remote->check_token();
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
 
 		$this->revisr->git->reset();

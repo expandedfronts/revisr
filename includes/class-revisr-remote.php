@@ -13,7 +13,20 @@
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Revisr_Remote extends Revisr_Admin {
+class Revisr_Remote {
+
+	/**
+	 * The current Revisr instance.
+	 */
+	protected $revisr;
+
+	/**
+	 * Initiates the class and grabs the Revisr instance.
+	 * @access public
+	 */
+	public function __construct() {
+		$this->revisr = Revisr::get_instance();
+	}
 
 
 	/**
