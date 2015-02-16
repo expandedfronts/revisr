@@ -1,194 +1,179 @@
-# Copyright (C) 2014 Revisr
+# Copyright (C) 2015 Revisr
 # This file is distributed under the same license as the Revisr package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Revisr 1.8.2\n"
-"Report-Msgid-Bugs-To: http://wordpress.org/tag/revisr\n"
-"POT-Creation-Date: 2014-12-16 08:32:11+00:00\n"
+"Project-Id-Version: Revisr 1.9\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/revisr\n"
+"POT-Creation-Date: 2015-02-16 07:52:34+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2014-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: assets/partials/delete-branch-form.php:13
+#: assets/partials/delete-branch-form.php:17
 msgid ""
 "Are you sure you want to delete this branch?<br>This will delete all local "
-"work on branch <strong>%s</strong>"
+"work on branch <strong>%s</strong>."
 msgstr ""
 
-#: assets/partials/delete-branch-form.php:20
+#: assets/partials/delete-branch-form.php:28
 msgid "Also delete this branch from the remote repository."
 msgstr ""
 
-#: assets/partials/delete-branch-form.php:24 templates/branches.php:78
+#: assets/partials/delete-branch-form.php:34 templates/branches.php:90
 msgid "Delete Branch"
 msgstr ""
 
-#: assets/partials/import-tables-form.php:20
+#: assets/partials/delete-branch-form.php:34
+#: assets/partials/import-tables-form.php:38 assets/partials/merge-form.php:34
+#: assets/partials/revert-form.php:53
+msgid "Cancel"
+msgstr ""
+
+#: assets/partials/import-tables-form.php:28
 msgid ""
 "The following new tables were added to the repository, but not automatically "
 "imported due to your tracking settings. Check any tables that you'd like to "
 "import and click \"Import\" to continue."
 msgstr ""
 
-#: assets/partials/import-tables-form.php:28
+#: assets/partials/import-tables-form.php:38
 msgid "Import"
 msgstr ""
 
-#: assets/partials/merge-form.php:13
+#: assets/partials/merge-form.php:17
 msgid ""
 "This will merge changes from branch <strong>%s</strong> into the current "
 "branch. In the event of conflicts, Revisr will keep the version from the "
 "branch being merged in."
 msgstr ""
 
-#: assets/partials/merge-form.php:20
+#: assets/partials/merge-form.php:28
 msgid "Import tracked database tables"
 msgstr ""
 
-#: assets/partials/merge-form.php:24 templates/branches.php:77
+#: assets/partials/merge-form.php:34 templates/branches.php:89
 msgid "Merge Branch"
 msgstr ""
 
-#: includes/class-revisr-admin-setup.php:71
+#: assets/partials/revert-form.php:27
+msgid "Are you sure you want to revert to this commit?"
+msgstr ""
+
+#: assets/partials/revert-form.php:32
+msgid "Revert files"
+msgstr ""
+
+#: assets/partials/revert-form.php:33
+msgid "Revert database"
+msgstr ""
+
+#: assets/partials/revert-form.php:34
+msgid "Revert files and database"
+msgstr ""
+
+#: assets/partials/revert-form.php:53 includes/class-revisr-commits.php:507
+msgid "Revert"
+msgstr ""
+
+#: includes/class-revisr-admin.php:86
 msgid "Please enter a message for your commit."
 msgstr ""
 
-#: includes/class-revisr-admin-setup.php:72
+#: includes/class-revisr-admin.php:87
 msgid ""
 "Nothing was added to the commit. Please use the section below to add files "
 "to use in the commit."
 msgstr ""
 
-#: includes/class-revisr-admin-setup.php:73
+#: includes/class-revisr-admin.php:88
 msgid ""
 "There was an error committing the files. Make sure that your Git username "
 "and email is set, and that Revisr has write permissions to the \".git\" "
 "directory."
 msgstr ""
 
-#: includes/class-revisr-admin-setup.php:74
-#: includes/class-revisr-admin.php:174
+#: includes/class-revisr-admin.php:89 includes/class-revisr-admin.php:323
 msgid "View Diff"
 msgstr ""
 
-#: includes/class-revisr-admin-setup.php:102
-msgid "Committed Files"
+#: includes/class-revisr-admin.php:120 includes/class-revisr-admin.php:121
+msgid "Dashboard"
 msgstr ""
 
-#: includes/class-revisr-admin-setup.php:105
-msgid "Stage Changes"
+#: includes/class-revisr-admin.php:121 templates/dashboard.php:34
+msgid "Revisr - Dashboard"
 msgstr ""
 
-#: includes/class-revisr-admin-setup.php:106
-msgid "Add Tag"
+#: includes/class-revisr-admin.php:122 templates/branches.php:20
+msgid "Revisr - Branches"
 msgstr ""
 
-#: includes/class-revisr-admin-setup.php:118
-msgid "Tag Name:"
+#: includes/class-revisr-admin.php:122 templates/dashboard.php:71
+msgid "Branches"
 msgstr ""
 
-#: includes/class-revisr-admin-setup.php:201
+#: includes/class-revisr-admin.php:123 templates/settings.php:17
+msgid "Revisr - Settings"
+msgstr ""
+
+#: includes/class-revisr-admin.php:123 revisr.php:358
+msgid "Settings"
+msgstr ""
+
+#: includes/class-revisr-admin.php:165
 msgid "%s Untracked File"
 msgid_plural "%s Untracked Files"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-revisr-admin-setup.php:252
-msgid "%s ago"
+#: includes/class-revisr-admin.php:236 includes/class-revisr-admin.php:237
+#: includes/class-revisr-git-callback.php:318
+msgid "Unknown"
 msgstr ""
 
-#: includes/class-revisr-admin-setup.php:260
-msgid ""
-"<p id=\"revisr_activity_no_results\">Your recent activity will show up here."
-"</p>"
-msgstr ""
-
-#: includes/class-revisr-admin-setup.php:317
-msgid "Sponsored by"
-msgstr ""
-
-#: includes/class-revisr-admin.php:139
+#: includes/class-revisr-admin.php:287
 msgid "<a href=\"%s\">Click here</a> for more details."
 msgstr ""
 
-#: includes/class-revisr-admin.php:158
+#: includes/class-revisr-admin.php:306
 msgid ""
 "<div class=\"revisr-alert updated\"><p>There are currently no untracked "
 "files on branch %s."
 msgstr ""
 
-#: includes/class-revisr-admin.php:161
+#: includes/class-revisr-admin.php:309
 msgid ""
 "<div class=\"revisr-alert updated\"><p>There are currently %s untracked "
 "files on branch %s. <a href=\"%s\">Commit</a> your changes to save them.</"
 "p></div>"
 msgstr ""
 
-#: includes/class-revisr-admin.php:194
-msgid "Failed to render the diff."
+#: includes/class-revisr-admin.php:348
+msgid "Oops! Revisr ran into an error rendering the diff."
 msgstr ""
 
-#: includes/class-revisr-admin.php:211
-msgid ""
-"There are <strong>%s</strong> untracked files that can be added to this "
-"commit on branch <strong>%s</strong>."
+#: includes/class-revisr-admin.php:365
+msgid "View Status"
 msgstr ""
 
-#: includes/class-revisr-admin.php:213
-msgid ""
-"Use the boxes below to select the files to include in this commit. Only "
-"files in the \"Staged Files\" section will be included.<br>Double-click "
-"files marked as \"Modified\" to view the changes to the file.<br><br>"
+#: includes/class-revisr-admin.php:378
+msgid "Error retrieving the status of the repository."
 msgstr ""
 
-#: includes/class-revisr-admin.php:214
-msgid "Backup database?"
-msgstr ""
-
-#: includes/class-revisr-admin.php:220
-msgid "Staged Files"
-msgstr ""
-
-#: includes/class-revisr-admin.php:233
-msgid "Unstage Selected"
-msgstr ""
-
-#: includes/class-revisr-admin.php:235
-msgid "Unstage All"
-msgstr ""
-
-#: includes/class-revisr-admin.php:241
-msgid "Unstaged Files"
-msgstr ""
-
-#: includes/class-revisr-admin.php:245
-msgid "Stage Selected"
-msgstr ""
-
-#: includes/class-revisr-admin.php:247
-msgid "Stage All"
-msgstr ""
-
-#: includes/class-revisr-admin.php:272
-msgid ""
-"<br><strong>%s</strong> files were included in this commit. Double-click "
-"files marked as \"Modified\" to view the changes in a diff."
-msgstr ""
-
-#: includes/class-revisr-admin.php:283
-msgid "No files were included in this commit."
+#: includes/class-revisr-admin.php:436
+msgid "Sponsored by"
 msgstr ""
 
 #: includes/class-revisr-commits.php:38 includes/class-revisr-commits.php:40
-#: includes/class-revisr-commits.php:42 templates/branches.php:43
-#: templates/branches.php:90
+#: includes/class-revisr-commits.php:42 templates/branches.php:51
+#: templates/branches.php:102
 msgid "Commits"
 msgstr ""
 
-#: includes/class-revisr-commits.php:39 includes/class-revisr-commits.php:250
+#: includes/class-revisr-commits.php:39 includes/class-revisr-commits.php:270
 msgid "Commit"
 msgstr ""
 
@@ -224,377 +209,531 @@ msgstr ""
 msgid "Commits made through Revisr"
 msgstr ""
 
-#: includes/class-revisr-commits.php:92 includes/class-revisr-commits.php:95
+#: includes/class-revisr-commits.php:90
+msgid "Committed Files"
+msgstr ""
+
+#: includes/class-revisr-commits.php:91
+msgid "Commit Details"
+msgstr ""
+
+#: includes/class-revisr-commits.php:95
+msgid "Stage Changes"
+msgstr ""
+
+#: includes/class-revisr-commits.php:96
+msgid "Add Tag"
+msgstr ""
+
+#: includes/class-revisr-commits.php:97
+msgid "Save Commit"
+msgstr ""
+
+#: includes/class-revisr-commits.php:112
+msgid "Enter a message for your commit"
+msgstr ""
+
+#: includes/class-revisr-commits.php:127 includes/class-revisr-commits.php:130
 msgid "Commit updated."
 msgstr ""
 
-#: includes/class-revisr-commits.php:93
+#: includes/class-revisr-commits.php:128
 msgid "Custom field updated."
 msgstr ""
 
-#: includes/class-revisr-commits.php:94
+#: includes/class-revisr-commits.php:129
 msgid "Custom field deleted."
 msgstr ""
 
 #. translators: %s: date and time of the revision
-#: includes/class-revisr-commits.php:97
+#: includes/class-revisr-commits.php:132
 msgid "Commit restored to revision from %s"
 msgstr ""
 
-#: includes/class-revisr-commits.php:98
+#: includes/class-revisr-commits.php:133
 msgid "Committed files on branch <strong>%s</strong>."
 msgstr ""
 
-#: includes/class-revisr-commits.php:99
+#: includes/class-revisr-commits.php:134
 msgid "Commit saved."
 msgstr ""
 
-#: includes/class-revisr-commits.php:100
+#: includes/class-revisr-commits.php:135
 msgid "Commit submitted."
 msgstr ""
 
-#: includes/class-revisr-commits.php:102
+#: includes/class-revisr-commits.php:137
 msgid "Commit scheduled for: <strong>%1$s</strong>."
 msgstr ""
 
 #. translators: Publish box date format, see http:php.net/date
-#: includes/class-revisr-commits.php:104
+#: includes/class-revisr-commits.php:139 includes/class-revisr-commits.php:466
 msgid "M j, Y @ G:i"
 msgstr ""
 
-#: includes/class-revisr-commits.php:106
+#: includes/class-revisr-commits.php:141
 msgid "Commit draft updated."
 msgstr ""
 
-#: includes/class-revisr-commits.php:119
+#: includes/class-revisr-commits.php:154
 msgid "%s commit updated."
 msgid_plural "%s commits updated."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-revisr-commits.php:120
+#: includes/class-revisr-commits.php:155
 msgid "%s commit not updated, somebody is editing it."
 msgid_plural "%s commits not updated, somebody is editing them."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-revisr-commits.php:121
+#: includes/class-revisr-commits.php:156
 msgid "%s commit permanently deleted."
 msgid_plural "%s commits permanently deleted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-revisr-commits.php:122
+#: includes/class-revisr-commits.php:157
 msgid "%s commit moved to the Trash."
 msgid_plural "%s commits moved to the Trash."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-revisr-commits.php:123
+#: includes/class-revisr-commits.php:158
 msgid "%s commit restored from the Trash."
 msgid_plural "%s commits restored from the Trash."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-revisr-commits.php:143
+#: includes/class-revisr-commits.php:182
 msgid "View"
 msgstr ""
 
-#: includes/class-revisr-commits.php:149
+#: includes/class-revisr-commits.php:184
 msgid "Revert Files"
 msgstr ""
 
-#: includes/class-revisr-commits.php:160
+#: includes/class-revisr-commits.php:189
 msgid "Revert Database"
 msgstr ""
 
-#: includes/class-revisr-commits.php:208
+#: includes/class-revisr-commits.php:238
 msgid "<a href=\"%s\"%s>All Branches <span class=\"count\">(%d)</span></a>"
 msgstr ""
 
-#: includes/class-revisr-commits.php:249
+#: includes/class-revisr-commits.php:269
 msgid "ID"
 msgstr ""
 
-#: includes/class-revisr-commits.php:251 templates/branches.php:42
-#: templates/branches.php:89
+#: includes/class-revisr-commits.php:271
+msgid "Author"
+msgstr ""
+
+#: includes/class-revisr-commits.php:272 templates/branches.php:50
+#: templates/branches.php:101
 msgid "Branch"
 msgstr ""
 
-#: includes/class-revisr-commits.php:252
+#: includes/class-revisr-commits.php:273
 msgid "Tag"
 msgstr ""
 
-#: includes/class-revisr-commits.php:253
+#: includes/class-revisr-commits.php:274
 msgid "Files Changed"
 msgstr ""
 
-#: includes/class-revisr-commits.php:254
+#: includes/class-revisr-commits.php:275
 msgid "Date"
 msgstr ""
 
-#: includes/class-revisr-cron.php:53
-#: includes/class-revisr-settings-fields.php:174
+#: includes/class-revisr-commits.php:314
+msgid ""
+"There are <strong>%s</strong> untracked files that can be added to this "
+"commit."
+msgstr ""
+
+#: includes/class-revisr-commits.php:316
+msgid ""
+"Use the boxes below to select the files to include in this commit. Only "
+"files in the \"Staged Files\" section will be included.<br>Double-click "
+"files marked as \"Modified\" to view the changes to the file.<br><br>"
+msgstr ""
+
+#: includes/class-revisr-commits.php:321
+msgid "Staged Files"
+msgstr ""
+
+#: includes/class-revisr-commits.php:335
+msgid "Unstage Selected"
+msgstr ""
+
+#: includes/class-revisr-commits.php:337
+msgid "Unstage All"
+msgstr ""
+
+#: includes/class-revisr-commits.php:343
+msgid "Unstaged Files"
+msgstr ""
+
+#: includes/class-revisr-commits.php:347
+msgid "Stage Selected"
+msgstr ""
+
+#: includes/class-revisr-commits.php:349
+msgid "Stage All"
+msgstr ""
+
+#: includes/class-revisr-commits.php:374
+msgid ""
+"<br><strong>%s</strong> files were included in this commit. Double-click "
+"files marked as \"Modified\" to view the changes in a diff."
+msgstr ""
+
+#: includes/class-revisr-commits.php:389
+msgid "No files were included in this commit."
+msgstr ""
+
+#: includes/class-revisr-commits.php:403
+msgid "Tag Name:"
+msgstr ""
+
+#: includes/class-revisr-commits.php:418 includes/class-revisr-commits.php:480
+msgid "Status:"
+msgstr ""
+
+#: includes/class-revisr-commits.php:419
+msgid "Pending"
+msgstr ""
+
+#: includes/class-revisr-commits.php:423 includes/class-revisr-commits.php:485
+msgid "Branch:"
+msgstr ""
+
+#: includes/class-revisr-commits.php:429
+msgid "Backup database?"
+msgstr ""
+
+#: includes/class-revisr-commits.php:439
+msgid "Push changes?"
+msgstr ""
+
+#: includes/class-revisr-commits.php:449
+msgid "Commit Changes"
+msgstr ""
+
+#: includes/class-revisr-commits.php:467
+msgid "Committed on: <strong>%s</strong>"
+msgstr ""
+
+#: includes/class-revisr-commits.php:470
+msgid "Committed"
+msgstr ""
+
+#: includes/class-revisr-commits.php:472
+msgid "Error"
+msgstr ""
+
+#: includes/class-revisr-commits.php:495
+msgid "Tagged:"
+msgstr ""
+
+#: includes/class-revisr-commits.php:507
+msgid "Revert to this Commit"
+msgstr ""
+
+#: includes/class-revisr-compatibility.php:50
+msgid "Not Found"
+msgstr ""
+
+#: includes/class-revisr-cron.php:47
+#: includes/class-revisr-settings-fields.php:171
 msgid "Weekly"
 msgstr ""
 
-#: includes/class-revisr-cron.php:66
+#: includes/class-revisr-cron.php:63
 msgid "%s backup - %s"
 msgstr ""
 
-#: includes/class-revisr-cron.php:86
+#: includes/class-revisr-cron.php:85
 msgid "The %s backup was successful."
 msgstr ""
 
-#: includes/class-revisr-db.php:281
+#: includes/class-revisr-cron.php:98 includes/class-revisr-db.php:459
+#: includes/class-revisr-process.php:209 includes/class-revisr-process.php:273
+#: includes/class-revisr-process.php:312 includes/class-revisr-remote.php:81
+msgid "Cheatin&#8217; uh?"
+msgstr ""
+
+#: includes/class-revisr-cron.php:134 includes/class-revisr-process.php:240
+msgid "Pulled <a href=\"%s\">#%s</a> from %s/%s."
+msgstr ""
+
+#: includes/class-revisr-db.php:279
 msgid "Error backing up the database."
 msgstr ""
 
-#: includes/class-revisr-db.php:285
+#: includes/class-revisr-db.php:283
 msgid "Successfully backed up the database."
 msgstr ""
 
-#: includes/class-revisr-db.php:297
+#: includes/class-revisr-db.php:295
 msgid "Backed up the database with Revisr."
 msgstr ""
 
-#: includes/class-revisr-db.php:344
+#: includes/class-revisr-db.php:342
 msgid ""
 "New database tables detected. <a class=\"thickbox\" title=\"Import Tables\" "
 "href=\"%s\">Click here</a> to view and import."
 msgstr ""
 
-#: includes/class-revisr-db.php:372
+#: includes/class-revisr-db.php:370
 msgid "Backup table not found: %s"
 msgstr ""
 
-#: includes/class-revisr-db.php:436
+#: includes/class-revisr-db.php:434
 msgid "Error importing the database."
 msgstr ""
 
-#: includes/class-revisr-db.php:444
+#: includes/class-revisr-db.php:442
 msgid "Undo"
 msgstr ""
 
-#: includes/class-revisr-db.php:447
+#: includes/class-revisr-db.php:445
 msgid "Successfully imported the database. %s"
 msgstr ""
 
-#: includes/class-revisr-db.php:482
+#: includes/class-revisr-db.php:485
 msgid "The backup file does not exist or has been corrupted."
 msgstr ""
 
-#: includes/class-revisr-db.php:492
+#: includes/class-revisr-db.php:495
 msgid "Failed to revert the database to an earlier commit."
 msgstr ""
 
-#: includes/class-revisr-db.php:499
+#: includes/class-revisr-db.php:502
 msgid ""
 "Successfully reverted the database to a previous commit. <a href=\"%s"
 "\">Undo</a>"
 msgstr ""
 
-#: includes/class-revisr-db.php:505
+#: includes/class-revisr-db.php:512
 msgid "Something went wrong. Check your settings and try again."
 msgstr ""
 
-#: includes/class-revisr-db.php:532
+#: includes/class-revisr-db.php:535
 msgid "Error reverting one or more database tables."
 msgstr ""
 
-#: includes/class-revisr-db.php:620
+#: includes/class-revisr-db.php:623
 msgid "Error updating the table: %s."
 msgstr ""
 
-#: includes/class-revisr-db.php:623
+#: includes/class-revisr-db.php:626
 msgid "The table \"%s\" has no primary key. Manual change needed on row %s."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:24
+#: includes/class-revisr-git-callback.php:54
 msgid "Checked out branch: %s."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:25
+#: includes/class-revisr-git-callback.php:55
 msgid "%s was switched to branch %s."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:28
+#: includes/class-revisr-git-callback.php:58
 msgid " - Branch Changed"
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:36
+#: includes/class-revisr-git-callback.php:66
 msgid ""
 "There was an error checking out the branch. Check your configuration and try "
 "again."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:61
-msgid "Commmitted <a href=\"%s\">#%s</a> to the local repository."
+#: includes/class-revisr-git-callback.php:89
+msgid "Committed <a href=\"%s\">#%s</a> to the local repository."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:64
+#: includes/class-revisr-git-callback.php:92
 msgid "A new commit was made to the repository: <br> #%s - %s"
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:65
+#: includes/class-revisr-git-callback.php:93
 msgid " - New Commit"
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:81
+#: includes/class-revisr-git-callback.php:109
 msgid "Error committing the changes to the local repository."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:93
+#: includes/class-revisr-git-callback.php:121
 msgid "Deleted branch %s."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:94
+#: includes/class-revisr-git-callback.php:122
 msgid "The branch \"%s\" on the repository for %s was deleted."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:96
+#: includes/class-revisr-git-callback.php:124
 msgid " - Branch Deleted"
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:97
+#: includes/class-revisr-git-callback.php:125
 msgid "Branch deleted successfully. Redirecting..."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:158
+#: includes/class-revisr-git-callback.php:188
 msgid "Successfully created a new repository."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:169
+#: includes/class-revisr-git-callback.php:198
 msgid ""
 "Failed to initialize a new repository. Please make sure that Git is "
 "installed on the server and that Revisr has write permissons to the "
 "WordPress install."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:179
+#: includes/class-revisr-git-callback.php:208
 msgid "Successfully merged changes from branch %s into branch %s."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:180
+#: includes/class-revisr-git-callback.php:209
 msgid "Merged branch %s into branch %s."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:183
+#: includes/class-revisr-git-callback.php:212
 msgid "Merge completed successfully. Redirecting..."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:194
+#: includes/class-revisr-git-callback.php:223
 msgid "Error merging branch %s into %s."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:195
+#: includes/class-revisr-git-callback.php:224
 msgid ""
 "There was an error merging branch %s into your current branch. The merge was "
 "aborted to avoid conflicts."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:209
+#: includes/class-revisr-git-callback.php:238
 msgid "The local repository is already up-to-date with the remote repository."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:212
+#: includes/class-revisr-git-callback.php:241
 msgid "Successfully pulled %s commit from %s/%s."
 msgid_plural "Successfully pulled %s commits from %s/%s."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-revisr-git-callback.php:228
+#: includes/class-revisr-git-callback.php:256
 msgid ""
 "There was an error pulling from the remote repository. The local repository "
 "could be ahead, or there may be an authentication issue."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:230
+#: includes/class-revisr-git-callback.php:258
 msgid "Error pulling changes from the remote repository."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:239
+#: includes/class-revisr-git-callback.php:267
 msgid "Successfully pushed %s commit to %s/%s."
 msgid_plural "Successfully pushed %s commits to %s/%s."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-revisr-git-callback.php:253
+#: includes/class-revisr-git-callback.php:281
 msgid ""
 "Error pushing to the remote repository. The remote repository could be "
 "ahead, or there may be an authentication issue."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:255
+#: includes/class-revisr-git-callback.php:283
 msgid "Error pushing changes to the remote repository."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:264
+#: includes/class-revisr-git-callback.php:292
 msgid "Success!"
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:273
+#: includes/class-revisr-git-callback.php:301
 msgid "Remote not found..."
 msgstr ""
 
-#: includes/class-revisr-git-callback.php:290
-#: includes/class-revisr-git.php:311
-msgid "Unknown"
-msgstr ""
-
-#: includes/class-revisr-git.php:328
+#: includes/class-revisr-git.php:363
 msgid "Modified"
 msgstr ""
 
-#: includes/class-revisr-git.php:330 includes/class-revisr-git.php:486
+#: includes/class-revisr-git.php:365 includes/class-revisr-git.php:473
 msgid "Deleted"
 msgstr ""
 
-#: includes/class-revisr-git.php:332
+#: includes/class-revisr-git.php:367
 msgid "Added"
 msgstr ""
 
-#: includes/class-revisr-git.php:334
+#: includes/class-revisr-git.php:369
 msgid "Renamed"
 msgstr ""
 
-#: includes/class-revisr-git.php:336
+#: includes/class-revisr-git.php:371
 msgid "Updated"
 msgstr ""
 
-#: includes/class-revisr-git.php:338
+#: includes/class-revisr-git.php:373
 msgid "Copied"
 msgstr ""
 
-#: includes/class-revisr-git.php:340
+#: includes/class-revisr-git.php:375
 msgid "Untracked"
 msgstr ""
 
-#: includes/class-revisr-git.php:498
+#: includes/class-revisr-git.php:485
 msgid ""
 "There was an error staging the files. Please check the settings and try "
 "again."
 msgstr ""
 
-#: includes/class-revisr-git.php:500
+#: includes/class-revisr-git.php:487
 msgid "Error staging files."
 msgstr ""
 
-#: includes/class-revisr-process.php:58
+#: includes/class-revisr-list-table.php:71
+msgid "%s ago"
+msgstr ""
+
+#: includes/class-revisr-list-table.php:85
+msgid "Event"
+msgstr ""
+
+#: includes/class-revisr-list-table.php:86
+msgid "Time"
+msgstr ""
+
+#: includes/class-revisr-list-table.php:197
+msgid "1 item"
+msgid_plural "%s items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-revisr-list-table.php:222
+msgid "Your recent activity will show up here."
+msgstr ""
+
+#: includes/class-revisr-process.php:50
 msgid ""
 "Thanks for installing Revisr! No Git repository was detected, <a href=\"%s"
 "\">click here</a> to create one."
 msgstr ""
 
-#: includes/class-revisr-process.php:133
+#: includes/class-revisr-process.php:124
 msgid "Created new branch: %s"
 msgstr ""
 
-#: includes/class-revisr-process.php:162
+#: includes/class-revisr-process.php:161
 msgid "Discarded all uncommitted changes."
 msgstr ""
 
-#: includes/class-revisr-process.php:163
+#: includes/class-revisr-process.php:162
 msgid "Successfully discarded any uncommitted changes."
 msgstr ""
 
@@ -602,155 +741,147 @@ msgstr ""
 msgid "Importing..."
 msgstr ""
 
-#: includes/class-revisr-process.php:213 includes/class-revisr-remote.php:57
-msgid "Cheatin&#8217; uh?"
+#: includes/class-revisr-process.php:299
+msgid "Revert completed. Redirecting..."
 msgstr ""
 
-#: includes/class-revisr-process.php:248
-msgid "Pulled <a href=\"%s\">#%s</a> from %s/%s."
-msgstr ""
-
-#: includes/class-revisr-process.php:280
+#: includes/class-revisr-process.php:317
 msgid "Reverted to commit: #%s."
 msgstr ""
 
-#: includes/class-revisr-process.php:295
+#: includes/class-revisr-process.php:332
 msgid "Reverted to commit <a href=\"%s\">#%s</a>."
 msgstr ""
 
-#: includes/class-revisr-process.php:296
+#: includes/class-revisr-process.php:333
 msgid "%s was reverted to commit #%s"
 msgstr ""
 
-#: includes/class-revisr-process.php:298
+#: includes/class-revisr-process.php:335
 msgid " - Commit Reverted"
 msgstr ""
 
-#: includes/class-revisr-process.php:303
-msgid "You are not authorized to access this page."
-msgstr ""
-
-#: includes/class-revisr-remote.php:85
+#: includes/class-revisr-remote.php:109
 msgid "Error contacting webhook URL."
 msgstr ""
 
-#: includes/class-revisr-remote.php:87
+#: includes/class-revisr-remote.php:111
 msgid "Sent update request to the webhook."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:61
+#: includes/class-revisr-settings-fields.php:60
 msgid ""
 "These settings configure the local repository, and may be required for "
 "Revisr to work correctly."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:69
+#: includes/class-revisr-settings-fields.php:68
 msgid ""
 "These settings are optional, and only need to be configured if you plan to "
 "push your website to a remote repository like Bitbucket or Github."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:77
+#: includes/class-revisr-settings-fields.php:76
 msgid ""
 "These settings configure how Revisr interacts with your database, if at all."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:96
+#: includes/class-revisr-settings-fields.php:95
 msgid "The username to commit with in Git."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:121
+#: includes/class-revisr-settings-fields.php:120
 msgid ""
 "The email address associated to your Git username. Also used for "
 "notifications (if enabled)."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:139
+#: includes/class-revisr-settings-fields.php:137
 msgid "Updated .gitignore."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:156
+#: includes/class-revisr-settings-fields.php:153
 msgid ""
 "Add files or directories that you don't want to show up in Git here, one per "
 "line.<br>This will update the \".gitignore\" file for this repository."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:172
-#: includes/class-revisr-settings-fields.php:389
+#: includes/class-revisr-settings-fields.php:169
+#: includes/class-revisr-settings-fields.php:385
 msgid "None"
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:173
+#: includes/class-revisr-settings-fields.php:170
 msgid "Daily"
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:176
+#: includes/class-revisr-settings-fields.php:173
 msgid ""
 "Automatic backups will backup both the files and database at the interval of "
 "your choosing."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:205
+#: includes/class-revisr-settings-fields.php:202
 msgid ""
 "Enabling notifications will send updates about new commits, pulls, and "
 "pushes to the email address above."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:218
+#: includes/class-revisr-settings-fields.php:215
 msgid ""
 "Git sets this to \"origin\" by default when you clone a repository, and this "
 "should be sufficient in most cases. If you've changed the remote name or "
 "have more than one remote, you can specify that here."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:254
+#: includes/class-revisr-settings-fields.php:252
 msgid ""
 "Useful if you need to authenticate over \"https://\" instead of SSH, or if "
 "the remote has not already been set through Git."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:282
+#: includes/class-revisr-settings-fields.php:280
 msgid ""
 "If you have Revisr installed on another server using the same repository,"
 "<br> you can add the Revisr Webhook from that server here to trigger an "
 "update when pushing."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:309
+#: includes/class-revisr-settings-fields.php:307
 msgid "Check to automatically push new commits to the remote repository."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:336
+#: includes/class-revisr-settings-fields.php:334
 msgid ""
 "Check to generate the Revisr Webhook and allow Revisr to automatically pull "
 "commits from a remote repository."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:346
+#: includes/class-revisr-settings-fields.php:344
 msgid "Revisr Webhook:"
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:348
+#: includes/class-revisr-settings-fields.php:346
 msgid ""
 "You can add the above webhook to Bitbucket, GitHub, or another instance of "
 "Revisr to automatically update this repository."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:353
+#: includes/class-revisr-settings-fields.php:351
 msgid ""
 "There was an error generating the webhook. Please make sure that Revisr has "
 "write access to the \".git/config\" and try again."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:387
+#: includes/class-revisr-settings-fields.php:383
 msgid "All Tables"
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:388
+#: includes/class-revisr-settings-fields.php:384
 msgid "Let me decide..."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:436
+#: includes/class-revisr-settings-fields.php:432
 msgid ""
 "If you're importing the database from a seperate environment, enter the "
 "WordPress Site URL for that environment here to replace all occurrences of "
@@ -758,7 +889,7 @@ msgid ""
 "WordPress Site URL of the database being imported."
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:463
+#: includes/class-revisr-settings-fields.php:459
 msgid ""
 "Leave blank if the full path to MySQL has already been set on the server. "
 "Some possible settings include:\n"
@@ -766,15 +897,15 @@ msgid ""
 "\t\t\tFor WAMP: C:\\wamp\\bin\\mysql\\mysql5.6.12\\bin\\ "
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:497
+#: includes/class-revisr-settings-fields.php:493
 msgid "Import database when changing branches?"
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:499
+#: includes/class-revisr-settings-fields.php:495
 msgid "Import database when pulling commits?"
 msgstr ""
 
-#: includes/class-revisr-settings-fields.php:500
+#: includes/class-revisr-settings-fields.php:496
 msgid ""
 "If checked, Revisr will automatically import the above tracked tables while "
 "pulling from or checking out a branch. The tracked tables will be backed up "
@@ -783,207 +914,248 @@ msgid ""
 "backup of your website."
 msgstr ""
 
-#: includes/class-revisr-settings.php:78
+#: includes/class-revisr-settings.php:74
 msgid "Git Username"
 msgstr ""
 
-#: includes/class-revisr-settings.php:85
+#: includes/class-revisr-settings.php:81
 msgid "Git Email"
 msgstr ""
 
-#: includes/class-revisr-settings.php:92
+#: includes/class-revisr-settings.php:88
 msgid "Files/Directories to ignore"
 msgstr ""
 
-#: includes/class-revisr-settings.php:99
+#: includes/class-revisr-settings.php:95
 msgid "Automatic backup schedule"
 msgstr ""
 
-#: includes/class-revisr-settings.php:106
+#: includes/class-revisr-settings.php:102
 msgid "Enable email notifications?"
 msgstr ""
 
-#: includes/class-revisr-settings.php:113
+#: includes/class-revisr-settings.php:109
 msgid "Remote Name"
 msgstr ""
 
-#: includes/class-revisr-settings.php:120
+#: includes/class-revisr-settings.php:116
 msgid "Remote URL"
 msgstr ""
 
-#: includes/class-revisr-settings.php:127
+#: includes/class-revisr-settings.php:123
 msgid "Revisr Webhook URL"
 msgstr ""
 
-#: includes/class-revisr-settings.php:134
+#: includes/class-revisr-settings.php:130
 msgid "Automatically push new commits?"
 msgstr ""
 
-#: includes/class-revisr-settings.php:141
+#: includes/class-revisr-settings.php:137
 msgid "Automatically pull new commits?"
 msgstr ""
 
-#: includes/class-revisr-settings.php:148
+#: includes/class-revisr-settings.php:144
 msgid "Database tables to track"
 msgstr ""
 
-#: includes/class-revisr-settings.php:155
+#: includes/class-revisr-settings.php:151
 msgid "Import Options"
 msgstr ""
 
-#: includes/class-revisr-settings.php:162
+#: includes/class-revisr-settings.php:158
 msgid "Development URL"
 msgstr ""
 
-#: includes/class-revisr-settings.php:169
+#: includes/class-revisr-settings.php:165
 msgid "Path to MySQL"
 msgstr ""
 
-#: includes/class-revisr.php:189 revisr.php:372
-msgid ""
-"It appears that you don't have the PHP exec() function enabled on your "
-"server. This can be enabled in your php.ini.\n"
-"\t\t\t\tCheck with your web host if you're not sure what this means."
-msgstr ""
-
-#: includes/class-revisr.php:195 revisr.php:378
-msgid ""
-"Revisr requires write permissions to the repository. The recommended "
-"settings are 755 for directories, and 644 for files."
-msgstr ""
-
-#: includes/class-revisr.php:253 revisr.php:361
-msgid "Settings"
-msgstr ""
-
-#: revisr.php:137 revisr.php:145
+#: revisr.php:112 revisr.php:120
 msgid "Cheatin&#8217; huh?"
 msgstr ""
 
-#: templates/branches.php:16
-msgid "Revisr - Branches"
-msgstr ""
-
-#: templates/branches.php:21
+#: templates/branches.php:25
 msgid "Successfully created branch: %s."
 msgstr ""
 
-#: templates/branches.php:25
+#: templates/branches.php:29
 msgid "Failed to create the new branch."
 msgstr ""
 
-#: templates/branches.php:28
+#: templates/branches.php:31
+msgid "Failed to create branch: %s (branch already exists)."
+msgstr ""
+
+#: templates/branches.php:36
 msgid "Successfully deleted branch: %s."
 msgstr ""
 
-#: templates/branches.php:44 templates/branches.php:91
+#: templates/branches.php:52 templates/branches.php:103
 msgid "Actions"
 msgstr ""
 
-#: templates/branches.php:76
+#: templates/branches.php:69
+msgid "%s (current branch)"
+msgstr ""
+
+#: templates/branches.php:72 templates/branches.php:88
 msgid "Checkout"
 msgstr ""
 
-#: templates/branches.php:78
+#: templates/branches.php:73 templates/branches.php:89
+msgid "Merge"
+msgstr ""
+
+#: templates/branches.php:74 templates/branches.php:90
 msgid "Delete"
 msgstr ""
 
-#: templates/branches.php:99
+#: templates/branches.php:111
 msgid "Add New Branch"
 msgstr ""
 
-#: templates/branches.php:103
+#: templates/branches.php:115
 msgid "Name"
 msgstr ""
 
-#: templates/branches.php:105
+#: templates/branches.php:117
 msgid "The name of the new branch."
 msgstr ""
 
-#: templates/branches.php:109
+#: templates/branches.php:121
 msgid "Checkout new branch?"
 msgstr ""
 
-#: templates/branches.php:111
+#: templates/branches.php:123
 msgid "Create Branch"
 msgstr ""
 
-#: templates/dashboard.php:20
+#: templates/dashboard.php:22
 msgid "Are you sure you want to discard your uncommitted changes?"
 msgstr ""
 
-#: templates/dashboard.php:21
+#: templates/dashboard.php:23
 msgid "Are you sure you want to push all committed changes to the remote?"
 msgstr ""
 
-#: templates/dashboard.php:22
+#: templates/dashboard.php:24
 msgid ""
 "Are you sure you want to discard your uncommitted changes and pull from the "
 "remote?"
 msgstr ""
 
-#: templates/dashboard.php:28
-msgid "Revisr - Dashboard"
-msgstr ""
-
-#: templates/dashboard.php:30
+#: templates/dashboard.php:36
 msgid "Loading..."
 msgstr ""
 
-#: templates/dashboard.php:31
+#: templates/dashboard.php:37
 msgid "Processing request..."
 msgstr ""
 
-#: templates/dashboard.php:39
-msgid "Recent Activity"
-msgstr ""
-
-#: templates/dashboard.php:51
+#: templates/dashboard.php:55
 msgid "Quick Actions"
 msgstr ""
 
-#: templates/dashboard.php:53
+#: templates/dashboard.php:57
 msgid "Save Changes"
 msgstr ""
 
-#: templates/dashboard.php:54
+#: templates/dashboard.php:58
 msgid "Discard Changes"
 msgstr ""
 
-#: templates/dashboard.php:55
+#: templates/dashboard.php:59
 msgid "Backup Database"
 msgstr ""
 
-#: templates/dashboard.php:56
+#: templates/dashboard.php:60
 msgid "Push Changes "
 msgstr ""
 
-#: templates/dashboard.php:57
+#: templates/dashboard.php:61
 msgid "Pull Changes"
 msgstr ""
 
-#: templates/dashboard.php:63
+#: templates/dashboard.php:67
 msgid "Branches/Tags"
 msgstr ""
 
-#: templates/dashboard.php:67
-msgid "Branches"
-msgstr ""
-
-#: templates/dashboard.php:68
+#: templates/dashboard.php:72
 msgid "Tags"
 msgstr ""
 
-#: templates/dashboard.php:108
-msgid "About this plugin"
+#: templates/dashboard.php:105
+msgid "Manage Branches"
 msgstr ""
 
-#: templates/dashboard.php:110
-msgid "Please read more about this plugin at %s."
+#: templates/dashboard.php:112
+msgid "Documentation"
 msgstr ""
 
-#: templates/settings.php:17
-msgid "Revisr - Settings"
+#: templates/dashboard.php:114
+msgid "Need help? Check out the improved documentation at %s."
+msgstr ""
+
+#: templates/dashboard.php:116
+msgid "&copy; %d Expanded Fronts, LLC"
+msgstr ""
+
+#: templates/help.php:19
+msgid "Help and Troubleshooting"
+msgstr ""
+
+#: templates/help.php:21
+msgid ""
+"Support is available on the <a href=\"https://wordpress.org/support/plugin/"
+"revisr\" target=\"_blank\">plugin support forums</a>."
+msgstr ""
+
+#: templates/help.php:23
+msgid ""
+"Found a bug or have a feature request? Please open an issue on <a href="
+"\"https://github.com/ExpandedFronts/revisr\" target=\"_blank\">GitHub</a>."
+msgstr ""
+
+#: templates/help.php:30
+msgid "Operating System"
+msgstr ""
+
+#: templates/help.php:40
+msgid "Exec() Enabled"
+msgstr ""
+
+#: templates/help.php:45
+msgid "Git Install Path"
+msgstr ""
+
+#: templates/help.php:50
+msgid "Git Version"
+msgstr ""
+
+#: templates/help.php:55
+msgid "MySQL Install Path"
+msgstr ""
+
+#: templates/help.php:62
+msgid "File Permissions"
+msgstr ""
+
+#: templates/help.php:67
+msgid "Repository Path"
+msgstr ""
+
+#: templates/help.php:72 templates/help.php:79
+msgid "Repository Status"
+msgstr ""
+
+#: templates/help.php:73
+msgid ""
+"<a href=\"%s\" class=\"thickbox\" title=\"View Status\">Click here</a> to "
+"view."
+msgstr ""
+
+#: templates/help.php:80
+msgid "No repository detected."
 msgstr ""
 
 #: templates/settings.php:22
@@ -1008,6 +1180,14 @@ msgstr ""
 
 #: templates/settings.php:34
 msgid "Database"
+msgstr ""
+
+#: templates/settings.php:35
+msgid "Help"
+msgstr ""
+
+#: tests/test-admin.php:25
+msgid "test_alert"
 msgstr ""
 
 #. Plugin Name of the plugin/theme

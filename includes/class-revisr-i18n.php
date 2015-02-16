@@ -7,10 +7,10 @@
  * Loads and defines the internationalization files for this plugin
  * so that its ready for translation.
  *
- * @package   Revisr
- * @license   GPLv3
- * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts, LLC
+ * @package   	Revisr
+ * @license   	GPLv3
+ * @link      	https://revisr.io
+ * @copyright 	Expanded Fronts, LLC
  */
 
 // Disallow direct access.

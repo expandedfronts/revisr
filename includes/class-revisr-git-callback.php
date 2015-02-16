@@ -4,27 +4,57 @@
  * 
  * Processes Git responses and errors.
  * 
- * @package   Revisr
- * @license   GPLv3
- * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts, LLC
+ * @package   	Revisr
+ * @license   	GPLv3
+ * @link      	https://revisr.io
+ * @copyright 	Expanded Fronts, LLC
  */
 
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Revisr_Git_Callback extends Revisr_Git {
+class Revisr_Git_Callback {
+
+	/**
+	 * The instance of the Git class.
+	 * @var object
+	 */
+	private $revisr;
+
+	/**
+	 * Initiates the class.
+	 * @access public
+	 */
+	public function __construct() {
+		$this->revisr = Revisr::get_instance();
+	}
+
+	/**
+	 * The default success callback. Fired if no callback is provided.
+	 * @access public
+	 */
+	public function success_( $output = '', $args = '' ) {
+		return $output;
+	}
+
+	/**
+	 * The default failure callback, fired if no callback is provided.
+	 * @access public
+	 */
+	public function null_( $output = '', $args = '' ) {
+		return false;
+	}
 	
 	/**
 	 * Callback for a successful checkout.
 	 * @access public
 	 */
 	public function success_checkout( $output = '', $args = '' ) {
-		$branch 	= $this->branch;
+		$branch 	= $this->revisr->git->current_branch();
 		$msg 		= sprintf( __( 'Checked out branch: %s.', 'revisr' ), $branch );
 		$email_msg 	= sprintf( __( '%s was switched to branch %s.', 'revisr' ), get_bloginfo(), $branch );
 		Revisr_Admin::alert( $msg );
-		Revisr_Admin::log( $msg, "branch" );
+		Revisr_Admin::log( $msg, 'branch' );
 		Revisr_Admin::notify(get_bloginfo() . __( ' - Branch Changed', 'revisr'), $email_msg );
 	}
 
@@ -45,31 +75,29 @@ class Revisr_Git_Callback extends Revisr_Git {
 	public function success_commit( $output = '', $args = '' ) {
 		$id 			= get_the_ID();
 		$view_link 		= get_admin_url() . "post.php?post={$id}&action=edit";
-		$commit_hash 	= $this->current_commit();
+		$commit_hash 	= $this->revisr->git->current_commit();
 		$commit_msg 	= $_REQUEST['post_title'];
 		add_post_meta( $id, 'commit_hash', $commit_hash );
-		add_post_meta( $id, 'branch', $this->branch );
+		add_post_meta( $id, 'branch', $this->revisr->git->branch );
 		// Backup the database if necessary
 		if ( isset( $_REQUEST['backup_db'] ) && $_REQUEST['backup_db'] == 'on' ) {
-			$db = new Revisr_DB;
-			$db->backup();
-			$db_hash = $this->run( "log --pretty=format:'%h' -n 1" );
-			add_post_meta( $id, 'db_hash', $db_hash[0] );
+			$this->revisr->db->backup();
+			add_post_meta( $id, 'db_hash', $this->revisr->git->current_commit() );
 			add_post_meta( $id, 'backup_method', 'tables' );
 		}
 		// Log the event.
-		$msg = sprintf( __( 'Commmitted <a href="%s">#%s</a> to the local repository.', 'revisr' ), $view_link, $commit_hash );
+		$msg = sprintf( __( 'Committed <a href="%s">#%s</a> to the local repository.', 'revisr' ), $view_link, $commit_hash );
 		Revisr_Admin::log( $msg, 'commit' );
 		// Notify the admin.
 		$email_msg = sprintf( __( 'A new commit was made to the repository: <br> #%s - %s', 'revisr' ), $commit_hash, $commit_msg );
 		Revisr_Admin::notify( get_bloginfo() . __( ' - New Commit', 'revisr' ), $email_msg );
 		// Add a tag if necessary.
 		if ( isset( $_REQUEST['tag_name'] ) ) {
-			$this->tag( $_POST['tag_name'] );
+			$this->revisr->git->tag( $_POST['tag_name'] );
 			add_post_meta( $id, 'git_tag', $_POST['tag_name'] );
 		}
 		// Push if necessary.
-		$this->auto_push();
+		$this->revisr->git->auto_push();
 		return $commit_hash;
 	}
 
@@ -130,33 +158,34 @@ class Revisr_Git_Callback extends Revisr_Git {
 	}
 
 	/**
-	 * Returns if the repo initialization was successful.
+	 * Called if the repo initialization was successful.
+	 * Sets up the '.git/config' file for the first time.
 	 * @access public
 	 */
 	public function success_init_repo() {
 		Revisr_Admin::clear_transients();
 		$user = wp_get_current_user();
 
-		if ( isset( $this->options['username'] ) && $this->options['username'] != "" ) {
-			$this->config_user_name( $this->options['username'] );
+		if ( isset( $this->revisr->git->options['username'] ) && $this->revisr->git->options['username'] != '' ) {
+			$this->revisr->git->set_config( 'user', 'name', $this->revisr->git->options['username'] );
 		} else {
-			$this->config_user_name( $user->user_login );
+			$this->revisr->git->set_config( 'user', 'name', $user->user_login );
 		}
-		if ( isset( $this->options['email'] ) && $this->options['email'] != "" ) {
-			$this->config_user_email( $this->options['email'] );
+		if ( isset( $this->revisr->git->options['email'] ) && $this->revisr->git->options['email'] != '' ) {
+			$this->revisr->git->set_config( 'user', 'email', $this->revisr->git->options['email'] );
 		} else {
-			$this->config_user_email( $user->user_email );
+			$this->revisr->git->set_config( 'user', 'email', $user->user_email );
 		}
-		if ( isset( $this->options['remote_name'] ) && $this->options['remote_name'] != "" ) {
-			$remote_name = $this->options['remote_name'];
+		if ( isset( $this->revisr->git->options['remote_name'] ) && $this->revisr->git->options['remote_name'] != '' ) {
+			$remote_name = $this->revisr->git->options['remote_name'];
 		} else {
 			$remote_name = 'origin';
 		}
-		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != "" ) {
-			$this->run("remote add $remote_name {$this->options['remote_url']}");
+		if ( isset( $this->revisr->git->options['remote_url'] ) && $this->revisr->git->options['remote_url'] != '' ) {
+			$this->revisr->git->run( 'remote', array( 'add', $remote_name, $this->revisr->git->options['remote_url'] ) );
 		}
-		$msg = sprintf( __( 'Successfully created a new repository.', 'revisr' ) );
-		Revisr_Admin::log( $msg, 'init' );
+
+		Revisr_Admin::log( __( 'Successfully created a new repository.', 'revisr' ), 'init' );
 		wp_redirect( get_admin_url() . 'admin.php?page=revisr_settings&init=success' );
 		exit();
 	}
@@ -176,8 +205,8 @@ class Revisr_Git_Callback extends Revisr_Git {
 	 * @access public
 	 */
 	public function success_merge( $output = '', $args = '' ) {
-		$alert_msg 	= sprintf( __( 'Successfully merged changes from branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->branch );
-		$log_msg 	= sprintf( __( 'Merged branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->branch );
+		$alert_msg 	= sprintf( __( 'Successfully merged changes from branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->revisr->git->branch );
+		$log_msg 	= sprintf( __( 'Merged branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->revisr->git->branch );
 		Revisr_Admin::alert( $alert_msg );
 		Revisr_Admin::log( $log_msg, 'merge' );
 		_e( 'Merge completed successfully. Redirecting...', 'revisr' );
@@ -191,7 +220,7 @@ class Revisr_Git_Callback extends Revisr_Git {
 	 * @access public
 	 */
 	public function null_merge( $output = '', $args = '' ) {
-		$log_msg 	= sprintf( __( 'Error merging branch %s into %s.', 'revisr'), $_REQUEST['branch'], $this->branch );
+		$log_msg 	= sprintf( __( 'Error merging branch %s into %s.', 'revisr'), $_REQUEST['branch'], $this->revisr->git->branch );
 		$alert_msg 	= sprintf( __( 'There was an error merging branch %s into your current branch. The merge was aborted to avoid conflicts.', 'revisr' ), $_REQUEST['branch'] );
 		Revisr_Admin::alert( $alert_msg, true );
 		Revisr_Admin::log( $log_msg, 'error' );
@@ -209,12 +238,11 @@ class Revisr_Git_Callback extends Revisr_Git {
 			$msg = __( 'The local repository is already up-to-date with the remote repository.', 'revisr' );
 			Revisr_Admin::alert( $msg );
 		} else {
-			$msg = sprintf( _n( 'Successfully pulled %s commit from %s/%s.', 'Successfully pulled %s commits from %s/%s.', $args, 'revisr' ), $args, $this->remote, $this->branch );
+			$msg = sprintf( _n( 'Successfully pulled %s commit from %s/%s.', 'Successfully pulled %s commits from %s/%s.', $args, 'revisr' ), $args, $this->revisr->git->remote, $this->revisr->git->branch );
 			Revisr_Admin::alert( $msg );
 
-			if ( $this->config_revisr_option( 'import-pulls' ) === 'true' ) {
-				$db = new Revisr_DB();
-				$db->import();
+			if ( $this->revisr->git->get_config( 'revisr', 'import-pulls' ) === 'true' ) {
+				$this->revisr->db->import();
 			}
 		}
 	}
@@ -236,10 +264,10 @@ class Revisr_Git_Callback extends Revisr_Git {
 	 * @access public
 	 */
 	public function success_push( $output = '', $args = '' ) {
-		$msg = sprintf( _n( 'Successfully pushed %s commit to %s/%s.', 'Successfully pushed %s commits to %s/%s.', $args, 'revisr' ), $args, $this->remote, $this->branch );
+		$msg = sprintf( _n( 'Successfully pushed %s commit to %s/%s.', 'Successfully pushed %s commits to %s/%s.', $args, 'revisr' ), $args, $this->revisr->git->remote, $this->revisr->git->branch );
 		Revisr_Admin::alert( $msg );
 		Revisr_Admin::log( $msg, 'push' );
-		if ( $this->config_revisr_url( 'webhook' ) !== false ) {
+		if ( $this->revisr->git->get_config( 'revisr', 'webhook-url' ) !== false ) {
 			$remote = new Revisr_Remote();
 			$remote->send_request();
 		}
