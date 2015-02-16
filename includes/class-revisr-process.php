@@ -219,7 +219,7 @@ class Revisr_Process {
 			foreach ( $commits_since as $commit ) {
 				$commit_hash = substr( $commit, 0, 7 );
 				$commit_msg = substr( $commit, 40 );
-				$show_files = $this->revisr->git->run( 'show --pretty="format:" --name-status ' . $commit_hash );
+				$show_files = $this->revisr->git->run( 'show', array( '--pretty=format:', '--name-status', $commit_hash ) );
 				
 				if ( is_array( $show_files ) ) {
 					$files_changed = array_filter( $show_files );			
