@@ -164,6 +164,10 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function auto_push() {
+		if ( isset( $_REQUEST['autopush_enabled'] ) && ! isset( $_REQUEST['auto_push'] ) ) {
+			return;
+		}
+		
 		if ( $this->get_config( 'revisr', 'auto-push' ) === 'true' || isset( $_REQUEST['auto_push'] ) ) {
 			$this->push();
 		}

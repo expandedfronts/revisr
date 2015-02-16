@@ -430,7 +430,12 @@ class Revisr_Commits {
 				</div>
 
 				<div class="misc-pub-section revisr-push-cb">
-					<span><input id="revisr-push-cb" type="checkbox" name="auto_push" /></span>
+					<?php if ( $this->revisr->git->get_config( 'revisr', 'auto-push' ) == 'true' ): ?>
+						<input type="hidden" name="autopush_enabled" value="true" />
+						<span><input id="revisr-push-cb" type="checkbox" name="auto_push" checked /></span>
+					<?php else: ?>
+						<span><input id="revisr-push-cb" type="checkbox" name="auto_push" /></span>
+					<?php endif; ?>
 					<label for="revisr-push-cb"><?php _e( 'Push changes?', 'revisr' ); ?></label>
 				</div>
 
