@@ -50,15 +50,15 @@ class Revisr_Admin {
 	public function revisr_scripts( $hook ) {
 		
 		// Register all CSS files used by Revisr.
-		wp_register_style( 'revisr_dashboard_css', REVISR_URL . 'assets/css/dashboard.css', array(), '07052014' );
-		wp_register_style( 'revisr_commits_css', REVISR_URL . 'assets/css/commits.css', array(), '08202014' );
-		wp_register_style( 'revisr_octicons_css', REVISR_URL . 'assets/octicons/octicons.css', array(), '01152015' );
+		wp_register_style( 'revisr_dashboard_css', REVISR_URL . 'assets/css/dashboard.css', array(), '02162015' );
+		wp_register_style( 'revisr_commits_css', REVISR_URL . 'assets/css/commits.css', array(), '02162015' );
+		wp_register_style( 'revisr_octicons_css', REVISR_URL . 'assets/octicons/octicons.css', array(), '02162015' );
 		
 		// Register all JS files used by Revisr.
-		wp_register_script( 'revisr_dashboard', REVISR_URL . 'assets/js/revisr-dashboard.js', 'jquery',  '09232014', true );
-		wp_register_script( 'revisr_staging', REVISR_URL . 'assets/js/revisr-staging.js', 'jquery', '07052014', false );
-		wp_register_script( 'revisr_committed', REVISR_URL . 'assets/js/revisr-committed.js', 'jquery', '07052014', false );
-		wp_register_script( 'revisr_settings', REVISR_URL . 'assets/js/revisr-settings.js', 'jquery', '08272014', true );
+		wp_register_script( 'revisr_dashboard', REVISR_URL . 'assets/js/revisr-dashboard.js', 'jquery',  '02162015', true );
+		wp_register_script( 'revisr_staging', REVISR_URL . 'assets/js/revisr-staging.js', 'jquery', '02162015', false );
+		wp_register_script( 'revisr_committed', REVISR_URL . 'assets/js/revisr-committed.js', 'jquery', '02162015', false );
+		wp_register_script( 'revisr_settings', REVISR_URL . 'assets/js/revisr-settings.js', 'jquery', '02162015', true );
 		
 		// An array of pages that most scripts can be allowed on.
 		$allowed_pages = array( 'revisr', 'revisr_settings', 'revisr_branches' );

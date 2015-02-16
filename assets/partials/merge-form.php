@@ -13,7 +13,7 @@
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$styles_url = REVISR_URL . 'assets/css/thickbox.css';
+$styles_url = REVISR_URL . 'assets/css/thickbox.css?02162015';
 $merge_text = sprintf( __( 'This will merge changes from branch <strong>%s</strong> into the current branch. In the event of conflicts, Revisr will keep the version from the branch being merged in.', 'revisr' ), esc_html( $_GET['branch'] ) );
 
 ?>
