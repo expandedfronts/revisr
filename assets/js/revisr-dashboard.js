@@ -43,10 +43,10 @@
 	 */
 	function update_counts() {
 		$.post(ajaxurl, {action: 'ajax_button_count', data: 'unpulled'}, function(response) {
-			document.getElementById('#unpulled').innerHTML = response;
+			document.getElementById('unpulled').innerHTML = response;
 		});
 		$.post(ajaxurl, {action: 'ajax_button_count',data: 'unpushed'}, function(response) {
-			document.getElementById('#unpushed').innerHTML = response;
+			document.getElementById('unpushed').innerHTML = response;
 		});
 	}
 
