@@ -32,6 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		    <a href="?page=revisr_settings&tab=general_settings" class="nav-tab <?php echo $active_tab == 'general_settings' ? 'nav-tab-active' : ''; ?>"><?php _e( 'General', 'revisr' ); ?></a>
 		    <a href="?page=revisr_settings&tab=remote_settings" class="nav-tab <?php echo $active_tab == 'remote_settings' ? 'nav-tab-active' : ''; ?>"><?php _e( 'Remote', 'revisr' ); ?></a>
 		    <a href="?page=revisr_settings&tab=database_settings" class="nav-tab <?php echo $active_tab == 'database_settings' ? 'nav-tab-active' : ''; ?>"><?php _e( 'Database', 'revisr' ); ?></a>
+		    <a href="?page=revisr_settings&tab=help" class="nav-tab <?php echo $active_tab == 'help' ? 'nav-tab-active' : ''; ?>"><?php _e( 'Help', 'revisr' ); ?></a>
 		</h2>
 		
 		<form class="settings-form" method="post" action="options.php">
@@ -41,14 +42,19 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	            if ( $active_tab == 'general_settings' ) {
 	            	settings_fields( 'revisr_general_settings' );   
 	            	do_settings_sections( 'revisr_general_settings' );
-	            } else if ( $active_tab == 'remote_settings' ) {
+	            } elseif ( $active_tab == 'remote_settings' ) {
 		            settings_fields( 'revisr_remote_settings' );   
 	            	do_settings_sections( 'revisr_remote_settings' );
+	            } elseif ( $active_tab == 'help' ) {
+	            	include REVISR_PATH . 'templates/help.php';
 	            } else {
 		            settings_fields( 'revisr_database_settings' );   
 	            	do_settings_sections( 'revisr_database_settings' );
 	            }
-	            submit_button(); 
+
+	            if ( $active_tab !== 'help' ) {
+	            	submit_button(); 
+	            }
 		    ?>
 		</form>
 	</div>

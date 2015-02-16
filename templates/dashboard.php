@@ -11,17 +11,23 @@
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+// Grab the instance 
 $revisr 	= Revisr::get_instance();
-$git 		= $revisr->git;
 $loader_url = REVISR_URL . 'assets/img/loader.gif';
+
+// Enqueue any necessary scripts (Already registered in "Revisr_Admin_Setup").
 wp_enqueue_script( 'revisr_dashboard' );
-wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
-	'ajax_nonce' 	=> wp_create_nonce( 'dashboard_nonce' ),
+wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
+	'ajax_nonce' 	=> wp_create_nonce( 'revisr_dashboard_nonce' ),
 	'discard_msg' 	=> __( 'Are you sure you want to discard your uncommitted changes?', 'revisr' ),
 	'push_msg' 		=> __( 'Are you sure you want to push all committed changes to the remote?', 'revisr' ),
 	'pull_msg' 		=> __( 'Are you sure you want to discard your uncommitted changes and pull from the remote?', 'revisr' ),
 	)
 );
+
+// Prepares the Revisr custom list table.
+$revisr->list_table->prepare_items();
+
 ?>
 <div class="wrap">
 	<div id="icon-options-general" class="icon32"></div>
@@ -35,12 +41,10 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 			<!-- main content -->
 			<div id="post-body-content">
 				<div class="meta-box-sortables ui-sortable">
-					<div class="postbox">
-						<h3><span><?php _e('Recent Activity', 'revisr'); ?></span></h3>
-						<div class="inside" id="revisr_activity">
-							<?php Revisr_Setup::recent_activity(); ?>
-						</div><!-- .inside -->
-					</div><!-- .postbox -->
+					<form id="revisr-list-table">
+						<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+						<?php $revisr->list_table->display(); ?>
+					</form>
 				</div><!-- .meta-box-sortables .ui-sortable -->
 			</div><!-- post-body-content -->
 			<!-- sidebar -->
@@ -50,11 +54,11 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 					<div class="postbox">
 						<h3><span><?php _e('Quick Actions', 'revisr'); ?></span> <div id='loader'><img src="<?php echo $loader_url; ?>"/></div></h3>
 						<div class="inside">
-							<button id="commit-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span class="qb-text">| <?php _e( 'Save Changes', 'revisr' ); ?></span></button>
+							<button id="commit-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Save Changes', 'revisr' ); ?></span></button>
 							<button id="discard-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Discard Changes', 'revisr' ); ?></span></button>
 							<button id="backup-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Backup Database', 'revisr' ); ?></span></button>
-							<button id="push-btn" class="button button-primary quick-action-btn" onlick="confirmPush(); return false;"><span id="push-text" class="qb-text">| <?php _e( 'Push Changes ', 'revisr' ); ?> <span id="unpushed"></span></span></button>
-							<button id="pull-btn" class="button button-primary quick-action-btn" onlick="confirmPull(); return false;"><span id="pull-text" class="qb-text">| <?php _e( 'Pull Changes', 'revisr' ); ?>  <span id="unpulled"></span></span></button>
+							<button id="push-btn" class="button button-primary quick-action-btn"><span id="push-text" class="qb-text">| <?php _e( 'Push Changes ', 'revisr' ); ?> <span id="unpushed"></span></span></button>
+							<button id="pull-btn" class="button button-primary quick-action-btn"><span id="pull-text" class="qb-text">| <?php _e( 'Pull Changes', 'revisr' ); ?>  <span id="unpulled"></span></span></button>
 						</div> <!-- .inside -->
 					</div> <!-- .postbox -->
 					<!-- END QUICK ACTIONS -->
@@ -70,7 +74,7 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 								<div id="branches" class="tabs-panel" style="display: block;">
 									<table id="branches_table" class="widefat">
 										<?php
-											$output = $git->get_branches();
+											$output = $revisr->git->get_branches();
 											if ( is_array( $output ) ) {
 												foreach ($output as $key => $value){
 													$branch = substr($value, 2);
@@ -88,7 +92,7 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 								<div id="tags" class="tabs-panel" style="display: none;">
 									<ul id="tags-list">
 										<?php
-											$tags = $git->tag();
+											$tags = $revisr->git->run( 'tag', array() );
 											if ( is_array( $tags ) ) {
 												foreach ( $tags as $tag ) {
 													echo "<li>$tag</li>";
@@ -98,18 +102,18 @@ wp_localize_script( 'revisr_dashboard', 'dashboard_vars', array(
 									</ul>
 								</div>
 								<div id="manage_branches" class="wp-hidden-children">
-									<h4><a id="manage-branches-link" href="<?php echo get_admin_url() . 'admin.php?page=revisr_branches'; ?>" class="hide-if-no-js">Manage Branches</a></h4>
+									<h4><a id="manage-branches-link" href="<?php echo get_admin_url() . 'admin.php?page=revisr_branches'; ?>" class="hide-if-no-js"><?php _e( 'Manage Branches', 'revisr' ); ?></a></h4>
 								</div>
 							</div>
 						</div>
 					</div>
 					<!-- END BRANCHES/TAGS WIDGET -->
 					<div class="postbox">
-						<h3><span><?php _e( 'About this plugin', 'revisr' ); ?></span></h3>
+						<h3><span><?php _e( 'Documentation', 'revisr' ); ?></span></h3>
 						<div class="inside">
-							<?php printf( __( 'Please read more about this plugin at %s.', 'revisr' ),  ' <a href="http://revisr.io/">revisr.io</a>' ); ?>
+							<?php printf( __( 'Need help? Check out the improved documentation at %s.', 'revisr' ),  ' <a href="http://docs.revisr.io/" target="_blank">http://docs.revisr.io</a>' ); ?>
 							<br><br>
-							&copy; 2014 Expanded Fronts, LLC
+							<?php printf( __( '&copy; %d Expanded Fronts, LLC', 'revisr' ), date( 'Y' ) ); ?>
 						</div> <!-- .inside -->
 					</div> <!-- .postbox -->				
 				</div> <!-- .meta-box-sortables -->		

@@ -10,6 +10,10 @@
 
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+$revisr = Revisr::get_instance();
+$git 	= $revisr->git;
+
 ?>
 
 <div class="wrap">
@@ -18,14 +22,18 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		if ( isset( $_GET['status'] ) && isset( $_GET['branch'] ) ) {
 			switch ( $_GET['status'] ) {
 				case "create_success":
-					$msg = sprintf( __( 'Successfully created branch: %s.', 'revisr' ), $_GET['branch'] );
+					$msg = sprintf( esc_html__( 'Successfully created branch: %s.', 'revisr' ), $_GET['branch'] );
 					echo '<div id="revisr-alert" class="updated" style="margin-top:20px;"><p>' . $msg . '</p></div>';
 					break;
 				case "create_error":
 					$msg = __( 'Failed to create the new branch.', 'revisr' );
+					if ( $git->is_branch( $_GET['branch'] ) ) {
+						$msg = sprintf( esc_html__( 'Failed to create branch: %s (branch already exists).', 'revisr' ), $_GET['branch'] );
+					}
+					echo '<div id="revisr-alert" class="error" style="margin-top:20px;"><p>' . $msg . '</p></div>';
 					break;
 				case "delete_success":
-					$msg = sprintf( __( 'Successfully deleted branch: %s.', 'revisr' ), $_GET['branch'] );
+					$msg = sprintf( esc_html__( 'Successfully deleted branch: %s.', 'revisr' ), $_GET['branch'] );
 					echo '<div id="revisr-alert" class="updated" style="margin-top:20px;"><p>' . $msg . '</p></div>';
 					break;
 				default:
@@ -45,36 +53,40 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					</tr>
 				</thead>
 					<?php
-						$git = new Revisr_Git;
-						$output = $git->get_branches();
-						
+						$output 	= $git->get_branches();
+						$admin_url 	= get_admin_url();
+
 						if ( is_array( $output ) ) {
-							foreach ($output as $key => $value){
+
+							foreach ( $output as $key => $value ) {
 								
-								$branch 		= substr($value, 2);
+								$branch 		= substr( $value, 2 );
 								$num_commits 	= Revisr_Admin::count_commits( $branch );
 								
 								if ( substr( $value, 0, 1 ) === "*" ){
-									echo "<tr>
-									<td><strong>$branch (current branch)</strong></td>
-									<td class='center-td'>$num_commits</td>
-									<td class='center-td'>
-										<a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Checkout</a>
-										<a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Merge</a>
-										<a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Delete</a>
-									</td></tr>";
+									?>
+									<tr>
+										<td><strong><?php printf( __( '%s (current branch)', 'revisr' ), $branch ); ?></strong></td>
+										<td class='center-td'><?php echo $num_commits; ?></td>
+										<td class="center-td">
+											<a class="button disabled branch-btn" onclick="preventDefault()" href="#"><?php _e( 'Checkout', 'revisr' ); ?></a>
+											<a class="button disabled branch-btn" onclick="preventDefault()" href="#"><?php _e( 'Merge', 'revisr' ); ?></a>
+											<a class="button disabled branch-btn" onclick="preventDefault()" href="#"><?php _e( 'Delete', 'revisr' ); ?></a>
+										</td>
+									</tr>
+									<?php
 								} else {
-									$checkout_url 		= get_admin_url() . "admin-post.php?action=process_checkout&branch={$branch}";
-									$merge_url 			= get_admin_url() . "admin-post.php?action=merge_branch_form&branch={$branch}&TB_iframe=true&width=350&height=200";
-									$delete_url 		= get_admin_url() . "admin-post.php?action=delete_branch_form&branch={$branch}&TB_iframe=true&width=350&height=200";
-									$pull_remote_url 	= get_admin_url() . "admin-post.php?action=pull_remote_form&remote_branch={$branch}&TB_iframe=true&width=350&height=200";
+									$checkout_url 		= $admin_url . "admin-post.php?action=process_checkout&branch={$branch}";
+									$merge_url 			= $admin_url . "admin-post.php?action=merge_branch_form&branch={$branch}&TB_iframe=true&width=350&height=200";
+									$delete_url 		= $admin_url . "admin-post.php?action=delete_branch_form&branch={$branch}&TB_iframe=true&width=350&height=200";
+									$pull_remote_url 	= $admin_url . "admin-post.php?action=pull_remote_form&remote_branch={$branch}&TB_iframe=true&width=350&height=200";
 									?>
 									<tr>
 										<td><?php echo $branch; ?></td>
 										<td style='text-align:center;'><?php echo $num_commits; ?></td>
 										<td class="center-td">
 											<a class='button branch-btn' href='<?php echo $checkout_url; ?>'><?php _e( 'Checkout', 'revisr' ); ?></a>
-											<a class='button branch-btn merge-btn thickbox' href="<?php echo $merge_url; ?>" title="<?php _e( 'Merge Branch', 'revisr' ); ?>">Merge</a>
+											<a class='button branch-btn merge-btn thickbox' href="<?php echo $merge_url; ?>" title="<?php _e( 'Merge Branch', 'revisr' ); ?>"><?php _e( 'Merge', 'revisr' ); ?></a>
 											<a class='button branch-btn delete-branch-btn thickbox' href='<?php echo $delete_url; ?>' title='<?php _e( 'Delete Branch', 'revisr' ); ?>'><?php _e( 'Delete', 'revisr' ); ?></a>
 										</td>
 									</tr>

@@ -4,10 +4,10 @@
  *
  * Interacts with the WordPress Settings API.
  *
- * @package   Revisr
- * @license   GPLv3
- * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts, LLC
+ * @package   	Revisr
+ * @license   	GPLv3
+ * @link      	https://revisr.io
+ * @copyright 	Expanded Fronts, LLC
  */
 
 // Disallow direct access.
@@ -19,7 +19,7 @@ class Revisr_Settings {
 	 * The Settings callback class.
 	 * @var Revisr_Settings_Fields()
 	 */
-	public $settings_fields;
+	protected $settings_fields;
 
 	/**
 	 * Initialize the class.
@@ -27,10 +27,6 @@ class Revisr_Settings {
 	 */
 	public function __construct() {
 		$this->settings_fields = new Revisr_Settings_Fields();
-
-		if ( is_admin() ) {
-			add_action( 'admin_init', array( $this, 'init_settings' ) );
-		}
 	}
 
 	/**

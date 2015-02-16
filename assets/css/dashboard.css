@@ -12,7 +12,7 @@
 }
 #commit-btn:before {
 	content: "\f132";
-	margin-top:5px;
+	margin: 5px 1px;
 	display: inline-block;
 	color: #fff;
 	-webkit-font-smoothing: antialiased;
@@ -31,7 +31,7 @@
 }
 #discard-btn:before {
 	content: "\f158";
-	margin-top: 5px;
+	margin: 4px 1px;
 	display: inline-block;
 	color: #fff;
 	-webkit-font-smoothing: antialiased;
@@ -44,30 +44,30 @@
 	color: #fff;
 }
 #backup-btn:before {
-	content: "\f321";
-	margin-top: 5px;
+	content: "\f096";
+	margin: 5px;
 	display: inline-block;
 	color: #fff;
 	-webkit-font-smoothing: antialiased;
-	font: normal 20px/1 'dashicons';
+	font: normal 17px/1 'octicons';
 	float: left;
 }
 #push-btn:before {
-	content: "\f142";
-	margin-top: 5px;
+	content: "\f03d";
+	margin: 5px;
 	display: inline-block;
 	color: #fff;
 	-webkit-font-smoothing: antialiased;
-	font: normal 20px/1 'dashicons';
+	font: normal 20px/1 'octicons';
 	float: left;
 }
 #pull-btn:before {
-	content: "\f140";
-	margin-top: 5px;
+	content: "\f03f";
+	margin: 5px;
 	display: inline-block;
 	color: #fff;
 	-webkit-font-smoothing: antialiased;
-	font: normal 20px/1 'dashicons';
+	font: normal 20px/1 'octicons';
 	float: left;
 }
 .qb-text {
@@ -84,17 +84,12 @@
 }
 
 /* === Recent Activity === */
-#revisr_activity {
-	padding: 0;
-	margin-top: 0px !important;
+.tablenav.top {
+	display: none !important;
 }
-#revisr_activity table {
-	border: 0px;
+th[id=message] {
+	width: 75%;
 }
-#revisr_activity tr:nth-child(odd) {
-	background-color: #f9f9f9;
-}
-
 /* === Branches === */
 .revisr_col_container {
 	margin-top: 25px !important;
@@ -203,4 +198,7 @@
 }
 #post-hook-input {
 	width: 35em;
+}
+#revisr-debug-table {
+	max-width: 750px;
 }

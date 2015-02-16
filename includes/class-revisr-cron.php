@@ -4,10 +4,10 @@
  *
  * Processes scheduled events for Revisr.
  *
- * @package   Revisr
- * @license   GPLv3
- * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts, LLC
+ * @package   	Revisr
+ * @license   	GPLv3
+ * @link      	https://revisr.io
+ * @copyright 	Expanded Fronts, LLC
  */
 
 // Disallow direct access.
@@ -16,14 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Revisr_Cron {
 
 	/**
-	 * The Revisr database class.
+	 * A reference back to the main Revisr instance.
+	 * @var object
 	 */
-	protected $db;
-
-	/**
-	 * The main Git class.
-	 */
-	protected $git;
+	protected $revisr;
 
 	/**
 	 * User options and preferences.
@@ -35,9 +31,7 @@ class Revisr_Cron {
 	 * @access public
 	 */
 	public function __construct() {
-		$revisr 		= Revisr::get_instance();
-		$this->db 		= $revisr->db;
-		$this->git 		= $revisr->git;
+		$this->revisr 	= Revisr::get_instance();
 		$this->options 	= Revisr::get_options();
 	}
 
@@ -60,16 +54,21 @@ class Revisr_Cron {
 	 * @access public
 	 */
 	public function run_automatic_backup() {
-		$date 			= date("F j, Y");
-		$files 			= $this->git->status();
-		$backup_type 	= ucfirst( $this->options['automatic_backups'] );
-		$commit_msg 	= sprintf( __( '%s backup - %s', 'revisr' ), $backup_type, $date );
+		$this->revisr->git 	= new Revisr_Git();
+		$this->revisr->db 	= new Revisr_DB();
+		
+		$date 				= date("F j, Y");
+		$files 				= $this->revisr->git->status();
+		$backup_type 		= ucfirst( $this->options['automatic_backups'] );
+		$commit_msg 		= sprintf( __( '%s backup - %s', 'revisr' ), $backup_type, $date );
+		
 		// In case there are no files to commit.
 		if ( $files == false ) {
 			$files = array();
 		}
-		$this->git->stage_files( $files );
-		$this->git->commit( $commit_msg );
+		
+		$this->revisr->git->stage_files( $files );
+		$this->revisr->git->commit( $commit_msg );
 		$post = array(
 			'post_title'	=> $commit_msg,
 			'post_content'	=> '',
@@ -77,13 +76,75 @@ class Revisr_Cron {
 			'post_status'	=> 'publish',
 		);
 		$post_id = wp_insert_post( $post );
-		add_post_meta( $post_id, 'branch', $this->git->branch );
-		add_post_meta( $post_id, 'commit_hash', $this->git->current_commit() );
+		add_post_meta( $post_id, 'branch', $this->revisr->git->branch );
+		add_post_meta( $post_id, 'commit_hash', $this->revisr->git->current_commit() );
 		add_post_meta( $post_id, 'files_changed', count( $files ) );
 		add_post_meta( $post_id, 'committed_files', $files );
-		$this->db->backup();
-		add_post_meta( $post_id, 'db_hash', $this->git->current_commit() );
+		$this->revisr->db->backup();
+		add_post_meta( $post_id, 'db_hash', $this->revisr->git->current_commit() );
 		$log_msg = sprintf( __( 'The %s backup was successful.', 'revisr' ), $this->options['automatic_backups'] );
 		Revisr_Admin::log( $log_msg, 'backup' );
+	}
+
+	/**
+	 * Processes the "auto-pull" functionality.
+	 * @access public
+	 */
+	public function run_autopull() {
+		$this->revisr->git = new Revisr_Git();
+
+		// If auto-pull isn't enabled, we definitely don't want to do this.
+		if ( $this->revisr->git->get_config( 'revisr', 'auto-pull' ) !== 'true' ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
+
+		// Verify the provided token matches the token stored locally.
+		$remote = new Revisr_Remote();
+		$remote->check_token();
+
+		// If we're still running at this point, we've successfully authenticated.
+		$this->revisr->git->reset();
+		$this->revisr->git->fetch();
+
+		$commits_since = $this->revisr->git->run( 'log', array( $this->revisr->git->branch . '..' . $this->revisr->git->remote . '/' . $this->revisr->git->branch, '--pretty=oneline' ) );
+
+		if ( is_array( $commits_since ) ) {
+			// Iterate through the commits to pull and add them to the database.
+			foreach ( $commits_since as $commit ) {
+				$commit_hash = substr( $commit, 0, 7 );
+				$commit_msg = substr( $commit, 40 );
+				$show_files = $this->revisr->git->run( 'show', array( '--pretty=format:', '--name-status', $commit_hash ) );
+				
+				if ( is_array( $show_files ) ) {
+					$files_changed = array_filter( $show_files );			
+					$post = array(
+						'post_title'	=> $commit_msg,
+						'post_content'	=> '',
+						'post_type'		=> 'revisr_commits',
+						'post_status'	=> 'publish',
+					);
+					$post_id = wp_insert_post( $post );
+
+					add_post_meta( $post_id, 'commit_hash', $commit_hash );
+					add_post_meta( $post_id, 'branch', $this->revisr->git->branch );
+					add_post_meta( $post_id, 'files_changed', count( $files_changed ) );
+					add_post_meta( $post_id, 'committed_files', $files_changed );
+
+					$view_link = get_admin_url() . "post.php?post=$post_id&action=edit";
+					$msg = sprintf( __( 'Pulled <a href="%s">#%s</a> from %s/%s.', 'revisr' ), $view_link, $commit_hash, $this->revisr->git->remote, $this->revisr->git->branch );
+					Revisr_Admin::log( $msg, 'pull' );
+				}
+			}
+		}
+
+		if ( $this->revisr->git->get_config( 'revisr', 'import-pulls' ) === 'true' ) {
+			$this->revisr->db = new Revisr_DB();
+			$this->revisr->db->backup();
+			$undo_hash = $this->revisr->git->current_commit();
+			$this->revisr->git->set_config( 'revisr', 'last-db-backup', $undo_hash );
+		}
+		// Pull the changes or return an error on failure.
+		$this->revisr->git->pull();
+
 	}
 }

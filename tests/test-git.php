@@ -3,77 +3,68 @@
 class RevisrGitTest extends WP_UnitTestCase {
 
 	/**
-	 * The Git object.
+	 * The main Revisr object.
 	 */
-	protected $git;
+	protected $revisr;
 
 	/**
 	 * Initialize the Git object.
 	 */
     function setUp() {
-		$this->git = new Revisr_Git();
+		$this->revisr = Revisr::get_instance();
+		$this->revisr->git = new Revisr_Git();
 	}
 
 	/**
-	 * Tests for the current Git version.
-	 * Expects string containing "git".
+	 * Restore the Git object.
 	 */
-	function test_version() {
-		$version = $this->git->version();
-		$this->assertStringStartsWith( 'git', $version );
+	function tearDown() {
+		if ( $this->revisr->git->current_branch() != 'master' ) {
+			$this->revisr->git->checkout( 'master' );
+		}
 	}
 
 	/**
 	 * Tests the init function.
 	 */
 	function test_init_repo() {
-		if ( ! $this->git->is_repo() ) {
-			$this->git->init_repo();
+		if ( ! $this->revisr->git->is_repo ) {
+			$this->revisr->git->init_repo();
 		}
-		$this->assertEquals( true, $this->git->is_repo() );
+		$this->assertEquals( true, $this->revisr->git->is_repo );
 	}
 
 	/**
 	 * Tests setting the Git username.
 	 */
-	function test_config_user_name() {
-		$this->git->config_user_name( 'revisr' );
-		$current_user = $this->git->run( 'config user.name' );
-		$this->assertEquals( 'revisr', $current_user[0] );
+	function test_config() {
+		// Set the Git username and email address.
+		$this->revisr->git->set_config( 'user', 'name', 'revisr' );
+		$this->revisr->git->set_config( 'user', 'email', 'support@expandedfronts.com' );
+		
+		// Grab the values via get_config().
+		$current_user 	= $this->revisr->git->get_config( 'user', 'name' );
+		$current_email 	= $this->revisr->git->get_config( 'user', 'email' );
+		
+		$this->assertEquals( 'revisr', $current_user );
+		$this->assertEquals( 'support@expandedfronts.com', $current_email );
 	}
 
-	/**
-	 * Tests setting the Git email address.
-	 */
-	function test_config_user_email() {
-		$this->git->config_user_email( 'support@expandedfronts.com' );
-		$current_email = $this->git->run( 'config user.email' );
-		$this->assertEquals( 'support@expandedfronts.com', $current_email[0] );
-	}
 
 	/**
-	 * Tests setting the dev URL.
+	 * Tests for the current Git version.
+	 * Expects string containing "git".
 	 */
-	function test_config_revisr_url() {
-		$this->git->config_revisr_url( 'dev', 'http://revisr.io' );
-		$current_url = $this->git->config_revisr_url( 'dev' );
-		$this->assertEquals( 'http://revisr.io', $current_url );
-	}
-
-	/**
-	 * Tests setting a path in the .git/config.
-	 */
-	function test_config_revisr_path() {
-		$this->git->config_revisr_path( 'mysql', '/Applications/MAMP/Library/bin/' );
-		$current_mysql = $this->git->config_revisr_path( 'mysql' );
-		$this->assertEquals( '/Applications/MAMP/Library/bin/', $current_mysql[0] );
+	function test_version() {
+		$version = $this->revisr->git->version();
+		$this->assertStringStartsWith( 'git', $version );
 	}
 
 	/**
 	 * Tests the current dir with an initialized repository.
 	 */
-	function test_current_dir() {
-		$dir = $this->git->current_dir();
+	function test_git_dir() {
+		$dir = $this->revisr->git->get_git_dir();
 		$this->assertFileExists( $dir );
 		$this->assertFileExists( $dir . '/.git/config' );
 	}
@@ -82,16 +73,16 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests a commit.
 	 */
 	function test_commit() {
-		$this->git->run( 'add -A' );
-		$this->git->commit( 'Committed pending files' );
-		$this->assertEquals( 0, $this->git->count_untracked() );
+		$this->revisr->git->run( 'add', array( '-A' ) );
+		$this->revisr->git->commit( 'Committed pending files' );
+		$this->assertEquals( 0, $this->revisr->git->count_untracked() );
 	}
 
 	/**
 	 * Tests the branches function.
 	 */
 	function test_branches() {
-		$branches = $this->git->get_branches();
+		$branches = $this->revisr->git->get_branches();
 		$this->assertContains( '* ', $branches[0] );
 	}
 
@@ -99,18 +90,18 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests creating a new branch.
 	 */
 	function test_create_branch() {
-		$this->git->create_branch( 'testbranch' );
-		$this->git->create_branch( 'deletethisbranch' );
-		$this->assertEquals( true, $this->git->is_branch( 'testbranch' ) );
-		$this->assertEquals( true, $this->git->is_branch( 'deletethisbranch' ) );
+		$this->revisr->git->create_branch( 'testbranch' );
+		$this->revisr->git->create_branch( 'deletethisbranch' );
+		$this->assertEquals( true, $this->revisr->git->is_branch( 'testbranch' ) );
+		$this->assertEquals( true, $this->revisr->git->is_branch( 'deletethisbranch' ) );
 	}
 
 	/**
 	 * Tests the is_branch function.
 	 */
 	function test_is_branch() {
-		$real_branch = $this->git->is_branch( 'testbranch' );
-		$fake_branch = $this->git->is_branch( 'fakebranch' );
+		$real_branch = $this->revisr->git->is_branch( 'testbranch' );
+		$fake_branch = $this->revisr->git->is_branch( 'fakebranch' );
 		$this->assertEquals( true, $real_branch );
 		$this->assertEquals( false, $fake_branch );
 	}
@@ -119,8 +110,8 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests checking out a branch.
 	 */
 	function test_checkout() {
-		$this->git->checkout( 'testbranch' );
-		$current_branch = $this->git->current_branch();
+		$this->revisr->git->checkout( 'testbranch' );
+		$current_branch = $this->revisr->git->current_branch();
 		$this->assertEquals( 'testbranch', $current_branch );
 	}
 
@@ -128,8 +119,9 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests deleting a branch.
 	 */
 	function test_delete_branch() {
-		$this->git->delete_branch( 'deletethisbranch' );
-		$is_branch = $this->git->is_branch( 'deletethisbranch' );
+		$this->revisr->git->delete_branch( 'testbranch', false );
+		$this->revisr->git->delete_branch( 'deletethisbranch', false );
+		$is_branch = $this->revisr->git->is_branch( 'deletethisbranch' );
 		$this->assertEquals( false, $is_branch );
 	}
 
@@ -137,8 +129,9 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the count_untracked() function.
 	 */
 	function test_count_untracked() {
-		fopen("sample-file_2.txt", "w");
-		$new_untracked = $this->git->count_untracked();
+		$time = time();
+		fopen("sample-file_$time.txt", "w");
+		$new_untracked = $this->revisr->git->count_untracked();
 		$this->assertEquals( 1, $new_untracked );
 	}
 
@@ -146,8 +139,8 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the reset functionality.
 	 */
 	function test_reset() {
-		$this->git->reset( '--hard', 'HEAD', true );
-		$after_reset  = $this->git->count_untracked();
+		$this->revisr->git->reset( '--hard', 'HEAD', true );
+		$after_reset  = $this->revisr->git->count_untracked();
 		$this->assertEquals( 0, $after_reset );
 	}
 
@@ -155,7 +148,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the Git status functionality.
 	 */
 	function test_status() {
-		$status = $this->git->status();
+		$status = $this->revisr->git->status();
 		$this->assertNotEquals( false, $status );
 	}
 
@@ -163,17 +156,47 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the current_commit() function. Expects 7 digit short SHA1 hash.
 	 */
 	function test_current_commit() {
-		$current 	= $this->git->current_commit();
+		$current 	= $this->revisr->git->current_commit();
 		$length 	= strlen($current);
 		$this->assertEquals( 7, $length );
+	}
+
+	/**
+	 * Test the current_remote() method. Expects origin since we haven't changed it.
+	 */
+	function test_current_remote() {
+		$remote = $this->revisr->git->current_remote();
+		$this->assertEquals( 'origin', $remote );
+	}
+
+	/**
+	 * Tests the get_status() method.
+	 */
+	function test_get_status() {
+		$test_modified 	= Revisr_Git::get_status( 'MM' );
+		$test_deleted 	= Revisr_Git::get_status( 'DD' );
+		$test_added 	= Revisr_Git::get_status( 'AA' );
+		$test_renamed 	= Revisr_Git::get_status( 'RR' );
+		$test_untracked = Revisr_Git::get_status( '??' );
+		$test_invalid 	= Revisr_Git::get_status( '$$' );
+		
+		$this->assertEquals( 'Modified', $test_modified );
+		$this->assertEquals( 'Deleted', $test_deleted );
+		$this->assertEquals( 'Added', $test_added );
+		$this->assertEquals( 'Renamed', $test_renamed );
+		$this->assertEquals( 'Untracked', $test_untracked );
+		$this->assertFalse( $test_invalid );
+
 	}
 
 	/**
 	 * Tests the tag() function.
 	 */
 	function test_tag() {
-		$this->git->tag( 'v1.0' );
-		$tags 	= $this->git->tag();
-		$this->assertEquals( 'v1.0', $tags[0] );
+		$time = time();
+		$this->revisr->git->tag( $time );
+		$tags = serialize( $this->revisr->git->run( 'tag', array() ) );
+		$this->assertContains( "$time", $tags );
+		$this->revisr->git->run( 'tag', array( '-d', $time ) );
 	}
 }

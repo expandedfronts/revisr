@@ -1,7 +1,7 @@
 === Revisr ===
 Contributors: ExpandedFronts
 Tags: revisr, git, git management, revision tracking, revision, backup, database, database backup, database plugin, deploy, commit, bitbucket, github, version control
-Requires at least: 3.7
+Requires at least: 3.9.2
 Tested up to: 4.1
 Stable tag: trunk
 License: GPLv3
@@ -78,6 +78,17 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 
 == Changelog ==
+
+= 1.9 =
+* Added support for multiple commit authors
+* Added basic support for custom WordPress file structures
+* Added support for PHP autoloading when available
+* Added pagination to the "Recent Activity" table on the dashboard page
+* Added "Debug" page to the "Revisr Settings" page
+* Fixed bug with viewing diffs in Firefox, 
+* Fixed potential XSS and user escalation vulnerabilities, props @jdgrimes
+* General UI improvements
+* General performance improvements
 
 = 1.8.3 =
 * Fixed bug with spaces in filename

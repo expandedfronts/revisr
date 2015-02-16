@@ -4,10 +4,10 @@
  *
  * Processes user actions and delegates work to the correct class.
  *
- * @package   Revisr
- * @license   GPLv3
- * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts, LLC
+ * @package   	Revisr
+ * @license   	GPLv3
+ * @link      	https://revisr.io
+ * @copyright 	Expanded Fronts, LLC
  */
 
 // Disallow direct access.
@@ -16,16 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Revisr_Process {
 
 	/**
-	 * The Revisr database class.
-	 * @var Revisr_DB()
+	 * A reference back to the main Revisr instance.
+	 * @var object
 	 */
-	protected $db;
-
-	/**
-	 * The Revisr Git class.
-	 * @var Revisr_Git()
-	 */
-	protected $git;
+	protected $revisr;
 
 	/**
 	 * User options and preferences.
@@ -38,9 +32,7 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function __construct() {
-		$revisr 		= Revisr::get_instance();
-		$this->db 		= $revisr->db;
-		$this->git 		= $revisr->git;
+		$this->revisr 	= Revisr::get_instance();
 		$this->options 	= Revisr::get_options();
 	}
 
@@ -51,7 +43,7 @@ class Revisr_Process {
 	 * @return boolean
 	 */
 	public function process_is_repo() {
-		if ( $this->git->is_repo() ) {
+		if ( $this->revisr->git->is_repo ) {
 			return true;
 		} else {
 			$init_url 	= wp_nonce_url( get_admin_url() . 'admin-post.php?action=init_repo', 'init_repo', 'revisr_init_nonce' );
@@ -66,21 +58,22 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_checkout( $args = '', $new_branch = false ) {
-		if ( $this->git->config_revisr_option( 'import-checkouts' ) === 'true' ) {
-			$this->db->backup();
+
+		if ( $this->revisr->git->get_config( 'revisr', 'import-checkouts' ) === 'true' ) {
+			$this->revisr->db->backup();
 		}
 
 		if ( $args == '' ) {
-			$branch = escapeshellarg( $_REQUEST['branch'] );
+			$branch = $_REQUEST['branch'];
 		} else {
 			$branch = $args;
 		}
 		
-		$this->git->reset();
-		$this->git->checkout( $branch );
+		$this->revisr->git->reset();
+		$this->revisr->git->checkout( $branch );
 		
-		if ( $this->git->config_revisr_option( 'import-checkouts' ) === 'true' && $new_branch === false ) {
-			$this->db->import();
+		if ( $this->revisr->git->get_config( 'revisr', 'import-checkouts' ) === 'true' && $new_branch === false ) {
+			$this->revisr->db->import();
 		}
 		$url = get_admin_url() . 'admin.php?page=revisr';
 		wp_redirect( $url );
@@ -92,30 +85,30 @@ class Revisr_Process {
 	 */
 	public function process_commit() {
 		if ( isset( $_REQUEST['_wpnonce'] ) && isset( $_REQUEST['_wp_http_referer'] ) ) {
+			
+			$id 			= get_the_ID();
 			$commit_msg 	= $_REQUEST['post_title'];
 			$post_new 		= get_admin_url() . 'post-new.php?post_type=revisr_commits';
 			
 			// Require a message to be entered for the commit.
 			if ( $commit_msg == 'Auto Draft' || $commit_msg == '' ) {
-				$url = $post_new . '&message=42';
-				wp_redirect( $url );
+				wp_redirect( $post_new . '&message=42' );
 				exit();
 			}
 
 			// Stage any necessary files, or cancel if none are found.
 			if ( isset( $_POST['staged_files'] ) ) {
-				$this->git->stage_files( $_POST['staged_files'] );
+				$this->revisr->git->stage_files( $_POST['staged_files'] );
 				$staged_files = $_POST['staged_files'];
 			} else {
-				$url = $post_new . '&message=43';
-				wp_redirect( $url );
+				wp_redirect( $post_new . '&message=43' );
 				exit();
 			}
 
 			// Add the necessary post meta and make the commit in Git.
-			add_post_meta( get_the_ID(), 'committed_files', $staged_files );
-			add_post_meta( get_the_ID(), 'files_changed', count( $staged_files ) );
-			$this->git->commit( $commit_msg, 'commit' );	
+			add_post_meta( $id, 'committed_files', $staged_files );
+			add_post_meta( $id, 'files_changed', count( $staged_files ) );
+			$this->revisr->git->commit( $commit_msg, 'commit' );	
 		}
 	}
 	
@@ -125,17 +118,22 @@ class Revisr_Process {
 	 */
 	public function process_create_branch() {
 		$branch = $_REQUEST['branch_name'];
-		$result = $this->git->create_branch( $branch );
-		if ( isset( $_REQUEST['checkout_new_branch'] ) ) {
-			$this->git->checkout( $branch );
-		}
+		$result = $this->revisr->git->create_branch( $branch );
+
 		if ( $result !== false ) {
 			$msg = sprintf( __( 'Created new branch: %s', 'revisr' ), $branch );
 			Revisr_Admin::log( $msg, 'branch' );
+
+			if ( isset( $_REQUEST['checkout_new_branch'] ) ) {
+				$this->revisr->git->checkout( $branch );
+			}
+
 			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_success&branch=' . $branch );
 		} else {
 			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_error&branch=' . $branch );
 		}
+
+		exit();
 	}
 	
 	/**
@@ -143,11 +141,11 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_delete_branch() {
-		if ( isset( $_POST['branch'] ) && $_POST['branch'] != $this->git->branch ) {
+		if ( isset( $_POST['branch'] ) && $_POST['branch'] != $this->revisr->git->branch ) {
 			$branch = $_POST['branch'];
-			$this->git->delete_branch( $branch );
+			$this->revisr->git->delete_branch( $branch );
 			if ( isset( $_POST['delete_remote_branch'] ) ) {
-				$this->git->run( "push {$this->git->remote} --delete {$branch}" );
+				$this->revisr->git->run( "push {$this->revisr->git->remote} --delete {$branch}" );
 			}
 		}
 		exit();
@@ -158,10 +156,12 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_discard() {
-		$this->git->reset( '--hard', 'HEAD', true );
-		Revisr_Admin::log( __('Discarded all uncommitted changes.', 'revisr'), 'discard' );
-		Revisr_Admin::alert( __('Successfully discarded any uncommitted changes.', 'revisr') );
-		exit();
+		if ( wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
+			$this->revisr->git->reset( '--hard', 'HEAD', true );
+			Revisr_Admin::log( __('Discarded all uncommitted changes.', 'revisr'), 'discard' );
+			Revisr_Admin::alert( __('Successfully discarded any uncommitted changes.', 'revisr') );
+			exit();
+		}
 	}
 
 	/**
@@ -172,7 +172,7 @@ class Revisr_Process {
 		if ( ! wp_verify_nonce( $_REQUEST['revisr_init_nonce'], 'init_repo' ) ) {
 			wp_die( 'Cheatin&#8217; uh?', 'revisr' );
 		}
-		$this->git->init_repo();
+		$this->revisr->git->init_repo();
 	}
 
 	/**
@@ -181,7 +181,7 @@ class Revisr_Process {
 	 */
 	public function process_import() {
 		if ( isset( $_REQUEST['revisr_import_untracked'] ) && is_array( $_REQUEST['revisr_import_untracked'] ) ) {
-			$this->db->import( $_REQUEST['revisr_import_untracked'] );
+			$this->revisr->db->import( $_REQUEST['revisr_import_untracked'] );
 			_e( 'Importing...', 'revisr' );
 			echo "<script>
 					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
@@ -194,9 +194,9 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_merge() {
-		$this->git->merge( $_REQUEST['branch'] );
+		$this->revisr->git->merge( $_REQUEST['branch'] );
 		if ( isset( $_REQUEST['import_db'] ) && $_REQUEST['import_db'] == 'on' ) {
-			$this->db->import();
+			$this->revisr->db->import();
 		}
 	}
 	
@@ -205,29 +205,21 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_pull() {
-		// Determine whether this is a request from the dashboard or a POST request.
-		$from_dash = check_ajax_referer( 'dashboard_nonce', 'security', false );
-		if ( $from_dash == false ) {
-
-			if ( $this->git->config_revisr_option( 'auto-pull' ) !== 'true' ) {
-				wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-			}
-
-			$remote = new Revisr_Remote();
-			$remote->check_token();
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
 
-		$this->git->reset();
-		$this->git->fetch();
+		$this->revisr->git->reset();
+		$this->revisr->git->fetch();
 
-		$commits_since  = $this->git->run( "log {$this->git->branch}..{$this->git->remote}/{$this->git->branch} --pretty=oneline" );
+		$commits_since = $this->revisr->git->run( 'log', array( $this->revisr->git->branch . '..' . $this->revisr->git->remote . '/' . $this->revisr->git->branch, '--pretty=oneline' ) );
 
 		if ( is_array( $commits_since ) ) {
 			// Iterate through the commits to pull and add them to the database.
 			foreach ( $commits_since as $commit ) {
 				$commit_hash = substr( $commit, 0, 7 );
 				$commit_msg = substr( $commit, 40 );
-				$show_files = $this->git->run( 'show --pretty="format:" --name-status ' . $commit_hash );
+				$show_files = $this->revisr->git->run( 'show', array( '--pretty=format:', '--name-status', $commit_hash ) );
 				
 				if ( is_array( $show_files ) ) {
 					$files_changed = array_filter( $show_files );			
@@ -240,23 +232,24 @@ class Revisr_Process {
 					$post_id = wp_insert_post( $post );
 
 					add_post_meta( $post_id, 'commit_hash', $commit_hash );
-					add_post_meta( $post_id, 'branch', $this->git->branch );
+					add_post_meta( $post_id, 'branch', $this->revisr->git->branch );
 					add_post_meta( $post_id, 'files_changed', count( $files_changed ) );
 					add_post_meta( $post_id, 'committed_files', $files_changed );
 
 					$view_link = get_admin_url() . "post.php?post=$post_id&action=edit";
-					$msg = sprintf( __( 'Pulled <a href="%s">#%s</a> from %s/%s.', 'revisr' ), $view_link, $commit_hash, $this->git->remote, $this->git->branch );
+					$msg = sprintf( __( 'Pulled <a href="%s">#%s</a> from %s/%s.', 'revisr' ), $view_link, $commit_hash, $this->revisr->git->remote, $this->revisr->git->branch );
 					Revisr_Admin::log( $msg, 'pull' );
 				}
 			}
 		}
-		if ( $this->git->config_revisr_option( 'import-pulls' ) === 'true' ) {
-			$this->db->backup();
-			$undo_hash = $this->git->current_commit();
-			$this->git->run( "config --add revisr.last-db-backup $undo_hash" );
+
+		if ( $this->revisr->git->get_config( 'revisr', 'import-pulls' ) === 'true' ) {
+			$this->revisr->db->backup();
+			$undo_hash = $this->revisr->git->current_commit();
+			$this->revisr->git->set_config( 'revisr', 'last-db-backup', $undo_hash );
 		}
 		// Pull the changes or return an error on failure.
-		$this->git->pull();
+		$this->revisr->git->pull();
 	}
 	
 	/**
@@ -264,43 +257,86 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_push() {
-		$this->git->reset();
-		$this->git->push();
+		if ( wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
+			$this->revisr->git->push();
+		}
 	}
-	
+
+	/**
+	 * Processes a request to revert, routing to the necessary functions.
+	 * @access public
+	 * @param  string $type What to revert
+	 * @return null
+	 */
+	public function process_revert( $type = '' ) {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
+
+		// Determine how to handle the request.
+		if ( isset( $_REQUEST['revert_type'] ) && $_REQUEST['revert_type'] !== '' ) {
+			$revert_type = $_REQUEST['revert_type'];
+		} else {
+			$revert_type = $type;
+		}
+
+		// Run the action.
+		switch ( $revert_type ) {
+			case 'files':
+				$this->process_revert_files( false );
+				break;
+			case 'db':
+				$this->revisr->db->restore( false );
+				break;
+			case 'files_and_db':
+				$this->process_revert_files( false );
+				$this->revisr->db->restore( false );
+				break;
+			default:
+		}
+
+		if ( isset( $_REQUEST['echo_redirect'] ) ) {
+			_e( 'Revert completed. Redirecting...', 'revisr' );
+			echo "<script>window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';</script>";
+		} else {
+			wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
+		}
+	}
+
 	/**
 	 * Processes the request to revert to an earlier commit.
 	 * @access public
 	 */
-	public function process_revert() {
-	    if ( isset( $_GET['revert_nonce'] ) && wp_verify_nonce( $_GET['revert_nonce'], 'revert' ) ) {
+	public function process_revert_files( $redirect = true ) {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
 			
-			$branch 	= $_GET['branch'];
-			$commit 	= $_GET['commit_hash'];			
-			$commit_msg = sprintf( __( 'Reverted to commit: #%s.', 'revisr' ), $commit );
+		$branch 	= $_REQUEST['branch'];
+		$commit 	= $_REQUEST['commit_hash'];			
+		$commit_msg = sprintf( __( 'Reverted to commit: #%s.', 'revisr' ), $commit );
 
-			if ( $branch != $this->git->branch ) {
-				$this->git->checkout( $branch );
-			}
+		if ( $branch != $this->revisr->git->branch ) {
+			$this->revisr->git->checkout( $branch );
+		}
 
-			$this->git->reset( '--hard', 'HEAD', true );
-			$this->git->reset( '--hard', $commit );
-			$this->git->reset( '--soft', 'HEAD@{1}' );
-			$this->git->run( 'add -A' );
-			$this->git->commit( $commit_msg );
-			$this->git->auto_push();
-			
-			$post_url = get_admin_url() . "post.php?post=" . $_GET['post_id'] . "&action=edit";
+		$this->revisr->git->reset( '--hard', 'HEAD', true );
+		$this->revisr->git->reset( '--hard', $commit );
+		$this->revisr->git->reset( '--soft', 'HEAD@{1}' );
+		$this->revisr->git->run( 'add', array( '-A' ) );
+		$this->revisr->git->commit( $commit_msg );
+		$this->revisr->git->auto_push();
+		
+		$post_url = get_admin_url() . "post.php?post=" . $_REQUEST['post_id'] . "&action=edit";
 
-			$msg = sprintf( __( 'Reverted to commit <a href="%s">#%s</a>.', 'revisr' ), $post_url, $commit );
-			$email_msg = sprintf( __( '%s was reverted to commit #%s', 'revisr' ), get_bloginfo(), $commit );
-			Revisr_Admin::log( $msg, 'revert' );
-			Revisr_Admin::notify( get_bloginfo() . __( ' - Commit Reverted', 'revisr' ), $email_msg );
+		$msg = sprintf( __( 'Reverted to commit <a href="%s">#%s</a>.', 'revisr' ), $post_url, $commit );
+		$email_msg = sprintf( __( '%s was reverted to commit #%s', 'revisr' ), get_bloginfo(), $commit );
+		Revisr_Admin::log( $msg, 'revert' );
+		Revisr_Admin::notify( get_bloginfo() . __( ' - Commit Reverted', 'revisr' ), $email_msg );
+		
+		if ( true === $redirect ) {
 			$redirect = get_admin_url() . "admin.php?page=revisr";
 			wp_redirect( $redirect );
-		}
-		else {
-			wp_die( __( 'You are not authorized to access this page.', 'revisr' ) );
 		}
 	}
 }

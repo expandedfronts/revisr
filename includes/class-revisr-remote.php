@@ -4,16 +4,29 @@
  *
  * Processes remote updates for Revisr.
  *
- * @package   Revisr
- * @license   GPLv3
- * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts, LLC
+ * @package   	Revisr
+ * @license   	GPLv3
+ * @link      	https://revisr.io
+ * @copyright 	Expanded Fronts, LLC
  */
 
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Revisr_Remote extends Revisr_Admin {
+class Revisr_Remote {
+
+	/**
+	 * The current Revisr instance.
+	 */
+	protected $revisr;
+
+	/**
+	 * Initiates the class and grabs the Revisr instance.
+	 * @access public
+	 */
+	public function __construct() {
+		$this->revisr = Revisr::get_instance();
+	}
 
 
 	/**
@@ -22,21 +35,20 @@ class Revisr_Remote extends Revisr_Admin {
 	 * @return string|boolean The token, or false on complete failure.
 	 */
 	public function get_token() {
-		$check = $this->git->run( 'config revisr.token' );
+		$check = $this->revisr->git->get_config( 'revisr', 'token' );
 
 		if ( $check === false ) {
-			$token = wp_generate_password( 16, false, false );
-			$save  = $this->git->run( "config revisr.token $token" );
+			// If there is no token, generate a new one.
+			$token 	= wp_generate_password( 16, false, false );
+			$save 	= $this->revisr->git->set_config( 'revisr', 'token', $token );
 
 			if ( $save !== false ) {
 				return $token;
 			} else {
 				return false;
 			}
-		} elseif ( is_array( $check ) ) {
-			return $check[0];
 		} else {
-			return false;
+			return $check;
 		}
 	}
 
@@ -45,15 +57,27 @@ class Revisr_Remote extends Revisr_Admin {
 	 * @access public
 	 * @return boolean
 	 */
-	public function check_token() {
-		if ( isset( $_REQUEST['token'] ) ) {
-			$safe_token = $this->git->run( 'config revisr.token' );
-			if ( is_array( $safe_token ) ) {
-				if ( $safe_token[0] === $_REQUEST['token'] ) {
-					return true;
-				}
-			}			
+	public function check_token( $token = '' ) {
+
+		// Allow testing of this function.
+		if ( $token !== '' ) {
+			$token_to_check = $token;
 		}
+
+		// This is set in the Webhook URL.
+		if ( isset( $_REQUEST['token'] ) && $_REQUEST['token'] !== '' ) {
+			$token_to_check = $_REQUEST['token'];
+		}
+
+		// Compare the tokens and return true if a complete match.
+		if ( isset( $token_to_check ) ) {
+			$safe_token = $this->revisr->git->get_config( 'revisr', 'token' );
+			if ( hash_equals( $safe_token, $token_to_check ) ) {
+				return true;
+			}
+		}
+
+		// Die if not.
 		wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 	}
 
@@ -67,7 +91,7 @@ class Revisr_Remote extends Revisr_Admin {
 		);
 		$args 	= array(
 			'method' 		=> 'POST',
-			'timeout'		=> '15',
+			'timeout'		=> '30',
 			'redirection'	=> '5',
 			'httpversion'	=> '1.0',
 			'blocking'		=> true,
@@ -76,7 +100,7 @@ class Revisr_Remote extends Revisr_Admin {
 		);
 
 		// Get the URL and send the request.
-		$get_url = $this->git->config_revisr_url( 'webhook' );
+		$get_url = $this->revisr->git->get_config( 'revisr', 'webhook-url' );
 
 		if ( $get_url !== false ) {
 			$webhook = urldecode( $get_url );

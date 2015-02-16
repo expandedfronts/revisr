@@ -8,7 +8,7 @@
  * Plugin Name:       Revisr
  * Plugin URI:        http://revisr.io/
  * Description:       A plugin that allows users to manage WordPress websites with Git repositories.
- * Version:           1.8.3
+ * Version:           1.9
  * Author:            Expanded Fronts, LLC
  * Author URI:        http://expandedfronts.com/
  * License:           GPL-3.0+
@@ -49,77 +49,52 @@ class Revisr {
 	private static $instance;
 
 	/**
-	 * The "Revisr_Git" object.
-	 * @var object
+	 * Stores the Revisr_Admin object.
+	 * @var Revisr_Admin
 	 */
-	public $git;
+	public $admin;
 
 	/**
-	 * The "Revisr_DB" object.
-	 * @var object
+	 * Stores the Revisr_DB object.
+	 * @var Revisr_DB
 	 */
 	public $db;
 
 	/**
-	 * The "Revisr_Admin" object.
-	 * @var object
+	 * Stores the Revisr_Git object.
+	 * @var Revisr_Git
 	 */
-	public $admin;
+	public $git;
+
+	/**
+	 * Stores the Revisr_Process object.
+	 * @var Revisr_Process
+	 */
+	public $process;
+
+	/**
+	 * Stores the Revisr_List_Table object.
+	 * @var Revisr_List_Table
+	 */
+	public $list_table;
+
+	/**
+	 * Stores the Revisr_Settings object
+	 * @var Revisr_Settings
+	 */
+	public $settings;
+
+	/**
+	 * The name of the plugin.
+	 * @var string
+	 */
+	public $plugin_name = 'revisr';
 
 	/**
 	 * An array of user options and preferences.
 	 * @var array
 	 */
 	public $options;
-
-	/**
-	 * The name of the plugin.
-	 * @var string
-	 */
-	public $plugin_name;
-
-	/**
-	 * The name of the database table.
-	 * @var string
-	 */
-	public $table_name;
-
-	/**
-	 * The "Revisr_Admin_Setup" object.
-	 * @var object
-	 */
-	private $admin_setup;
-
-	/**
-	 * The "Revisr_Commits" object.
-	 * @var object
-	 */
-	private $commits;
-
-	/**
-	 * The "Revisr_Process" object.
-	 * @var object
-	 */
-	private $process;
-
-	/**
-	 * The "Revisr_Settings" object.
-	 * @var object
-	 */
-	private $settings;
-
-	/**
-	 * The "Revisr_Cron" object.
-	 * @var object
-	 */
-	private $cron;
-
-	/**
-	 * The "Revisr_Remote" object.
-	 * @var object
-	 */
-	private $remote;
-
 
 	/**
 	 * Empty construct, use get_instance() instead.
@@ -155,16 +130,21 @@ class Revisr {
 	public static function get_instance() {
 		if ( null == self::$instance ) {
 			self::$instance 				= new self;
-			self::$instance->plugin_name 	= 'revisr';
-			self::$instance->table_name 	= self::$instance->get_table_name();
 			self::$instance->options 		= self::$instance->get_options();
 			
 			self::$instance->define_constants();
-			self::$instance->load_dependencies();
+			
+			// Try to autoload the classes.
+			if ( function_exists( 'spl_autoload_register' ) ) {
+				spl_autoload_register( array( __CLASS__, 'autoload' ) );
+			} else {
+				self::$instance->load_dependencies();
+			}
+			
 			self::$instance->set_locale();
 			self::$instance->load_public_hooks();
 
-			if ( is_admin() ) {
+			if ( current_user_can( 'install_plugins' ) && is_admin() ) {
 				self::$instance->load_admin_hooks();
 			}
 		}
@@ -172,36 +152,23 @@ class Revisr {
 	}
 
 	/**
-	 * Defines the constants used by Revisr.
-	 * @access public
+	 * Callback for spt_autoload_register.
+	 * @access private
+	 * @param  string $class The class to load.
+	 * @since  1.9
 	 */
-	public function define_constants() {
-		// Defines the plugin root file.
-		if ( ! defined( 'REVISR_FILE' ) ) {
-			define( 'REVISR_FILE', __FILE__ );
-		}
-
-		// Defines the plugin path.
-		if ( ! defined( 'REVISR_PATH' ) ) {
-			define( 'REVISR_PATH', plugin_dir_path( REVISR_FILE ) );
-		}
-
-		// Defines the plugin URL.
-		if ( ! defined( 'REVISR_URL' ) ) {
-			define( 'REVISR_URL', plugin_dir_url( REVISR_FILE ) );
-		}
-
-		// Defines the plugin version.
-		if ( ! defined( 'REVISR_VERSION' ) ) {
-			define( 'REVISR_VERSION', '1.8' );
+	private static function autoload( $class ) {
+		$file = REVISR_PATH . 'includes/class-' . strtolower( str_replace( '_', '-', $class ) ) . '.php';
+		if ( is_readable( $file ) ) {
+			require( $file );
 		}
 	}
 
 	/**
-	 * Loads the plugin dependencies.
-	 * @access public
+	 * Loads dependencies if autoloading is not enabled.
+	 * @access private
 	 */
-	public function load_dependencies() {
+	private function load_dependencies() {
 		require_once REVISR_PATH . 'includes/class-revisr-i18n.php';
 		require_once REVISR_PATH . 'includes/class-revisr-git.php';
 		require_once REVISR_PATH . 'includes/class-revisr-admin.php';
@@ -209,100 +176,113 @@ class Revisr {
 		require_once REVISR_PATH . 'includes/class-revisr-db.php';
 		require_once REVISR_PATH . 'includes/class-revisr-git-callback.php';
 		require_once REVISR_PATH . 'includes/class-revisr-cron.php';
-		require_once REVISR_PATH . 'includes/class-revisr-process.php';
-
-		if ( is_admin() ) {
+		
+		// Classes that should only be loaded for admins.
+		if ( current_user_can( 'install_plugins' ) && is_admin() ) {
+			require_once REVISR_PATH . 'includes/class-revisr-compatibility.php';
+			require_once REVISR_PATH . 'includes/class-revisr-process.php';
+			require_once REVISR_PATH . 'includes/class-revisr-list-table.php';
 			require_once REVISR_PATH . 'includes/class-revisr-commits.php';
 			require_once REVISR_PATH . 'includes/class-revisr-settings.php';
-			require_once REVISR_PATH . 'includes/class-revisr-settings-fields.php';	
-			require_once REVISR_PATH . 'includes/class-revisr-admin-setup.php';
+			require_once REVISR_PATH . 'includes/class-revisr-settings-fields.php';
 		}
 	}
 
 	/**
-	 * Define the locale for this plugin for internationalization.
+	 * Defines the constants used by Revisr.
+	 * @access private
+	 */
+	private function define_constants() {
+		// The base plugin file.
+		define( 'REVISR_FILE', __FILE__ );
+		// The full path used for includes.
+		define( 'REVISR_PATH', plugin_dir_path( REVISR_FILE ) );
+		// The URL of the plugin base directory.
+		define( 'REVISR_URL', plugin_dir_url( REVISR_FILE ) );
+		// The current version of the plugin.
+		define( 'REVISR_VERSION', '1.9' );
+	}
+
+	/**
+	 * Sets the locale and loads any translation files.
 	 * @access private
 	 */
 	private function set_locale() {
 		$revisr_i18n = new Revisr_i18n();
-		$revisr_i18n->set_domain( $this->get_plugin_name() );
+		$revisr_i18n->set_domain( $this->plugin_name );
 		add_action( 'plugins_loaded', array( $revisr_i18n, 'load_plugin_textdomain' ) );
 	}
 
 	/**
-	 * Loads hooks required regardless of user role.
+	 * Loads any public-facing hooks.
 	 * @access private
 	 */
 	private function load_public_hooks() {
-		// Initialize the necessary classes.
-		self::$instance->git 		= new Revisr_Git();
-		self::$instance->admin 		= new Revisr_Admin();
-		self::$instance->db 		= new Revisr_DB();
-		self::$instance->cron 		= new Revisr_Cron();
-		self::$instance->process 	= new Revisr_Process();
-
-		// Allows the cron to run with no admin login.
-		add_filter( 'cron_schedules', array( self::$instance->cron, 'revisr_schedules' ) );
-		add_action( 'revisr_cron', array( self::$instance->cron, 'run_automatic_backup' ) );
-		add_action( 'admin_post_nopriv_revisr_update', array( self::$instance->process, 'process_pull' ) );
+		$cron = new Revisr_Cron();
+		add_filter( 'cron_schedules', array( $cron, 'revisr_schedules' ) );
+		add_action( 'revisr_cron', array( $cron, 'run_automatic_backup' ) );
+		add_action( 'admin_post_nopriv_revisr_update', array( $cron, 'run_autopull' ) );
 	}
 
 	/**
-	 * Loads the hooks used in the plugin dashboard.
+	 * Loads hooks used in the admin.
 	 * @access private
 	 */
 	private function load_admin_hooks() {
-
-		// Initialize the necessary classes.
+		// Load necessary classes into the instance.
+		self::$instance->git 			= new Revisr_Git();
 		self::$instance->commits 		= new Revisr_Commits();
+		self::$instance->admin 			= new Revisr_Admin();
+		self::$instance->db 			= new Revisr_DB();
+		self::$instance->process 		= new Revisr_Process();
 		self::$instance->settings 		= new Revisr_Settings();
-		self::$instance->admin_setup 	= new Revisr_Setup( self::$instance->options );
+		self::$instance->list_table 	= new Revisr_List_Table();
 
-		// Check for compatibility.
-		self::$instance->check_compatibility();
-		
-		// Register the "revisr_commits" custom post type.
+		// Create and configure the "revisr_commits" custom post type.
 		add_action( 'init', array( self::$instance->commits, 'post_types' ) );
 		add_action( 'pre_get_posts', array( self::$instance->commits, 'filters' ) );
 		add_action( 'views_edit-revisr_commits', array( self::$instance->commits, 'custom_views' ) );
 		add_action( 'load-edit.php', array( self::$instance->commits, 'default_views' ) );
 		add_action( 'post_row_actions', array( self::$instance->commits, 'custom_actions' ) );
 		add_action( 'manage_edit-revisr_commits_columns', array( self::$instance->commits, 'columns' ) );
-		add_action( 'manage_revisr_commits_posts_custom_column', array( self::$instance->commits, 'custom_columns' ) );	
-		add_action( 'admin_enqueue_scripts', array( self::$instance->commits, 'disable_autodraft' ) );
+		add_action( 'manage_revisr_commits_posts_custom_column', array( self::$instance->commits, 'custom_columns' ), 10, 2 );
 		add_filter( 'post_updated_messages', array( self::$instance->commits, 'custom_messages' ) );
 		add_filter( 'bulk_post_updated_messages', array( self::$instance->commits, 'bulk_messages' ), 10, 2 );
+		add_action( 'wp_ajax_pending_files', array( self::$instance->commits, 'pending_files' ) );
+		add_action( 'load-post.php', array( self::$instance->commits, 'post_meta' ) );
+		add_action( 'load-post-new.php', array( self::$instance->commits, 'post_meta' ) );
+		add_filter( 'enter_title_here', array( self::$instance->commits, 'custom_enter_title' ) );
 
-		// Quick actions.
+		// Enqueue styles and scripts.
+		add_action( 'admin_enqueue_scripts', array( self::$instance->admin, 'revisr_scripts' ) );
+
+		// Initiate the admin menus.
+		add_action( 'admin_menu', array( self::$instance->admin, 'menus' ), 2 );
+		add_action( 'admin_bar_menu', array( self::$instance->admin, 'admin_bar' ), 999 );
+		add_filter( 'custom_menu_order', array( self::$instance->admin, 'revisr_submenu_order' ) );
+		
+		// Callbacks for AJAX UI
 		add_action( 'wp_ajax_render_alert', array( self::$instance->admin, 'render_alert' ) );
 		add_action( 'wp_ajax_ajax_button_count', array( self::$instance->admin, 'ajax_button_count' ) );
-		add_action( 'wp_ajax_pending_files', array( self::$instance->admin, 'pending_files' ) );
-		add_action( 'wp_ajax_committed_files', array( self::$instance->admin, 'committed_files' ) );
 		add_action( 'wp_ajax_view_diff', array( self::$instance->admin, 'view_diff' ) );
 		add_action( 'wp_ajax_verify_remote', array( self::$instance->git, 'verify_remote' ) );
 
-		// Database backups.
-		add_action( 'wp_ajax_backup_db', array( self::$instance->db, 'backup' ) );
-		add_action( 'admin_post_revert_db', array( self::$instance->db, 'restore' ) );
+		// Load the thickbox forms used by Revisr.
+		add_action( 'admin_post_delete_branch_form', array( self::$instance->admin, 'delete_branch_form' ) );
+		add_action( 'admin_post_merge_branch_form', array ( self::$instance->admin, 'merge_branch_form' ) );
+		add_action( 'admin_post_import_tables_form', array( self::$instance->admin, 'import_tables_form' ) );
+		add_action( 'admin_post_revert_form', array( self::$instance->admin, 'revert_form' ) );
+		add_action( 'admin_post_revisr_view_status', array( self::$instance->admin, 'view_status' ) );
 
-		// General admin customizations.
-		add_action( 'admin_notices', array( self::$instance->admin_setup, 'site5_notice' ) );
-		add_action( 'load-post.php', array( self::$instance->admin_setup, 'meta' ) );
-		add_action( 'load-post-new.php', array( self::$instance->admin_setup, 'meta' ) );
-		add_action( 'admin_menu', array( self::$instance->admin_setup, 'menus' ), 2 );
-		add_action( 'admin_post_delete_branch_form', array( self::$instance->admin_setup, 'delete_branch_form' ) );
-		add_action( 'admin_post_merge_branch_form', array ( self::$instance->admin_setup, 'merge_branch_form' ) );
-		add_action( 'admin_post_import_tables_form', array( self::$instance->admin_setup, 'import_tables_form' ) );
-		add_action( 'admin_enqueue_scripts', array( self::$instance->admin_setup, 'revisr_scripts' ) );
-		add_action( 'admin_bar_menu', array( self::$instance->admin_setup, 'admin_bar' ), 999 );
-		add_filter( 'custom_menu_order', array( self::$instance->admin_setup, 'revisr_commits_submenu_order' ) );
-		add_action( 'wp_ajax_recent_activity', array( self::$instance->admin_setup, 'recent_activity' ) );
-
+		// Displays the "Sponsored by Site5" logo.
+		add_action( 'admin_notices', array( self::$instance->admin, 'site5_notice' ) );
+		
+		// Update the database schema if necessary.
 		if ( get_option( 'revisr_db_version' ) === '1.0' ) {
-			add_action( 'admin_init', array( self::$instance->admin_setup, 'do_upgrade' ) );
+			add_action( 'admin_init', array( self::$instance->admin, 'do_upgrade' ) );
 		}
 
-		// Admin-specific actions.
+		// Processes actions taken from within the WordPress dashboard.
 		add_action( 'init', array( self::$instance->process, 'process_is_repo' ) );
 		add_action( 'publish_revisr_commits', array( self::$instance->process, 'process_commit' ) );
 		add_action( 'admin_post_process_checkout', array( self::$instance->process, 'process_checkout' ) );
@@ -316,35 +296,30 @@ class Revisr {
 		add_action( 'wp_ajax_discard', array( self::$instance->process, 'process_discard' ) );
 		add_action( 'wp_ajax_process_push', array( self::$instance->process, 'process_push' ) );
 		add_action( 'wp_ajax_process_pull', array( self::$instance->process, 'process_pull' ) );
+		add_action( 'wp_ajax_backup_db', array( self::$instance->db, 'backup' ) );
+
+		// Load the settings page.
+		add_action( 'admin_init', array( self::$instance->settings, 'init_settings' ) );
 	}
 
 	/**
-	 * Returns user options as a single array.
+	 * Returns an array of user options and preferences.
 	 * @access public
-	 * @return array $options An array of user-stored options.
+	 * @return array
 	 */
 	public static function get_options() {
-		$old 		= get_option( 'revisr_settings' ) ? get_option( 'revisr_settings' ) : array();
+		$deprecated = get_option( 'revisr_settings' ) ? get_option( 'revisr_settings' ) : array();
 		$general 	= get_option( 'revisr_general_settings' ) ? get_option( 'revisr_general_settings' ) : array();
 		$remote 	= get_option( 'revisr_remote_settings' ) ? get_option( 'revisr_remote_settings' ) : array();
 		$database 	= get_option( 'revisr_database_settings' ) ? get_option( 'revisr_database_settings' ) : array();
-		$options 	= array_merge( $old, $general, $remote, $database );
+		$options 	= array_merge( $deprecated, $general, $remote, $database );
 		return $options;
 	}
 
 	/**
-	 * Returns the name of the plugin.
+	 * Returns the name of the custom table used by Revisr.
 	 * @access public
-	 * @return 
-	 */
-	public function get_plugin_name() {
-		return $this->plugin_name;
-	}
-
-	/**
-	 * Returns the name of the database table for the plugin.
-	 * @access public
-	 * @return string The name of the database table.
+	 * @return string
 	 */
 	public static function get_table_name() {
 		global $wpdb;
@@ -353,40 +328,11 @@ class Revisr {
 	}
 
 	/**
-	 * Displays the link to the settings on the WordPress plugin page.
-	 * @access public
-	 * @param array $links The links assigned to Revisr.
-	 */
-	public static function revisr_settings_link( $links ) {
-		$settings_link = '<a href="admin.php?page=revisr_settings">' . __( 'Settings', 'revisr' ) . '</a>'; 
-  		array_unshift( $links, $settings_link ); 
-  		return $links; 
-	}
-
-	/**
-	 * Makes sure that Revisr is compatible in the current environment.
-	 * @access public
-	 */
-	public function check_compatibility() {
-		if ( ! function_exists( 'exec' ) ) {
-			Revisr_Admin::alert( __( 'It appears that you don\'t have the PHP exec() function enabled on your server. This can be enabled in your php.ini.
-				Check with your web host if you\'re not sure what this means.', 'revisr'), true );
-			return false;
-		}
-		$git = self::$instance->git;
-		if ( is_dir( $git->dir . '/.git/' ) && !is_writeable( $git->dir . '/.git/' ) ) {
-			Revisr_Admin::alert( __( 'Revisr requires write permissions to the repository. The recommended settings are 755 for directories, and 644 for files.', 'revisr' ), true );
-			return false;
-		}
-		return true;
-	}
-
-	/**
 	 * Installs the database table.
 	 * @access public
 	 */
 	public static function revisr_install() {
-		$table_name = self::$instance->table_name;
+		$table_name = Revisr::get_table_name();
 		$sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -400,25 +346,37 @@ class Revisr {
 	   	if ( get_option( 'revisr_db_version' ) === false ) {
 	   		add_option( 'revisr_db_version', '1.1' );
 	   	}
-	}	
+	}
+
+	/**
+	 * Displays the link to the settings on the WordPress plugin page.
+	 * @access public
+	 * @param array $links The links assigned to Revisr.
+	 */
+	public static function settings_link( $links ) {
+		$settings_link = '<a href="admin.php?page=revisr_settings">' . __( 'Settings', 'revisr' ) . '</a>'; 
+  		array_unshift( $links, $settings_link ); 
+  		return $links;
+	}
 
 }
 
 /**
  * Returns a single instance of the Revisr plugin.
  * 
- * @since  1.8.2
- * @return object
+ * @since 	1.8.2
+ * @return 	object
  */
 function revisr() {
 	return Revisr::get_instance();
 }
 
 // Runs the plugin.
-$revisr = revisr();
+add_action( 'plugins_loaded', 'revisr' );
 
 // Registers the activation hook.
-register_activation_hook( REVISR_FILE, array( 'Revisr', 'revisr_install' ) );
+register_activation_hook( __FILE__, array( 'Revisr', 'revisr_install' ) );
 
 // Adds the settings link to the plugins page.
-add_filter( 'plugin_action_links_'  . plugin_basename( REVISR_FILE ), array( 'Revisr', 'revisr_settings_link' ) );
+add_filter( 'plugin_action_links_'  . plugin_basename( __FILE__ ), array( 'Revisr', 'settings_link' ) );
+

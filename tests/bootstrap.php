@@ -12,3 +12,8 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 require $_tests_dir . '/includes/bootstrap.php';
 
+define( 'REVISR_GIT_DIR', '/tmp/wordpress' );
+chdir( REVISR_GIT_DIR );
+
+// Activate & install the plugin
+Revisr::revisr_install();
