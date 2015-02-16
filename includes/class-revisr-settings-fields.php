@@ -361,8 +361,6 @@ class Revisr_Settings_Fields {
 		if ( $this->is_updated( 'db_tracking' ) ) {
 			$this->revisr->git->set_config( 'revisr', 'db-tracking', $this->options['db_tracking'] );
 		}
-
-		$check_tracking = $this->revisr->git->get_config( 'revisr', 'db-tracking' );
 		
 		if ( $db_tracking = $this->revisr->git->get_config( 'revisr', 'db-tracking' ) ) {
 			if ( $db_tracking == 'custom' && $this->is_updated( 'tracked_tables' ) ) {
@@ -481,9 +479,6 @@ class Revisr_Settings_Fields {
 				$this->revisr->git->run( 'config',  array( '--unset-all', 'revisr.import-pulls' ) );
 			}
 		}
-
-		$get_reset 	= $this->revisr->git->run( 'config', array( 'revisr.import-checkouts' ) );
-		$get_import = $this->revisr->git->run( 'config', array( 'revisr.import-pulls' ) );
 
 		printf(
 			'<input type="checkbox" id="reset_db" name="revisr_database_settings[reset_db]" %s /><label for="reset_db">%s</label><br><br>

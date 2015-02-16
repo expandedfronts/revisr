@@ -141,7 +141,7 @@ class Revisr_Cron {
 			$this->revisr->db = new Revisr_DB();
 			$this->revisr->db->backup();
 			$undo_hash = $this->revisr->git->current_commit();
-			$this->revisr->git->run( "config --add revisr.last-db-backup $undo_hash" );
+			$this->revisr->git->set_config( 'revisr', 'last-db-backup', $undo_hash );
 		}
 		// Pull the changes or return an error on failure.
 		$this->revisr->git->pull();

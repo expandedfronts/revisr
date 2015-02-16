@@ -18,7 +18,7 @@ class RevisrTest extends WP_UnitTestCase {
 	 * Tests the revisr() method.
 	 */
 	function test_revisr() {
-		$revisr = revisr();
+		revisr();
 		$this->assertClassHasStaticAttribute( 'instance', 'Revisr' );
 	}
 

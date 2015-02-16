@@ -130,7 +130,6 @@ class Revisr {
 	public static function get_instance() {
 		if ( null == self::$instance ) {
 			self::$instance 				= new self;
-			self::$instance->table_name 	= self::$instance->get_table_name();
 			self::$instance->options 		= self::$instance->get_options();
 			
 			self::$instance->define_constants();
