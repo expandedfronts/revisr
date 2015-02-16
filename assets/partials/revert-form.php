@@ -44,6 +44,8 @@ $styles_url = REVISR_URL . 'assets/css/thickbox.css';
 		</div>
 
 		<div class="revisr-tb-submit">
+			<input type="hidden" name="echo_redirect" value="true" />
+			<input type="hidden" name="post_id" value="<?php echo $_GET['commit_id']; ?>" />
 			<input type="hidden" name="branch" value="<?php echo $commit['branch']; ?>" />
 			<input type="hidden" name="commit_hash" value="<?php echo $commit['commit_hash']; ?>" />
 			<input type="hidden" name="action" value="process_revert" />

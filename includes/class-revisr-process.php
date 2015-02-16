@@ -283,16 +283,23 @@ class Revisr_Process {
 		// Run the action.
 		switch ( $revert_type ) {
 			case 'files':
-				$this->process_revert_files();
+				$this->process_revert_files( false );
 				break;
 			case 'db':
-				$this->revisr->db->restore();
+				$this->revisr->db->restore( false );
 				break;
 			case 'files_and_db':
 				$this->process_revert_files( false );
-				$this->revisr->db->restore();
+				$this->revisr->db->restore( false );
 				break;
 			default:
+		}
+
+		if ( isset( $_REQUEST['echo_redirect'] ) ) {
+			_e( 'Revert completed. Redirecting...', 'revisr' );
+			echo "<script>window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';</script>";
+		} else {
+			wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
 		}
 	}
 
@@ -320,7 +327,7 @@ class Revisr_Process {
 		$this->revisr->git->commit( $commit_msg );
 		$this->revisr->git->auto_push();
 		
-		$post_url = get_admin_url() . "post.php?post=" . $_GET['post_id'] . "&action=edit";
+		$post_url = get_admin_url() . "post.php?post=" . $_REQUEST['post_id'] . "&action=edit";
 
 		$msg = sprintf( __( 'Reverted to commit <a href="%s">#%s</a>.', 'revisr' ), $post_url, $commit );
 		$email_msg = sprintf( __( '%s was reverted to commit #%s', 'revisr' ), get_bloginfo(), $commit );

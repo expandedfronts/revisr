@@ -452,8 +452,9 @@ class Revisr_DB {
 	 * Reverts all tracked tables to an earlier commit.
 	 * Honors the old "revisr_db_backup.sql".
 	 * @access public
+	 * @param  boolean $redirect Whether or not to redirect via PHP.
 	 */
-	public function restore() {
+	public function restore( $redirect = true ) {
 		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
 			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
@@ -502,8 +503,11 @@ class Revisr_DB {
 			// Store the undo link and alert the user.
 			Revisr_Admin::log( $undo_msg, 'revert' );
 			Revisr_Admin::alert( $undo_msg );
-			wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
-			exit();
+
+			if ( $redirect !== false ) {
+				wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
+				exit();
+			}
 		} else {
 			wp_die( __( 'Something went wrong. Check your settings and try again.', 'revisr' ) );
 		}
