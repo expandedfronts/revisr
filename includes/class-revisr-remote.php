@@ -91,7 +91,7 @@ class Revisr_Remote {
 		);
 		$args 	= array(
 			'method' 		=> 'POST',
-			'timeout'		=> '15',
+			'timeout'		=> '30',
 			'redirection'	=> '5',
 			'httpversion'	=> '1.0',
 			'blocking'		=> true,
