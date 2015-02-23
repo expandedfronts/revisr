@@ -1,7 +1,7 @@
 <?php
 /**
  * delete-branch-form.php
- * 
+ *
  * Displays the form to delete a branch.
  *
  * @package   	Revisr

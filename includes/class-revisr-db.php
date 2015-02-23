@@ -329,7 +329,7 @@ class Revisr_DB {
 			$new_tables 	= $this->get_tables_not_in_db();
 			$all_tables		= array_unique( array_merge( $new_tables, $tracked_tables ) );
 			$replace_url 	= $this->revisr->git->get_config( 'revisr', 'dev-url' ) ? $this->revisr->git->get_config( 'revisr', 'dev-url' ) : '';
-			
+
 			if ( ! empty( $new_tables ) ) {
 				// If there are new tables that were imported.
 				if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'all_tables' ) {
@@ -355,10 +355,10 @@ class Revisr_DB {
 
 	/**
 	 * Imports a table from a Revisr .sql file to the database.
-	 * 
+	 *
 	 * Partly adapted/modified from VaultPress.
 	 * @link https://wordpress.org/plugins/vaultpress/
-	 * 
+	 *
 	 * @access public
 	 * @param  string $table 		The table to import.
 	 * @param  string $replace_url 	Replace this URL in the database with the live URL.
@@ -420,7 +420,7 @@ class Revisr_DB {
 			if ( $status['errors'] !== 0 ) {
 				return false;
 			}
-			return true;			
+			return true;
 		}
 	}
 
@@ -556,9 +556,9 @@ class Revisr_DB {
 	/**
 	 * Adapated from interconnect/it's search/replace script.
 	 * Modified to use WordPress wpdb functions instead of PHP's native mysql/pdo functions.
-	 * 
+	 *
 	 * @link https://interconnectit.com/products/search-and-replace-for-wordpress-databases/
-	 * 
+	 *
 	 * @access public
 	 * @param  string $table 	The table to run the replacement on.
 	 * @param  string $search 	The string to replace.
@@ -589,10 +589,10 @@ class Revisr_DB {
 			$current_row 	= 0;
 			$start 			= $page * $page_size;
 			$end 			= $start + $page_size;
-			
+
 			// Grab the content of the table.
 			$data = $this->wpdb->get_results( "SELECT * FROM $table LIMIT $start, $end", ARRAY_A );
-			
+
 			// Loop through the data.
 			foreach ( $data as $row ) {
 				$current_row++;
@@ -636,12 +636,12 @@ class Revisr_DB {
 
 	/**
 	 * Adapated from interconnect/it's search/replace script.
-	 * 
+	 *
 	 * @link https://interconnectit.com/products/search-and-replace-for-wordpress-databases/
-	 * 
+	 *
 	 * Take a serialised array and unserialise it replacing elements as needed and
 	 * unserialising any subordinate arrays and performing the replace on those too.
-	 * 
+	 *
 	 * @access private
 	 * @param  string $from       String we're looking to replace.
 	 * @param  string $to         What we want it to be replaced with.
@@ -678,7 +678,7 @@ class Revisr_DB {
 				$data = $_tmp;
 				unset( $_tmp );
 			}
-			
+
 			else {
 				if ( is_string( $data ) )
 					$data = str_replace( $from, $to, $data );
@@ -717,14 +717,14 @@ class Revisr_DB {
 	 */
 	public function mysql_escape_mimic( $input ) {
 
-	    if( is_array( $input ) ) 
-	        return array_map( __METHOD__, $input ); 
+	    if( is_array( $input ) )
+	        return array_map( __METHOD__, $input );
 
-	    if( ! empty( $input ) && is_string( $input ) ) { 
-	        return str_replace( array( '\\', "\0", "\n", "\r", "'", '"', "\x1a" ), array( '\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z' ), $input ); 
-	    } 
+	    if( ! empty( $input ) && is_string( $input ) ) {
+	        return str_replace( array( '\\', "\0", "\n", "\r", "'", '"', "\x1a" ), array( '\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z' ), $input );
+	    }
 
-	    return $input; 
-	}		
+	    return $input;
+	}
 
 }

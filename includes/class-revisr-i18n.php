@@ -1,7 +1,7 @@
 <?php
 /**
  * class-revisr-i18n.php
- * 
+ *
  * Defines the internationalization functionality.
  *
  * Loads and defines the internationalization files for this plugin

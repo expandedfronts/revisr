@@ -14,7 +14,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Revisr_Settings {
-	
+
 	/**
 	 * The Settings callback class.
 	 * @var Revisr_Settings_Fields()
@@ -74,13 +74,13 @@ class Revisr_Settings {
             __( 'Git Username', 'revisr' ),
             array( $this->settings_fields, 'username_callback' ),
             'revisr_general_settings',
-            'revisr_general_settings'          
-        );      
+            'revisr_general_settings'
+        );
         add_settings_field(
-            'email', 
-            __( 'Git Email', 'revisr'), 
-            array( $this->settings_fields, 'email_callback' ), 
-            'revisr_general_settings', 
+            'email',
+            __( 'Git Email', 'revisr'),
+            array( $this->settings_fields, 'email_callback' ),
+            'revisr_general_settings',
             'revisr_general_settings'
         );
         add_settings_field(
@@ -105,17 +105,17 @@ class Revisr_Settings {
     		'revisr_general_settings'
 		);
 		add_settings_field(
-            'remote_name', 
-            __( 'Remote Name', 'revisr'), 
-            array( $this->settings_fields, 'remote_name_callback' ), 
-            'revisr_remote_settings', 
+            'remote_name',
+            __( 'Remote Name', 'revisr'),
+            array( $this->settings_fields, 'remote_name_callback' ),
+            'revisr_remote_settings',
             'revisr_remote_settings'
         );
         add_settings_field(
-            'remote_url', 
-            __( 'Remote URL', 'revisr'), 
-            array( $this->settings_fields, 'remote_url_callback' ), 
-            'revisr_remote_settings', 
+            'remote_url',
+            __( 'Remote URL', 'revisr'),
+            array( $this->settings_fields, 'remote_url_callback' ),
+            'revisr_remote_settings',
             'revisr_remote_settings'
         );
         add_settings_field(

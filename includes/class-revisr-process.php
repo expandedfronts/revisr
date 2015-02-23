@@ -68,28 +68,28 @@ class Revisr_Process {
 		} else {
 			$branch = $args;
 		}
-		
+
 		$this->revisr->git->reset();
 		$this->revisr->git->checkout( $branch );
-		
+
 		if ( $this->revisr->git->get_config( 'revisr', 'import-checkouts' ) === 'true' && $new_branch === false ) {
 			$this->revisr->db->import();
 		}
 		$url = get_admin_url() . 'admin.php?page=revisr';
 		wp_redirect( $url );
 	}
-	
+
 	/**
 	 * Processes a new commit from the "New Commit" admin page.
 	 * @access public
 	 */
 	public function process_commit() {
 		if ( isset( $_REQUEST['_wpnonce'] ) && isset( $_REQUEST['_wp_http_referer'] ) ) {
-			
+
 			$id 			= get_the_ID();
 			$commit_msg 	= $_REQUEST['post_title'];
 			$post_new 		= get_admin_url() . 'post-new.php?post_type=revisr_commits';
-			
+
 			// Require a message to be entered for the commit.
 			if ( $commit_msg == 'Auto Draft' || $commit_msg == '' ) {
 				wp_redirect( $post_new . '&message=42' );
@@ -108,10 +108,10 @@ class Revisr_Process {
 			// Add the necessary post meta and make the commit in Git.
 			add_post_meta( $id, 'committed_files', $staged_files );
 			add_post_meta( $id, 'files_changed', count( $staged_files ) );
-			$this->revisr->git->commit( $commit_msg, 'commit' );	
+			$this->revisr->git->commit( $commit_msg, 'commit' );
 		}
 	}
-	
+
 	/**
 	 * Processes the request to create a new branch.
 	 * @access public
@@ -135,7 +135,7 @@ class Revisr_Process {
 
 		exit();
 	}
-	
+
 	/**
 	 * Processes the request to delete an existing branch.
 	 * @access public
@@ -150,7 +150,7 @@ class Revisr_Process {
 		}
 		exit();
 	}
-	
+
 	/**
 	 * Processes the request to discard all untracked changes.
 	 * @access public
@@ -199,7 +199,7 @@ class Revisr_Process {
 			$this->revisr->db->import();
 		}
 	}
-	
+
 	/**
 	 * Processes the request to pull changes into the current branch.
 	 * @access public
@@ -220,9 +220,9 @@ class Revisr_Process {
 				$commit_hash = substr( $commit, 0, 7 );
 				$commit_msg = substr( $commit, 40 );
 				$show_files = $this->revisr->git->run( 'show', array( '--pretty=format:', '--name-status', $commit_hash ) );
-				
+
 				if ( is_array( $show_files ) ) {
-					$files_changed = array_filter( $show_files );			
+					$files_changed = array_filter( $show_files );
 					$post = array(
 						'post_title'	=> $commit_msg,
 						'post_content'	=> '',
@@ -251,7 +251,7 @@ class Revisr_Process {
 		// Pull the changes or return an error on failure.
 		$this->revisr->git->pull();
 	}
-	
+
 	/**
 	 * Processes the request to push changes to a remote repository.
 	 * @access public
@@ -311,9 +311,9 @@ class Revisr_Process {
 		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
 			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
-			
+
 		$branch 	= $_REQUEST['branch'];
-		$commit 	= $_REQUEST['commit_hash'];			
+		$commit 	= $_REQUEST['commit_hash'];
 		$commit_msg = sprintf( __( 'Reverted to commit: #%s.', 'revisr' ), $commit );
 
 		if ( $branch != $this->revisr->git->branch ) {
@@ -326,14 +326,14 @@ class Revisr_Process {
 		$this->revisr->git->run( 'add', array( '-A' ) );
 		$this->revisr->git->commit( $commit_msg );
 		$this->revisr->git->auto_push();
-		
+
 		$post_url = get_admin_url() . "post.php?post=" . $_REQUEST['post_id'] . "&action=edit";
 
 		$msg = sprintf( __( 'Reverted to commit <a href="%s">#%s</a>.', 'revisr' ), $post_url, $commit );
 		$email_msg = sprintf( __( '%s was reverted to commit #%s', 'revisr' ), get_bloginfo(), $commit );
 		Revisr_Admin::log( $msg, 'revert' );
 		Revisr_Admin::notify( get_bloginfo() . __( ' - Commit Reverted', 'revisr' ), $email_msg );
-		
+
 		if ( true === $redirect ) {
 			$redirect = get_admin_url() . "admin.php?page=revisr";
 			wp_redirect( $redirect );

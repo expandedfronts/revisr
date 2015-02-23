@@ -16,17 +16,17 @@
  * Text Domain:       revisr
  * Domain Path:       /languages
  * Network: 		  true
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * The main Revisr class. Initializes the plugin loads any
  * required hooks and dependencies.
- * 
+ *
  * @since 1.8.2
  */
 class Revisr {
@@ -131,16 +131,16 @@ class Revisr {
 		if ( null == self::$instance ) {
 			self::$instance 				= new self;
 			self::$instance->options 		= self::$instance->get_options();
-			
+
 			self::$instance->define_constants();
-			
+
 			// Try to autoload the classes.
 			if ( function_exists( 'spl_autoload_register' ) ) {
 				spl_autoload_register( array( __CLASS__, 'autoload' ) );
 			} else {
 				self::$instance->load_dependencies();
 			}
-			
+
 			self::$instance->set_locale();
 			self::$instance->load_public_hooks();
 
@@ -176,7 +176,7 @@ class Revisr {
 		require_once REVISR_PATH . 'includes/class-revisr-db.php';
 		require_once REVISR_PATH . 'includes/class-revisr-git-callback.php';
 		require_once REVISR_PATH . 'includes/class-revisr-cron.php';
-		
+
 		// Classes that should only be loaded for admins.
 		if ( current_user_can( 'install_plugins' ) && is_admin() ) {
 			require_once REVISR_PATH . 'includes/class-revisr-compatibility.php';
@@ -260,7 +260,7 @@ class Revisr {
 		add_action( 'admin_menu', array( self::$instance->admin, 'menus' ), 2 );
 		add_action( 'admin_bar_menu', array( self::$instance->admin, 'admin_bar' ), 999 );
 		add_filter( 'custom_menu_order', array( self::$instance->admin, 'revisr_submenu_order' ) );
-		
+
 		// Callbacks for AJAX UI
 		add_action( 'wp_ajax_render_alert', array( self::$instance->admin, 'render_alert' ) );
 		add_action( 'wp_ajax_ajax_button_count', array( self::$instance->admin, 'ajax_button_count' ) );
@@ -276,7 +276,7 @@ class Revisr {
 
 		// Displays the "Sponsored by Site5" logo.
 		add_action( 'admin_notices', array( self::$instance->admin, 'site5_notice' ) );
-		
+
 		// Update the database schema if necessary.
 		if ( get_option( 'revisr_db_version' ) === '1.0' ) {
 			add_action( 'admin_init', array( self::$instance->admin, 'do_upgrade' ) );
@@ -340,7 +340,7 @@ class Revisr {
 			event VARCHAR(42) NOT NULL,
 			UNIQUE KEY id (id)
 			);";
-		
+
 	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	   	dbDelta( $sql );
 	   	if ( get_option( 'revisr_db_version' ) === false ) {
@@ -354,8 +354,8 @@ class Revisr {
 	 * @param array $links The links assigned to Revisr.
 	 */
 	public static function settings_link( $links ) {
-		$settings_link = '<a href="admin.php?page=revisr_settings">' . __( 'Settings', 'revisr' ) . '</a>'; 
-  		array_unshift( $links, $settings_link ); 
+		$settings_link = '<a href="admin.php?page=revisr_settings">' . __( 'Settings', 'revisr' ) . '</a>';
+  		array_unshift( $links, $settings_link );
   		return $links;
 	}
 
@@ -363,7 +363,7 @@ class Revisr {
 
 /**
  * Returns a single instance of the Revisr plugin.
- * 
+ *
  * @since 	1.8.2
  * @return 	object
  */

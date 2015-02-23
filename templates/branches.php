@@ -18,7 +18,7 @@ $git 	= $revisr->git;
 
 <div class="wrap">
 	<h2><?php _e( 'Revisr - Branches', 'revisr' ); ?></h2>
-	<?php 
+	<?php
 		if ( isset( $_GET['status'] ) && isset( $_GET['branch'] ) ) {
 			switch ( $_GET['status'] ) {
 				case "create_success":
@@ -59,10 +59,10 @@ $git 	= $revisr->git;
 						if ( is_array( $output ) ) {
 
 							foreach ( $output as $key => $value ) {
-								
+
 								$branch 		= substr( $value, 2 );
 								$num_commits 	= Revisr_Admin::count_commits( $branch );
-								
+
 								if ( substr( $value, 0, 1 ) === "*" ){
 									?>
 									<tr>
@@ -92,7 +92,7 @@ $git 	= $revisr->git;
 									</tr>
 									<?php
 								}
-							}										
+							}
 						}
 
 					?>

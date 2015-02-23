@@ -1,7 +1,7 @@
 <?php
 /**
  * merge-form.php
- * 
+ *
  * Displays the form to merge a branch.
  *
  * @package   	Revisr

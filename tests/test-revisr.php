@@ -29,11 +29,11 @@ class RevisrTest extends WP_UnitTestCase {
 		// Plugin Folder URL
 		$path = str_replace( 'tests/', '', plugin_dir_url( __FILE__ ) );
 		$this->assertSame( REVISR_URL, $path );
-		
+
 		// Plugin Folder Path
 		$path = str_replace( 'tests/', '', plugin_dir_path( __FILE__ ) );
 		$this->assertSame( REVISR_PATH, $path );
-		
+
 		// Plugin Root File
 		$path = str_replace( 'tests/', '', plugin_dir_path( __FILE__ ) );
 		$this->assertSame( REVISR_FILE, $path . 'revisr.php' );

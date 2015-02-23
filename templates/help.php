@@ -74,7 +74,7 @@ $revisr = Revisr::get_instance();
 		</tr>
 
 		<?php else: ?>
-		
+
 		<tr>
 			<td><label><strong><?php _e( 'Repository Status', 'revisr' ); ?></strong></label></td>
 			<td><?php _e( 'No repository detected.', 'revisr' ); ?></td>

@@ -1,7 +1,7 @@
 <?php
 /**
  * revert-form.php
- * 
+ *
  * Displays the form to revert to a specific commit.
  *
  * @package 	Revisr
@@ -17,7 +17,7 @@ $commit 	= Revisr_Admin::get_commit_details( $_GET['commit_id'] );
 $styles_url = REVISR_URL . 'assets/css/thickbox.css?02162015';
 
 ?>
-	
+
 	<link href="<?php echo $styles_url; ?>" rel="stylesheet" type="text/css">
 
 	<form action="<?php echo get_admin_url() . 'admin-post.php'; ?>" method="post">

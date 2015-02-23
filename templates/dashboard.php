@@ -11,7 +11,7 @@
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Grab the instance 
+// Grab the instance
 $revisr 	= Revisr::get_instance();
 $loader_url = REVISR_URL . 'assets/img/loader.gif';
 
@@ -84,7 +84,7 @@ $revisr->list_table->prepare_items();
 													else {
 														echo "<tr><td>$branch</td><td width='70'><a class='button branch-btn' href='" . get_admin_url() . "admin-post.php?action=process_checkout&branch={$branch}'>Checkout</a></td></tr>";
 													}
-												}										
+												}
 											}
 										?>
 									</table>
@@ -115,8 +115,8 @@ $revisr->list_table->prepare_items();
 							<br><br>
 							<?php printf( __( '&copy; %d Expanded Fronts, LLC', 'revisr' ), date( 'Y' ) ); ?>
 						</div> <!-- .inside -->
-					</div> <!-- .postbox -->				
-				</div> <!-- .meta-box-sortables -->		
+					</div> <!-- .postbox -->
+				</div> <!-- .meta-box-sortables -->
 			</div> <!-- #postbox-container-1 .postbox-container -->
 		</div> <!-- #post-body .metabox-holder .columns-2 -->
 		<br class="clear">

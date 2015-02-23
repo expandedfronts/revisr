@@ -1,9 +1,9 @@
 <?php
 /**
  * class-revisr-git-callback.php
- * 
+ *
  * Processes Git responses and errors.
- * 
+ *
  * @package   	Revisr
  * @license   	GPLv3
  * @link      	https://revisr.io
@@ -44,7 +44,7 @@ class Revisr_Git_Callback {
 	public function null_( $output = '', $args = '' ) {
 		return false;
 	}
-	
+
 	/**
 	 * Callback for a successful checkout.
 	 * @access public
@@ -300,7 +300,7 @@ class Revisr_Git_Callback {
 	public function null_verify_remote( $output = '', $args = '' ) {
 		_e( 'Remote not found...', 'revisr' );
 		exit();
-	} 
+	}
 
 	/**
 	 * Returns the Git version.

@@ -41,11 +41,11 @@ class RevisrGitTest extends WP_UnitTestCase {
 		// Set the Git username and email address.
 		$this->revisr->git->set_config( 'user', 'name', 'revisr' );
 		$this->revisr->git->set_config( 'user', 'email', 'support@expandedfronts.com' );
-		
+
 		// Grab the values via get_config().
 		$current_user 	= $this->revisr->git->get_config( 'user', 'name' );
 		$current_email 	= $this->revisr->git->get_config( 'user', 'email' );
-		
+
 		$this->assertEquals( 'revisr', $current_user );
 		$this->assertEquals( 'support@expandedfronts.com', $current_email );
 	}
@@ -179,7 +179,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 		$test_renamed 	= Revisr_Git::get_status( 'RR' );
 		$test_untracked = Revisr_Git::get_status( '??' );
 		$test_invalid 	= Revisr_Git::get_status( '$$' );
-		
+
 		$this->assertEquals( 'Modified', $test_modified );
 		$this->assertEquals( 'Deleted', $test_deleted );
 		$this->assertEquals( 'Added', $test_added );

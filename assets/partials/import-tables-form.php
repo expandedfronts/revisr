@@ -1,7 +1,7 @@
 <?php
 /**
  * pull-remote-form.php
- * 
+ *
  * Displays the form to delete a branch.
  *
  * @package   	Revisr
@@ -23,7 +23,7 @@ $tables 		= $db->get_tables_not_in_db();
 <link href="<?php echo $styles_url; ?>" rel="stylesheet" type="text/css">
 
 <form action="<?php echo get_admin_url(); ?>admin-post.php" method="post">
-	
+
 	<div class="revisr-tb-description">
 		<p><?php _e( 'The following new tables were added to the repository, but not automatically imported due to your tracking settings. Check any tables that you\'d like to import and click "Import" to continue.', 'revisr' ); ?></p>
 		<?php

@@ -48,21 +48,21 @@ class Revisr_Admin {
 	 * @param string $hook The page to enqueue the styles/scripts.
 	 */
 	public function revisr_scripts( $hook ) {
-		
+
 		// Register all CSS files used by Revisr.
 		wp_register_style( 'revisr_dashboard_css', REVISR_URL . 'assets/css/dashboard.css', array(), '02162015' );
 		wp_register_style( 'revisr_commits_css', REVISR_URL . 'assets/css/commits.css', array(), '02162015' );
 		wp_register_style( 'revisr_octicons_css', REVISR_URL . 'assets/octicons/octicons.css', array(), '02162015' );
-		
+
 		// Register all JS files used by Revisr.
 		wp_register_script( 'revisr_dashboard', REVISR_URL . 'assets/js/revisr-dashboard.js', 'jquery',  '02162015', true );
 		wp_register_script( 'revisr_staging', REVISR_URL . 'assets/js/revisr-staging.js', 'jquery', '02162015', false );
 		wp_register_script( 'revisr_committed', REVISR_URL . 'assets/js/revisr-committed.js', 'jquery', '02162015', false );
 		wp_register_script( 'revisr_settings', REVISR_URL . 'assets/js/revisr-settings.js', 'jquery', '02162015', true );
-		
+
 		// An array of pages that most scripts can be allowed on.
 		$allowed_pages = array( 'revisr', 'revisr_settings', 'revisr_branches' );
-		
+
 		// Enqueue common scripts and styles.
 		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
 
@@ -72,7 +72,7 @@ class Revisr_Admin {
 			wp_enqueue_script( 'revisr_settings' );
 			wp_enqueue_style( 'revisr_octicons_css' );
 
-		} 
+		}
 
 		// Enqueue scripts and styles for the 'revisr_commits' custom post type.
 		if ( 'revisr_commits' === get_post_type() ) {
@@ -110,7 +110,7 @@ class Revisr_Admin {
 		}
 
 	}
-	
+
 	/**
 	 * Registers the menus used by Revisr.
 	 * @access public
@@ -130,7 +130,7 @@ class Revisr_Admin {
 	public function revisr_submenu_order( $menu_ord ) {
 		global $submenu;
 	    $arr = array();
-	    
+
 		if ( isset( $submenu['revisr'] ) ) {
 		    $arr[] = $submenu['revisr'][0];
 		    $arr[] = $submenu['revisr'][3];
@@ -170,7 +170,7 @@ class Revisr_Admin {
 				'meta'  => array( 'class' => 'revisr_commits' ),
 			);
 			$wp_admin_bar->add_node( $args );
-		} 
+		}
 	}
 
 	/**
@@ -249,8 +249,8 @@ class Revisr_Admin {
 	/**
 	 * Logs an event to the database.
 	 * @access public
-	 * @param  string $message The message to show in the Recent Activity. 
-	 * @param  string $event   Will be used for filtering later. 
+	 * @param  string $message The message to show in the Recent Activity.
+	 * @param  string $event   Will be used for filtering later.
 	 */
 	public static function log( $message, $event ) {
 		global $wpdb;
@@ -258,7 +258,7 @@ class Revisr_Admin {
 		$table = $wpdb->prefix . 'revisr';
 		$wpdb->insert(
 			"$table",
-			array( 
+			array(
 				'time' 		=> $time,
 				'message'	=> $message,
 				'event' 	=> $event,
@@ -268,7 +268,7 @@ class Revisr_Admin {
 				'%s',
 				'%s',
 			)
-		);		
+		);
 	}
 
 	/**
@@ -291,7 +291,7 @@ class Revisr_Admin {
 	}
 
 	/**
-	 * Renders an alert and removes the old data. 
+	 * Renders an alert and removes the old data.
 	 * @access public
 	 */
 	public function render_alert() {
@@ -341,7 +341,7 @@ class Revisr_Admin {
 						echo '<span class="diff_removed" style="background-color:#fdd;">' . htmlspecialchars( $line ) . '</span><br>';
 					} else {
 						echo htmlspecialchars( $line ) . '<br>';
-					}	
+					}
 				}
 
 			} else {
