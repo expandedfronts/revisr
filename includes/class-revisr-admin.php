@@ -107,6 +107,10 @@ class Revisr_Admin {
 			wp_enqueue_style( 'revisr_octicons_css' );
 			wp_enqueue_script( 'thickbox' );
 			wp_dequeue_script( 'autosave' );
+
+		} elseif ( isset( $_GET['post_type'] ) && 'revisr_commits' === $_GET['post_type'] ) {
+			// Necessary for when there are no commits found in a branch.
+			wp_enqueue_style( 'revisr_commits_css' );
 		}
 
 	}
