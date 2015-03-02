@@ -468,7 +468,7 @@ class Revisr_Git {
 
 		foreach ( $staged_files as $result ) {
 			$file 	= substr( $result, 3 );
-			$status = Revisr_Git::get_status( substr( $result, 0, 2 ) );
+			$status = self::get_status( substr( $result, 0, 2 ) );
 
 			if ( $status == __( 'Deleted', 'revisr' ) ) {
 				if ( $this->run( 'rm', array( $file ) ) === false ) {

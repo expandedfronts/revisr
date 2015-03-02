@@ -294,16 +294,10 @@ class Revisr_Settings_Fields {
 			}
 		}
 
-		if ( $this->revisr->git->get_config( 'revisr', 'auto-push' ) === 'true' ) {
-			$checked = 'checked';
-		} else {
-			$checked = '';
-		}
-
 		printf(
 			'<input type="checkbox" id="auto_push" name="revisr_remote_settings[auto_push]" %s />
 			<label for="auto_push">%s</label>',
-			$checked,
+			checked( $this->revisr->git->get_config( 'revisr', 'auto-push' ), 'true', false ),
 			__( 'Check to automatically push new commits to the remote repository.', 'revisr' )
 		);
 	}
@@ -321,16 +315,10 @@ class Revisr_Settings_Fields {
 			}
 		}
 
-		if ( $this->revisr->git->get_config( 'revisr', 'auto-pull' ) === 'true' ) {
-			$checked = 'checked';
-		} else {
-			$checked = '';
-		}
-
 		printf(
 			'<input type="checkbox" id="auto_pull" name="revisr_remote_settings[auto_pull]" %s />
 			<label for="auto_pull">%s</label>',
-			$checked,
+			checked( $this->revisr->git->get_config( 'revisr', 'auto-pull' ), 'true', false ),
 			__( 'Check to generate the Revisr Webhook and allow Revisr to automatically pull commits from a remote repository.', 'revisr' )
 		);
 		$remote 	= new Revisr_Remote();
@@ -486,7 +474,7 @@ class Revisr_Settings_Fields {
 			<p class="description revisr-description">%s</p>',
 			checked( $this->revisr->git->get_config( 'revisr', 'import-checkouts' ), 'true', false ),
 			__( 'Import database when changing branches?', 'revisr' ),
-			checked( $this->revisr->git->get_config( 'revisr', 'import-checkouts' ), 'true', false ),
+			checked( $this->revisr->git->get_config( 'revisr', 'import-pulls' ), 'true', false ),
 			__( 'Import database when pulling commits?', 'revisr' ),
 			__( 'If checked, Revisr will automatically import the above tracked tables while pulling from or checking out a branch. The tracked tables will be backed up beforehand to provide a restore point immediately prior to the import. Use this feature with caution and only after verifying that you have a full backup of your website.', 'revisr' )
 		);
