@@ -27,7 +27,7 @@ A must have plugin for deploying and managing WordPress using Git repositories.
 
 == Installation ==
 
-= Requirements = 
+= Requirements =
 * A web server with Git and WordPress installed
 * The PHP exec() function enabled
 
@@ -54,14 +54,14 @@ location ~ path/to/your-repo/.git {
 
 This issue can be avoided entirely by using SSH to authenticate, which is recommended in most cases. If using SSH, you will need to generate a SSH key on the server and add it to the remote repository (Bitbucket and Github both support SSH).
 
-It is also adviseable to add Revisr to the gitignore file via the settings page to make sure that reverts don't rollback the plugins' functionality. 
+It is also adviseable to add Revisr to the gitignore file via the settings page to make sure that reverts don't rollback the plugins' functionality.
 
 == Frequently Asked Questions ==
 
 = How does Revisr handle the database? =
 You have complete control, and can decide whether you want to track the entire database, just certain tables, or if you don't want to track the database at all. Then, during a backup, the tracked database tables are exported via "mysqldump". When importing or restoring the database to an earlier commit, Revisr first takes a backup of the existing database, creating a restore point from immediately before the import that can be reverted to if needed.
 
-You can also set a "Development URL" that will be automatically replaced in the database during import- allowing for backups and restores that work on both your dev and live environments. 
+You can also set a "Development URL" that will be automatically replaced in the database during import- allowing for backups and restores that work on both your dev and live environments.
 
 = Why aren't my commits being pushed to Bitbucket/GitHub? =
 This is either an authentication issue or the remote branch is ahead of yours.
@@ -73,11 +73,17 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 1. The main dashboard of Revisr.
 2. Simple staging area that lets you decide what gets committed.
-3. Easily view changes in files with Revisr's diffs. 
+3. Easily view changes in files with Revisr's diffs.
 4. A comprehensive history of your website, with unlimited restore points.
 
 
 == Changelog ==
+
+= 1.9.1 =
+* Fixed bug with "Import Pushes" checkbox not showing after saving
+* Fixed bug with saving some settings in Windows
+* Fixed CSS issue when viewing a branch with no commits
+* Small cleanup
 
 = 1.9 =
 * Added support for multiple commit authors
@@ -85,7 +91,7 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 * Added support for PHP autoloading when available
 * Added pagination to the "Recent Activity" table on the dashboard page
 * Added "Debug" page to the "Revisr Settings" page
-* Fixed bug with viewing diffs in Firefox, 
+* Fixed bug with viewing diffs in Firefox,
 * Fixed potential XSS and user escalation vulnerabilities, props @jdgrimes
 * General UI improvements
 * General performance improvements
@@ -122,7 +128,7 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 * Fixed potential PHP notice with tags widget
 * Fixed permissions to just check the ".git/" directory
 
-= 1.7 = 
+= 1.7 =
 * Added ability to create a new repository if one does not already exist
 * Added ability to create automatic daily or weekly backups
 * Added ability to merge changes
