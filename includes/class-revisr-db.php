@@ -108,9 +108,9 @@ class Revisr_DB {
 		}
 		// Workaround for Windows/Mac compatibility.
 		if ( DB_PASSWORD != '' ) {
-			$conn = "-u " . escapeshellarg( DB_USER ) . " -p" . escapeshellarg( DB_PASSWORD ) . " " . DB_NAME . $table . " --host " . $db_host . $add_port;
+			$conn = "-u " . Revisr_Admin::escapeshellarg( DB_USER ) . " -p" . Revisr_Admin::escapeshellarg( DB_PASSWORD ) . " " . DB_NAME . $table . " --host " . $db_host . $add_port;
 		} else {
-			$conn = "-u " . escapeshellarg( DB_USER ) . " " . DB_NAME . $table . " --host " . $db_host . $add_port;
+			$conn = "-u " . Revisr_Admin::escapeshellarg( DB_USER ) . " " . DB_NAME . $table . " --host " . $db_host . $add_port;
 		}
 		return $conn;
 	}

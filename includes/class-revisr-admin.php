@@ -219,6 +219,16 @@ class Revisr_Admin {
 	}
 
 	/**
+	 * Escapes a shell arguement.
+	 * @access public
+	 * @param  string $string The string to escape.
+	 * @return string $string The escaped string.
+	 */
+	public static function escapeshellarg( $string ) {
+		return "'" . str_replace( "'", "'\\''", $string ) . "'";
+	}
+
+	/**
 	 * Gets an array of details on a saved commit.
 	 * @access public
 	 * @param  string $id The WordPress Post ID associated with the commit.

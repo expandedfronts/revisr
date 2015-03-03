@@ -95,9 +95,9 @@ class Revisr_Git {
 	 */
 	public function run( $command, $args, $callback = '', $info = '' ) {
 		// Setup the command for safe usage.
-		$safe_path 		= escapeshellarg( $this->git_path );
-		$safe_cmd 		= escapeshellarg( $command );
-		$safe_args 		= join( ' ', array_map( 'escapeshellarg', $args ) );
+		$safe_path 		= Revisr_Admin::escapeshellarg( $this->git_path );
+		$safe_cmd 		= Revisr_Admin::escapeshellarg( $command );
+		$safe_args 		= join( ' ', array_map( array( 'Revisr_Admin', 'escapeshellarg' ), $args ) );
 
 		// Run the command.
 		chdir( $this->git_dir );

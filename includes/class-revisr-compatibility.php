@@ -36,7 +36,7 @@ class Revisr_Compatibility {
 	 */
 	public static function guess_path( $program ) {
 		$os 		= Revisr_Compatibility::get_os();
-		$program 	= escapeshellarg( $program );
+		$program 	= Revisr_Admin::escapeshellarg( $program );
 
 		if ( $os['code'] !== 'WIN' ) {
 			$path = exec( "which $program" );
