@@ -254,7 +254,7 @@ class Revisr_Git_Callback {
 	 */
 	public function null_pull( $output = '', $args = '' ) {
 		$msg = __( 'There was an error pulling from the remote repository. The local repository could be ahead, or there may be an authentication issue.', 'revisr' );
-		Revisr_Admin::alert( $msg, true );
+		Revisr_Admin::alert( implode( '<br>', $output ), true );
 		Revisr_Admin::log( __( 'Error pulling changes from the remote repository.', 'revisr' ), 'error' );
 		return false;
 	}
@@ -279,7 +279,7 @@ class Revisr_Git_Callback {
 	 */
 	public function null_push( $output = '', $args = '' ) {
 		$msg = __( 'Error pushing to the remote repository. The remote repository could be ahead, or there may be an authentication issue.', 'revisr' );
-		Revisr_Admin::alert( $msg, true );
+		Revisr_Admin::alert( implode( '<br>', $output ), true );
 		Revisr_Admin::log( __( 'Error pushing changes to the remote repository.', 'revisr' ), 'error' );
 		return;
 	}
