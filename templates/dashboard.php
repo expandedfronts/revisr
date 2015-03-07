@@ -90,16 +90,13 @@ $revisr->list_table->prepare_items();
 									</table>
 								</div>
 								<div id="tags" class="tabs-panel" style="display: none;">
-									<ul id="tags-list">
-										<?php
-											$tags = $revisr->git->run( 'tag', array() );
-											if ( is_array( $tags ) ) {
-												foreach ( $tags as $tag ) {
-													echo "<li>$tag</li>";
-												}
-											}
-										?>
-									</ul>
+								<?php
+									// TODO: Link these back as a filter on the "Commits" page.
+									$tags = $revisr->git->run( 'tag', array() );
+									if ( is_array( $tags ) ) {
+										echo '<ul id="tags-list"><li>' . implode( '</li><li>', $tags ) . '</ul>';
+									}
+								?>
 								</div>
 								<div id="manage_branches" class="wp-hidden-children">
 									<h4><a id="manage-branches-link" href="<?php echo get_admin_url() . 'admin.php?page=revisr_branches'; ?>" class="hide-if-no-js"><?php _e( 'Manage Branches', 'revisr' ); ?></a></h4>

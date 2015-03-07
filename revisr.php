@@ -129,8 +129,8 @@ class Revisr {
 	 */
 	public static function get_instance() {
 		if ( null == self::$instance ) {
-			self::$instance 				= new self;
-			self::$instance->options 		= self::$instance->get_options();
+			self::$instance 			= new self;
+			self::$instance->options 	= self::$instance->get_options();
 
 			self::$instance->define_constants();
 
@@ -152,7 +152,7 @@ class Revisr {
 	}
 
 	/**
-	 * Callback for spt_autoload_register.
+	 * Callback for spl_autoload_register.
 	 * @access private
 	 * @param  string $class The class to load.
 	 * @since  1.9
