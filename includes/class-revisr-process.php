@@ -209,47 +209,22 @@ class Revisr_Process {
 			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
 
+		// Fetch the changes so we can compare them.
 		$this->revisr->git->reset();
 		$this->revisr->git->fetch();
 
+		// Build an array of the commits we don't have locally.
 		$commits_since = $this->revisr->git->run( 'log', array( $this->revisr->git->branch . '..' . $this->revisr->git->remote . '/' . $this->revisr->git->branch, '--pretty=oneline' ) );
 
-		if ( is_array( $commits_since ) ) {
-			// Iterate through the commits to pull and add them to the database.
-			foreach ( $commits_since as $commit ) {
-				$commit_hash = substr( $commit, 0, 7 );
-				$commit_msg = substr( $commit, 40 );
-				$show_files = $this->revisr->git->run( 'show', array( '--pretty=format:', '--name-status', $commit_hash ) );
-
-				if ( is_array( $show_files ) ) {
-					$files_changed = array_filter( $show_files );
-					$post = array(
-						'post_title'	=> $commit_msg,
-						'post_content'	=> '',
-						'post_type'		=> 'revisr_commits',
-						'post_status'	=> 'publish',
-					);
-					$post_id = wp_insert_post( $post );
-
-					add_post_meta( $post_id, 'commit_hash', $commit_hash );
-					add_post_meta( $post_id, 'branch', $this->revisr->git->branch );
-					add_post_meta( $post_id, 'files_changed', count( $files_changed ) );
-					add_post_meta( $post_id, 'committed_files', $files_changed );
-
-					$view_link = get_admin_url() . "post.php?post=$post_id&action=edit";
-					$msg = sprintf( __( 'Pulled <a href="%s">#%s</a> from %s/%s.', 'revisr' ), $view_link, $commit_hash, $this->revisr->git->remote, $this->revisr->git->branch );
-					Revisr_Admin::log( $msg, 'pull' );
-				}
-			}
-		}
-
+		// Maybe backup database.
 		if ( $this->revisr->git->get_config( 'revisr', 'import-pulls' ) === 'true' ) {
 			$this->revisr->db->backup();
 			$undo_hash = $this->revisr->git->current_commit();
 			$this->revisr->git->set_config( 'revisr', 'last-db-backup', $undo_hash );
 		}
+
 		// Pull the changes or return an error on failure.
-		$this->revisr->git->pull();
+		$this->revisr->git->pull( $commits_since );
 	}
 
 	/**

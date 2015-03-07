@@ -246,12 +246,40 @@ class Revisr_Git_Callback {
 	 * Returns if a pull was successful.
 	 * @access public
 	 */
-	public function success_pull( $output = '', $args = '' ) {
-		if ( $args == '0' ) {
+	public function success_pull( $output = array(), $args = array() ) {
+		$commits_since 	= $args;
+		$num_commits 	= count( $commits_since );
+
+		if ( 0 === $num_commits ) {
 			$msg = __( 'The local repository is already up-to-date with the remote repository.', 'revisr' );
 			Revisr_Admin::alert( $msg );
 		} else {
-			$msg = sprintf( _n( 'Successfully pulled %s commit from %s/%s.', 'Successfully pulled %s commits from %s/%s.', $args, 'revisr' ), $args, $this->revisr->git->remote, $this->revisr->git->branch );
+			foreach ( $commits_since as $commit ) {
+
+				$commit_hash 	= substr( $commit, 0, 7 );
+				$commit_msg 	= substr( $commit, 40 );
+				$show_files 	= $this->revisr->git->run( 'show', array( '--pretty=format:', '--name-status', $commit_hash ) );
+
+				if ( is_array( $show_files ) ) {
+					$files_changed = array_filter( $show_files );
+					$post = array(
+						'post_title'	=> $commit_msg,
+						'post_content'	=> '',
+						'post_type'		=> 'revisr_commits',
+						'post_status'	=> 'publish',
+					);
+					$post_id = wp_insert_post( $post );
+					add_post_meta( $post_id, 'commit_hash', $commit_hash );
+					add_post_meta( $post_id, 'branch', $this->revisr->git->branch );
+					add_post_meta( $post_id, 'files_changed', count( $files_changed ) );
+					add_post_meta( $post_id, 'committed_files', $files_changed );
+					$view_link = get_admin_url() . "post.php?post=$post_id&action=edit";
+					$msg = sprintf( __( 'Pulled <a href="%s">#%s</a> from %s/%s.', 'revisr' ), $view_link, $commit_hash, $this->revisr->git->remote, $this->revisr->git->branch );
+					Revisr_Admin::log( $msg, 'pull' );
+				}
+			}
+
+			$msg = sprintf( _n( 'Successfully pulled %s commit from %s/%s.', 'Successfully pulled %s commits from %s/%s.', $num_commits, 'revisr' ), $num_commits, $this->revisr->git->remote, $this->revisr->git->branch );
 			Revisr_Admin::alert( $msg );
 
 			if ( $this->revisr->git->get_config( 'revisr', 'import-pulls' ) === 'true' ) {

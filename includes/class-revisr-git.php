@@ -417,10 +417,11 @@ class Revisr_Git {
 	/**
 	 * Pulls changes from the remote repository.
 	 * @access public
+	 * @param  array $commits The commits we're pulling (used in callback).
 	 */
-	public function pull() {
+	public function pull( $commits = array() ) {
 		$this->reset();
-		$pull = $this->run( 'pull', array( '-Xtheirs', '--quiet', $this->remote, $this->branch ), __FUNCTION__, $this->count_unpulled( false ) );
+		$pull = $this->run( 'pull', array( '-Xtheirs', '--quiet', $this->remote, $this->branch ), __FUNCTION__, $commits );
 		return $pull;
 	}
 
