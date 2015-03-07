@@ -77,25 +77,33 @@ class Revisr_Git_Callback {
 		$view_link 		= get_admin_url() . "post.php?post={$id}&action=edit";
 		$commit_hash 	= $this->revisr->git->current_commit();
 		$commit_msg 	= $_REQUEST['post_title'];
+
+		// Add post-commit meta.
 		add_post_meta( $id, 'commit_hash', $commit_hash );
 		add_post_meta( $id, 'branch', $this->revisr->git->branch );
+		add_post_meta( $id, 'commit_status', __( 'Committed', 'revisr' ) );
+
 		// Backup the database if necessary
 		if ( isset( $_REQUEST['backup_db'] ) && $_REQUEST['backup_db'] == 'on' ) {
 			$this->revisr->db->backup();
 			add_post_meta( $id, 'db_hash', $this->revisr->git->current_commit() );
 			add_post_meta( $id, 'backup_method', 'tables' );
 		}
+
 		// Log the event.
 		$msg = sprintf( __( 'Committed <a href="%s">#%s</a> to the local repository.', 'revisr' ), $view_link, $commit_hash );
 		Revisr_Admin::log( $msg, 'commit' );
+
 		// Notify the admin.
 		$email_msg = sprintf( __( 'A new commit was made to the repository: <br> #%s - %s', 'revisr' ), $commit_hash, $commit_msg );
 		Revisr_Admin::notify( get_bloginfo() . __( ' - New Commit', 'revisr' ), $email_msg );
+
 		// Add a tag if necessary.
 		if ( isset( $_REQUEST['tag_name'] ) ) {
 			$this->revisr->git->tag( $_POST['tag_name'] );
 			add_post_meta( $id, 'git_tag', $_POST['tag_name'] );
 		}
+
 		// Push if necessary.
 		$this->revisr->git->auto_push();
 		return $commit_hash;
@@ -106,10 +114,14 @@ class Revisr_Git_Callback {
 	 * @access public
 	 */
 	public function null_commit( $output = array(), $args = '' ) {
-		$msg = __( 'Error committing the changes to the local repository.', 'revisr' );
+		$id 	= get_the_ID();
+		$msg 	= __( 'Error committing the changes to the local repository.', 'revisr' );
+		$url 	= get_admin_url() . 'post.php?post=' . $id . '&action=edit&message=44';
+
+		add_post_meta( $id, 'commit_status', __( 'Error', 'revisr' ) );
 		Revisr_Admin::alert( $msg, true, $output );
 		Revisr_Admin::log( $msg, 'error' );
-		$url = get_admin_url() . 'post-new.php?post_type=revisr_commits&message=44';
+
 		wp_redirect( $url );
 	}
 
