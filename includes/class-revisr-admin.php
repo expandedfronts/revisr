@@ -148,12 +148,24 @@ class Revisr_Admin {
 	/**
 	 * Stores an alert to be rendered on the dashboard.
 	 * @access public
-	 * @param  string  $message 	The message to display.
-	 * @param  bool    $is_error Whether the message is an error.
+	 * @param  string  	$message 	The message to display.
+	 * @param  bool    	$is_error 	Whether the message is an error.
+	 * @param  array  	$output 	An array of output to store for viewing error details.
 	 */
-	public static function alert( $message, $is_error = false ) {
-		if ( $is_error == true ) {
+	public static function alert( $message, $is_error = false, $output = array() ) {
+		if ( true === $is_error ) {
+
+			if ( is_array( $output ) && ! empty( $output ) ) {
+				// Store info about the error for later.
+				set_transient( 'revisr_error_details', $output );
+
+				// Provide a link to view the error.
+				$error_url 	= wp_nonce_url( admin_url( 'admin-post.php?action=revisr_view_error&TB_iframe=true&width=350' ), 'revisr_view_error', 'revisr_error_nonce' );
+				$message 	.= sprintf( __( '<br>Click <a href="%s" class="thickbox" title="Error Details">here</a> for more details.', 'revisr' ), $error_url );
+			}
+
 			set_transient( 'revisr_error', $message, 10 );
+
 		} else {
 			set_transient( 'revisr_alert', $message, 3 );
 		}
@@ -197,6 +209,7 @@ class Revisr_Admin {
 	public static function clear_transients( $errors = true ) {
 		if ( $errors == true ) {
 			delete_transient( 'revisr_error' );
+			delete_transient( 'revisr_error_details' );
 		} else {
 			delete_transient( 'revisr_alert' );
 		}
@@ -373,6 +386,29 @@ class Revisr_Admin {
 		</html>
 		<?php
 		exit();
+	}
+
+	/**
+	 * Processes a view error request.
+	 * @access public
+	 */
+	public function view_error() {
+		?>
+		<html>
+		<head>
+		<title><?php _e( 'Error Details', 'revisr' ); ?></title>
+		</head>
+		<body>
+			<?php
+				if ( $revisr_error = get_transient( 'revisr_error_details' ) ) {
+					echo implode( '<br>', $revisr_error );
+				} else {
+					_e( 'Detailed error information not available.', 'revisr' );
+				}
+			?>
+		</body>
+		</html>
+		<?php
 	}
 
 	/**

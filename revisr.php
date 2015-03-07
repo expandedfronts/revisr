@@ -273,6 +273,7 @@ class Revisr {
 		add_action( 'admin_post_import_tables_form', array( self::$instance->admin, 'import_tables_form' ) );
 		add_action( 'admin_post_revert_form', array( self::$instance->admin, 'revert_form' ) );
 		add_action( 'admin_post_revisr_view_status', array( self::$instance->admin, 'view_status' ) );
+		add_action( 'admin_post_revisr_view_error', array( self::$instance->admin, 'view_error' ) );
 
 		// Displays the "Sponsored by Site5" logo.
 		add_action( 'admin_notices', array( self::$instance->admin, 'site5_notice' ) );

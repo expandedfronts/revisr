@@ -105,8 +105,9 @@ class Revisr_Git_Callback {
 	 * Callback for a failed commit.
 	 * @access public
 	 */
-	public function null_commit( $output = '', $args = '' ) {
+	public function null_commit( $output = array(), $args = '' ) {
 		$msg = __( 'Error committing the changes to the local repository.', 'revisr' );
+		Revisr_Admin::alert( $msg, true, $output );
 		Revisr_Admin::log( $msg, 'error' );
 		$url = get_admin_url() . 'post-new.php?post_type=revisr_commits&message=44';
 		wp_redirect( $url );
@@ -222,7 +223,7 @@ class Revisr_Git_Callback {
 	public function null_merge( $output = '', $args = '' ) {
 		$log_msg 	= sprintf( __( 'Error merging branch %s into %s.', 'revisr'), $_REQUEST['branch'], $this->revisr->git->branch );
 		$alert_msg 	= sprintf( __( 'There was an error merging branch %s into your current branch. The merge was aborted to avoid conflicts.', 'revisr' ), $_REQUEST['branch'] );
-		Revisr_Admin::alert( $alert_msg, true );
+		Revisr_Admin::alert( $alert_msg, true, $output );
 		Revisr_Admin::log( $log_msg, 'error' );
 		echo "<script>
 				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
@@ -252,9 +253,9 @@ class Revisr_Git_Callback {
 	 * @access public
 	 * @return boolean
 	 */
-	public function null_pull( $output = '', $args = '' ) {
+	public function null_pull( $output = array(), $args = '' ) {
 		$msg = __( 'There was an error pulling from the remote repository. The local repository could be ahead, or there may be an authentication issue.', 'revisr' );
-		Revisr_Admin::alert( implode( '<br>', $output ), true );
+		Revisr_Admin::alert( $msg, true, $output );
 		Revisr_Admin::log( __( 'Error pulling changes from the remote repository.', 'revisr' ), 'error' );
 		return false;
 	}
@@ -279,7 +280,7 @@ class Revisr_Git_Callback {
 	 */
 	public function null_push( $output = '', $args = '' ) {
 		$msg = __( 'Error pushing to the remote repository. The remote repository could be ahead, or there may be an authentication issue.', 'revisr' );
-		Revisr_Admin::alert( implode( '<br>', $output ), true );
+		Revisr_Admin::alert( $msg, true, $output );
 		Revisr_Admin::log( __( 'Error pushing changes to the remote repository.', 'revisr' ), 'error' );
 		return;
 	}
