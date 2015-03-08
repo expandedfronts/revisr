@@ -13,6 +13,9 @@ env:
     - WP_VERSION=3.9.2 WP_MULTISITE=0
     - WP_VERSION=3.9.2 WP_MULTISITE=1
 
+before_install:
+    - sudo apt-get update -qq
+
 before_script:
     - bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
     - cd /tmp/wordpress/
@@ -24,8 +27,5 @@ before_script:
 script: phpunit --coverage-clover=coverage.clover
 
 after_script:
-    - pwd
-    - cd /home/travis/build/ExpandedFronts/Revisr/
-    - ls
     - wget https://scrutinizer-ci.com/ocular.phar
     - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
