@@ -24,6 +24,7 @@ before_script:
 script: phpunit --coverage-clover=coverage.clover
 
 after_script:
+    - pwd
     - cd /home/travis/build/ExpandedFronts/Revisr/
     - ls
     - wget https://scrutinizer-ci.com/ocular.phar
