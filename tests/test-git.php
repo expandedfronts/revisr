@@ -129,8 +129,9 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the count_untracked() function.
 	 */
 	function test_count_untracked() {
-		$time = time();
-		fopen("sample-file_$time.txt", "w");
+		$dir 	= $this->revisr->git->get_git_dir();
+		$time 	= time();
+		fopen( $dir . "/sample-file_$time.txt", "w" );
 		$new_untracked = $this->revisr->git->count_untracked();
 		$this->assertEquals( 1, $new_untracked );
 	}
