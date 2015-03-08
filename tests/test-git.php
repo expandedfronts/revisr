@@ -70,6 +70,14 @@ class RevisrGitTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests that we have the path to Git.
+	 */
+	function test_git_path() {
+		$path = $this->revisr->git->get_git_path();
+		$this->assertContains('git', $path );
+	}
+
+	/**
 	 * Tests a commit.
 	 */
 	function test_commit() {

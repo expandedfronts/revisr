@@ -22,7 +22,7 @@ class RevisrAdminTest extends WP_UnitTestCase {
 	 */
 	function test_alert() {
 		// Tests for a standard alert.
-		$this->revisr->admin->alert( __( 'test_alert' ) );
+		Revisr_Admin::alert( __( 'test_alert' ) );
 		$alert_transient = get_transient( 'revisr_alert' );
 		$this->assertEquals( 'test_alert', $alert_transient );
 		// Tests for an error.
@@ -32,7 +32,22 @@ class RevisrAdminTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests the get_commit_details() method.
+	 * Tests the Revisr_Admin::clear_transients() method.
+	 */
+	function test_clear_transients() {
+		//First set a transient and make sure it exists.
+		Revisr_Admin::alert( 'test_error', true );
+		$transient = get_transient( 'revisr_error' );
+		$this->assertEquals( 'test_error', $transient );
+
+		// Clear the transients and make sure they're really gone.
+		Revisr_Admin::clear_transients();
+		$new_transient = get_transient( 'revisr_error' );
+		$this->assertEquals( false, $new_transient );
+	}
+
+	/**
+	 * Tests the Revisr_Admin::get_commit_details() method.
 	 */
 	function test_get_commit_details() {
 		$commit = Revisr_Admin::get_commit_details( 42 );
