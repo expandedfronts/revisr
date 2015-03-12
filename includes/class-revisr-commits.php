@@ -468,7 +468,7 @@ class Revisr_Commits {
 		$timestamp 		 	= sprintf( __( 'Committed on: <strong>%s</strong>', 'revisr' ), date_i18n( $time_format, get_the_time( 'U' ) ) );
 
 		if ( false !== $commit['error_details'] ) {
-			$details = ' <a class="thickbox" title="' . __( 'Error Details', 'revisr' ) . '" href="' . wp_nonce_url( admin_url( 'admin-post.php?action=revisr_view_error&post_id=' . $post_id . '&TB_iframe=true&width=350' ), 'revisr_view_error', 'revisr_error_nonce' ) . '">View Details</a>';
+			$details = ' <a class="thickbox" title="' . __( 'Error Details', 'revisr' ) . '" href="' . wp_nonce_url( admin_url( 'admin-post.php?action=revisr_view_error&post_id=' . $post_id . '&TB_iframe=true&width=350&height=300' ), 'revisr_view_error', 'revisr_error_nonce' ) . '">View Details</a>';
 			$revert_btn = '<a class="button button-primary disabled" href="#">' . __( 'Revert to this Commit', 'revisr' ) . '</a>';
 		} else {
 			$revert_btn = '<a class="button button-primary thickbox" href="' . $revert_url . '" title="' . __( 'Revert', 'revisr' ) . '">' . __( 'Revert to this Commit', 'revisr' ) . '</a>';

@@ -150,7 +150,7 @@ class Revisr_Admin {
 				set_transient( 'revisr_error_details', $output );
 
 				// Provide a link to view the error.
-				$error_url 	= wp_nonce_url( admin_url( 'admin-post.php?action=revisr_view_error&TB_iframe=true&width=350' ), 'revisr_view_error', 'revisr_error_nonce' );
+				$error_url 	= wp_nonce_url( admin_url( 'admin-post.php?action=revisr_view_error&TB_iframe=true&width=350&height=300' ), 'revisr_view_error', 'revisr_error_nonce' );
 				$message 	.= sprintf( __( '<br>Click <a href="%s" class="thickbox" title="Error Details">here</a> for more details.', 'revisr' ), $error_url );
 			}
 
