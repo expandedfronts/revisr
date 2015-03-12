@@ -368,7 +368,7 @@ class Revisr_Commits {
 			}
 		}
 
-		echo '<div id="committed_files_result">';
+		echo '<div id="message"></div><div id="committed_files_result">';
 
 		if ( isset( $output ) ) {
 			printf( __('<br><strong>%s</strong> files were included in this commit. Double-click files marked as "Modified" to view the changes in a diff.', 'revisr' ), $commit['files_changed'] );
@@ -460,16 +460,19 @@ class Revisr_Commits {
 	 */
 	public function view_commit_meta() {
 
-		$commit 			= Revisr_Admin::get_commit_details( get_the_ID() );
-		$revert_url 		= get_admin_url() . "admin-post.php?action=revert_form&commit_id=" . get_the_ID() . "&TB_iframe=true&width=350&height=200";
+		$post_id 			= get_the_ID();
+		$commit 			= Revisr_Admin::get_commit_details( $post_id );
+		$revert_url 		= get_admin_url() . "admin-post.php?action=revert_form&commit_id=" . $post_id . "&TB_iframe=true&width=350&height=200";
 
 		$time_format 	 	= __( 'M j, Y @ G:i' );
 		$timestamp 		 	= sprintf( __( 'Committed on: <strong>%s</strong>', 'revisr' ), date_i18n( $time_format, get_the_time( 'U' ) ) );
 
-		if ( $commit['committed_files'] && $commit['commit_hash'] ) {
-			$status = __( 'Committed', 'revisr' );
+		if ( false !== $commit['error_details'] ) {
+			$details = ' <a class="thickbox" title="' . __( 'Error Details', 'revisr' ) . '" href="' . wp_nonce_url( admin_url( 'admin-post.php?action=revisr_view_error&post_id=' . $post_id . '&TB_iframe=true&width=350' ), 'revisr_view_error', 'revisr_error_nonce' ) . '">View Details</a>';
+			$revert_btn = '<a class="button button-primary disabled" href="#">' . __( 'Revert to this Commit', 'revisr' ) . '</a>';
 		} else {
-			$status = __( 'Error', 'revisr' );
+			$revert_btn = '<a class="button button-primary thickbox" href="' . $revert_url . '" title="' . __( 'Revert', 'revisr' ) . '">' . __( 'Revert to this Commit', 'revisr' ) . '</a>';
+			$details = '';
 		}
 
 		?>
@@ -478,7 +481,7 @@ class Revisr_Commits {
 
 				<div class="misc-pub-section revisr-pub-status">
 					<label for="post_status"><?php _e( 'Status:', 'revisr' ); ?></label>
-					<span><strong><?php echo $status; ?></strong></span>
+					<span><strong><?php echo $commit['status'] . $details; ?></strong></span>
 				</div>
 
 				<div class="misc-pub-section revisr-pub-branch">
@@ -504,7 +507,7 @@ class Revisr_Commits {
 			<div id="delete-action"></div>
 			<div id="publishing-action">
 				<span class="spinner"></span>
-				<a class="button button-primary thickbox" href="<?php echo $revert_url; ?>" title="<?php _e( 'Revert', 'revisr' ); ?>"><?php _e( 'Revert to this Commit', 'revisr' ); ?></a>
+				<?php echo $revert_btn; ?>
 			</div>
 			<div class="clear"></div>
 		</div>

@@ -119,10 +119,12 @@ class Revisr_Git_Callback {
 		$url 	= get_admin_url() . 'post.php?post=' . $id . '&action=edit&message=44';
 
 		add_post_meta( $id, 'commit_status', __( 'Error', 'revisr' ) );
+		add_post_meta( $id, 'error_details', $output );
 		Revisr_Admin::alert( $msg, true, $output );
 		Revisr_Admin::log( $msg, 'error' );
 
 		wp_redirect( $url );
+		exit();
 	}
 
 	/**
