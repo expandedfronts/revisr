@@ -253,7 +253,7 @@ class Revisr_DB {
 		if ( isset( $_REQUEST['source'] ) && $_REQUEST['source'] == 'ajax_button' ) {
 			$this->commit_db( true );
 		} else {
-			$this->commit_db();
+			$this->commit_db( false, false );
 		}
 	}
 
@@ -289,9 +289,10 @@ class Revisr_DB {
 	/**
 	 * Commits the database to the repository and pushes if needed.
 	 * @access public
-	 * @param  boolean $insert_post Whether to insert a new commit custom_post_type.
+	 * @param  boolean $insert_post 	Whether to insert a new commit custom_post_type.
+	 * @param  boolean $push_changes	Whether or not to push the changes.
 	 */
-	public function commit_db( $insert_post = false ) {
+	public function commit_db( $insert_post = false, $push_changes = true ) {
 		$commit_msg  = __( 'Backed up the database with Revisr.', 'revisr' );
 		$this->revisr->git->commit( $commit_msg );
 		// Insert the corresponding post if necessary.
@@ -312,7 +313,9 @@ class Revisr_DB {
 			add_post_meta( $post_id, 'committed_files', array() );
 		}
 		// Push changes if necessary.
-		$this->revisr->git->auto_push();
+		if ( true === $push_changes ) {
+			$this->revisr->git->auto_push();
+		}
 	}
 
 	/**
