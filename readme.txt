@@ -82,6 +82,7 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 = 1.9.2 =
 * Improved error handling for commits, pushes, and pulls
 * Fixed bug with saving Git username
+* Fixed bug with PHP error reporting
 * Fixed CSS issue with viewing untracked tables after importing
 
 = 1.9.1 =
