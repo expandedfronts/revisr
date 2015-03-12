@@ -50,6 +50,11 @@ It is also adviseable to add Revisr to the gitignore file via the settings page 
 
 ## Changelog ##
 
+#### 1.9.2 ####
+* Improved error handling for commits, pushes, and pulls
+* Fixed bug with saving Git username
+* Fixed CSS issue with viewing untracked tables after importing
+
 #### 1.9.1 ####
 * Fixed bug with "Import Pushes" checkbox not showing after saving
 * Fixed bug with saving some settings in Windows
