@@ -14,7 +14,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Prevent PHP notices from breaking AJAX.
-error_reporting( ~E_NOTICE );
+error_reporting( ~E_NOTICE & ~E_STRICT );
 
 // Include WP_List_Table if it isn't already loaded.
 if ( ! class_exists( 'WP_List_Table' ) ) {
