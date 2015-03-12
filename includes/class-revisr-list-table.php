@@ -13,9 +13,6 @@
 // Prevent direct access to this file.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Prevent PHP notices from breaking AJAX.
-error_reporting( ~E_NOTICE );
-
 // Include WP_List_Table if it isn't already loaded.
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once( ABSPATH . '/wp-admin/includes/class-wp-list-table.php' );
@@ -34,6 +31,13 @@ class Revisr_List_Table extends WP_List_Table {
 	 * @access public
 	 */
 	public function __construct(){
+
+		// Prevent PHP notices from breaking AJAX.
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			error_reporting( ~E_NOTICE, ~E_STRICT );
+		}
+
+		// Grab the instance and load the parent class on the appropriate hook.
 		$this->revisr = Revisr::get_instance();
 		add_action( 'load-' . $this->revisr->admin->page_hooks['dashboard'], array( $this, 'load' ) );
 		add_action( 'wp_ajax_revisr_get_custom_list', array( $this, 'ajax_callback' ) );
