@@ -19,7 +19,7 @@ input[type="text"] {
 }
 .revisr-tb-submit {
 	width: 100%;
-	position: absolute;
+	position: fixed;
 	bottom: 0px;
 	padding: 15px 0 15px 0;
 	border-top: 1px solid #ddd;
