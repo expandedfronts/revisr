@@ -80,6 +80,12 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function username_callback() {
+
+		// Update the .git/config if necessary.
+        if ( $this->is_updated( 'username' ) ) {
+        	$this->revisr->git->set_config(  'user', 'name', $this->options['username'] );
+        }
+
 		$check_username = $this->revisr->git->get_config( 'user', 'name' );
 		if ( $check_username ) {
 			$username = $check_username;
@@ -94,10 +100,6 @@ class Revisr_Settings_Fields {
            $username,
             __( 'The username to commit with in Git.', 'revisr' )
         );
-
-        if ( $this->is_updated( 'username' ) ) {
-        	$this->revisr->git->set_config(  'user', 'email', $this->options['username'] );
-        }
 	}
 
 	/**
@@ -105,6 +107,12 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function email_callback() {
+
+		// Update the .git/config if necessary.
+        if ( $this->is_updated( 'email' ) ) {
+        	$this->revisr->git->set_config( 'user', 'email',  $this->options['email'] );
+        }
+
 		$check_email = $this->revisr->git->get_config( 'user', 'email' );
 		if ( $check_email ) {
 			$email = $check_email;
@@ -119,10 +127,6 @@ class Revisr_Settings_Fields {
            	$email,
             __( 'The email address associated to your Git username. Also used for notifications (if enabled).', 'revisr' )
         );
-
-        if ( $this->is_updated( 'email' ) ) {
-        	$this->revisr->git->set_config( 'user', 'email',  $this->options['email'] );
-        }
 	}
 
 	/**
