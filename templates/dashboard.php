@@ -74,7 +74,10 @@ $revisr->list_table->prepare_items();
 								<div id="branches" class="tabs-panel" style="display: block;">
 									<table id="branches_table" class="widefat">
 										<?php
-											$output = $revisr->git->get_branches();
+
+											$admin_url 	= get_admin_url();
+											$output 	= $revisr->git->get_branches();
+
 											if ( is_array( $output ) ) {
 												foreach ($output as $key => $value){
 													$branch = substr($value, 2);
@@ -82,7 +85,8 @@ $revisr->list_table->prepare_items();
 														echo "<tr><td><strong>$branch</strong></td><td width='70'><a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Checked Out</a></td></tr>";
 													}
 													else {
-														echo "<tr><td>$branch</td><td width='70'><a class='button branch-btn' href='" . get_admin_url() . "admin-post.php?action=process_checkout&branch={$branch}'>Checkout</a></td></tr>";
+														$branch_url = wp_nonce_url( $admin_url . "admin-post.php?action=process_checkout&branch={$branch}", 'process_checkout', 'revisr_checkout_nonce' );
+														echo "<tr><td>$branch</td><td width='70'><a class='button branch-btn' href='" . $branch_url . "'>Checkout</a></td></tr>";
 													}
 												}
 											}

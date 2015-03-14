@@ -94,6 +94,7 @@ class Revisr_Git {
 	 * @param 	string|array 	$info 		Additional info to pass to the callback
 	 */
 	public function run( $command, $args, $callback = '', $info = '' ) {
+
 		// Setup the command for safe usage.
 		$safe_path 		= Revisr_Admin::escapeshellarg( $this->git_path );
 		$safe_cmd 		= Revisr_Admin::escapeshellarg( $command );
@@ -109,6 +110,7 @@ class Revisr_Git {
 		$success_callback 	= 'success_' . $callback;
 		$failure_callback 	= 'null_' . $callback;
 
+		// Return the callback.
 		if ( 0 !== $return_code ) {
 			return $response->$failure_callback( $output, $info );
 		} else {
@@ -164,10 +166,13 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function auto_push() {
+
+		// Allow for preventing auto-push on a per-commit basis.
 		if ( isset( $_REQUEST['autopush_enabled'] ) && ! isset( $_REQUEST['auto_push'] ) ) {
 			return;
 		}
 
+		// Push the changes if needed.
 		if ( $this->get_config( 'revisr', 'auto-push' ) === 'true' || isset( $_REQUEST['auto_push'] ) ) {
 			$this->push();
 		}

@@ -64,6 +64,7 @@ $git 	= $revisr->git;
 								$num_commits 	= Revisr_Admin::count_commits( $branch );
 
 								if ( substr( $value, 0, 1 ) === "*" ){
+
 									?>
 									<tr>
 										<td><strong><?php printf( __( '%s (current branch)', 'revisr' ), $branch ); ?></strong></td>
@@ -75,11 +76,13 @@ $git 	= $revisr->git;
 										</td>
 									</tr>
 									<?php
+
 								} else {
-									$checkout_url 		= $admin_url . "admin-post.php?action=process_checkout&branch={$branch}";
-									$merge_url 			= $admin_url . "admin-post.php?action=merge_branch_form&branch={$branch}&TB_iframe=true&width=350&height=200";
-									$delete_url 		= $admin_url . "admin-post.php?action=delete_branch_form&branch={$branch}&TB_iframe=true&width=350&height=200";
-									$pull_remote_url 	= $admin_url . "admin-post.php?action=pull_remote_form&remote_branch={$branch}&TB_iframe=true&width=350&height=200";
+
+									$checkout_url 		= wp_nonce_url( $admin_url . "admin-post.php?action=process_checkout&branch=" . $branch, 'process_checkout', 'revisr_checkout_nonce' );
+									$merge_url 			= $admin_url . "admin-post.php?action=merge_branch_form&branch=" . $branch . "&TB_iframe=true&width=350&height=200";
+									$delete_url 		= $admin_url . "admin-post.php?action=delete_branch_form&branch=" . $branch . "&TB_iframe=true&width=350&height=200";
+									$pull_remote_url 	= $admin_url . "admin-post.php?action=pull_remote_form&remote_branch=" . $branch . "&TB_iframe=true&width=350&height=200";
 									?>
 									<tr>
 										<td><?php echo $branch; ?></td>
@@ -91,6 +94,7 @@ $git 	= $revisr->git;
 										</td>
 									</tr>
 									<?php
+
 								}
 							}
 						}
@@ -120,6 +124,7 @@ $git 	= $revisr->git;
 							<input id="checkout-new-branch" type="checkbox" name="checkout_new_branch" style="width: 17px;">
 							<label  id="checkout-label" for="checkout-new-branch"><?php _e('Checkout new branch?'); ?></label>
 							<input type="hidden" name="action" value="process_create_branch">
+							<?php wp_nonce_field( 'process_create_branch', 'revisr_create_branch_nonce' ); ?>
 							<p id="add-branch-submit" class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e( 'Create Branch', 'revisr' ); ?>" style="width:150px;"></p>
 						</div>
 					</form>

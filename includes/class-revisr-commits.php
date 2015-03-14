@@ -446,6 +446,7 @@ class Revisr_Commits {
 			<div id="delete-action"></div>
 			<div id="publishing-action">
 				<span class="spinner"></span>
+				<?php wp_nonce_field( 'process_commit', 'revisr_commit_nonce' ); ?>
 				<input type="submit" name="publish" id="commit" class="button button-primary button-large" value="<?php _e( 'Commit Changes', 'revisr' ); ?>" onclick="commit_files();" accesskey="p">
 			</div>
 			<div class="clear"></div>

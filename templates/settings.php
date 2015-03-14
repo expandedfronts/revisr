@@ -11,13 +11,16 @@
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+// Determines which tab to display.
+$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general_settings';
+
 ?>
 <div class="wrap">
 	<div id="revisr_settings">
 		<h2><?php _e( 'Revisr - Settings', 'revisr' ); ?></h2>
 
 		<?php
-			$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general_settings';
+
 			if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == "true" ) {
 				_e( '<div id="revisr_alert" class="updated" style="margin-top:20px;"><p>Settings updated successfully.</p></div>', 'revisr' );
 			}
@@ -37,24 +40,33 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 		<form class="settings-form" method="post" action="options.php">
 			<?php
-				// Decides which settings to display.
-				$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general_settings';
-	            if ( $active_tab == 'general_settings' ) {
-	            	settings_fields( 'revisr_general_settings' );
-	            	do_settings_sections( 'revisr_general_settings' );
-	            } elseif ( $active_tab == 'remote_settings' ) {
-		            settings_fields( 'revisr_remote_settings' );
-	            	do_settings_sections( 'revisr_remote_settings' );
-	            } elseif ( $active_tab == 'help' ) {
-	            	include REVISR_PATH . 'templates/help.php';
-	            } else {
-		            settings_fields( 'revisr_database_settings' );
-	            	do_settings_sections( 'revisr_database_settings' );
-	            }
 
-	            if ( $active_tab !== 'help' ) {
-	            	submit_button();
-	            }
+				// Renders the settings page.
+				switch ( $active_tab ) {
+
+					case 'general_settings':
+						settings_fields( 'revisr_general_settings' );
+	            		do_settings_sections( 'revisr_general_settings' );
+	            		break;
+
+            		case 'remote_settings':
+			            settings_fields( 'revisr_remote_settings' );
+	            		do_settings_sections( 'revisr_remote_settings' );
+	            		break;
+
+            		case 'database_settings':
+			            settings_fields( 'revisr_database_settings' );
+	            		do_settings_sections( 'revisr_database_settings' );
+	            		break;
+
+            		case 'help':
+            			include REVISR_PATH . 'templates/help.php';
+            			break;
+				}
+
+				if ( 'help' !== $active_tab ) {
+					submit_button();
+				}
 		    ?>
 		</form>
 	</div>

@@ -94,10 +94,11 @@ class Revisr_Settings_Fields {
 		} else {
 			$username = '';
 		}
+
 		printf(
             '<input type="text" id="username" name="revisr_general_settings[username]" value="%s" class="regular-text revisr-text" />
             <p class="description revisr-description">%s</p>',
-           $username,
+           esc_attr( $username ),
             __( 'The username to commit with in Git.', 'revisr' )
         );
 	}
@@ -121,10 +122,11 @@ class Revisr_Settings_Fields {
 		} else {
 			$email = '';
 		}
+
 		printf(
             '<input type="text" id="email" name="revisr_general_settings[email]" value="%s" class="regular-text revisr-text" />
             <p class="description revisr-description">%s</p>',
-           	$email,
+           	esc_attr( $email ),
             __( 'The email address associated to your Git username. Also used for notifications (if enabled).', 'revisr' )
         );
 	}
@@ -134,7 +136,8 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function gitignore_callback() {
-		chdir( $this->revisr->git->git_dir );
+
+		// Update the .gitignore if necessary.
 		if ( $this->is_updated( 'gitignore' ) ) {
 			file_put_contents( $this->revisr->git->git_dir . '/.gitignore', $this->options['gitignore'] );
 			$this->revisr->git->run( 'add', array( '.gitignore' ) );
@@ -150,10 +153,11 @@ class Revisr_Settings_Fields {
 		} else {
 			$gitignore = '';
 		}
+
 		printf(
             '<textarea id="gitignore" name="revisr_general_settings[gitignore]" rows="6" />%s</textarea>
             <p class="description revisr-description">%s</p>',
-            $gitignore,
+            esc_textarea( $gitignore ),
             __( 'Add files or directories that you don\'t want to show up in Git here, one per line.<br>This will update the ".gitignore" file for this repository.', 'revisr' )
 		);
 	}
@@ -265,7 +269,7 @@ class Revisr_Settings_Fields {
 		// Allow the user to unset the Webhook URL.
 		if ( isset( $_GET['settings-updated'] ) ) {
 			if ( $this->is_updated( 'webhook_url' ) ) {
-				$this->revisr->git->set_config( 'revisr', 'webhook-url', $this->options['webhook_url'] );
+				$this->revisr->git->set_config( 'revisr', 'webhook-url', esc_url_raw( $this->options['webhook_url'] ) );
 			} else {
 				$this->revisr->git->run( 'config', array( '--unset', 'revisr.webhook-url' ) );
 			}
@@ -401,7 +405,7 @@ class Revisr_Settings_Fields {
 		// Allow the user to unset the dev URL.
 		if ( isset( $_GET['settings-updated'] ) ) {
 			if ( $this->is_updated( 'development_url' ) ) {
-				$this->revisr->git->set_config( 'revisr', 'dev-url', $this->options['development_url'] );
+				$this->revisr->git->set_config( 'revisr', 'dev-url', esc_url_raw( $this->options['development_url'] ) );
 			} else {
 				$this->revisr->git->run( 'config', array( '--unset', 'revisr.dev-url' ) );
 			}
@@ -445,7 +449,7 @@ class Revisr_Settings_Fields {
 		printf(
 			'<input type="text" id="mysql_path" name="revisr_database_settings[mysql_path]" value="%s" class="regular-text revisr-text" placeholder="" />
 			<p class="description revisr-description">%s</p>',
-			$mysql_path,
+			esc_attr( $mysql_path ),
 			__( 'Leave blank if the full path to MySQL has already been set on the server. Some possible settings include:
 			<br><br>For MAMP: /Applications/MAMP/Library/bin/<br>
 			For WAMP: C:\wamp\bin\mysql\mysql5.6.12\bin\ ', 'revisr' )

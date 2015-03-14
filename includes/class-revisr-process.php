@@ -59,24 +59,26 @@ class Revisr_Process {
 	 */
 	public function process_checkout( $args = '', $new_branch = false ) {
 
-		if ( $this->revisr->git->get_config( 'revisr', 'import-checkouts' ) === 'true' ) {
-			$this->revisr->db->backup();
+		if ( wp_verify_nonce( $_REQUEST['revisr_checkout_nonce'], 'process_checkout' ) ) {
+
+			if ( $this->revisr->git->get_config( 'revisr', 'import-checkouts' ) === 'true' ) {
+				$this->revisr->db->backup();
+			}
+
+			$branch = $_REQUEST['branch'] ? $_REQUEST['branch'] : $args;
+
+			$this->revisr->git->reset();
+			$this->revisr->git->checkout( $branch );
+
+			if ( $this->revisr->git->get_config( 'revisr', 'import-checkouts' ) === 'true' && $new_branch === false ) {
+				$this->revisr->db->import();
+			}
+
+			wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr' );
+			exit();
+
 		}
 
-		if ( $args == '' ) {
-			$branch = $_REQUEST['branch'];
-		} else {
-			$branch = $args;
-		}
-
-		$this->revisr->git->reset();
-		$this->revisr->git->checkout( $branch );
-
-		if ( $this->revisr->git->get_config( 'revisr', 'import-checkouts' ) === 'true' && $new_branch === false ) {
-			$this->revisr->db->import();
-		}
-		$url = get_admin_url() . 'admin.php?page=revisr';
-		wp_redirect( $url );
 	}
 
 	/**
@@ -84,7 +86,8 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_commit() {
-		if ( isset( $_REQUEST['_wpnonce'] ) && isset( $_REQUEST['_wp_http_referer'] ) ) {
+
+		if ( wp_verify_nonce( $_REQUEST['revisr_commit_nonce'], 'process_commit' ) ) {
 
 			$id 			= get_the_ID();
 			$commit_msg 	= $_REQUEST['post_title'];
@@ -92,7 +95,7 @@ class Revisr_Process {
 
 			// Require a message to be entered for the commit.
 			if ( $commit_msg == 'Auto Draft' || $commit_msg == '' ) {
-				wp_redirect( $post_new . '&message=42' );
+				wp_safe_redirect( $post_new . '&message=42' );
 				exit();
 			}
 
@@ -101,7 +104,7 @@ class Revisr_Process {
 				$this->revisr->git->stage_files( $_POST['staged_files'] );
 				$staged_files = $_POST['staged_files'];
 			} else {
-				wp_redirect( $post_new . '&message=43' );
+				wp_safe_redirect( $post_new . '&message=43' );
 				exit();
 			}
 
@@ -110,6 +113,7 @@ class Revisr_Process {
 			add_post_meta( $id, 'files_changed', count( $staged_files ) );
 			$this->revisr->git->commit( $commit_msg, 'commit' );
 		}
+
 	}
 
 	/**
@@ -117,20 +121,25 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_create_branch() {
-		$branch = $_REQUEST['branch_name'];
-		$result = $this->revisr->git->create_branch( $branch );
 
-		if ( $result !== false ) {
-			$msg = sprintf( __( 'Created new branch: %s', 'revisr' ), $branch );
-			Revisr_Admin::log( $msg, 'branch' );
+		if ( wp_verify_nonce( $_REQUEST['revisr_create_branch_nonce'], 'process_create_branch' ) ) {
 
-			if ( isset( $_REQUEST['checkout_new_branch'] ) ) {
-				$this->revisr->git->checkout( $branch );
+			$branch = $_REQUEST['branch_name'];
+			$result = $this->revisr->git->create_branch( $branch );
+
+			if ( $result !== false ) {
+				$msg = sprintf( __( 'Created new branch: %s', 'revisr' ), $branch );
+				Revisr_Admin::log( $msg, 'branch' );
+
+				if ( isset( $_REQUEST['checkout_new_branch'] ) ) {
+					$this->revisr->git->checkout( $branch );
+				}
+
+				wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_success&branch=' . $branch );
+			} else {
+				wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_error&branch=' . $branch );
 			}
 
-			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_success&branch=' . $branch );
-		} else {
-			wp_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_error&branch=' . $branch );
 		}
 
 		exit();
@@ -141,13 +150,20 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_delete_branch() {
-		if ( isset( $_POST['branch'] ) && $_POST['branch'] != $this->revisr->git->branch ) {
-			$branch = $_POST['branch'];
-			$this->revisr->git->delete_branch( $branch );
-			if ( isset( $_POST['delete_remote_branch'] ) ) {
-				$this->revisr->git->run( "push {$this->revisr->git->remote} --delete {$branch}" );
+
+		if ( wp_verify_nonce( $_REQUEST['revisr_delete_branch_nonce'], 'process_delete_branch' ) ) {
+
+			if ( isset( $_POST['branch'] ) && $_POST['branch'] != $this->revisr->git->branch ) {
+				$branch = $_POST['branch'];
+				$this->revisr->git->delete_branch( $branch );
+
+				if ( isset( $_POST['delete_remote_branch'] ) ) {
+					$this->revisr->git->run( 'push', array( $this->revisr->git->remote, '--delete', $branch ) );
+				}
 			}
+
 		}
+
 		exit();
 	}
 
@@ -156,12 +172,16 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_discard() {
+
 		if ( wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
+
 			$this->revisr->git->reset( '--hard', 'HEAD', true );
 			Revisr_Admin::log( __('Discarded all uncommitted changes.', 'revisr'), 'discard' );
 			Revisr_Admin::alert( __('Successfully discarded any uncommitted changes.', 'revisr') );
-			exit();
+
 		}
+
+		exit();
 	}
 
 	/**
@@ -180,13 +200,19 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_import() {
-		if ( isset( $_REQUEST['revisr_import_untracked'] ) && is_array( $_REQUEST['revisr_import_untracked'] ) ) {
-			$this->revisr->db->import( $_REQUEST['revisr_import_untracked'] );
-			_e( 'Importing...', 'revisr' );
-			echo "<script>
-					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
-			</script>";
+
+		if ( wp_verify_nonce( $_REQUEST['revisr_import_nonce'], 'process_import' ) ) {
+
+			if ( isset( $_REQUEST['revisr_import_untracked'] ) && is_array( $_REQUEST['revisr_import_untracked'] ) ) {
+				$this->revisr->db->import( $_REQUEST['revisr_import_untracked'] );
+				_e( 'Importing...', 'revisr' );
+				echo "<script>
+						window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
+				</script>";
+			}
+
 		}
+
 	}
 
 	/**
@@ -194,10 +220,16 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_merge() {
-		$this->revisr->git->merge( $_REQUEST['branch'] );
-		if ( isset( $_REQUEST['import_db'] ) && $_REQUEST['import_db'] == 'on' ) {
-			$this->revisr->db->import();
+
+		if ( wp_verify_nonce( $_REQUEST['revisr_merge_nonce'], 'process_merge' ) ) {
+
+			$this->revisr->git->merge( $_REQUEST['branch'] );
+
+			if ( isset( $_REQUEST['import_db'] ) && $_REQUEST['import_db'] == 'on' ) {
+				$this->revisr->db->import();
+			}
 		}
+
 	}
 
 	/**
@@ -274,7 +306,7 @@ class Revisr_Process {
 			_e( 'Revert completed. Redirecting...', 'revisr' );
 			echo "<script>window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';</script>";
 		} else {
-			wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
+			wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr' );
 		}
 	}
 
@@ -311,7 +343,7 @@ class Revisr_Process {
 
 		if ( true === $redirect ) {
 			$redirect = get_admin_url() . "admin.php?page=revisr";
-			wp_redirect( $redirect );
+			wp_safe_redirect( $redirect );
 		}
 	}
 }
