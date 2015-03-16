@@ -264,7 +264,7 @@ class Revisr_DB {
 	 */
 	private function backup_table( $table ) {
 		$conn = $this->build_conn( $table );
-		exec( "{$this->path}mysqldump $conn > {$this->backup_dir}revisr_$table.sql --skip-comments" );
+		exec( "{$this->path}mysqldump $conn > '{$this->backup_dir}revisr_$table.sql' --skip-comments" );
 		$this->add_table( $table );
 		return $this->verify_backup( $table );
 	}
