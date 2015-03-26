@@ -428,6 +428,28 @@ class Revisr_Settings_Fields {
 	}
 
 	/**
+	 * Displays/updates the "DB Driver" settings field.
+	 * @access public
+	 */
+	public function db_driver_callback() {
+		if ( $this->is_updated( 'db_driver' ) ) {
+			$this->revisr->git->set_config( 'revisr', 'db-driver', $this->options['db_driver'] );
+		}
+
+		$current = $this->revisr->git->get_config( 'revisr', 'db-driver' );
+
+		?>
+		<select id="db-driver-select" name="revisr_database_settings[db_driver]">
+			<option value="mysql" <?php selected( 'mysql', $current ); ?>><?php _e( 'MySQL', 'revisr' ); ?></option>
+			<option value="wpdb" <?php selected( 'wpdb', $current ); ?>><?php _e( 'WordPress', 'revisr' ); ?></option>
+		</select>
+		<p class="description"><?php _e( 'MySQL can be faster, but may not be available on some servers.', 'revisr' ); ?></p>
+
+		<?php
+
+	}
+
+	/**
 	 * Displays/updates the "Path to MySQL" settings field.
 	 * @access public
 	 */

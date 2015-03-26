@@ -174,6 +174,8 @@ class Revisr {
 		require_once REVISR_PATH . 'includes/class-revisr-admin.php';
 		require_once REVISR_PATH . 'includes/class-revisr-remote.php';
 		require_once REVISR_PATH . 'includes/class-revisr-db.php';
+		require_once REVISR_PATH . 'includes/class-revisr-db-backup.php';
+		require_once REVISR_PATH . 'includes/class-revisr-db-import.php';
 		require_once REVISR_PATH . 'includes/class-revisr-git-callback.php';
 		require_once REVISR_PATH . 'includes/class-revisr-cron.php';
 

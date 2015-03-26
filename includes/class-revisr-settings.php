@@ -160,6 +160,13 @@ class Revisr_Settings {
 			'revisr_database_settings',
 			'revisr_database_settings'
 		);
+		add_settings_field(
+			'db_driver',
+			__( 'Database Driver', 'revisr' ),
+			array( $this->settings_fields, 'db_driver_callback' ),
+			'revisr_database_settings',
+			'revisr_database_settings'
+		);
         add_settings_field(
         	'mysql_path',
         	__( 'Path to MySQL', 'revisr' ),
