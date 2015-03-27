@@ -105,6 +105,7 @@ class Revisr_DB_Backup extends Revisr_DB {
 	 * Processes the results and alerts the user as necessary.
 	 * @access public
 	 * @param  array $args An array containing the results of the backup.
+	 * @return boolean
 	 */
 	public function callback( $args ) {
 
@@ -116,8 +117,10 @@ class Revisr_DB_Backup extends Revisr_DB {
 			$msg = __( 'Successfully backed up the database.', 'revisr' );
 			Revisr_Admin::alert( $msg );
 			Revisr_Admin::log( $msg, 'backup' );
+			return true;
 		}
 
+		return false;
 	}
 
 }

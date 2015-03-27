@@ -97,6 +97,7 @@ class Revisr_DB_Import extends Revisr_DB {
 	 * Processes the results and alerts the user as necessary.
 	 * @access public
 	 * @param  array $args An array containing the results of the backup.
+	 * @return boolean
 	 */
 	public function callback( $args ) {
 
@@ -115,7 +116,10 @@ class Revisr_DB_Import extends Revisr_DB {
 			$msg = sprintf( __( 'Successfully imported the database. %s', 'revisr'), $revert_url );
 			Revisr_Admin::log( $msg, 'import' );
 			Revisr_Admin::alert( $msg );
+			return true;
 		}
+
+		return false;
 	}
 
 	/**
