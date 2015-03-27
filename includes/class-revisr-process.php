@@ -99,19 +99,41 @@ class Revisr_Process {
 				exit();
 			}
 
-			// Stage any necessary files, or cancel if none are found.
+			// Determine what we want to do.
 			if ( isset( $_POST['staged_files'] ) ) {
+
+				// Stage any files.
 				$this->revisr->git->stage_files( $_POST['staged_files'] );
 				$staged_files = $_POST['staged_files'];
-			} else {
+
+				// Add the necessary post meta and make the commit in Git.
+				add_post_meta( $id, 'committed_files', $staged_files );
+				add_post_meta( $id, 'files_changed', count( $staged_files ) );
+				$this->revisr->git->commit( $commit_msg, 'commit' );
+
+			} elseif ( isset( $_POST['backup_db'] ) ) {
+
+				// Backup the database.
+				$this->revisr->db->backup();
+				$commit_hash 	= $this->revisr->git->current_commit();
+
+				// Add post-commit meta.
+				add_post_meta( $id, 'commit_hash', $commit_hash );
+				add_post_meta( $id, 'branch', $this->revisr->git->branch );
+				add_post_meta( $id, 'files_changed', '0' );
+				add_post_meta( $id, 'commit_status', __( 'Committed', 'revisr' ) );
+				add_post_meta( $id, 'db_hash', $commit_hash );
+				add_post_meta( $id, 'backup_method', 'tables' );
+
+			}
+			else {
+
+				// There's nothing to do here!
 				wp_safe_redirect( $post_new . '&message=43' );
 				exit();
 			}
 
-			// Add the necessary post meta and make the commit in Git.
-			add_post_meta( $id, 'committed_files', $staged_files );
-			add_post_meta( $id, 'files_changed', count( $staged_files ) );
-			$this->revisr->git->commit( $commit_msg, 'commit' );
+
 		}
 
 	}

@@ -19,10 +19,16 @@
 		});
 	});
 
+	if ( jQuery("#db-driver-select").val() == 'mysql' ) {
+		jQuery("#db-driver-select").closest('tr').next('tr').show();
+	} else {
+		jQuery("#db-driver-select").closest('tr').next('tr').hide();
+	}
+
 	if ( jQuery("#db-tracking-select").val() == 'custom' ) {
 		jQuery("#advanced-db-tracking").show();
 	} else {
-		jQuery('#advanced-db-tracking').hide();		
+		jQuery('#advanced-db-tracking').hide();
 	}
 
 	jQuery( '#post-hook' ).hide();
@@ -37,8 +43,9 @@
     		jQuery( '#post-hook' ).fadeIn( 'fast' );
   		} else {
     		jQuery( '#post-hook' ).fadeOut( 'fast' );
-  		}                   
+  		}
 	});
+
 	jQuery('#db-tracking-select').change(function(){
 		if (this.value == 'custom') {
 			jQuery('#advanced-db-tracking').fadeIn('fast');
@@ -46,3 +53,11 @@
 			jQuery('#advanced-db-tracking').fadeOut('fast');
 		}
 	});
+
+	jQuery('#db-driver-select').change( function() {
+		if ( this.value == 'mysql' ) {
+			jQuery(this).closest('tr').next('tr').fadeIn('fast');
+		} else {
+			jQuery(this).closest('tr').next('tr').fadeOut('fast');
+		}
+	})

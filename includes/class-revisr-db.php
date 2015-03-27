@@ -2,7 +2,9 @@
 /**
  * class-revisr-db.php
  *
- * Performs database backup and restore operations.
+ * The base database class, acting as a factory via run() for
+ * backups and imports. Also contains some methods shared
+ * across all database operations.
  *
  * @package   	Revisr
  * @license   	GPLv3
@@ -10,89 +12,190 @@
  * @copyright 	Expanded Fronts, LLC
  */
 
-// Disallow direct access.
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Revisr_DB {
 
 	/**
-	 * The connection to use for the commands passed to MySQL.
-	 * @var string
-	 */
-	protected $conn;
-
-	/**
-	 * Stores the backup directory.
-	 * @var string
-	 */
-	protected $backup_dir;
-
-	/**
-	 * Stores the upload directory.
-	 * @var string
-	 */
-	protected $upload_dir;
-
-	/**
-	 * Stores a reference to the main Revisr instance.
+	 * A reference to the main Revisr instance.
 	 * @var Revisr
 	 */
 	protected $revisr;
 
 	/**
-	 * Stores user options and preferences.
+	 * An array of user options and preferences.
 	 * @var array
 	 */
 	protected $options;
 
 	/**
-	 * Stores the path to MySQL.
+	 * The backup directory.
 	 * @var string
 	 */
-	protected $path;
+	protected $backup_dir;
 
 	/**
 	 * The WordPress database class.
 	 * @var WPDB
 	 */
-	private $wpdb;
+	protected $wpdb;
 
 	/**
-	 * Initiate the class.
+	 * Constructs the class.
 	 * @access public
 	 */
 	public function __construct() {
+
+		// Make WPDB available to the class.
 		global $wpdb;
-		$this->revisr 		= Revisr::get_instance();
-		$this->wpdb 		= $wpdb;
-		$this->upload_dir 	= wp_upload_dir();
-		$this->backup_dir	= $this->upload_dir['basedir'] . '/revisr-backups/';
-		$this->options 		= Revisr::get_options();
+		$this->wpdb = $wpdb;
 
-		if ( $this->revisr->git->get_config( 'revisr', 'mysql-path' ) ) {
-			$this->path = $this->revisr->git->get_config( 'revisr', 'mysql-path' );
-		} else {
-			$this->path = '';
-		}
+		// Grab the instance of Revisr.
+		$this->revisr 	= Revisr::get_instance();
+		$this->options 	= Revisr::get_options();
 
+		$upload_dir = wp_upload_dir();
+
+		$this->backup_dir = $upload_dir['basedir'] . '/revisr-db-backups/';
+
+		// Set up the "revisr_backups" directory if necessary.
 		$this->setup_env();
+
 	}
 
 	/**
-	 * Close any pending connections.
-	 * @access public
+	 * Runs an action on all tracked database tables.
+	 *
+	 * @access private
+	 * @param  string 			$action 	The action to perform.
+	 * @param  array 			$tables 	The tables to run on (optional).
+	 * @param  string|array 	$args 		Any arguements to pass through (optional).
+	 * @return boolean
 	 */
-	public function __destruct() {
-		$this->wpdb->flush();
+	private function run( $action, $tables = array(), $args = '' ) {
+
+		// An empty status array to update later.
+		$status 	= array();
+
+		// Whether we're using MySQL, WPDB, or maybe even something else.
+		$driver 	= $this->get_driver();
+
+		// Builds the name of the class to construct.
+		$class 		= 'Revisr_DB_' . $action;
+
+		// Builds the name of the method to call.
+		$method 	= $action . '_table_' . $driver;
+
+		// The tables we want to run the action on.
+		$tables 	= $tables ? $tables : $this->get_tracked_tables();
+
+		if ( is_callable( array( $class, $method ) ) ) {
+
+			// Construct the class.
+			$class = new $class;
+
+			/**
+			 * Loop through the tracked tables,
+			 * storing the results in the status array.
+			 */
+			foreach ( $tables as $table ) {
+				$status[$table] = $class->$method( $table, $args );
+			}
+
+			// Fire off the callback.
+			$class->callback( $status );
+
+		}
+
+	}
+
+	/**
+	 * Returns the database method being used.
+	 * @access private
+	 * @return string
+	 */
+	private function get_driver() {
+		return $this->revisr->git->get_config( 'revisr', 'db-driver' ) ? $this->revisr->git->get_config( 'revisr', 'db-driver' ) : 'WPDB';
+	}
+
+	/**
+	 * Returns the path to MySQL.
+	 * @access protected
+	 * @return string
+	 */
+	protected function get_path() {
+		return $this->revisr->git->get_config( 'revisr', 'mysql-path' ) ? $this->revisr->git->get_config( 'revisr', 'mysql-path' ) : '';
+	}
+
+	/**
+	 * Returns an array of tables in the database.
+	 * @access public
+	 * @return array
+	 */
+	public function get_tables() {
+		$tables = $this->wpdb->get_col( 'SHOW TABLES' );
+		return $tables;
+	}
+
+	/**
+	 * Returns a list of tables that are in the "revisr-backups" directory,
+	 * but not in the database. Necessary for importing tables that could
+	 * not be added to the tracked tables due to them not existing.
+	 * @access public
+	 * @return array
+	 */
+	public function get_tables_not_in_db() {
+		$backup_tables	= array();
+		$db_tables 		= $this->get_tables();
+
+		foreach ( scandir( $this->backup_dir) as $file ) {
+
+			if ( 'revisr_' !== substr( $file, 0, 7 ) ) {
+				continue;
+			}
+
+			$table_temp 		= substr( $file, 7 );
+	        $backup_tables[] 	= substr( $table_temp, 0, -4 );
+    	}
+
+    	$new_tables = array_diff( $backup_tables, $db_tables );
+    	return $new_tables;
+	}
+
+	/**
+	 * Returns the array of tables that are to be tracked.
+	 * @access public
+	 * @return array
+	 */
+	public function get_tracked_tables() {
+		$stored_tables = $this->revisr->git->run( 'config', array( '--get-all', 'revisr.tracked-tables' ) );
+		if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'all_tables' ) {
+			$tracked_tables = $this->get_tables();
+		} elseif ( is_array( $stored_tables ) ) {
+			$tracked_tables = array_intersect( $stored_tables, $this->get_tables() );
+		} else {
+			$tracked_tables = array();
+		}
+		return $tracked_tables;
+	}
+
+	/**
+	 * Adds a table to version control.
+	 * @access private
+	 * @param  string $table The table to add.
+	 */
+	protected function add_table( $table ) {
+		$this->revisr->git->run( 'add', array( $this->backup_dir . 'revisr_' . $table. '.sql' ) );
 	}
 
 	/**
 	 * Builds the connection string to use with MySQL.
-	 * @access public
+	 * @access protected
 	 * @param  string $table Optionally pass the table to use.
 	 * @return string
 	 */
-	public function build_conn( $table = '' ) {
+	protected function build_conn( $table = '' ) {
 		if ( $this->check_port( DB_HOST ) != false ) {
 			$port 		= $this->check_port( DB_HOST );
 			$add_port 	= " --port=$port";
@@ -142,180 +245,124 @@ class Revisr_DB {
 	}
 
 	/**
-	 * Returns an array of tables in the database.
+	 * Checks if a given host is using a port, if so, return the port.
 	 * @access public
-	 * @return array
+	 * @param  string $url The URL to check.
+	 * @return string
 	 */
-	public function get_tables() {
-		$tables = $this->wpdb->get_col( 'SHOW TABLES' );
-		return $tables;
-	}
-
-	/**
-	 * Returns a list of tables that are in the "revisr-backups" directory,
-	 * but not in the database. Necessary for importing tables that could
-	 * not be added to the tracked tables due to them not existing.
-	 * @access public
-	 * @return array
-	 */
-	public function get_tables_not_in_db() {
-		$backup_tables	= array();
-		$db_tables 		= $this->get_tables();
-		foreach ( scandir( $this->backup_dir) as $file ) {
-
-			if ( substr( $file, 0, 7 ) !== 'revisr_' ) {
-				continue;
-			}
-
-			$table_temp 		= substr( $file, 7 );
-	        $backup_tables[] 	= substr( $table_temp, 0, -4 );
-    	}
-
-    	$new_tables = array_diff( $backup_tables, $db_tables );
-    	return $new_tables;
-	}
-
-	/**
-	 * Returns the array of tables that are to be tracked.
-	 * @access public
-	 * @return array
-	 */
-	public function get_tracked_tables() {
-		$stored_tables = $this->revisr->git->run( 'config', array( '--get-all', 'revisr.tracked-tables' ) );
-		if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'all_tables' ) {
-			$tracked_tables = $this->get_tables();
-		} elseif ( is_array( $stored_tables ) ) {
-			$tracked_tables = array_intersect( $stored_tables, $this->get_tables() );
+	public function check_port( $url ) {
+		$parsed_url = parse_url( $url );
+		if ( isset( $parsed_url['port'] ) && $parsed_url['port'] != '' ) {
+			return $parsed_url['port'];
 		} else {
-			$tracked_tables = array();
+			return false;
 		}
-		return $tracked_tables;
 	}
 
 	/**
-	 * Runs through a provided array of tables to perform an action.
+	 * Mimics the mysql_real_escape_string function. Adapted from a post by 'feedr' on php.net.
+	 * @link   http://php.net/manual/en/function.mysql-real-escape-string.php#101248
 	 * @access public
-	 * @param  string $action The action to perform.
-	 * @param  array  $tables The tables to act on.
-	 * @param  string $args   Optional additional arguements to pass to the action.
-	 * @return boolean
+	 * @param  string $input The string to escape.
 	 */
-	public function run( $action, $tables = array(), $args = '' ) {
-		// Create the status array.
-		$status = array();
+	public function mysql_escape_mimic( $input ) {
 
-		// Iterate through the tables and perform the action.
-		foreach ( $tables as $table ) {
-			switch ( $action ) {
-				case 'backup':
-					$status[$table] = $this->backup_table( $table );
-					break;
-				case 'revert':
-					$status[$table] = $this->revert_table( $table, $args );
-					break;
-				case 'import':
-					$status[$table] = $this->import_table( $table, $args );
-					break;
-				default:
-					return false;
-			}
-		}
+	    if ( is_array( $input ) ) {
+	        return array_map( __METHOD__, $input );
+	    }
 
-		// Process the results and alert the user.
-		$callback = $action . '_callback';
-		$this->$callback( $status );
+	    if( ! empty( $input ) && is_string( $input ) ) {
+	        return str_replace( array( '\\', "\0", "\n", "\r", "'", '"', "\x1a" ), array( '\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z' ), $input );
+	    }
+
+	    return $input;
 	}
 
 	/**
-	 * Adds a table to version control.
-	 * @access private
-	 * @param  string $table The table to add.
-	 */
-	private function add_table( $table ) {
-		$this->revisr->git->run( 'add', array( $this->backup_dir . 'revisr_' . $table. '.sql' ) );
-	}
-
-	/**
-	 * Callback for the "Backup Database" AJAX button.
+	 * Callback for database backups (AJAX button and via New Commit)
 	 * @access public
 	 */
 	public function backup() {
-		// Get the tables to backup.
-		$tables = $this->get_tracked_tables();
-		if ( empty( $tables ) ) {
-			$tables = $this->get_tables();
-		}
 
 		// Run the backup.
-		$this->run( 'backup', $tables );
+		$this->run( 'backup' );
 
 		// Commit any changed database files and insert a post if necessary.
 		if ( isset( $_REQUEST['source'] ) && $_REQUEST['source'] == 'ajax_button' ) {
 			$this->commit_db( true );
 		} else {
-			$this->commit_db( false, false );
+			$this->commit_db( false );
 		}
 	}
 
 	/**
-	 * Backs up a database table.
-	 * @access private
-	 * @param  string $table The table to backup.
-	 */
-	private function backup_table( $table ) {
-		$conn = $this->build_conn( $table );
-		exec( "{$this->path}mysqldump $conn > {$this->backup_dir}revisr_$table.sql --skip-comments" );
-		$this->add_table( $table );
-		return $this->verify_backup( $table );
-	}
-
-	/**
-	 * Callback for the backup action.
-	 * @access private
-	 * @param  array $status The status of the backup.
-	 */
-	private function backup_callback( $status ) {
-		if ( in_array( false, $status ) ) {
-			$msg = __( 'Error backing up the database.', 'revisr' );
-			Revisr_Admin::log( $msg, 'error' );
-			Revisr_Admin::alert( $msg, true );
-		} else {
-			$msg = __( 'Successfully backed up the database.', 'revisr' );
-			Revisr_Admin::log( $msg, 'backup' );
-			Revisr_Admin::alert( $msg );
-		}
-	}
-
-	/**
-	 * Commits the database to the repository and pushes if needed.
+	 * Reverts all tracked tables to an earlier commit.
 	 * @access public
-	 * @param  boolean $insert_post 	Whether to insert a new commit custom_post_type.
-	 * @param  boolean $push_changes	Whether or not to push the changes.
+	 * @param  boolean $redirect Whether or not to redirect via PHP.
 	 */
-	public function commit_db( $insert_post = false, $push_changes = true ) {
-		$commit_msg  = __( 'Backed up the database with Revisr.', 'revisr' );
-		$this->revisr->git->commit( $commit_msg );
-		// Insert the corresponding post if necessary.
-		if ( $insert_post === true ) {
-			$post = array(
-				'post_title' 	=> $commit_msg,
-				'post_content' 	=> '',
-				'post_type' 	=> 'revisr_commits',
-				'post_status' 	=> 'publish',
-			);
-			$post_id 		= wp_insert_post( $post );
-			$commit_hash 	= $this->revisr->git->current_commit();
-			add_post_meta( $post_id, 'commit_hash', $commit_hash );
-			add_post_meta( $post_id, 'db_hash', $commit_hash );
-			add_post_meta( $post_id, 'backup_method', 'tables' );
-			add_post_meta( $post_id, 'branch', $this->revisr->git->branch );
-			add_post_meta( $post_id, 'files_changed', '0' );
-			add_post_meta( $post_id, 'committed_files', array() );
+	public function restore( $redirect = true ) {
+
+		// Make sure we really want to do this.
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
-		// Push changes if necessary.
-		if ( true === $push_changes ) {
-			$this->revisr->git->auto_push();
+
+		$commit = $_REQUEST['db_hash'];
+		$branch = $_REQUEST['branch'];
+
+		// Checkout the appropriate branch if necessary.
+		if ( $branch != $this->revisr->git->branch ) {
+			$this->revisr->git->checkout( $branch );
 		}
+
+		/**
+		 * Backup the database and store the resulting commit hash
+		 * in memory so we can use it to create the revert link later.
+		 */
+		$this->backup();
+		$current_temp = $this->revisr->git->current_commit();
+
+		if ( $current_temp ) {
+
+			/**
+			 * If the backup was successful and we have the resulting commit hash,
+			 * run a revert on the sql files for the tracked tables and import them.
+			 */
+			$tables 	= $this->get_tracked_tables();
+			$checkout 	= array();
+
+			foreach ( $tables as $table ) {
+				$checkout[$table] = $this->revisr->git->run( 'checkout', array( $commit, "{$this->backup_dir}revisr_$table.sql" ) );
+			}
+
+			if ( ! in_array( 1, $checkout ) ) {
+				// If all tables reverted successfully, import them.
+				$this->import();
+			} else {
+				$msg = __( 'Error reverting one or more database tables.', 'revisr' );
+				Revisr_Admin::log( $msg, 'error' );
+				Revisr_Admin::alert( $msg, true );
+			}
+
+
+			// Create a link to undo the revert if necessary.
+			$undo_nonce = wp_nonce_url( admin_url( "admin-post.php?action=process_revert&revert_type=db&db_hash=" . $current_temp . "&branch=" . $_REQUEST['branch'] . "&backup_method=tables" ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
+			$undo_msg 	= sprintf( __( 'Successfully reverted the database to a previous commit. <a href="%s">Undo</a>', 'revisr' ), $undo_nonce );
+
+			// Store the undo link and alert the user.
+			Revisr_Admin::log( $undo_msg, 'revert' );
+			Revisr_Admin::alert( $undo_msg );
+
+			// Redirect if necessary.
+			if ( $redirect !== false ) {
+				wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
+				exit();
+			}
+
+		} else {
+			wp_die( __( 'Something went wrong. Check your settings and try again.', 'revisr' ) );
+		}
+
 	}
 
 	/**
@@ -357,190 +404,40 @@ class Revisr_DB {
 	}
 
 	/**
-	 * Imports a table from a Revisr .sql file to the database.
-	 *
-	 * Partly adapted/modified from VaultPress.
-	 * @link https://wordpress.org/plugins/vaultpress/
-	 *
+	 * Commits the database to the repository and pushes if needed.
 	 * @access public
-	 * @param  string $table 		The table to import.
-	 * @param  string $replace_url 	Replace this URL in the database with the live URL.
+	 * @param  boolean $insert_post Whether to insert a new commit custom_post_type.
 	 */
-	public function import_table( $table, $replace_url = '' ) {
-		$live_url = site_url();
-		// Only import if the file exists and is valid.
-		if ( $this->verify_backup( $table ) == false ) {
-			$msg = sprintf( __( 'Backup table not found: %s', 'revisr' ), $table );
-			Revisr_Admin::log( $msg, 'error' );
-			return;
+	public function commit_db( $insert_post = false ) {
+
+		$commit_msg  = __( 'Backed up the database with Revisr.', 'revisr' );
+
+		// Allow for overriding default commit message through the "New Commit" screen.
+		if ( isset( $_REQUEST['post_title'] ) && $_REQUEST['post_title'] !== '' ) {
+			$commit_msg = $_REQUEST['post_title'];
 		}
 
-		if ( $mysql = exec( 'which mysql' ) ) {
-			// Try to pass the file directly to MySQL.
-			$conn = $this->build_conn();
-			exec( "{$mysql} {$conn} < {$this->backup_dir}revisr_$table.sql" );
-			if ( $replace_url !== '' && $replace_url !== false ) {
-				$this->revisr_srdb( $table, $replace_url, $live_url );
-			}
-			return true;
-		} elseif ( $mysql = exec( "which {$this->path}mysql" ) ) {
-			// Fallback to the user-defined path.
-			$conn = $this->build_conn();
-			exec( "{$mysql} {$conn} < {$this->backup_dir}revisr_$table.sql" );
-			if ( $replace_url !== '' && $replace_url !== false ) {
-				$this->revisr_srdb( $table, $replace_url, $live_url );
-			}
-			return true;
-		} else {
-			// Fallback on manually querying the file.
-			$fh 	= fopen( "{$this->backup_dir}revisr_$table.sql", 'r' );
-			$size	= filesize( "{$this->backup_dir}revisr_$table.sql" );
-			$status = array(
-				'errors' 	=> 0,
-				'updates' 	=> 0
+
+		$this->revisr->git->commit( $commit_msg );
+		// Insert the corresponding post if necessary.
+		if ( $insert_post === true ) {
+			$post = array(
+				'post_title' 	=> $commit_msg,
+				'post_content' 	=> '',
+				'post_type' 	=> 'revisr_commits',
+				'post_status' 	=> 'publish',
 			);
-
-			while( !feof( $fh ) ) {
-				$query = trim( stream_get_line( $fh, $size, ';' . PHP_EOL ) );
-				if ( empty( $query ) ) {
-					$status['dropped_queries'][] = $query;
-					continue;
-				}
-				if ( $this->wpdb->query( $query ) === false ) {
-					$status['errors']++;
-					$status['bad_queries'][] = $query;
-				} else {
-					$status['updates']++;
-					$status['good_queries'][] = $query;
-				}
-			}
-			fclose( $fh );
-
-			if ( $replace_url !== '' ) {
-				$this->revisr_srdb( $table, $replace_url, $live_url );
-			}
-
-			if ( $status['errors'] !== 0 ) {
-				return false;
-			}
-			return true;
+			$post_id 		= wp_insert_post( $post );
+			$commit_hash 	= $this->revisr->git->current_commit();
+			add_post_meta( $post_id, 'commit_hash', $commit_hash );
+			add_post_meta( $post_id, 'db_hash', $commit_hash );
+			add_post_meta( $post_id, 'backup_method', 'tables' );
+			add_post_meta( $post_id, 'branch', $this->revisr->git->branch );
+			add_post_meta( $post_id, 'files_changed', '0' );
+			add_post_meta( $post_id, 'committed_files', array() );
 		}
-	}
-
-	/**
-	 * Callback for the import action.
-	 * @access private
-	 * @param  array $status The status of the import.
-	 */
-	private function import_callback( $status ) {
-		if ( in_array( false, $status ) ) {
-			$msg = __( 'Error importing the database.', 'revisr' );
-			Revisr_Admin::log( $msg, 'error' );
-			Revisr_Admin::alert( $msg, true );
-		} else {
-			$get_hash 	= $this->revisr->git->run( 'config', array( 'revisr.last-db-backup' ) );
-			$revert_url = '';
-			if ( is_array( $get_hash ) ) {
-				$undo_hash 	= $get_hash[0];
-				$revert_url = '<a href="' .wp_nonce_url( admin_url( "admin-post.php?action=revert_db&db_hash=$undo_hash&branch={$this->revisr->git->branch}&backup_method=tables" ), 'revert_db', 'revert_db_nonce' ) . '">' . __( 'Undo', 'revisr') . '</a>';
-				$this->revisr->git->run( 'config', array( '--unset', 'revisr.last-db-backup' ) );
-			}
-			$msg = sprintf( __( 'Successfully imported the database. %s', 'revisr'), $revert_url );
-			Revisr_Admin::log( $msg, 'import' );
-			Revisr_Admin::alert( $msg );
-		}
-	}
-
-	/**
-	 * Reverts all tracked tables to an earlier commit.
-	 * Honors the old "revisr_db_backup.sql".
-	 * @access public
-	 * @param  boolean $redirect Whether or not to redirect via PHP.
-	 */
-	public function restore( $redirect = true ) {
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
-
-		$commit = $_REQUEST['db_hash'];
-		$branch = $_REQUEST['branch'];
-		if ( $branch != $this->revisr->git->branch ) {
-			$this->revisr->git->checkout( $branch );
-		}
-
-		/**
-		 * Backup the database and store the resulting commit hash
-		 * in memory so we can use it to create the revert link later.
-		 */
-		$this->backup();
-		$current_temp = $this->revisr->git->current_commit();
-
-		if ( isset( $_REQUEST['backup_method'] ) && $_REQUEST['backup_method'] == 'tables' ) {
-			// Import the tables, one by one, running a search/replace if necessary.
-			$this->run( 'revert', $this->get_tracked_tables(), $commit );
-			$backup_method = 'tables';
-		} else {
-			// Import the old revisr_db_backup.sql file.
-			$backup_method 	= 'old';
-
-			// Make sure the SQL file exists and is not empty.
-			if ( ! file_exists( $this->upload_dir['basedir'] . '/revisr_db_backup.sql' ) || filesize( $this->upload_dir['basedir'] . '/revisr_db_backup.sql' ) < 1000 ) {
-				wp_die( __( 'The backup file does not exist or has been corrupted.', 'revisr' ) );
-			}
-			clearstatcache();
-
-			// Checkout the old SQL file and import it.
-			$checkout = $this->revisr->git->run( 'checkout', array( $commit, "{$this->upload_dir['basedir']}/revisr_db_backup.sql" ) );
-			if ( $checkout !== 1 ) {
-				exec( "{$this->path}mysql {$this->conn} < {$this->upload_dir['basedir']}/revisr_db_backup.sql" );
-				$this->revisr->git->run( 'checkout', array( "{$this->revisr->git->branch} {$this->upload_dir['basedir']}/revisr_db_backup.sql" ) );
-			} else {
-				wp_die( __( 'Failed to revert the database to an earlier commit.', 'revisr' ) );
-			}
-		}
-
-		if ( $current_temp ) {
-			// Create a link to undo the revert if necessary.
-			$undo_nonce = wp_nonce_url( admin_url( "admin-post.php?action=process_revert&revert_type=db&db_hash=" . $current_temp . "&branch=" . $_REQUEST['branch'] . "&backup_method=" . $backup_method ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
-			$undo_msg 	= sprintf( __( 'Successfully reverted the database to a previous commit. <a href="%s">Undo</a>', 'revisr' ), $undo_nonce );
-			// Store the undo link and alert the user.
-			Revisr_Admin::log( $undo_msg, 'revert' );
-			Revisr_Admin::alert( $undo_msg );
-
-			if ( $redirect !== false ) {
-				wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
-				exit();
-			}
-		} else {
-			wp_die( __( 'Something went wrong. Check your settings and try again.', 'revisr' ) );
-		}
-	}
-
-	/**
-	 * Reverts a table to an earlier commit.
-	 * @access private
-	 * @param  string $table  The table to revert.
-	 * @param  string $commit The commit to revert to.
-	 * @return boolean
-	 */
-	private function revert_table( $table, $commit ) {
-		$checkout = $this->revisr->git->run( 'checkout', array( $commit, "{$this->backup_dir}revisr_$table.sql" ) );
-		return $checkout;
-	}
-
-	/**
-	 * Callback for the revert_table action.
-	 * @access private
-	 * @param  array $status The status of the revert.
-	 */
-	private function revert_callback( $status ) {
-		if ( in_array( 1, $status ) ) {
-			$msg = __( 'Error reverting one or more database tables.', 'revisr' );
-			Revisr_Admin::log( $msg, 'error' );
-			Revisr_Admin::alert( $msg, true );
-		} else {
-			$this->import();
-		}
+		// Push changes if necessary.
+		$this->revisr->git->auto_push();
 	}
 
 	/**
@@ -550,184 +447,10 @@ class Revisr_DB {
 	 * @return boolean
 	 */
 	public function verify_backup( $table ) {
-		if ( ! file_exists( "{$this->backup_dir}revisr_$table.sql" ) || filesize( "{$this->backup_dir}revisr_$table.sql" ) < 1000 ) {
+		if ( ! file_exists( "{$this->backup_dir}revisr_$table.sql" ) || filesize( "{$this->backup_dir}revisr_$table.sql" ) < 100 ) {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * Adapated from interconnect/it's search/replace script.
-	 * Modified to use WordPress wpdb functions instead of PHP's native mysql/pdo functions.
-	 *
-	 * @link https://interconnectit.com/products/search-and-replace-for-wordpress-databases/
-	 *
-	 * @access public
-	 * @param  string $table 	The table to run the replacement on.
-	 * @param  string $search 	The string to replace.
-	 * @param  string $replace 	The string to replace with.
-	 * @return array   			Collection of information gathered during the run.
-	 */
-	public function revisr_srdb( $table, $search = '', $replace = '' ) {
-
-		// Get a list of columns in this table.
-		$columns = array();
-		$fields  = $this->wpdb->get_results( 'DESCRIBE ' . $table );
-		foreach ( $fields as $column ) {
-			$columns[$column->Field] = $column->Key == 'PRI' ? true : false;
-		}
-		$this->wpdb->flush();
-
-		// Count the number of rows we have in the table if large we'll split into blocks, This is a mod from Simon Wheatley
-		$this->wpdb->get_results( 'SELECT COUNT(*) FROM ' . $table );
-		$row_count = $this->wpdb->num_rows;
-		if ( $row_count == 0 )
-			continue;
-
-		$page_size 	= 50000;
-		$pages 		= ceil( $row_count / $page_size );
-
-		for( $page = 0; $page < $pages; $page++ ) {
-
-			$current_row 	= 0;
-			$start 			= $page * $page_size;
-			$end 			= $start + $page_size;
-
-			// Grab the content of the table.
-			$data = $this->wpdb->get_results( "SELECT * FROM $table LIMIT $start, $end", ARRAY_A );
-
-			// Loop through the data.
-			foreach ( $data as $row ) {
-				$current_row++;
-				$update_sql = array();
-				$where_sql 	= array();
-				$upd 		= false;
-
-				foreach( $columns as $column => $primary_key ) {
-					$edited_data = $data_to_fix = $row[ $column ];
-
-					// Run a search replace on the data that'll respect the serialisation.
-					$edited_data = $this->recursive_unserialize_replace( $search, $replace, $data_to_fix );
-
-					// Something was changed
-					if ( $edited_data != $data_to_fix ) {
-						$update_sql[] = $column . ' = "' . $this->mysql_escape_mimic( $edited_data ) . '"';
-						$upd = true;
-					}
-
-					if ( $primary_key )
-						$where_sql[] = $column . ' = "' .  $this->mysql_escape_mimic( $data_to_fix ) . '"';
-				}
-
-				if ( $upd && ! empty( $where_sql ) ) {
-					$sql = 'UPDATE ' . $table . ' SET ' . implode( ', ', $update_sql ) . ' WHERE ' . implode( ' AND ', array_filter( $where_sql ) );
-					$result = $this->wpdb->query( $sql );
-					if ( ! $result ) {
-						$error_msg = sprintf( __( 'Error updating the table: %s.', 'revisr' ), $table );
-					}
-				} elseif ( $upd ) {
-					$error_msg = sprintf( __( 'The table "%s" has no primary key. Manual change needed on row %s.', 'revisr' ), $table, $current_row );
-				}
-			}
-		}
-		$this->wpdb->flush();
-		if ( isset( $error_msg ) ) {
-			Revisr_Admin::log( $error_msg, 'error' );
-			return false;
-		}
-	}
-
-	/**
-	 * Adapated from interconnect/it's search/replace script.
-	 *
-	 * @link https://interconnectit.com/products/search-and-replace-for-wordpress-databases/
-	 *
-	 * Take a serialised array and unserialise it replacing elements as needed and
-	 * unserialising any subordinate arrays and performing the replace on those too.
-	 *
-	 * @access private
-	 * @param  string $from       String we're looking to replace.
-	 * @param  string $to         What we want it to be replaced with.
-	 * @param  array  $data       Used to pass any subordinate arrays back to in.
-	 * @param  bool   $serialised Does the array passed via $data need serialising.
-	 *
-	 * @return array	The original array with all elements replaced as needed.
-	 */
-	public function recursive_unserialize_replace( $from = '', $to = '', $data = '', $serialised = false ) {
-		try {
-
-			if ( is_string( $data ) && ( $unserialized = @unserialize( $data ) ) !== false ) {
-				$data = $this->recursive_unserialize_replace( $from, $to, $unserialized, true );
-			}
-
-			elseif ( is_array( $data ) ) {
-				$_tmp = array( );
-				foreach ( $data as $key => $value ) {
-					$_tmp[ $key ] = $this->recursive_unserialize_replace( $from, $to, $value, false );
-				}
-
-				$data = $_tmp;
-				unset( $_tmp );
-			}
-
-			// Submitted by Tina Matter
-			elseif ( is_object( $data ) ) {
-				$dataClass 	= get_class( $data );
-				$_tmp  		= new $dataClass();
-				foreach ( $data as $key => $value ) {
-					$_tmp->$key = $this->recursive_unserialize_replace( $from, $to, $value, false );
-				}
-
-				$data = $_tmp;
-				unset( $_tmp );
-			}
-
-			else {
-				if ( is_string( $data ) )
-					$data = str_replace( $from, $to, $data );
-			}
-
-			if ( $serialised )
-				return serialize( $data );
-
-		} catch( Exception $error ) {
-			Revisr_Admin::log( $error, 'error' );
-		}
-
-		return $data;
-	}
-
-	/**
-	 * Checks if a given host is using a port, if so, return the port.
-	 * @access public
-	 * @param  string $url The URL to check.
-	 * @return string
-	 */
-	public function check_port( $url ) {
-		$parsed_url = parse_url( $url );
-		if ( isset( $parsed_url['port'] ) && $parsed_url['port'] != '' ) {
-			return $parsed_url['port'];
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Mimics the mysql_real_escape_string function. Adapted from a post by 'feedr' on php.net.
-	 * @link   http://php.net/manual/en/function.mysql-real-escape-string.php#101248
-	 * @access public
-	 * @param  string $input The string to escape.
-	 */
-	public function mysql_escape_mimic( $input ) {
-
-	    if( is_array( $input ) )
-	        return array_map( __METHOD__, $input );
-
-	    if( ! empty( $input ) && is_string( $input ) ) {
-	        return str_replace( array( '\\', "\0", "\n", "\r", "'", '"', "\x1a" ), array( '\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z' ), $input );
-	    }
-
-	    return $input;
 	}
 
 }
