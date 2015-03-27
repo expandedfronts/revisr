@@ -30,7 +30,7 @@ class Revisr_DB_Backup extends Revisr_DB {
 		$path = $this->get_path();
 
 		// Backup the table.
-		exec( "{$path}mysqldump $conn > {$this->backup_dir}revisr_$table.sql --skip-comments 2>&1", $output, $return_code );
+		exec( "{$path}mysqldump $conn > '{$this->backup_dir}revisr_$table.sql' --skip-comments 2>&1", $output, $return_code );
 
 		// Handle any errors
 		if ( 0 !== $return_code ) {

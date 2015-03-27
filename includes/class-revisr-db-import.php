@@ -33,7 +33,7 @@ class Revisr_DB_Import extends Revisr_DB {
 		$live_url = site_url();
 
 		// Import the table.
-		exec( "{$path}mysql {$conn} < {$this->backup_dir}revisr_$table.sql 2>&1", $output, $return_code );
+		exec( "{$path}mysql {$conn} < '{$this->backup_dir}revisr_$table.sql' 2>&1", $output, $return_code );
 
 		// Handle any errors.
 		if ( 0 !== $return_code ) {

@@ -57,7 +57,7 @@ class Revisr_DB {
 
 		$upload_dir = wp_upload_dir();
 
-		$this->backup_dir = $upload_dir['basedir'] . '/revisr-db-backups/';
+		$this->backup_dir = $upload_dir['basedir'] . '/revisr-backups/';
 
 		// Set up the "revisr_backups" directory if necessary.
 		$this->setup_env();
