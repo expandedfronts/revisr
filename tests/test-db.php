@@ -69,7 +69,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Tests a database import.
 	 */
 	function test_import() {
-		$import = $this->revisr->db->import_table( 'wptests_users' );
+		$import = $this->revisr->db->import( array( 'wptests_users' ) );
 		$this->assertEquals( true, $import );
 	}
 
