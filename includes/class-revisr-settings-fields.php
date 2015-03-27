@@ -139,11 +139,7 @@ class Revisr_Settings_Fields {
 
 		// Update the .gitignore if necessary.
 		if ( $this->is_updated( 'gitignore' ) ) {
-			file_put_contents( $this->revisr->git->git_dir . '/.gitignore', $this->options['gitignore'] );
-			$this->revisr->git->run( 'add', array( '.gitignore' ) );
-			$commit_msg = __( 'Updated .gitignore.', 'revisr' );
-			$this->revisr->git->run('commit', array( '-m', $commit_msg ) );
-			$this->revisr->git->auto_push();
+			$this->revisr->git->update_gitignore();
 		}
 
 		if ( isset( $this->options['gitignore'] ) ) {

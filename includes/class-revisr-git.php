@@ -515,6 +515,40 @@ class Revisr_Git {
 	}
 
 	/**
+	 * Updates the .gitignore file, and removes files from version control,
+	 * making sure to keep the physical copies of the files on the server.
+	 * @access public
+	 */
+	public function update_gitignore() {
+		// Store the content in the .gitignore.
+		file_put_contents( $this->git_dir . '/.gitignore', $this->options['gitignore'] );
+
+		// Add the .gitignore.
+		$this->run( 'add', array( '.gitignore' ) );
+
+		// Convert the .gitignore into an array we can work with.
+		$files = explode( PHP_EOL, $this->options['gitignore'] );
+
+		foreach ( $files as $file ) {
+			if ( '' == $file || '!' === $file[0] ) {
+				// Don't do anything.
+				continue;
+			} else {
+				/**
+				 * Remove the cached version of the file,
+				 * leaving it intact in the working directory.
+				 */
+				$this->run( 'rm', array( '--cached', $file ) );
+			}
+		}
+
+		// Commit the updates.
+		$commit_msg = __( 'Updated .gitignore.', 'revisr' );
+		$this->run('commit', array( '-m', $commit_msg ) );
+		$this->auto_push();
+	}
+
+	/**
 	 * Pings a remote repository to verify that it exists and is reachable.
 	 * @access public
 	 * @param  string $remote The remote to ping.
