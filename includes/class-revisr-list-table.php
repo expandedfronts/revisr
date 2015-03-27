@@ -65,18 +65,16 @@ class Revisr_List_Table extends WP_List_Table {
 	 * @access 	public
      * @param 	array $item A singular item (one full row's worth of data)
      * @param 	array $column_name The name/slug of the column to be processed
-     * @return 	array
+     * @return 	string
      */
 	public function column_default( $item, $column_name ) {
 		switch( $column_name ) {
 			case 'message':
 				return ucfirst( $item[$column_name] );
-				break;
 			case 'time':
 				$current 	= strtotime( current_time( 'mysql' ) );
 				$timestamp 	= strtotime( $item[$column_name] );
 				return sprintf( __( '%s ago', 'revisr' ), human_time_diff( $timestamp, $current ) );
-				break;
 			default:
 				return print_r( $item, true );
 		}

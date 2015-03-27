@@ -42,7 +42,7 @@ $revisr->list_table->prepare_items();
 			<div id="post-body-content">
 				<div class="meta-box-sortables ui-sortable">
 					<form id="revisr-list-table">
-						<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+						<input type="hidden" name="page" value="<?php echo esc_attr( $_REQUEST['page'] ); ?>" />
 						<?php $revisr->list_table->display(); ?>
 					</form>
 				</div><!-- .meta-box-sortables .ui-sortable -->

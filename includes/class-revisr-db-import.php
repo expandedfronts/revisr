@@ -166,7 +166,7 @@ class Revisr_DB_Import extends Revisr_DB {
 				$upd 		= false;
 
 				foreach( $columns as $column => $primary_key ) {
-					$edited_data = $data_to_fix = $row[ $column ];
+					$data_to_fix = $row[ $column ];
 
 					// Run a search replace on the data that'll respect the serialisation.
 					$edited_data = $this->recursive_unserialize_replace( $search, $replace, $data_to_fix );

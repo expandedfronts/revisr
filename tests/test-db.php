@@ -31,15 +31,6 @@ class RevisrDBTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests the build_connection() function.
-	 */
-	function test_build_connection() {
-		$conn = $this->revisr->db->build_conn();
-		$this->assertNotEquals( null, $conn );
-		$this->assertContains( '--host', $conn );
-	}
-
-	/**
 	 * Tests the setup_env() method.
 	 */
 	function test_setup_env() {

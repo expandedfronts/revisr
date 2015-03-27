@@ -248,7 +248,7 @@ class Revisr_DB {
 	 * Checks if a given host is using a port, if so, return the port.
 	 * @access public
 	 * @param  string $url The URL to check.
-	 * @return string
+	 * @return string|boolean
 	 */
 	public function check_port( $url ) {
 		$parsed_url = parse_url( $url );
@@ -370,15 +370,22 @@ class Revisr_DB {
 	 * if tracking all_tables, or providing a link to import new tables
 	 * if necessary.
 	 * @access public
-	 * @param  string|array $tables The tables to import.
+	 * @param  array $tables The tables to import.
 	 */
-	public function import( $tables = '' ) {
-		if ( $tables === '' ) {
+	public function import( $tables = array() ) {
+		// The tables currently being tracked.
+		$tracked_tables = $this->get_tracked_tables();
 
-			$tracked_tables = $this->get_tracked_tables();
-			$new_tables 	= $this->get_tables_not_in_db();
-			$all_tables		= array_unique( array_merge( $new_tables, $tracked_tables ) );
-			$replace_url 	= $this->revisr->git->get_config( 'revisr', 'dev-url' ) ? $this->revisr->git->get_config( 'revisr', 'dev-url' ) : '';
+		// Tables that have import files but aren't in the database.
+		$new_tables 	= $this->get_tables_not_in_db();
+
+		// All tables.
+		$all_tables		= array_unique( array_merge( $new_tables, $tracked_tables ) );
+
+		// The URL to replace during import.
+		$replace_url 	= $this->revisr->git->get_config( 'revisr', 'dev-url' ) ? $this->revisr->git->get_config( 'revisr', 'dev-url' ) : '';
+
+		if ( empty( $tables ) ) {
 
 			if ( ! empty( $new_tables ) ) {
 				// If there are new tables that were imported.
