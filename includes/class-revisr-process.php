@@ -146,7 +146,7 @@ class Revisr_Process {
 
 		if ( wp_verify_nonce( $_REQUEST['revisr_create_branch_nonce'], 'process_create_branch' ) ) {
 
-			$branch = $_REQUEST['branch_name'];
+			$branch = str_replace( ' ', '-', $_REQUEST['branch_name'] );
 			$result = $this->revisr->git->create_branch( $branch );
 
 			if ( $result !== false ) {
