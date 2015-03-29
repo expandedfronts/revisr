@@ -44,6 +44,7 @@ class Revisr_List_Table extends WP_List_Table {
 
 		add_action( 'load-toplevel_page_revisr', array( $this, 'load' ) );
 		add_action( 'wp_ajax_revisr_get_custom_list', array( $this, 'ajax_callback' ) );
+		add_filter( 'set-screen-option', array( $this, 'set_screen_option' ), 10, 3 );
 	}
 
 	/**
@@ -58,6 +59,32 @@ class Revisr_List_Table extends WP_List_Table {
 			'plural'	=> 'activity',
 			'ajax'		=> true
 		) );
+
+		add_screen_option(
+			'per_page',
+			array(
+				'default' => 15,
+				'label'   => __( 'Events per page', 'revisr' ),
+				'option'  => 'edit_revisr_events_per_page',
+			)
+		);
+
+		set_screen_options();
+	}
+
+	/**
+	 * Sets the screen options for the Revisr dashboard.
+	 * @access public
+	 * @param  boolean 	$status This seems to be false
+	 * @param  string 	$option The name of the option
+	 * @param  int 		$value 	The number of events to display
+	 * @return int|boolean
+	 */
+	public function set_screen_option( $status, $option, $value ) {
+		if ( 'edit_revisr_events_per_page' === $option ) {
+			return $value;
+		}
+		return $status;
 	}
 
 	/**
@@ -114,7 +141,7 @@ class Revisr_List_Table extends WP_List_Table {
 		global $wpdb;
 
 		// Number of items per page.
-		$per_page = 15;
+		$per_page = $this->get_items_per_page( 'edit_revisr_events_per_page', 15 );
 
 		// Set up the custom columns.
         $columns 	= $this->get_columns();
