@@ -101,6 +101,25 @@ class Revisr_Commits {
 	}
 
 	/**
+	 * Registers all postmeta keys used and assigns the default
+	 * method used for escaping when using add_post_meta or edit_post_meta
+	 * @access public
+	 */
+	public function register_meta_keys() {
+		register_meta( 'post', 'files_changed', 'absint' );
+		register_meta( 'post', 'branch', 'wp_kses' );
+		register_meta( 'post', 'commit_hash', 'wp_kses' );
+		register_meta( 'post', 'db_hash', 'wp_kses' );
+		register_meta( 'post', 'committed_files', function( $input ) {
+			return array_map( 'esc_attr', $input );
+		} );
+		register_meta( 'post', 'git_tag', 'esc_attr' );
+		register_meta( 'post', 'backup_method', 'esc_attr' );
+		register_meta( 'post', 'commit_status', 'esc_attr' );
+		register_meta( 'post', 'error_details', 'esc_textarea' );
+	}
+
+	/**
 	 * Custom title message for the revisr_commits custom post type.
 	 * @access public
 	 * @return string

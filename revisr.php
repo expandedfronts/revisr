@@ -242,6 +242,7 @@ class Revisr {
 
 		// Create and configure the "revisr_commits" custom post type.
 		add_action( 'init', array( self::$instance->commits, 'post_types' ) );
+		add_action( 'init', array( self::$instance->commits, 'register_meta_keys' ) );
 		add_action( 'pre_get_posts', array( self::$instance->commits, 'filters' ) );
 		add_action( 'views_edit-revisr_commits', array( self::$instance->commits, 'custom_views' ) );
 		add_action( 'load-edit.php', array( self::$instance->commits, 'default_views' ) );
