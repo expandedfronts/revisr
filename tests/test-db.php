@@ -61,6 +61,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Tests a database backup.
 	 */
 	function test_backup() {
+		$this->revisr->git->set_config( 'revisr', 'db-tracking', 'all_tables' );
 		$this->revisr->db->backup();
 		$this->assertFileExists( ABSPATH . 'wp-content/uploads/revisr-backups/revisr_wptests_posts.sql' );
 	}
