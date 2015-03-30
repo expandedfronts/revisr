@@ -452,7 +452,14 @@ class Revisr_Settings_Fields {
 	public function mysql_path_callback() {
 		if ( isset( $_GET['settings-updated'] ) ) {
 			if ( $this->is_updated( 'mysql_path' ) ) {
+
+				// Properly escape trailing backslashes on Windows.
+				if ( substr( $this->options['mysql_path'], -1 ) === '\\' ) {
+					$this->options['mysql_path'] .= '\\';
+				}
+
 				$this->revisr->git->set_config( 'revisr', 'mysql-path', $this->options['mysql_path'] );
+
 			} else {
 				$this->revisr->git->run( 'config', array( '--unset', 'revisr.mysql-path' ) );
 			}
