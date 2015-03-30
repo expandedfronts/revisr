@@ -67,14 +67,6 @@ class RevisrDBTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests a database import.
-	 */
-	function test_import() {
-		$import = $this->revisr->db->import( array( 'wptests_users' ) );
-		$this->assertEquals( true, $import );
-	}
-
-	/**
 	 * Tests the verify_backup() function.
 	 */
 	function test_verify_backup() {
