@@ -198,7 +198,7 @@ class Revisr_DB {
 	protected function build_conn( $table = '' ) {
 
 		// Account for ports in the DB_HOST constant.
-		if ( false === $this->check_post( DB_HOST ) ) {
+		if ( false === $this->check_port( DB_HOST ) ) {
 			$port 		= $this->check_port( DB_HOST );
 			$add_port 	= " --port=$port";
 			$temp 		= strlen($port) * -1 - 1;
