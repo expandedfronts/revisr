@@ -149,14 +149,14 @@ class Revisr_DB {
 		$backup_tables	= array();
 		$db_tables 		= $this->get_tables();
 
-		foreach ( scandir( $this->backup_dir) as $file ) {
+		foreach ( scandir( $this->backup_dir ) as $file ) {
 
 			if ( 'revisr_' !== substr( $file, 0, 7 ) ) {
 				continue;
 			}
 
-			$table_temp 		= substr( $file, 7 );
-	        $backup_tables[] 	= substr( $table_temp, 0, -4 );
+			// Remove the prefix and extension.
+	        $backup_tables[] 	= substr( substr( $file, 7 ), 0, -4 );
     	}
 
     	$new_tables = array_diff( $backup_tables, $db_tables );
@@ -196,7 +196,9 @@ class Revisr_DB {
 	 * @return string
 	 */
 	protected function build_conn( $table = '' ) {
-		if ( $this->check_port( DB_HOST ) != false ) {
+
+		// Account for ports in the DB_HOST constant.
+		if ( false === $this->check_post( DB_HOST ) ) {
 			$port 		= $this->check_port( DB_HOST );
 			$add_port 	= " --port=$port";
 			$temp 		= strlen($port) * -1 - 1;
@@ -206,15 +208,19 @@ class Revisr_DB {
 			$db_host 	= DB_HOST;
 		}
 
-		if ( $table != '' ) {
+		// Account for tables in the connection string.
+		if ( '' !== $table ) {
 			$table = " $table";
 		}
+
 		// Workaround for Windows/Mac compatibility.
-		if ( DB_PASSWORD != '' ) {
+		if ( '' !== DB_PASSWORD ) {
 			$conn = "-u " . Revisr_Admin::escapeshellarg( DB_USER ) . " -p" . Revisr_Admin::escapeshellarg( DB_PASSWORD ) . " " . DB_NAME . $table . " --host " . $db_host . $add_port;
 		} else {
 			$conn = "-u " . Revisr_Admin::escapeshellarg( DB_USER ) . " " . DB_NAME . $table . " --host " . $db_host . $add_port;
 		}
+
+		// Return the connection string.
 		return $conn;
 	}
 
@@ -284,8 +290,14 @@ class Revisr_DB {
 	 */
 	public function backup() {
 
+		// Get the tables to backup.
+		$tables = $this->get_tracked_tables();
+		if ( empty( $tables ) ) {
+			$tables = $this->get_tables();
+		}
+
 		// Run the backup.
-		$this->run( 'backup' );
+		$this->run( 'backup', $tables );
 
 		// Commit any changed database files and insert a post if necessary.
 		if ( isset( $_REQUEST['source'] ) && $_REQUEST['source'] == 'ajax_button' ) {
@@ -293,6 +305,7 @@ class Revisr_DB {
 		} else {
 			$this->commit_db( false );
 		}
+
 	}
 
 	/**
@@ -424,10 +437,11 @@ class Revisr_DB {
 			$commit_msg = $_REQUEST['post_title'];
 		}
 
-
+		// Make the commit.
 		$this->revisr->git->commit( $commit_msg );
+
 		// Insert the corresponding post if necessary.
-		if ( $insert_post === true ) {
+		if ( true === $insert_post ) {
 			$post = array(
 				'post_title' 	=> $commit_msg,
 				'post_content' 	=> '',
@@ -443,6 +457,7 @@ class Revisr_DB {
 			add_post_meta( $post_id, 'files_changed', '0' );
 			add_post_meta( $post_id, 'committed_files', array() );
 		}
+
 		// Push changes if necessary.
 		$this->revisr->git->auto_push();
 	}
