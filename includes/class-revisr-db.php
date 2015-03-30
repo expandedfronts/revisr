@@ -116,7 +116,7 @@ class Revisr_DB {
 	 * @return string
 	 */
 	private function get_driver() {
-		return $this->revisr->git->get_config( 'revisr', 'db-driver' ) ? $this->revisr->git->get_config( 'revisr', 'db-driver' ) : 'WPDB';
+		return $this->revisr->git->get_config( 'revisr', 'db-driver' ) ? $this->revisr->git->get_config( 'revisr', 'db-driver' ) : 'mysql';
 	}
 
 	/**
