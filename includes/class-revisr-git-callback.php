@@ -10,7 +10,7 @@
  * @copyright 	Expanded Fronts, LLC
  */
 
-// Disallow direct access.
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Revisr_Git_Callback {
@@ -33,7 +33,7 @@ class Revisr_Git_Callback {
 	 * The default success callback. Fired if no callback is provided.
 	 * @access public
 	 */
-	public function success_( $output = '', $args = '' ) {
+	public function success_( $output = array(), $args = '' ) {
 		return $output;
 	}
 
@@ -41,7 +41,7 @@ class Revisr_Git_Callback {
 	 * The default failure callback, fired if no callback is provided.
 	 * @access public
 	 */
-	public function null_( $output = '', $args = '' ) {
+	public function null_( $output = array(), $args = '' ) {
 		return false;
 	}
 
@@ -49,7 +49,7 @@ class Revisr_Git_Callback {
 	 * Callback for a successful checkout.
 	 * @access public
 	 */
-	public function success_checkout( $output = '', $args = '' ) {
+	public function success_checkout( $output = array(), $args = '' ) {
 		$branch 	= $this->revisr->git->current_branch();
 		$msg 		= sprintf( __( 'Checked out branch: %s.', 'revisr' ), $branch );
 		$email_msg 	= sprintf( __( '%s was switched to branch %s.', 'revisr' ), get_bloginfo(), $branch );
@@ -62,7 +62,7 @@ class Revisr_Git_Callback {
 	 * Callback for a failed checkout.
 	 * @access public
 	 */
-	public function null_checkout( $output = '', $args = '' ) {
+	public function null_checkout( $output = array(), $args = '' ) {
 		$msg = __( 'There was an error checking out the branch. Check your configuration and try again.', 'revisr' );
 		Revisr_Admin::alert( $msg, true );
 		Revisr_Admin::log( $msg, 'error' );
@@ -72,7 +72,7 @@ class Revisr_Git_Callback {
 	 * Callback for a successful commit.
 	 * @access public
 	 */
-	public function success_commit( $output = '', $args = '' ) {
+	public function success_commit( $output = array(), $args = '' ) {
 		$id 			= get_the_ID();
 		$view_link 		= get_admin_url() . "post.php?post={$id}&action=edit";
 		$commit_hash 	= $this->revisr->git->current_commit();
@@ -131,9 +131,9 @@ class Revisr_Git_Callback {
 	 * Callback for successful branch deletion.
 	 * @access public
 	 */
-	public function success_delete_branch( $output = '', $args = '' ) {
+	public function success_delete_branch( $output = array(), $args = '' ) {
 		$branch 	= $args;
-		$msg 		= sprintf( __( 'Deleted branch %s.', 'revisr'), $branch );
+		$msg 		= sprintf( __( 'Deleted branch %s.', 'revisr' ), $branch );
 		$email_msg 	= sprintf( __( 'The branch "%s" on the repository for %s was deleted.', 'revisr' ), $branch, get_bloginfo() );
 		Revisr_Admin::log( $msg, 'branch' );
 		Revisr_Admin::notify( get_bloginfo() . __( ' - Branch Deleted', 'revisr' ), $email_msg );
@@ -147,7 +147,7 @@ class Revisr_Git_Callback {
 	 * Callback for a failed branch deletion.
 	 * @access public
 	 */
-	public function null_delete_branch( $output = '', $args = '' ) {
+	public function null_delete_branch( $output = array(), $args = '' ) {
 		echo "<script>
 				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_fail'
 		</script>";
@@ -157,7 +157,7 @@ class Revisr_Git_Callback {
 	 * Renders the number of unpushed/unpulled commits for the AJAX buttons.
 	 * @access public
 	 */
-	public function success_count_ajax_btn( $output = '', $args = '' ) {
+	public function success_count_ajax_btn( $output = array(), $args = '' ) {
 		if ( count( $output ) != 0 ) {
 			echo '(' . count( $output ) . ')';
 		}
@@ -168,7 +168,7 @@ class Revisr_Git_Callback {
 	 * Returns nothing if there are no commits to push/pull.
 	 * @access public
 	 */
-	public function null_count_ajax_btn( $output = '', $args = '' ) {
+	public function null_count_ajax_btn( $output = array(), $args = '' ) {
 		exit();
 	}
 
@@ -181,25 +181,38 @@ class Revisr_Git_Callback {
 		Revisr_Admin::clear_transients();
 		$user = wp_get_current_user();
 
+		// Set the default username to use in Git.
 		if ( isset( $this->revisr->git->options['username'] ) && $this->revisr->git->options['username'] != '' ) {
 			$this->revisr->git->set_config( 'user', 'name', $this->revisr->git->options['username'] );
 		} else {
 			$this->revisr->git->set_config( 'user', 'name', $user->user_login );
 		}
+
+		// Set the default email to use in Git.
 		if ( isset( $this->revisr->git->options['email'] ) && $this->revisr->git->options['email'] != '' ) {
 			$this->revisr->git->set_config( 'user', 'email', $this->revisr->git->options['email'] );
 		} else {
 			$this->revisr->git->set_config( 'user', 'email', $user->user_email );
 		}
+
+		// Set the default name of the remote.
 		if ( isset( $this->revisr->git->options['remote_name'] ) && $this->revisr->git->options['remote_name'] != '' ) {
 			$remote_name = $this->revisr->git->options['remote_name'];
 		} else {
 			$remote_name = 'origin';
 		}
+
+		// Add the remote URL in Git if already set in the database.
 		if ( isset( $this->revisr->git->options['remote_url'] ) && $this->revisr->git->options['remote_url'] != '' ) {
 			$this->revisr->git->run( 'remote', array( 'add', $remote_name, $this->revisr->git->options['remote_url'] ) );
 		}
 
+		// Adds an .htaccess file to the "/.git" directory to prevent public access.
+		if ( is_writable( $this->revisr->git->git_dir . '/.git/' ) ) {
+			file_put_contents( $this->revisr->git->git_dir . '/.git/.htaccess', 'Deny from all' . PHP_EOL );
+		}
+
+		// Alerts the user.
 		Revisr_Admin::log( __( 'Successfully created a new repository.', 'revisr' ), 'init' );
 		wp_redirect( get_admin_url() . 'admin.php?page=revisr_settings&init=success' );
 		exit();
@@ -219,7 +232,7 @@ class Revisr_Git_Callback {
 	 * Returns if a merge was successful.
 	 * @access public
 	 */
-	public function success_merge( $output = '', $args = '' ) {
+	public function success_merge( $output = array(), $args = '' ) {
 		$alert_msg 	= sprintf( __( 'Successfully merged changes from branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->revisr->git->branch );
 		$log_msg 	= sprintf( __( 'Merged branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], $this->revisr->git->branch );
 		Revisr_Admin::alert( $alert_msg );
@@ -234,7 +247,7 @@ class Revisr_Git_Callback {
 	 * Returns if a merge failed.
 	 * @access public
 	 */
-	public function null_merge( $output = '', $args = '' ) {
+	public function null_merge( $output = array(), $args = '' ) {
 		$log_msg 	= sprintf( __( 'Error merging branch %s into %s.', 'revisr'), $_REQUEST['branch'], $this->revisr->git->branch );
 		$alert_msg 	= sprintf( __( 'There was an error merging branch %s into your current branch. The merge was aborted to avoid conflicts.', 'revisr' ), $_REQUEST['branch'] );
 		Revisr_Admin::alert( $alert_msg, true, $output );
@@ -306,7 +319,7 @@ class Revisr_Git_Callback {
 	 * Returns if a push was successful.
 	 * @access public
 	 */
-	public function success_push( $output = '', $args = '' ) {
+	public function success_push( $output = array(), $args = '' ) {
 		$msg = sprintf( _n( 'Successfully pushed %s commit to %s/%s.', 'Successfully pushed %s commits to %s/%s.', $args, 'revisr' ), $args, $this->revisr->git->remote, $this->revisr->git->branch );
 		Revisr_Admin::alert( $msg );
 		Revisr_Admin::log( $msg, 'push' );
@@ -320,7 +333,7 @@ class Revisr_Git_Callback {
 	 * Returns if a push failed.
 	 * @access public
 	 */
-	public function null_push( $output = '', $args = '' ) {
+	public function null_push( $output = array(), $args = '' ) {
 		$msg = __( 'Error pushing to the remote repository. The remote repository could be ahead, or there may be an authentication issue.', 'revisr' );
 		Revisr_Admin::alert( $msg, true, $output );
 		Revisr_Admin::log( __( 'Error pushing changes to the remote repository.', 'revisr' ), 'error' );
@@ -331,7 +344,7 @@ class Revisr_Git_Callback {
 	 * Returns "Success!" if the connection to remote was successful.
 	 * @access public
 	 */
-	public function success_verify_remote(  $output = '', $args = '' ) {
+	public function success_verify_remote(  $output = array(), $args = '' ) {
 		_e( 'Success!', 'revisr' );
 		exit();
 	}
@@ -340,7 +353,7 @@ class Revisr_Git_Callback {
 	 * Returns if the connection to the remote was unsuccessful.
 	 * @access public
 	 */
-	public function null_verify_remote( $output = '', $args = '' ) {
+	public function null_verify_remote( $output = array(), $args = '' ) {
 		_e( 'Remote not found...', 'revisr' );
 		exit();
 	}
@@ -349,7 +362,7 @@ class Revisr_Git_Callback {
 	 * Returns the Git version.
 	 * @access public
 	 */
-	public function success_version( $output = '', $args = '' ) {
+	public function success_version( $output = array(), $args = '' ) {
 		return $output['0'];
 	}
 
@@ -357,7 +370,7 @@ class Revisr_Git_Callback {
 	 * Returns if Revisr could not detect the Git version.
 	 * @access public
 	 */
-	public function null_version( $output = '', $args = '' ) {
+	public function null_version( $output = array(), $args = '' ) {
 		return __( 'Unknown', 'revisr' );
 	}
 }
