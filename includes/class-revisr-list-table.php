@@ -10,7 +10,7 @@
  * @copyright 	Expanded Fronts, LLC
  */
 
-// Prevent direct access to this file.
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Include WP_List_Table if it isn't already loaded.

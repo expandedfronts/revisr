@@ -5,10 +5,10 @@
  * @package   Revisr
  * @license   GPLv3
  * @link      https://revisr.io
- * @copyright 2014 Expanded Fronts, LLC
+ * @copyright Expanded Fronts, LLC
  */
 
-// Disallow direct access.
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $revisr = Revisr::get_instance();
