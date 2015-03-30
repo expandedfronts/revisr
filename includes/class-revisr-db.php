@@ -197,23 +197,23 @@ class Revisr_DB {
 	 */
 	protected function build_conn( $table = '' ) {
 
-		// Account for ports in the DB_HOST constant.
-		if ( false === $this->check_port( DB_HOST ) ) {
+		// Allow using the port from the DB_HOST constant.
+		if ( false !== $this->check_port( DB_HOST ) ) {
 			$port 		= $this->check_port( DB_HOST );
 			$add_port 	= " --port=$port";
-			$temp 		= strlen($port) * -1 - 1;
+			$temp 		= strlen( $port ) * -1 - 1;
 			$db_host 	= substr( DB_HOST, 0, $temp );
 		} else {
 			$add_port 	= '';
 			$db_host 	= DB_HOST;
 		}
 
-		// Account for tables in the connection string.
+		// Maybe connect to a specific table.
 		if ( '' !== $table ) {
-			$table = " $table";
+			$table = ' ' . Revisr_Admin::escapeshellarg( $table );
 		}
 
-		// Workaround for Windows/Mac compatibility.
+		// Workaround for compatibility between UNIX and Windows.
 		if ( '' !== DB_PASSWORD ) {
 			$conn = "-u " . Revisr_Admin::escapeshellarg( DB_USER ) . " -p" . Revisr_Admin::escapeshellarg( DB_PASSWORD ) . " " . DB_NAME . $table . " --host " . $db_host . $add_port;
 		} else {
