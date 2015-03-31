@@ -46,9 +46,16 @@ location ~ path/to/your-repo/.git {
 
 This issue can be avoided entirely by using SSH to authenticate, which is recommended in most cases. If using SSH, you will need to generate a SSH key on the server and add it to the remote repository (Bitbucket and Github both support SSH).
 
-It is also adviseable to add Revisr to the gitignore file via the settings page to make sure that reverts don't rollback the plugins' functionality.
+It is also adviseable to add Revisr to the .gitignore file via the settings page to make sure that reverts don't rollback the plugins' functionality.
 
 ## Changelog ##
+
+#### 1.9.3 ####
+* Added option to use WordPress instead of MySQL for backups and imports
+* Added ability to backup the database through the "New Commit" screen without any pending files
+* Added ability to change the amount of events per page on the Revisr dashboard
+* Improved .gitignore functionality, automatically remove cached files from repository index
+* Several bugfixes and security improvements
 
 #### 1.9.2 ####
 * Improved error handling for commits, pushes, and pulls
