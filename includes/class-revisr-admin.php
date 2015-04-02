@@ -494,6 +494,16 @@ class Revisr_Admin {
 	}
 
 	/**
+	 * Returns an escaped array suitable for attributes.
+	 * @access public
+	 * @param  array $input An array of input to filter.
+	 * @return array
+	 */
+	public static function esc_attr_array( $input ) {
+		return array_map( 'esc_attr', $input );
+	}
+
+	/**
 	 * Includes the template for the main dashboard.
 	 * @access public
 	 */

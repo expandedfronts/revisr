@@ -110,9 +110,7 @@ class Revisr_Commits {
 		register_meta( 'post', 'branch', 'wp_kses' );
 		register_meta( 'post', 'commit_hash', 'wp_kses' );
 		register_meta( 'post', 'db_hash', 'wp_kses' );
-		register_meta( 'post', 'committed_files', function( $input ) {
-			return array_map( 'esc_attr', $input );
-		} );
+		register_meta( 'post', 'committed_files', array( 'Revisr_Admin', 'esc_attr_array' ) );
 		register_meta( 'post', 'git_tag', 'esc_attr' );
 		register_meta( 'post', 'backup_method', 'esc_attr' );
 		register_meta( 'post', 'commit_status', 'esc_attr' );
