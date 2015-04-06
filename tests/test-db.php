@@ -27,7 +27,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 		$full_url 	= $this->revisr->db->check_port_or_socket( 'http://localhost:3306' );
 
 		// Runs the assertions.
-		$this->assertEquals( false, $port );
+		$this->assertEquals( false, $no_port );
 
 		$this->assertArrayHasKey( 'port', $port );
 		$this->assertArrayHasKey( 'socket', $port );
