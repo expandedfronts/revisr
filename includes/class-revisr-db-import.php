@@ -35,7 +35,7 @@ class Revisr_DB_Import extends Revisr_DB {
 		// Import the table.
 		$current_dir = getcwd();
 		chdir( $this->backup_dir );
-		exec( "{$path}mysql {$conn} < revisr_$table.sql 2>&1", $output, $return_code );
+		exec( "{$path}mysql {$conn} < revisr_$table.sql", $output, $return_code );
 		chdir( $current_dir );
 
 		// Handle any errors.

@@ -104,7 +104,7 @@ class Revisr_DB {
 			}
 
 			// Fire off the callback.
-			$class->callback( $status );
+			return $class->callback( $status );
 
 		}
 
@@ -197,15 +197,26 @@ class Revisr_DB {
 	 */
 	protected function build_conn( $table = '' ) {
 
-		// Allow using the port from the DB_HOST constant.
-		if ( false !== $this->check_port( DB_HOST ) ) {
-			$port 		= $this->check_port( DB_HOST );
-			$add_port 	= " --port=$port";
-			$temp 		= strlen( $port ) * -1 - 1;
-			$db_host 	= substr( DB_HOST, 0, $temp );
-		} else {
-			$add_port 	= '';
-			$db_host 	= DB_HOST;
+		// Allow using the port or socket from the DB_HOST constant.
+		$port_or_socket = $this->check_port_or_socket( DB_HOST );
+		$add_port 		= '';
+		$add_socket 	= '';
+		$db_host 		= DB_HOST;
+
+		if ( false !== $port_or_socket ) {
+
+			if ( null !== $port_or_socket['socket'] ) {
+				$socket 	= $port_or_socket['socket'];
+				$add_socket = " --socket=$socket";
+				$temp 		= strlen( $socket ) * -1 - 1;
+			} else {
+				$port 		= $port_or_socket['port'];
+				$add_port 	= " --port=$port";
+				$temp 		= strlen( $port ) * -1 - 1;
+			}
+
+			$db_host = substr( DB_HOST, 0, $temp );
+
 		}
 
 		// Maybe connect to a specific table.
@@ -215,9 +226,9 @@ class Revisr_DB {
 
 		// Workaround for compatibility between UNIX and Windows.
 		if ( '' !== DB_PASSWORD ) {
-			$conn = "-u " . Revisr_Admin::escapeshellarg( DB_USER ) . " -p" . Revisr_Admin::escapeshellarg( DB_PASSWORD ) . " " . DB_NAME . $table . " --host " . $db_host . $add_port;
+			$conn = "-u " . Revisr_Admin::escapeshellarg( DB_USER ) . " -p" . Revisr_Admin::escapeshellarg( DB_PASSWORD ) . " " . DB_NAME . $table . " --host " . $db_host . $add_port . $add_socket;
 		} else {
-			$conn = "-u " . Revisr_Admin::escapeshellarg( DB_USER ) . " " . DB_NAME . $table . " --host " . $db_host . $add_port;
+			$conn = "-u " . Revisr_Admin::escapeshellarg( DB_USER ) . " " . DB_NAME . $table . " --host " . $db_host . $add_port . $add_socket;
 		}
 
 		// Return the connection string.
@@ -251,18 +262,45 @@ class Revisr_DB {
 	}
 
 	/**
-	 * Checks if a given host is using a port, if so, return the port.
+	 * Checks if a given DB_HOST parameter is using a port or socket.
+	 *
+	 * Adapated from WordPress core.
+	 *
 	 * @access public
 	 * @param  string $url The URL to check.
-	 * @return string|boolean
+	 * @return string|int|boolean
 	 */
-	public function check_port( $url ) {
-		$parsed_url = parse_url( $url );
-		if ( isset( $parsed_url['port'] ) && $parsed_url['port'] != '' ) {
-			return $parsed_url['port'];
-		} else {
+	public function check_port_or_socket( $url ) {
+
+		// Initialize the defaults.
+		$port 			= null;
+		$socket 		= null;
+		$host 			= $url;
+		$port_or_socket = strrchr( $host, ':' );
+
+		if ( ! empty( $port_or_socket ) ) {
+
+			$host = substr( $host, 0, strpos( $host, ':' ) );
+			$port_or_socket = substr( $port_or_socket, 1);
+
+			if ( 0 !== strpos( $port_or_socket, '/' ) ) {
+
+				$port 			= intval( $port_or_socket );
+				$maybe_socket 	= strstr( $port_or_socket, ':' );
+
+				if ( ! empty( $maybe_socket ) ) {
+					$socket = substr( $maybe_socket, 1 );
+				}
+			} else {
+				$socket = $port_or_socket;
+			}
+		}
+
+		if ( null === $port && null === $socket ) {
 			return false;
 		}
+
+		return array( 'port' => $port, 'socket' => $socket );
 	}
 
 	/**
@@ -349,22 +387,29 @@ class Revisr_DB {
 			}
 
 			if ( ! in_array( 1, $checkout ) ) {
-				// If all tables reverted successfully, import them.
-				$this->import();
+
+				$import = $this->import();
+
+				if ( $import ) {
+
+					// Create a link to undo the revert if necessary.
+					$undo_nonce = wp_nonce_url( admin_url( "admin-post.php?action=process_revert&revert_type=db&db_hash=" . $current_temp . "&branch=" . $_REQUEST['branch'] . "&backup_method=tables" ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
+					$undo_msg 	= sprintf( __( 'Successfully reverted the database to a previous commit. <a href="%s">Undo</a>', 'revisr' ), $undo_nonce );
+
+					// Store the undo link and alert the user.
+					Revisr_Admin::log( $undo_msg, 'revert' );
+					Revisr_Admin::alert( $undo_msg );
+
+				}
+
 			} else {
+
+				// There was an error importing the database.
 				$msg = __( 'Error reverting one or more database tables.', 'revisr' );
 				Revisr_Admin::log( $msg, 'error' );
 				Revisr_Admin::alert( $msg, true );
+
 			}
-
-
-			// Create a link to undo the revert if necessary.
-			$undo_nonce = wp_nonce_url( admin_url( "admin-post.php?action=process_revert&revert_type=db&db_hash=" . $current_temp . "&branch=" . $_REQUEST['branch'] . "&backup_method=tables" ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
-			$undo_msg 	= sprintf( __( 'Successfully reverted the database to a previous commit. <a href="%s">Undo</a>', 'revisr' ), $undo_nonce );
-
-			// Store the undo link and alert the user.
-			Revisr_Admin::log( $undo_msg, 'revert' );
-			Revisr_Admin::alert( $undo_msg );
 
 			// Redirect if necessary.
 			if ( $redirect !== false ) {
@@ -384,6 +429,7 @@ class Revisr_DB {
 	 * if necessary.
 	 * @access public
 	 * @param  array $tables The tables to import.
+	 * @return boolean
 	 */
 	public function import( $tables = array() ) {
 		// The tables currently being tracked.
@@ -404,23 +450,25 @@ class Revisr_DB {
 				// If there are new tables that were imported.
 				if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'all_tables' ) {
 					// If the user is tracking all tables, import all tables.
-					$this->run( 'import', $all_tables, $replace_url );
+					$import = $this->run( 'import', $all_tables, $replace_url );
 				} else {
 					// Import only tracked tables, but provide a warning and import link.
-					$this->run( 'import', $tracked_tables, $replace_url );
+					$import = $this->run( 'import', $tracked_tables, $replace_url );
 					$url = wp_nonce_url( get_admin_url() . 'admin-post.php?action=import_tables_form&TB_iframe=true&width=350&height=200', 'import_table_form', 'import_nonce' );
 					$msg = sprintf( __( 'New database tables detected. <a class="thickbox" title="Import Tables" href="%s">Click here</a> to view and import.', 'revisr' ), $url );
 					Revisr_Admin::log( $msg, 'db' );
 				}
 			} else {
 				// If there are no new tables, go ahead and import the tracked tables.
-				$this->run( 'import', $tracked_tables, $replace_url );
+				$import = $this->run( 'import', $tracked_tables, $replace_url );
 			}
 
 		} else {
 			// Import the provided tables.
-			$this->run( 'import', $tables, $replace_url );
+			$import = $this->run( 'import', $tables, $replace_url );
 		}
+
+		return $import;
 	}
 
 	/**
