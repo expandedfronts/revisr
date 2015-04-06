@@ -79,6 +79,11 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 == Changelog ==
 
+= 1.9.4 =
+* Added support for sockets in the DB_HOST constant
+* Fixed bug causing error on PHP 5.2
+* Fixed bug causing potential error with backups/imports on some systems
+
 = 1.9.3 =
 * Added option to use WordPress instead of MySQL for backups and imports
 * Added ability to backup the database through the "New Commit" screen without any pending files

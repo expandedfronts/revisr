@@ -268,7 +268,7 @@ class Revisr_DB {
 	 *
 	 * @access public
 	 * @param  string $url The URL to check.
-	 * @return string|int|boolean
+	 * @return array|boolean
 	 */
 	public function check_port_or_socket( $url ) {
 
