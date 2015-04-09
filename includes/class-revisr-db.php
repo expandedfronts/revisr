@@ -21,7 +21,7 @@ class Revisr_DB {
 	 * A reference to the main Revisr instance.
 	 * @var Revisr
 	 */
-	protected $revisr = revisr();
+	protected $revisr;
 
 	/**
 	 * The backup directory.
@@ -44,6 +44,8 @@ class Revisr_DB {
 		// Make WPDB available to the class.
 		global $wpdb;
 		$this->wpdb = $wpdb;
+
+		$this->revisr = revisr();
 
 		$upload_dir = wp_upload_dir();
 
