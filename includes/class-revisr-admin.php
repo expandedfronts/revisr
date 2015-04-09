@@ -275,6 +275,32 @@ class Revisr_Admin {
 	}
 
 	/**
+	 * Returns the ID of a commit with a provided commit hash.
+	 * @access public
+	 * @param  string 	$commit_hash The commit hash to check.
+	 * @param  boolean 	$return_link If set to true, will return as a link.
+	 * @return mixed
+	 */
+	public static function get_the_id_by_hash( $commit_hash, $return_link = false ) {
+		global $wpdb;
+		$query 	= $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'commit_hash' AND meta_value = %s", $commit_hash );
+		$result = $wpdb->get_results( $query, ARRAY_A );
+
+		if ( $result ) {
+
+			if ( true === $return_link ) {
+				$url 	= wp_nonce_url( get_admin_url() . 'post.php?post=' . $result[0]['post_id'] . '&action=edit', 'edit', 'revisr_edit_nonce' );
+				$link 	= sprintf( '<a href="%s" target="_blank">%s</a>', $url, $commit_hash );
+				return $link;
+			}
+
+			return $result[0]['post_id'];
+		}
+
+		return false;
+	}
+
+	/**
 	 * Logs an event to the database.
 	 * @access public
 	 * @param  string $message The message to show in the Recent Activity.
