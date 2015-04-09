@@ -64,6 +64,17 @@ class RevisrDBTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests the get_sizes() method.
+	 */
+	function test_get_sizes() {
+		global $wpdb;
+		$sizes 	= $this->revisr->db->get_sizes();
+		$key 	= $wpdb->prefix . 'posts';
+		$this->assertArrayHasKey($key, $sizes );
+		$this->assertContains( 'MB)', $sizes[$key] );
+	}
+
+	/**
 	 * Tests the get_tables_not_in_db() method.
 	 */
 	function test_get_tables_not_in_db() {

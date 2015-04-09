@@ -139,6 +139,23 @@ class Revisr_DB {
 	}
 
 	/**
+	 * Returns an array containing the size of each database table.
+	 * @access public
+	 * @return array
+	 */
+	public function get_sizes() {
+		$sizes 	= array();
+		$tables = $this->wpdb->get_results( 'SHOW TABLE STATUS', ARRAY_A );
+
+		foreach ( $tables as $table ) {
+			$size = round( $table['Data_length'] / 1024 / 1024, 2 );
+			$sizes[$table['Name']] = sprintf( __( '(%s MB)', 'revisr' ), $size );
+		}
+
+		return $sizes;
+	}
+
+	/**
 	 * Returns a list of tables that are in the "revisr-backups" directory,
 	 * but not in the database. Necessary for importing tables that could
 	 * not be added to the tracked tables due to them not existing.

@@ -379,6 +379,7 @@ class Revisr_Settings_Fields {
 		// Allows the user to select the tables they want to track.
 		$db 	= new Revisr_DB();
 		$tables = $db->get_tables();
+		$sizes  = $db->get_sizes();
 		echo '<div id="advanced-db-tracking" style="display:none;"><br><select name="revisr_database_settings[tracked_tables][]" multiple="multiple" style="width:35em;height:250px;">';
 		if ( is_array( $tables ) ) {
 			foreach ( $tables as $table ) {
@@ -386,7 +387,7 @@ class Revisr_Settings_Fields {
 				if ( in_array( $table, $db->get_tracked_tables() ) ) {
 					$table_selected = ' selected';
 				}
-				echo "<option value='$table'$table_selected>$table</option>";
+				echo "<option value='$table'$table_selected>$table $sizes[$table]</option>";
 			}
 		}
 		echo '</select></div>';
