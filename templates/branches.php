@@ -11,8 +11,7 @@
 // Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$revisr = Revisr::get_instance();
-$git 	= $revisr->git;
+$revisr = revisr();
 
 ?>
 
@@ -27,7 +26,7 @@ $git 	= $revisr->git;
 					break;
 				case "create_error":
 					$msg = __( 'Failed to create the new branch.', 'revisr' );
-					if ( $git->is_branch( $_GET['branch'] ) ) {
+					if ( $revisr->git->is_branch( $_GET['branch'] ) ) {
 						$msg = sprintf( esc_html__( 'Failed to create branch: %s (branch already exists).', 'revisr' ), $_GET['branch'] );
 					}
 					echo '<div id="revisr-alert" class="error" style="margin-top:20px;"><p>' . $msg . '</p></div>';
@@ -53,7 +52,7 @@ $git 	= $revisr->git;
 					</tr>
 				</thead>
 					<?php
-						$output 	= $git->get_branches();
+						$output 	= $revisr->git->get_branches();
 						$admin_url 	= get_admin_url();
 
 						if ( is_array( $output ) ) {

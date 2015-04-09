@@ -40,7 +40,7 @@ class Revisr_List_Table extends WP_List_Table {
 		}
 
 		// Grab the instance and load the parent class on the appropriate hook.
-		$this->revisr = Revisr::get_instance();
+		$this->revisr = revisr();
 
 		add_action( 'load-toplevel_page_revisr', array( $this, 'load' ) );
 		add_action( 'wp_ajax_revisr_get_custom_list', array( $this, 'ajax_callback' ) );

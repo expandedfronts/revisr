@@ -11,7 +11,7 @@ class RevisrTest extends WP_UnitTestCase {
 	 * Initializes the plugin.
 	 */
 	function setUp() {
-		$this->revisr = Revisr::get_instance();
+		$this->revisr = revisr();
 	}
 
 	/**

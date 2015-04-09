@@ -19,21 +19,14 @@ class Revisr_Settings_Fields {
 	 * A reference back to the main Revisr instance.
 	 * @var object
 	 */
-	private $revisr;
-
-	/**
-	 * User options and preferences.
-	 * @var array
-	 */
-	private $options;
+	protected $revisr;
 
 	/**
 	 * Initialize the class.
 	 * @access public
 	 */
 	public function __construct() {
-		$this->revisr 	= Revisr::get_instance();
-		$this->options 	= Revisr::get_options();
+		$this->revisr 	= revisr();
 	}
 
 	/**
@@ -45,7 +38,7 @@ class Revisr_Settings_Fields {
 	 */
 	private function is_updated( $option ) {
 		if ( isset( $_GET['settings-updated'] ) ) {
-			if ( isset( $this->options[$option] ) && $this->options[$option] != '' ) {
+			if ( isset( $this->revisr->options[$option] ) && $this->revisr->options[$option] != '' ) {
 				return true;
 			}
 		}
@@ -83,14 +76,14 @@ class Revisr_Settings_Fields {
 
 		// Update the .git/config if necessary.
         if ( $this->is_updated( 'username' ) ) {
-        	$this->revisr->git->set_config(  'user', 'name', $this->options['username'] );
+        	$this->revisr->git->set_config(  'user', 'name', $this->revisr->options['username'] );
         }
 
 		$check_username = $this->revisr->git->get_config( 'user', 'name' );
 		if ( $check_username ) {
 			$username = $check_username;
-		} elseif ( isset( $this->options['username'] ) ) {
-			$username = $this->options['username'];
+		} elseif ( isset( $this->revisr->options['username'] ) ) {
+			$username = $this->revisr->options['username'];
 		} else {
 			$username = '';
 		}
@@ -111,14 +104,14 @@ class Revisr_Settings_Fields {
 
 		// Update the .git/config if necessary.
         if ( $this->is_updated( 'email' ) ) {
-        	$this->revisr->git->set_config( 'user', 'email',  $this->options['email'] );
+        	$this->revisr->git->set_config( 'user', 'email',  $this->revisr->options['email'] );
         }
 
 		$check_email = $this->revisr->git->get_config( 'user', 'email' );
 		if ( $check_email ) {
 			$email = $check_email;
-		} elseif ( isset( $this->options['email'] ) ) {
-			$email = $this->options['email'];
+		} elseif ( isset( $this->revisr->options['email'] ) ) {
+			$email = $this->revisr->options['email'];
 		} else {
 			$email = '';
 		}
@@ -142,8 +135,8 @@ class Revisr_Settings_Fields {
 			$this->revisr->git->update_gitignore();
 		}
 
-		if ( isset( $this->options['gitignore'] ) ) {
-			$gitignore = $this->options['gitignore'];
+		if ( isset( $this->revisr->options['gitignore'] ) ) {
+			$gitignore = $this->revisr->options['gitignore'];
 		} elseif ( file_exists( $this->revisr->git->git_dir . '/.gitignore' ) ) {
 			$gitignore = file_get_contents( $this->revisr->git->git_dir . '/.gitignore' );
 		} else {
@@ -163,8 +156,8 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function automatic_backups_callback() {
-		if ( isset( $this->options['automatic_backups'] ) ) {
-			$schedule = $this->options['automatic_backups'];
+		if ( isset( $this->revisr->options['automatic_backups'] ) ) {
+			$schedule = $this->revisr->options['automatic_backups'];
 		} else {
 			$schedule = 'none';
 		}
@@ -180,13 +173,13 @@ class Revisr_Settings_Fields {
 		// Update the cron settings/clear if necessary on save.
 		if ( $this->is_updated( 'automatic_backups' ) ) {
 
-			if ( isset( $this->options['automatic_backups'] ) && $this->options['automatic_backups'] != 'none' ) {
+			if ( isset( $this->revisr->options['automatic_backups'] ) && $this->revisr->options['automatic_backups'] != 'none' ) {
 				$timestamp 	= wp_next_scheduled( 'revisr_cron' );
 				if ( $timestamp == false ) {
-					wp_schedule_event( time(), $this->options['automatic_backups'], 'revisr_cron' );
+					wp_schedule_event( time(), $this->revisr->options['automatic_backups'], 'revisr_cron' );
 				} else {
 					wp_clear_scheduled_hook( 'revisr_cron' );
-					wp_schedule_event( time(), $this->options['automatic_backups'], 'revisr_cron' );
+					wp_schedule_event( time(), $this->revisr->options['automatic_backups'], 'revisr_cron' );
 				}
 			} else {
 				wp_clear_scheduled_hook( 'revisr_cron' );
@@ -202,7 +195,7 @@ class Revisr_Settings_Fields {
 		printf(
 			'<input type="checkbox" id="notifications" name="revisr_general_settings[notifications]" %s />
 			<label for="notifications"><span class="description">%s</span></label>',
-			isset( $this->options['notifications'] ) ? "checked" : '',
+			isset( $this->revisr->options['notifications'] ) ? "checked" : '',
 			__( 'Enabling notifications will send updates about new commits, pulls, and pushes to the email address above.', 'revisr' )
 		);
 	}
@@ -215,21 +208,21 @@ class Revisr_Settings_Fields {
 		printf(
 			'<input type="text" id="remote_name" name="revisr_remote_settings[remote_name]" value="%s" class="regular-text revisr-text" placeholder="origin" />
 			<p class="description revisr-description">%s</p>',
-			isset( $this->options['remote_name'] ) ? esc_attr( $this->options['remote_name']) : '',
+			isset( $this->revisr->options['remote_name'] ) ? esc_attr( $this->revisr->options['remote_name']) : '',
 			__( 'Git sets this to "origin" by default when you clone a repository, and this should be sufficient in most cases. If you\'ve changed the remote name or have more than one remote, you can specify that here.', 'revisr' )
 		);
 
 		if ( $this->is_updated( 'remote_name' ) ) {
-			$remote_name = $this->options['remote_name'];
+			$remote_name = $this->revisr->options['remote_name'];
 		} else {
 			$remote_name = 'origin';
 		}
 
 		// Sets the remote name and/or URL if necessary.
-		if ( isset( $this->options['remote_url'] ) ) {
-			$add = $this->revisr->git->run( 'remote',  array( 'add', $remote_name, $this->options['remote_url'] ) );
+		if ( isset( $this->revisr->options['remote_url'] ) ) {
+			$add = $this->revisr->git->run( 'remote',  array( 'add', $remote_name, $this->revisr->options['remote_url'] ) );
 			if ( $add == false ) {
-				$this->revisr->git->run( 'remote', array( 'set-url', $remote_name, $this->options['remote_url'] ) );
+				$this->revisr->git->run( 'remote', array( 'set-url', $remote_name, $this->revisr->options['remote_url'] ) );
 			}
 		}
 	}
@@ -242,8 +235,8 @@ class Revisr_Settings_Fields {
 
 		$check_remote = $this->revisr->git->get_config( 'remote', 'origin.url' );
 
-		if ( isset( $this->options['remote_url'] ) && $this->options['remote_url'] != '' ) {
-			$remote_url = esc_attr( $this->options['remote_url'] );
+		if ( isset( $this->revisr->options['remote_url'] ) && $this->revisr->options['remote_url'] != '' ) {
+			$remote_url = esc_attr( $this->revisr->options['remote_url'] );
 		} elseif ( $check_remote ) {
 			$remote_url = $check_remote[0];
 		} else {
@@ -265,7 +258,7 @@ class Revisr_Settings_Fields {
 		// Allow the user to unset the Webhook URL.
 		if ( isset( $_GET['settings-updated'] ) ) {
 			if ( $this->is_updated( 'webhook_url' ) ) {
-				$this->revisr->git->set_config( 'revisr', 'webhook-url', $this->options['webhook_url'] );
+				$this->revisr->git->set_config( 'revisr', 'webhook-url', $this->revisr->options['webhook_url'] );
 			} else {
 				$this->revisr->git->run( 'config', array( '--unset', 'revisr.webhook-url' ) );
 			}
@@ -291,7 +284,7 @@ class Revisr_Settings_Fields {
 	 */
 	public function auto_push_callback() {
 		if ( isset( $_GET['settings-updated'] ) ) {
-			if ( isset( $this->options['auto_push'] ) ) {
+			if ( isset( $this->revisr->options['auto_push'] ) ) {
 				$this->revisr->git->set_config( 'revisr', 'auto-push', 'true' );
 			} else {
 				$this->revisr->git->run( 'config', array( '--unset', 'revisr.auto-push' ) );
@@ -312,7 +305,7 @@ class Revisr_Settings_Fields {
 	 */
 	public function auto_pull_callback() {
 		if ( isset( $_GET['settings-updated'] ) ) {
-			if ( isset( $this->options['auto_pull'] ) ) {
+			if ( isset( $this->revisr->options['auto_pull'] ) ) {
 				$this->revisr->git->set_config( 'revisr', 'auto-pull', 'true' );
 			} else {
 				$this->revisr->git->run( 'config', array( '--unset', 'revisr.auto-pull' ) );
@@ -351,13 +344,13 @@ class Revisr_Settings_Fields {
 	 */
 	public function tracked_tables_callback() {
 		if ( $this->is_updated( 'db_tracking' ) ) {
-			$this->revisr->git->set_config( 'revisr', 'db-tracking', $this->options['db_tracking'] );
+			$this->revisr->git->set_config( 'revisr', 'db-tracking', $this->revisr->options['db_tracking'] );
 		}
 
 		if ( $db_tracking = $this->revisr->git->get_config( 'revisr', 'db-tracking' ) ) {
 			if ( $db_tracking == 'custom' && $this->is_updated( 'tracked_tables' ) ) {
 				$this->revisr->git->run( 'config', array( '--unset-all', 'revisr.tracked-tables' ) );
-				$tables = $this->options['tracked_tables'];
+				$tables = $this->revisr->options['tracked_tables'];
 				foreach ( $tables as $table ) {
 					$this->revisr->git->run( 'config', array( '--add', 'revisr.tracked-tables', $table ) );
 				}
@@ -402,7 +395,7 @@ class Revisr_Settings_Fields {
 		// Allow the user to unset the dev URL.
 		if ( isset( $_GET['settings-updated'] ) ) {
 			if ( $this->is_updated( 'development_url' ) ) {
-				$this->revisr->git->set_config( 'revisr', 'dev-url', esc_url_raw( $this->options['development_url'] ) );
+				$this->revisr->git->set_config( 'revisr', 'dev-url', esc_url_raw( $this->revisr->options['development_url'] ) );
 			} else {
 				$this->revisr->git->run( 'config', array( '--unset', 'revisr.dev-url' ) );
 			}
@@ -430,7 +423,7 @@ class Revisr_Settings_Fields {
 	 */
 	public function db_driver_callback() {
 		if ( $this->is_updated( 'db_driver' ) ) {
-			$this->revisr->git->set_config( 'revisr', 'db-driver', $this->options['db_driver'] );
+			$this->revisr->git->set_config( 'revisr', 'db-driver', $this->revisr->options['db_driver'] );
 		}
 
 		$current = $this->revisr->git->get_config( 'revisr', 'db-driver' );
@@ -455,11 +448,11 @@ class Revisr_Settings_Fields {
 			if ( $this->is_updated( 'mysql_path' ) ) {
 
 				// Properly escape trailing backslashes on Windows.
-				if ( substr( $this->options['mysql_path'], -1 ) === '\\' ) {
-					$this->options['mysql_path'] .= '\\';
+				if ( substr( $this->revisr->options['mysql_path'], -1 ) === '\\' ) {
+					$this->revisr->options['mysql_path'] .= '\\';
 				}
 
-				$this->revisr->git->set_config( 'revisr', 'mysql-path', $this->options['mysql_path'] );
+				$this->revisr->git->set_config( 'revisr', 'mysql-path', $this->revisr->options['mysql_path'] );
 
 			} else {
 				$this->revisr->git->run( 'config', array( '--unset', 'revisr.mysql-path' ) );
@@ -489,13 +482,13 @@ class Revisr_Settings_Fields {
 	public function reset_db_callback() {
 		if ( isset( $_GET['settings-updated'] ) ) {
 
-			if ( isset( $this->options['reset_db'] ) ) {
+			if ( isset( $this->revisr->options['reset_db'] ) ) {
 				$this->revisr->git->set_config( 'revisr', 'import-checkouts', 'true' );
 			} else {
 				$this->revisr->git->run( 'config', array( '--unset-all', 'revisr.import-checkouts' ) );
 			}
 
-			if ( isset( $this->options['import_db'] ) ) {
+			if ( isset( $this->revisr->options['import_db'] ) ) {
 				$this->revisr->git->set_config( 'revisr', 'import-pulls', 'true' );
 			} else {
 				$this->revisr->git->run( 'config',  array( '--unset-all', 'revisr.import-pulls' ) );

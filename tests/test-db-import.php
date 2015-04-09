@@ -19,7 +19,7 @@ class Revisr_DB_Import_Test extends WP_UnitTestCase {
 	 * @access public
 	 */
 	public function setUp() {
-		$this->revisr 		= Revisr::get_instance();
+		$this->revisr 		= revisr();
 		$this->revisr->git 	= new Revisr_Git;
 		$this->revisr->db 	= new Revisr_DB;
 		$this->import 		= new Revisr_DB_Import;

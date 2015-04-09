@@ -11,7 +11,7 @@ class RevisrAdminTest extends WP_UnitTestCase {
 	 * Set up the instance so we can run our tests.
 	 */
 	function setUp() {
-		$this->revisr 			= Revisr::get_instance();
+		$this->revisr 			= revisr();
 		$this->revisr->git 		= new Revisr_Git();
 		$this->revisr->db 		= new Revisr_DB();
 		$this->revisr->admin 	= new Revisr_Admin();

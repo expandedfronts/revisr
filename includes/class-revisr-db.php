@@ -21,13 +21,7 @@ class Revisr_DB {
 	 * A reference to the main Revisr instance.
 	 * @var Revisr
 	 */
-	protected $revisr;
-
-	/**
-	 * An array of user options and preferences.
-	 * @var array
-	 */
-	protected $options;
+	protected $revisr = revisr();
 
 	/**
 	 * The backup directory.
@@ -50,10 +44,6 @@ class Revisr_DB {
 		// Make WPDB available to the class.
 		global $wpdb;
 		$this->wpdb = $wpdb;
-
-		// Grab the instance of Revisr.
-		$this->revisr 	= Revisr::get_instance();
-		$this->options 	= Revisr::get_options();
 
 		$upload_dir = wp_upload_dir();
 
@@ -187,7 +177,7 @@ class Revisr_DB {
 	 */
 	public function get_tracked_tables() {
 		$stored_tables = $this->revisr->git->run( 'config', array( '--get-all', 'revisr.tracked-tables' ) );
-		if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'all_tables' ) {
+		if ( isset( $this->revisr->options['db_tracking'] ) && $this->revisr->options['db_tracking'] == 'all_tables' ) {
 			$tracked_tables = $this->get_tables();
 		} elseif ( is_array( $stored_tables ) ) {
 			$tracked_tables = array_intersect( $stored_tables, $this->get_tables() );
@@ -465,7 +455,7 @@ class Revisr_DB {
 
 			if ( ! empty( $new_tables ) ) {
 				// If there are new tables that were imported.
-				if ( isset( $this->options['db_tracking'] ) && $this->options['db_tracking'] == 'all_tables' ) {
+				if ( isset( $this->revisr->options['db_tracking'] ) && $this->revisr->options['db_tracking'] == 'all_tables' ) {
 					// If the user is tracking all tables, import all tables.
 					$import = $this->run( 'import', $all_tables, $replace_url );
 				} else {

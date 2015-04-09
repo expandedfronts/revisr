@@ -12,7 +12,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Grab the instance
-$revisr 	= Revisr::get_instance();
+$revisr 	= revisr();
 $loader_url = REVISR_URL . 'assets/img/loader.gif';
 
 // Enqueue any necessary scripts (Already registered in "Revisr_Admin_Setup").

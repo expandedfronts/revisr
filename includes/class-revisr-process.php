@@ -22,18 +22,11 @@ class Revisr_Process {
 	protected $revisr;
 
 	/**
-	 * User options and preferences.
-	 * @var array
-	 */
-	protected $options;
-
-	/**
 	 * Initialize the class.
 	 * @access public
 	 */
 	public function __construct() {
-		$this->revisr 	= Revisr::get_instance();
-		$this->options 	= Revisr::get_options();
+		$this->revisr = revisr();
 	}
 
 	/**

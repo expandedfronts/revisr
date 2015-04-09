@@ -22,12 +22,6 @@ class Revisr_Admin {
 	protected $revisr;
 
 	/**
-	 * User options and preferences.
-	 * @var array
-	 */
-	protected $options;
-
-	/**
 	 * An array of page hooks returned by add_menu_page and add_submenu_page.
 	 * @var array
 	 */
@@ -38,8 +32,7 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function __construct() {
-		$this->options 	= Revisr::get_options();
-		$this->revisr 	= Revisr::get_instance();
+		$this->revisr = revisr();
 	}
 
 	/**
@@ -470,23 +463,23 @@ class Revisr_Admin {
 	public function do_upgrade() {
 
 		// Check for the "auto_push" option and save it to the config.
-		if ( isset( $this->options['auto_push'] ) ) {
+		if ( isset( $this->revisr->options['auto_push'] ) ) {
 			$this->revisr->git->set_config( 'revisr', 'auto-push', 'true' );
 		}
 
 		// Check for the "auto_pull" option and save it to the config.
-		if ( isset( $this->options['auto_pull'] ) ) {
+		if ( isset( $this->revisr->options['auto_pull'] ) ) {
 			$this->revisr->git->set_config( 'revisr', 'auto-pull', 'true' );
 		}
 
 		// Check for the "reset_db" option and save it to the config.
-		if ( isset( $this->options['reset_db'] ) ) {
+		if ( isset( $this->revisr->options['reset_db'] ) ) {
 			$this->revisr->git->set_config( 'revisr', 'import-checkouts', 'true' );
 		}
 
 		// Check for the "mysql_path" option and save it to the config.
-		if ( isset( $this->options['mysql_path'] ) ) {
-			$this->revisr->git->set_config( 'revisr', 'mysql-path', $this->options['mysql_path'] );
+		if ( isset( $this->revisr->options['mysql_path'] ) ) {
+			$this->revisr->git->set_config( 'revisr', 'mysql-path', $this->revisr->options['mysql_path'] );
 		}
 
 		// Configure the database tracking to use all tables, as this was how it behaved in 1.7.

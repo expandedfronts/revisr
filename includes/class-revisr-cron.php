@@ -22,17 +22,11 @@ class Revisr_Cron {
 	protected $revisr;
 
 	/**
-	 * User options and preferences.
-	 */
-	protected $options;
-
-	/**
 	 * Sets up the class.
 	 * @access public
 	 */
 	public function __construct() {
-		$this->revisr 	= Revisr::get_instance();
-		$this->options 	= Revisr::get_options();
+		$this->revisr = revisr();
 	}
 
 	/**
@@ -59,7 +53,7 @@ class Revisr_Cron {
 
 		$date 				= date("F j, Y");
 		$files 				= $this->revisr->git->status();
-		$backup_type 		= ucfirst( $this->options['automatic_backups'] );
+		$backup_type 		= ucfirst( $this->revisr->options['automatic_backups'] );
 		$commit_msg 		= sprintf( __( '%s backup - %s', 'revisr' ), $backup_type, $date );
 
 		// In case there are no files to commit.
@@ -82,7 +76,7 @@ class Revisr_Cron {
 		add_post_meta( $post_id, 'committed_files', $files );
 		$this->revisr->db->backup();
 		add_post_meta( $post_id, 'db_hash', $this->revisr->git->current_commit() );
-		$log_msg = sprintf( __( 'The %s backup was successful.', 'revisr' ), $this->options['automatic_backups'] );
+		$log_msg = sprintf( __( 'The %s backup was successful.', 'revisr' ), $this->revisr->options['automatic_backups'] );
 		Revisr_Admin::log( $log_msg, 'backup' );
 	}
 

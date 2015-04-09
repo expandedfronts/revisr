@@ -12,7 +12,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Load the Revisr instance.
-$revisr = Revisr::get_instance();
+$revisr = revisr();
 
 ?>
 
@@ -20,7 +20,7 @@ $revisr = Revisr::get_instance();
 
 <p><?php _e( 'Support is available on the <a href="https://wordpress.org/support/plugin/revisr" target="_blank">plugin support forums</a>.', 'revisr' ); ?></p>
 
-<p><?php _e( 'Found a bug or have a feature request? Please open an issue on <a href="https://github.com/ExpandedFronts/revisr" target="_blank">GitHub</a>.', 'revisr' ); ?></p>
+<p><?php _e( 'Found a bug or have a feature request? Please open an issue on <a href="https://github.com/ExpandedFronts/revisr" target="_blank">GitHub</a>!', 'revisr' ); ?></p>
 
 <table id="revisr-debug-table" class="wp-list-table widefat fixed striped">
 

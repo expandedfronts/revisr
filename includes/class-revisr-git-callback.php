@@ -26,7 +26,7 @@ class Revisr_Git_Callback {
 	 * @access public
 	 */
 	public function __construct() {
-		$this->revisr = Revisr::get_instance();
+		$this->revisr = revisr();
 	}
 
 	/**

@@ -11,7 +11,7 @@ class RevisrDBTest extends WP_UnitTestCase {
 	 * Initialize the database object.
 	 */
 	function setUp() {
-		$this->revisr 		= Revisr::get_instance();
+		$this->revisr 		= revisr();
 		$this->revisr->git 	= new Revisr_Git();
 		$this->revisr->db 	= new Revisr_DB();
 	}

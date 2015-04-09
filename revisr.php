@@ -35,12 +35,12 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * The main Revisr class. Initializes the plugin loads any
+ * The main Revisr class. Initializes the plugin and loads any
  * required hooks and dependencies.
  *
  * @since 1.8.2
  */
-class Revisr {
+final class Revisr {
 
 	/**
 	 * Stores the current instance of Revisr.
@@ -97,7 +97,7 @@ class Revisr {
 	public $options;
 
 	/**
-	 * Empty construct, use get_instance() instead.
+	 * Empty construct, use revisr() instead.
 	 * @access private
 	 */
 	private function __construct() {
@@ -128,27 +128,48 @@ class Revisr {
 	 * @return object
 	 */
 	public static function get_instance() {
+
 		if ( null == self::$instance ) {
+
+			// Create the instance.
 			self::$instance 			= new self;
 			self::$instance->options 	= self::$instance->get_options();
 
+			// Define constants used by the plugin.
 			self::$instance->define_constants();
 
-			// Try to autoload the classes.
-			if ( function_exists( 'spl_autoload_register' ) ) {
-				spl_autoload_register( array( __CLASS__, 'autoload' ) );
-			} else {
-				self::$instance->load_dependencies();
-			}
+			// Load the rest of the plugin.
+			add_action( 'plugins_loaded', array( __CLASS__, 'load_instance' ) );
 
-			self::$instance->set_locale();
-			self::$instance->load_public_hooks();
-
-			if ( current_user_can( 'install_plugins' ) && is_admin() ) {
-				self::$instance->load_admin_hooks();
-			}
 		}
+
 		return self::$instance;
+	}
+
+	/**
+	 * Loads dependencies and initiates action hooks.
+	 * @access public
+	 */
+	public static function load_instance() {
+
+		// Load the classes via autoloader if available.
+		if ( function_exists( 'spl_autoload_register' ) ) {
+			spl_autoload_register( array( __CLASS__, 'autoload' ) );
+		} else {
+			self::$instance->load_dependencies();
+		}
+
+		// Set the locale.
+		self::$instance->set_locale();
+
+		// Load any public-facing hooks.
+		self::$instance->load_public_hooks();
+
+		// Load any admin-side hooks.
+		if ( current_user_can( 'install_plugins' ) && is_admin() ) {
+			self::$instance->load_admin_hooks();
+		}
+
 	}
 
 	/**
@@ -239,6 +260,12 @@ class Revisr {
 		self::$instance->process 		= new Revisr_Process();
 		self::$instance->settings 		= new Revisr_Settings();
 		self::$instance->list_table 	= new Revisr_List_Table();
+
+		// Register the activation hook.
+		register_activation_hook( __FILE__, array( __CLASS__, 'revisr_install' ) );
+
+		// Register the plugin settings link.
+		add_filter( 'plugin_action_links_'  . plugin_basename( __FILE__ ), array( __CLASS__, 'settings_link' ) );
 
 		// Create and configure the "revisr_commits" custom post type.
 		add_action( 'init', array( self::$instance->commits, 'post_types' ) );
@@ -348,9 +375,11 @@ class Revisr {
 
 	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	   	dbDelta( $sql );
-	   	if ( get_option( 'revisr_db_version' ) === false ) {
+
+	   	if ( false === get_option( 'revisr_db_version' ) ) {
 	   		add_option( 'revisr_db_version', '1.1' );
 	   	}
+
 	}
 
 	/**
@@ -376,11 +405,5 @@ function revisr() {
 	return Revisr::get_instance();
 }
 
-// Runs the plugin.
-add_action( 'plugins_loaded', 'revisr' );
-
-// Registers the activation hook.
-register_activation_hook( __FILE__, array( 'Revisr', 'revisr_install' ) );
-
-// Adds the settings link to the plugins page.
-add_filter( 'plugin_action_links_'  . plugin_basename( __FILE__ ), array( 'Revisr', 'settings_link' ) );
+// Let's go!
+revisr();
