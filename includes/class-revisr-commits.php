@@ -213,16 +213,26 @@ class Revisr_Commits {
 	}
 
 	/**
-	 * Filters commits by branch.
+	 * Filters for edit.php.
 	 * @access public
 	 * @param  object $commits The commits query.
 	 */
 	public function filters( $commits ) {
-		if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
+		if ( isset( $commits->query_vars['post_type'] ) && 'revisr_commits' === $commits->query_vars['post_type'] ) {
+
+			// Filter by tag.
+			if ( isset( $_GET['git_tag'] ) && '' !== $_GET['git_tag'] ) {
+				$commits->set( 'meta_key', 'git_tag' );
+				$commits->set( 'meta_value', esc_sql( $_GET['git_tag'] ) );
+
+				// Bail out early so the filter isn't potentially overwritten.
+				return $commits;
+			}
+
+			// Filter by branch.
 			if ( isset( $_GET['branch'] ) && $_GET['branch'] != 'all' ) {
 				$commits->set( 'meta_key', 'branch' );
-				$commits->set( 'meta_value', $_GET['branch'] );
-				$commits->set( 'post_type', 'revisr_commits' );
+				$commits->set( 'meta_value', esc_sql( $_GET['branch'] ) );
 			}
 		}
 		return $commits;

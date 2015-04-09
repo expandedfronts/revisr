@@ -95,10 +95,17 @@ $revisr->list_table->prepare_items();
 								</div>
 								<div id="tags" class="tabs-panel" style="display: none;">
 								<?php
-									// TODO: Link these back as a filter on the "Commits" page.
 									$tags = $revisr->git->run( 'tag', array() );
+
 									if ( is_array( $tags ) ) {
-										echo '<ul id="tags-list"><li>' . implode( '</li><li>', $tags ) . '</ul>';
+
+										echo '<ul id="tags-list">';
+										foreach ( $tags as $tag ) {
+											$tag = esc_attr( $tag );
+											echo '<li class="revisr-tag"><a href="' . get_admin_url() . 'edit.php?post_type=revisr_commits&git_tag=' . $tag . '">' . $tag . '</a></li>';
+										}
+										echo '</ul>';
+
 									}
 								?>
 								</div>
