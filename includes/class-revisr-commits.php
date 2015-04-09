@@ -229,6 +229,23 @@ class Revisr_Commits {
 	}
 
 	/**
+	 * Allows for searching by the 7 digit commit hash on edit.php.
+	 * @access public
+	 * @param  string $where The WordPress "WHERE" queries being ran.
+	 * @return string
+	 */
+	public function posts_where( $where ) {
+		global $pagenow, $wpdb;
+		if ( 'edit.php' === $pagenow && isset( $_GET['post_type'] ) && 'revisr_commits' === $_GET['post_type'] ) {
+			if ( isset( $_GET['s'] ) && 7 === strlen( trim( $_GET['s'] ) ) ) {
+				$hash 	= esc_sql( $_GET['s'] );
+				$where .= " OR $wpdb->postmeta.meta_key = 'commit_hash'  AND $wpdb->postmeta.meta_value = '$hash'";
+			}
+		}
+		return $where;
+	}
+
+	/**
 	 * Unsets unused views, replaced with branches.
 	 * @access public
 	 * @param  array $views The global views for the post type.
