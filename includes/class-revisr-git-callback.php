@@ -75,12 +75,14 @@ class Revisr_Git_Callback {
 	public function success_commit( $output = array(), $args = '' ) {
 		$id 			= get_the_ID();
 		$view_link 		= get_admin_url() . "post.php?post={$id}&action=edit";
+
+		$branch 		= $this->revisr->git->current_branch();
 		$commit_hash 	= $this->revisr->git->current_commit();
 		$commit_msg 	= $_REQUEST['post_title'];
 
 		// Add post-commit meta.
 		add_post_meta( $id, 'commit_hash', $commit_hash );
-		add_post_meta( $id, 'branch', $this->revisr->git->branch );
+		add_post_meta( $id, 'branch', $branch );
 		add_post_meta( $id, 'commit_status', __( 'Committed', 'revisr' ) );
 
 		// Backup the database if necessary

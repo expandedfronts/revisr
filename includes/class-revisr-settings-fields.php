@@ -135,19 +135,20 @@ class Revisr_Settings_Fields {
 			$this->revisr->git->update_gitignore();
 		}
 
-		if ( isset( $this->revisr->options['gitignore'] ) ) {
-			$gitignore = $this->revisr->options['gitignore'];
-		} elseif ( file_exists( $this->revisr->git->git_dir . '/.gitignore' ) ) {
+		// Grab the contents from the .gitignore.
+		if ( file_exists( $this->revisr->git->git_dir . '/.gitignore' ) ) {
 			$gitignore = file_get_contents( $this->revisr->git->git_dir . '/.gitignore' );
 		} else {
-			$gitignore = '';
+			$gitignore = $this->revisr->options['gitignore'] ? $this->revisr->options['gitignore'] : '';
 		}
 
+		// Display the settings field.
 		printf(
             '<textarea id="gitignore" name="revisr_general_settings[gitignore]" rows="6" />%s</textarea>
-            <p class="description revisr-description">%s</p>',
+            <p class="description revisr-description">%s %s</p>',
             esc_textarea( $gitignore ),
-            __( 'Add files or directories that you don\'t want to show up in Git here, one per line.<br>This will update the ".gitignore" file for this repository.', 'revisr' )
+            __( 'Add files or directories that you don\'t want to show up in Git here, one per line.<br>This will update the ".gitignore" file for this repository.', 'revisr' ),
+            isset( )
 		);
 	}
 
@@ -173,18 +174,22 @@ class Revisr_Settings_Fields {
 		// Update the cron settings/clear if necessary on save.
 		if ( $this->is_updated( 'automatic_backups' ) ) {
 
+			// Clear the existing cron.
+			wp_clear_scheduled_hook( 'revisr_cron' );
+
+
 			if ( isset( $this->revisr->options['automatic_backups'] ) && $this->revisr->options['automatic_backups'] != 'none' ) {
+
+				$time 		= time();
+				$next_time 	= $time + 300;
 				$timestamp 	= wp_next_scheduled( 'revisr_cron' );
-				if ( $timestamp == false ) {
-					wp_schedule_event( time(), $this->revisr->options['automatic_backups'], 'revisr_cron' );
-				} else {
-					wp_clear_scheduled_hook( 'revisr_cron' );
-					wp_schedule_event( time(), $this->revisr->options['automatic_backups'], 'revisr_cron' );
-				}
-			} else {
-				wp_clear_scheduled_hook( 'revisr_cron' );
+
+				// Schedule the next one!
+				wp_schedule_event( $next_time, $this->revisr->options['automatic_backups'], 'revisr_cron' );
+
 			}
 		}
+
 	}
 
 	/**
@@ -235,17 +240,18 @@ class Revisr_Settings_Fields {
 
 		$check_remote = $this->revisr->git->get_config( 'remote', 'origin.url' );
 
-		if ( isset( $this->revisr->options['remote_url'] ) && $this->revisr->options['remote_url'] != '' ) {
-			$remote_url = esc_attr( $this->revisr->options['remote_url'] );
-		} elseif ( $check_remote ) {
-			$remote_url = $check_remote[0];
+		if ( false !== $check_remote ) {
+			$remote = $check_remote;
+		} elseif ( isset( $this->revisr->options['remote_url'] ) ) {
+			$remote = $this->revisr->options['remote_url'];
 		} else {
-			$remote_url = '';
+			$remote = '';
 		}
+
 		printf(
 			'<input type="text" id="remote_url" name="revisr_remote_settings[remote_url]" value="%s" class="regular-text revisr-text" placeholder="https://user:pass@host.com/user/example.git" /><span id="verify-remote"></span>
 			<p class="description revisr-description">%s</p>',
-			$remote_url,
+			$remote,
 			__( 'Useful if you need to authenticate over "https://" instead of SSH, or if the remote has not already been set through Git.', 'revisr' )
 		);
 	}
