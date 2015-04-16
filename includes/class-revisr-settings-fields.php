@@ -179,11 +179,8 @@ class Revisr_Settings_Fields {
 
 			if ( isset( $this->revisr->options['automatic_backups'] ) && $this->revisr->options['automatic_backups'] != 'none' ) {
 
-				$time 		= time();
-				$next_time 	= $time + 300;
-				$timestamp 	= wp_next_scheduled( 'revisr_cron' );
-
 				// Schedule the next one!
+				$next_time = time() + 300;
 				wp_schedule_event( $next_time, $this->revisr->options['automatic_backups'], 'revisr_cron' );
 
 			}
