@@ -145,10 +145,9 @@ class Revisr_Settings_Fields {
 		// Display the settings field.
 		printf(
             '<textarea id="gitignore" name="revisr_general_settings[gitignore]" rows="6" />%s</textarea>
-            <p class="description revisr-description">%s %s</p>',
+            <p class="description revisr-description">%s</p>',
             esc_textarea( $gitignore ),
-            __( 'Add files or directories that you don\'t want to show up in Git here, one per line.<br>This will update the ".gitignore" file for this repository.', 'revisr' ),
-            isset( )
+            __( 'Add files or directories that you don\'t want to show up in Git here, one per line.<br>This will update the ".gitignore" file for this repository.', 'revisr' )
 		);
 	}
 
