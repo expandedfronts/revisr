@@ -261,9 +261,6 @@ final class Revisr {
 		self::$instance->settings 		= new Revisr_Settings();
 		self::$instance->list_table 	= new Revisr_List_Table();
 
-		// Register the activation hook.
-		register_activation_hook( __FILE__, array( __CLASS__, 'revisr_install' ) );
-
 		// Register the plugin settings link.
 		add_filter( 'plugin_action_links_'  . plugin_basename( __FILE__ ), array( __CLASS__, 'settings_link' ) );
 
@@ -407,3 +404,6 @@ function revisr() {
 
 // Let's go!
 revisr();
+
+// Register the activation hook.
+register_activation_hook( __FILE__, array( 'Revisr', 'revisr_install' ) );
