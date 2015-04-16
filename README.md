@@ -92,9 +92,9 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 * Added ability to search for commits by the 7-letter commit ID/hash
 * Added link/filter for viewing tags on dashboard/commits page
 * Improved plugin intiation
-* Fixed bug with certain errors saved as an array
+* Fixed bug with certain errors saved as an array when making a commit
 * Fixed bug with first commit not showing correct branch
-* Fixed bug with ".gitignore" not showing latest version of gitignore
+* Fixed bug with ".gitignore" not showing latest version of gitignore when updated outside of Revisr
 
 ### 1.9.4 ###
 * Added support for sockets in the DB_HOST constant
