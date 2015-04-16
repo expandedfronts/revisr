@@ -114,7 +114,7 @@ class Revisr_Commits {
 		register_meta( 'post', 'git_tag', 'esc_attr' );
 		register_meta( 'post', 'backup_method', 'esc_attr' );
 		register_meta( 'post', 'commit_status', 'esc_attr' );
-		register_meta( 'post', 'error_details', 'esc_textarea' );
+		register_meta( 'post', 'error_details', array( 'Revisr_Admin', 'esc_attr_array' ) );
 	}
 
 	/**

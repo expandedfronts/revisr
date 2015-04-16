@@ -79,6 +79,13 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 == Changelog ==
 
+= 1.9.5 =
+* Added sizes to database tables on "Let me decide..." option
+* Allowed searching for commits by the 7-letter commit ID/hash
+* Added link/filter for viewing tags on dashboard/commits page
+* Improved plugin intiation
+* Fixed bug with errors being saved as an array
+
 = 1.9.4 =
 * Added support for sockets in the DB_HOST constant
 * Fixed bug causing error on PHP 5.2
