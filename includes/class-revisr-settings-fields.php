@@ -473,6 +473,7 @@ class Revisr_Settings_Fields {
 			esc_attr( $mysql_path ),
 			__( 'Leave blank if the full path to MySQL has already been set on the server. Some possible settings include:
 			<br><br>For MAMP: /Applications/MAMP/Library/bin/<br>
+			For AMPPS: /Applications/AMPPS/mysql/bin/<br>
 			For WAMP: C:\wamp\bin\mysql\mysql5.6.12\bin\ ', 'revisr' )
 		);
 	}
