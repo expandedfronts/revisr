@@ -109,12 +109,12 @@ class Revisr_DB_Import extends Revisr_DB {
 			Revisr_Admin::log( $msg, 'error' );
 			Revisr_Admin::alert( $msg, true );
 		} else {
-			$get_hash 	= $this->revisr->git->run( 'config', array( 'revisr.last-db-backup' ) );
+			$get_hash 	= revisr()->git->run( 'config', array( 'revisr.last-db-backup' ) );
 			$revert_url = '';
 			if ( is_array( $get_hash ) ) {
 				$undo_hash 	= $get_hash[0];
-				$revert_url = '<a href="' .wp_nonce_url( admin_url( "admin-post.php?action=revert_db&db_hash=$undo_hash&branch={$this->revisr->git->branch}&backup_method=tables" ), 'revert_db', 'revert_db_nonce' ) . '">' . __( 'Undo', 'revisr') . '</a>';
-				$this->revisr->git->run( 'config', array( '--unset', 'revisr.last-db-backup' ) );
+				$revert_url = '<a href="' .wp_nonce_url( admin_url( "admin-post.php?action=revert_db&db_hash=$undo_hash&branch={revisr()->git->branch}&backup_method=tables" ), 'revert_db', 'revert_db_nonce' ) . '">' . __( 'Undo', 'revisr') . '</a>';
+				revisr()->git->run( 'config', array( '--unset', 'revisr.last-db-backup' ) );
 			}
 			$msg = sprintf( __( 'Successfully imported the database. %s', 'revisr'), $revert_url );
 			Revisr_Admin::log( $msg, 'import' );

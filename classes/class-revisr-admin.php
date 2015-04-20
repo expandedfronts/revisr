@@ -16,24 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Revisr_Admin {
 
 	/**
-	 * A reference back to the main Revisr instance.
-	 * @var object
-	 */
-	protected $revisr;
-
-	/**
 	 * An array of page hooks returned by add_menu_page and add_submenu_page.
 	 * @var array
 	 */
 	public $page_hooks = array();
-
-	/**
-	 * Initialize the class.
-	 * @access public
-	 */
-	public function __construct() {
-		$this->revisr = revisr();
-	}
 
 	/**
 	 * Registers and enqueues css and javascript files.
@@ -159,8 +145,8 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function admin_bar( $wp_admin_bar ) {
-		if ( $this->revisr->git->is_repo && $this->revisr->git->count_untracked() != 0 ) {
-			$untracked 	= $this->revisr->git->count_untracked();
+		if ( revisr()->git->is_repo && revisr()->git->count_untracked() != 0 ) {
+			$untracked 	= revisr()->git->count_untracked();
 			$text 		= sprintf( _n( '%s Untracked File', '%s Untracked Files', $untracked, 'revisr' ), $untracked );
 			$args 		= array(
 				'id'    => 'revisr',
@@ -178,9 +164,9 @@ class Revisr_Admin {
 	 */
 	public function ajax_button_count() {
 		if ( $_REQUEST['data'] == 'unpulled' ) {
-			echo $this->revisr->git->count_unpulled();
+			echo revisr()->git->count_unpulled();
 		} else {
-			echo $this->revisr->git->count_unpushed();
+			echo revisr()->git->count_unpushed();
 		}
 		exit();
 	}
@@ -349,11 +335,11 @@ class Revisr_Admin {
 		} else if ( $alert ) {
 			echo "<div class='revisr-alert updated'>" . wpautop( $alert ) . "</div>";
 		} else {
-			if ( $this->revisr->git->count_untracked() == '0' ) {
-				printf( __( '<div class="revisr-alert updated"><p>There are currently no untracked files on branch %s.', 'revisr' ), $this->revisr->git->branch );
+			if ( revisr()->git->count_untracked() == '0' ) {
+				printf( __( '<div class="revisr-alert updated"><p>There are currently no untracked files on branch %s.', 'revisr' ), revisr()->git->branch );
 			} else {
 				$commit_link = get_admin_url() . 'post-new.php?post_type=revisr_commits';
-				printf( __('<div class="revisr-alert updated"><p>There are currently %s untracked files on branch %s. <a href="%s">Commit</a> your changes to save them.</p></div>', 'revisr' ), $this->revisr->git->count_untracked(), $this->revisr->git->branch, $commit_link );
+				printf( __('<div class="revisr-alert updated"><p>There are currently %s untracked files on branch %s. <a href="%s">Commit</a> your changes to save them.</p></div>', 'revisr' ), revisr()->git->count_untracked(), revisr()->git->branch, $commit_link );
 			}
 		}
 		exit();
@@ -373,9 +359,9 @@ class Revisr_Admin {
 		<?php
 
 			if ( isset( $_REQUEST['commit'] ) ) {
-				$diff = $this->revisr->git->run( 'show', array( $_REQUEST['commit'], $_REQUEST['file'] ) );
+				$diff = revisr()->git->run( 'show', array( $_REQUEST['commit'], $_REQUEST['file'] ) );
 			} else {
-				$diff = $this->revisr->git->run( 'diff', array( $_REQUEST['file'] ) );
+				$diff = revisr()->git->run( 'diff', array( $_REQUEST['file'] ) );
 			}
 
 			if ( is_array( $diff ) ) {
@@ -438,7 +424,7 @@ class Revisr_Admin {
 		</head>
 		<body>
 		<?php
-			$status = $this->revisr->git->run( 'status', array() );
+			$status = revisr()->git->run( 'status', array() );
 
 			if ( is_array( $status ) ) {
 				echo '<pre>';
@@ -463,27 +449,27 @@ class Revisr_Admin {
 	public function do_upgrade() {
 
 		// Check for the "auto_push" option and save it to the config.
-		if ( isset( $this->revisr->options['auto_push'] ) ) {
-			$this->revisr->git->set_config( 'revisr', 'auto-push', 'true' );
+		if ( isset( revisr()->options['auto_push'] ) ) {
+			revisr()->git->set_config( 'revisr', 'auto-push', 'true' );
 		}
 
 		// Check for the "auto_pull" option and save it to the config.
-		if ( isset( $this->revisr->options['auto_pull'] ) ) {
-			$this->revisr->git->set_config( 'revisr', 'auto-pull', 'true' );
+		if ( isset( revisr()->options['auto_pull'] ) ) {
+			revisr()->git->set_config( 'revisr', 'auto-pull', 'true' );
 		}
 
 		// Check for the "reset_db" option and save it to the config.
-		if ( isset( $this->revisr->options['reset_db'] ) ) {
-			$this->revisr->git->set_config( 'revisr', 'import-checkouts', 'true' );
+		if ( isset( revisr()->options['reset_db'] ) ) {
+			revisr()->git->set_config( 'revisr', 'import-checkouts', 'true' );
 		}
 
 		// Check for the "mysql_path" option and save it to the config.
-		if ( isset( $this->revisr->options['mysql_path'] ) ) {
-			$this->revisr->git->set_config( 'revisr', 'mysql-path', $this->revisr->options['mysql_path'] );
+		if ( isset( revisr()->options['mysql_path'] ) ) {
+			revisr()->git->set_config( 'revisr', 'mysql-path', revisr()->options['mysql_path'] );
 		}
 
 		// Configure the database tracking to use all tables, as this was how it behaved in 1.7.
-		$this->revisr->git->set_config( 'revisr', 'db_tracking', 'all_tables' );
+		revisr()->git->set_config( 'revisr', 'db_tracking', 'all_tables' );
 
 		// We're done here.
 		update_option( 'revisr_db_version', '1.1' );

@@ -11,9 +11,6 @@
 // Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Load the Revisr instance.
-$revisr = revisr();
-
 ?>
 
 <h3><?php _e( 'Help and Troubleshooting', 'revisr' ); ?></h3>
@@ -48,7 +45,7 @@ $revisr = revisr();
 
 		<tr>
 			<td><label><strong><?php _e( 'Git Version', 'revisr' ); ?></strong></label></td>
-			<td><?php echo $revisr->git->version(); ?></td>
+			<td><?php echo revisr()->git->version(); ?></td>
 		</tr>
 
 		<tr>
@@ -56,16 +53,16 @@ $revisr = revisr();
 			<td><?php echo Revisr_Compatibility::guess_path( 'mysql' ); ?></td>
 		</tr>
 
-		<?php if ( $revisr->git->is_repo ): ?>
+		<?php if ( revisr()->git->is_repo ): ?>
 
 		<tr>
 			<td><label><strong><?php _e( 'File Permissions', 'revisr' ); ?></strong></label></td>
-			<td><?php echo Revisr_Compatibility::server_has_permissions( $revisr->git->get_git_dir() ); ?></td>
+			<td><?php echo Revisr_Compatibility::server_has_permissions( revisr()->git->get_git_dir() ); ?></td>
 		</tr>
 
 		<tr>
 			<td><label><strong><?php _e( 'Repository Path', 'revisr' ); ?></strong></label></td>
-			<td><?php echo $revisr->git->get_git_dir(); ?></td>
+			<td><?php echo revisr()->git->get_git_dir(); ?></td>
 		</tr>
 
 		<tr>

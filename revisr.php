@@ -179,7 +179,7 @@ final class Revisr {
 	 * @since  1.9
 	 */
 	private static function autoload( $class ) {
-		$file = REVISR_PATH . 'includes/class-' . strtolower( str_replace( '_', '-', $class ) ) . '.php';
+		$file = REVISR_PATH . 'classes/class-' . strtolower( str_replace( '_', '-', $class ) ) . '.php';
 		if ( is_readable( $file ) ) {
 			require( $file );
 		}
@@ -190,24 +190,24 @@ final class Revisr {
 	 * @access private
 	 */
 	private function load_dependencies() {
-		require_once REVISR_PATH . 'includes/class-revisr-i18n.php';
-		require_once REVISR_PATH . 'includes/class-revisr-git.php';
-		require_once REVISR_PATH . 'includes/class-revisr-admin.php';
-		require_once REVISR_PATH . 'includes/class-revisr-remote.php';
-		require_once REVISR_PATH . 'includes/class-revisr-db.php';
-		require_once REVISR_PATH . 'includes/class-revisr-db-backup.php';
-		require_once REVISR_PATH . 'includes/class-revisr-db-import.php';
-		require_once REVISR_PATH . 'includes/class-revisr-git-callback.php';
-		require_once REVISR_PATH . 'includes/class-revisr-cron.php';
+		require_once REVISR_PATH . 'classes/class-revisr-i18n.php';
+		require_once REVISR_PATH . 'classes/class-revisr-git.php';
+		require_once REVISR_PATH . 'classes/class-revisr-admin.php';
+		require_once REVISR_PATH . 'classes/class-revisr-remote.php';
+		require_once REVISR_PATH . 'classes/class-revisr-db.php';
+		require_once REVISR_PATH . 'classes/class-revisr-db-backup.php';
+		require_once REVISR_PATH . 'classes/class-revisr-db-import.php';
+		require_once REVISR_PATH . 'classes/class-revisr-git-callback.php';
+		require_once REVISR_PATH . 'classes/class-revisr-cron.php';
 
 		// Classes that should only be loaded for admins.
 		if ( current_user_can( 'install_plugins' ) && is_admin() ) {
-			require_once REVISR_PATH . 'includes/class-revisr-compatibility.php';
-			require_once REVISR_PATH . 'includes/class-revisr-process.php';
-			require_once REVISR_PATH . 'includes/class-revisr-list-table.php';
-			require_once REVISR_PATH . 'includes/class-revisr-commits.php';
-			require_once REVISR_PATH . 'includes/class-revisr-settings.php';
-			require_once REVISR_PATH . 'includes/class-revisr-settings-fields.php';
+			require_once REVISR_PATH . 'classes/class-revisr-compatibility.php';
+			require_once REVISR_PATH . 'classes/class-revisr-process.php';
+			require_once REVISR_PATH . 'classes/class-revisr-list-table.php';
+			require_once REVISR_PATH . 'classes/class-revisr-commits.php';
+			require_once REVISR_PATH . 'classes/class-revisr-settings.php';
+			require_once REVISR_PATH . 'classes/class-revisr-settings-fields.php';
 		}
 	}
 
@@ -218,10 +218,13 @@ final class Revisr {
 	private function define_constants() {
 		// The base plugin file.
 		define( 'REVISR_FILE', __FILE__ );
+
 		// The full path used for includes.
 		define( 'REVISR_PATH', plugin_dir_path( REVISR_FILE ) );
+
 		// The URL of the plugin base directory.
 		define( 'REVISR_URL', plugin_dir_url( REVISR_FILE ) );
+
 		// The current version of the plugin.
 		define( 'REVISR_VERSION', '1.9.5' );
 	}
@@ -370,7 +373,7 @@ final class Revisr {
 			UNIQUE KEY id (id)
 			);";
 
-	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	  	require_once( ABSPATH . 'wp-admin/classes/upgrade.php' );
 	   	dbDelta( $sql );
 
 	   	if ( false === get_option( 'revisr_db_version' ) ) {

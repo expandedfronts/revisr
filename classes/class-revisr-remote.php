@@ -16,31 +16,17 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Revisr_Remote {
 
 	/**
-	 * The current Revisr instance.
-	 */
-	protected $revisr;
-
-	/**
-	 * Initiates the class and grabs the Revisr instance.
-	 * @access public
-	 */
-	public function __construct() {
-		$this->revisr = revisr();
-	}
-
-
-	/**
 	 * Returns the current token, creating one if it does not exist.
 	 * @access public
 	 * @return string|boolean The token, or false on complete failure.
 	 */
 	public function get_token() {
-		$check = $this->revisr->git->get_config( 'revisr', 'token' );
+		$check = revisr()->git->get_config( 'revisr', 'token' );
 
 		if ( $check === false ) {
 			// If there is no token, generate a new one.
 			$token 	= wp_generate_password( 16, false, false );
-			$save 	= $this->revisr->git->set_config( 'revisr', 'token', $token );
+			$save 	= revisr()->git->set_config( 'revisr', 'token', $token );
 
 			if ( $save !== false ) {
 				return $token;
@@ -71,7 +57,7 @@ class Revisr_Remote {
 
 		// Compare the tokens and return true if a complete match.
 		if ( isset( $token_to_check ) ) {
-			$safe_token = $this->revisr->git->get_config( 'revisr', 'token' );
+			$safe_token = revisr()->git->get_config( 'revisr', 'token' );
 			if ( hash_equals( $safe_token, $token_to_check ) ) {
 				return true;
 			}
@@ -100,7 +86,7 @@ class Revisr_Remote {
 		);
 
 		// Get the URL and send the request.
-		$get_url = $this->revisr->git->get_config( 'revisr', 'webhook-url' );
+		$get_url = revisr()->git->get_config( 'revisr', 'webhook-url' );
 
 		if ( $get_url !== false ) {
 			$webhook = urldecode( $get_url );

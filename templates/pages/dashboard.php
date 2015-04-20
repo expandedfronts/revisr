@@ -11,8 +11,6 @@
 // Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Grab the instance
-$revisr 	= revisr();
 $loader_url = REVISR_URL . 'assets/img/loader.gif';
 
 // Enqueue any necessary scripts (Already registered in "Revisr_Admin_Setup").
@@ -26,7 +24,7 @@ wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
 );
 
 // Prepares the Revisr custom list table.
-$revisr->list_table->prepare_items();
+revisr()->list_table->prepare_items();
 
 ?>
 <div class="wrap">
@@ -43,7 +41,7 @@ $revisr->list_table->prepare_items();
 				<div class="meta-box-sortables ui-sortable">
 					<form id="revisr-list-table">
 						<input type="hidden" name="page" value="<?php echo esc_attr( $_REQUEST['page'] ); ?>" />
-						<?php $revisr->list_table->display(); ?>
+						<?php revisr()->list_table->display(); ?>
 					</form>
 				</div><!-- .meta-box-sortables .ui-sortable -->
 			</div><!-- post-body-content -->
@@ -76,7 +74,7 @@ $revisr->list_table->prepare_items();
 										<?php
 
 											$admin_url 	= get_admin_url();
-											$output 	= $revisr->git->get_branches();
+											$output 	= revisr()->git->get_branches();
 
 											if ( is_array( $output ) ) {
 												foreach ($output as $key => $value){
@@ -95,7 +93,7 @@ $revisr->list_table->prepare_items();
 								</div>
 								<div id="tags" class="tabs-panel" style="display: none;">
 								<?php
-									$tags = $revisr->git->run( 'tag', array() );
+									$tags = revisr()->git->run( 'tag', array() );
 
 									if ( is_array( $tags ) ) {
 

@@ -18,12 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Revisr_DB {
 
 	/**
-	 * A reference to the main Revisr instance.
-	 * @var Revisr
-	 */
-	protected $revisr;
-
-	/**
 	 * The backup directory.
 	 * @var string
 	 */
@@ -44,8 +38,6 @@ class Revisr_DB {
 		// Make WPDB available to the class.
 		global $wpdb;
 		$this->wpdb = $wpdb;
-
-		$this->revisr = revisr();
 
 		$upload_dir = wp_upload_dir();
 
@@ -108,7 +100,7 @@ class Revisr_DB {
 	 * @return string
 	 */
 	private function get_driver() {
-		return $this->revisr->git->get_config( 'revisr', 'db-driver' ) ? $this->revisr->git->get_config( 'revisr', 'db-driver' ) : 'mysql';
+		return revisr()->git->get_config( 'revisr', 'db-driver' ) ? revisr()->git->get_config( 'revisr', 'db-driver' ) : 'mysql';
 	}
 
 	/**
@@ -117,7 +109,7 @@ class Revisr_DB {
 	 * @return string
 	 */
 	protected function get_path() {
-		return $this->revisr->git->get_config( 'revisr', 'mysql-path' ) ? $this->revisr->git->get_config( 'revisr', 'mysql-path' ) : '';
+		return revisr()->git->get_config( 'revisr', 'mysql-path' ) ? revisr()->git->get_config( 'revisr', 'mysql-path' ) : '';
 	}
 
 	/**
@@ -178,8 +170,8 @@ class Revisr_DB {
 	 * @return array
 	 */
 	public function get_tracked_tables() {
-		$stored_tables = $this->revisr->git->run( 'config', array( '--get-all', 'revisr.tracked-tables' ) );
-		if ( isset( $this->revisr->options['db_tracking'] ) && $this->revisr->options['db_tracking'] == 'all_tables' ) {
+		$stored_tables = revisr()->git->run( 'config', array( '--get-all', 'revisr.tracked-tables' ) );
+		if ( isset( revisr()->options['db_tracking'] ) && revisr()->options['db_tracking'] == 'all_tables' ) {
 			$tracked_tables = $this->get_tables();
 		} elseif ( is_array( $stored_tables ) ) {
 			$tracked_tables = array_intersect( $stored_tables, $this->get_tables() );
@@ -195,7 +187,7 @@ class Revisr_DB {
 	 * @param  string $table The table to add.
 	 */
 	protected function add_table( $table ) {
-		$this->revisr->git->run( 'add', array( $this->backup_dir . 'revisr_' . $table. '.sql' ) );
+		revisr()->git->run( 'add', array( $this->backup_dir . 'revisr_' . $table. '.sql' ) );
 	}
 
 	/**
@@ -371,8 +363,8 @@ class Revisr_DB {
 		$branch = $_REQUEST['branch'];
 
 		// Checkout the appropriate branch if necessary.
-		if ( $branch != $this->revisr->git->branch ) {
-			$this->revisr->git->checkout( $branch );
+		if ( $branch != revisr()->git->branch ) {
+			revisr()->git->checkout( $branch );
 		}
 
 		/**
@@ -380,7 +372,7 @@ class Revisr_DB {
 		 * in memory so we can use it to create the revert link later.
 		 */
 		$this->backup();
-		$current_temp = $this->revisr->git->current_commit();
+		$current_temp = revisr()->git->current_commit();
 
 		if ( $current_temp ) {
 
@@ -392,7 +384,7 @@ class Revisr_DB {
 			$checkout 	= array();
 
 			foreach ( $tables as $table ) {
-				$checkout[$table] = $this->revisr->git->run( 'checkout', array( $commit, "{$this->backup_dir}revisr_$table.sql" ) );
+				$checkout[$table] = revisr()->git->run( 'checkout', array( $commit, "{$this->backup_dir}revisr_$table.sql" ) );
 			}
 
 			if ( ! in_array( 1, $checkout ) ) {
@@ -451,13 +443,13 @@ class Revisr_DB {
 		$all_tables		= array_unique( array_merge( $new_tables, $tracked_tables ) );
 
 		// The URL to replace during import.
-		$replace_url 	= $this->revisr->git->get_config( 'revisr', 'dev-url' ) ? $this->revisr->git->get_config( 'revisr', 'dev-url' ) : '';
+		$replace_url 	= revisr()->git->get_config( 'revisr', 'dev-url' ) ? revisr()->git->get_config( 'revisr', 'dev-url' ) : '';
 
 		if ( empty( $tables ) ) {
 
 			if ( ! empty( $new_tables ) ) {
 				// If there are new tables that were imported.
-				if ( isset( $this->revisr->options['db_tracking'] ) && $this->revisr->options['db_tracking'] == 'all_tables' ) {
+				if ( isset( revisr()->options['db_tracking'] ) && revisr()->options['db_tracking'] == 'all_tables' ) {
 					// If the user is tracking all tables, import all tables.
 					$import = $this->run( 'import', $all_tables, $replace_url );
 				} else {
@@ -495,7 +487,7 @@ class Revisr_DB {
 		}
 
 		// Make the commit.
-		$this->revisr->git->commit( $commit_msg );
+		revisr()->git->commit( $commit_msg );
 
 		// Insert the corresponding post if necessary.
 		if ( true === $insert_post ) {
@@ -506,17 +498,17 @@ class Revisr_DB {
 				'post_status' 	=> 'publish',
 			);
 			$post_id 		= wp_insert_post( $post );
-			$commit_hash 	= $this->revisr->git->current_commit();
+			$commit_hash 	= revisr()->git->current_commit();
 			add_post_meta( $post_id, 'commit_hash', $commit_hash );
 			add_post_meta( $post_id, 'db_hash', $commit_hash );
 			add_post_meta( $post_id, 'backup_method', 'tables' );
-			add_post_meta( $post_id, 'branch', $this->revisr->git->branch );
+			add_post_meta( $post_id, 'branch', revisr()->git->branch );
 			add_post_meta( $post_id, 'files_changed', '0' );
 			add_post_meta( $post_id, 'committed_files', array() );
 		}
 
 		// Push changes if necessary.
-		$this->revisr->git->auto_push();
+		revisr()->git->auto_push();
 	}
 
 	/**

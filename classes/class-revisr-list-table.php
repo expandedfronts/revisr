@@ -18,15 +18,7 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once( ABSPATH . '/wp-admin/includes/class-wp-list-table.php' );
 }
 
-
-
 class Revisr_List_Table extends WP_List_Table {
-
-	/**
-	 * The main Revisr instance.
-	 * @var Revisr
-	 */
-	protected $revisr;
 
 	/**
 	 * Initiate the class and add necessary action hooks.
@@ -39,9 +31,7 @@ class Revisr_List_Table extends WP_List_Table {
 			error_reporting( ~E_NOTICE & ~E_STRICT );
 		}
 
-		// Grab the instance and load the parent class on the appropriate hook.
-		$this->revisr = revisr();
-
+		// Load the parent class on the appropriate hook.
 		add_action( 'load-toplevel_page_revisr', array( $this, 'load' ) );
 		add_action( 'wp_ajax_revisr_get_custom_list', array( $this, 'ajax_callback' ) );
 		add_filter( 'set-screen-option', array( $this, 'set_screen_option' ), 10, 3 );

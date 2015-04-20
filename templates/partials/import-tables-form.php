@@ -14,8 +14,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $styles_url 	= REVISR_URL . "assets/css/thickbox.css?v=02162015";
-$revisr 		= revisr();
-$tables 		= $revisr->db->get_tables_not_in_db();
+$tables 		= revisr()->db->get_tables_not_in_db();
 
 ?>
 
