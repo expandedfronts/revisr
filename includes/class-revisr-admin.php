@@ -527,7 +527,7 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function revisr_dashboard() {
-		include_once REVISR_PATH . 'templates/dashboard.php';
+		include_once REVISR_PATH . 'templates/pages/dashboard.php';
 	}
 
 	/**
@@ -535,7 +535,7 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function revisr_branches() {
-		include_once REVISR_PATH . 'templates/branches.php';
+		include_once REVISR_PATH . 'templates/pages/branches.php';
 	}
 
 	/**
@@ -543,7 +543,7 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function revisr_settings() {
-		include_once REVISR_PATH . 'templates/settings.php';
+		include_once REVISR_PATH . 'templates/pages/settings.php';
 	}
 
 	/**
@@ -551,7 +551,7 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function delete_branch_form() {
-		include_once REVISR_PATH . 'assets/partials/delete-branch-form.php';
+		include_once REVISR_PATH . 'templates/partials/delete-branch-form.php';
 	}
 
 	/**
@@ -559,7 +559,7 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function merge_branch_form() {
-		include_once REVISR_PATH . 'assets/partials/merge-form.php';
+		include_once REVISR_PATH . 'templates/partials/merge-form.php';
 	}
 
 	/**
@@ -567,7 +567,7 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function import_tables_form() {
-		include_once REVISR_PATH . 'assets/partials/import-tables-form.php';
+		include_once REVISR_PATH . 'templates/partials/import-tables-form.php';
 	}
 
 	/**
@@ -575,6 +575,6 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function revert_form() {
-		include_once REVISR_PATH . 'assets/partials/revert-form.php';
+		include_once REVISR_PATH . 'templates/partials/revert-form.php';
 	}
 }

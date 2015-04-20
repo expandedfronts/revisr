@@ -60,7 +60,7 @@ $active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general_settings';
 	            		break;
 
             		case 'help':
-            			include REVISR_PATH . 'templates/help.php';
+            			include REVISR_PATH . 'templates/pages/help.php';
             			break;
 				}
 
