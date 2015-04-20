@@ -373,7 +373,7 @@ final class Revisr {
 			UNIQUE KEY id (id)
 			);";
 
-	  	require_once( ABSPATH . 'wp-admin/classes/upgrade.php' );
+	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	   	dbDelta( $sql );
 
 	   	if ( false === get_option( 'revisr_db_version' ) ) {
