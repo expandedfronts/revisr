@@ -444,13 +444,21 @@ class Revisr_Git {
 	 * @access public
 	 * @param  string 	$mode	The mode to use for the reset (hard, soft, etc.).
 	 * @param  string 	$path 	The path to apply the reset to.
-	 * @param  bool 	$clean 	Whether to remove any untracked files.
+	 * @param  boolean 	$clean 	Whether to remove any untracked files.
+	 * @return boolean
 	 */
 	public function reset( $mode = '--hard', $path = 'HEAD', $clean = false ) {
-		$this->run( 'reset', array( $mode, $path ) );
-		if ( $clean === true ) {
-			$this->run( 'clean', array( '-f', '-d' ) );
+
+		if ( $this->run( 'reset', array( $mode, $path ) ) ) {
+
+			if ( true === $clean ) {
+				$this->run( 'clean', array( '-f', '-d' ) );
+			}
+
+			return true;
 		}
+
+		return false;
 	}
 
 	/**
