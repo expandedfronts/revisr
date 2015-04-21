@@ -18,6 +18,7 @@ class Revisr_Git_Callback {
 	/**
 	 * The default success callback. Fired if no callback is provided.
 	 * @access public
+	 * @return array
 	 */
 	public function success_( $output = array(), $args = '' ) {
 		return $output;
@@ -26,6 +27,7 @@ class Revisr_Git_Callback {
 	/**
 	 * The default failure callback, fired if no callback is provided.
 	 * @access public
+	 * @return boolean
 	 */
 	public function null_( $output = array(), $args = '' ) {
 		return false;

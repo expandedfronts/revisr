@@ -125,7 +125,7 @@ class Revisr_Settings_Fields {
 		if ( file_exists( revisr()->git->git_dir . '/.gitignore' ) ) {
 			$gitignore = file_get_contents( revisr()->git->git_dir . '/.gitignore' );
 		} else {
-			$gitignore = revisr()->options['gitignore'] ? revisr()->options['gitignore'] : '';
+			$gitignore = isset( revisr()->options['gitignore'] ) ? revisr()->options['gitignore'] : '';
 		}
 
 		// Display the settings field.
@@ -222,12 +222,11 @@ class Revisr_Settings_Fields {
 
 		$check_remote = revisr()->git->get_config( 'remote', 'origin.url' );
 
+
 		if ( false !== $check_remote ) {
 			$remote = $check_remote;
-		} elseif ( isset( revisr()->options['remote_url'] ) ) {
-			$remote = revisr()->options['remote_url'];
 		} else {
-			$remote = '';
+			$remote = isset( revisr()->options['remote_url'] ) ? revisr()->options['remote_url'] : '';
 		}
 
 		printf(
