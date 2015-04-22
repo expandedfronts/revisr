@@ -105,17 +105,25 @@ class Revisr_DB_Import extends Revisr_DB {
 	public function callback( $args ) {
 
 		if ( in_array( false, $args ) ) {
+
+			// There were one or more errors with the import.
 			$msg = __( 'Error importing the database.', 'revisr' );
 			Revisr_Admin::log( $msg, 'error' );
 			Revisr_Admin::alert( $msg, true );
+
 		} else {
+
+			// Everything imported properly.
 			$get_hash 	= revisr()->git->run( 'config', array( 'revisr.last-db-backup' ) );
 			$revert_url = '';
+
 			if ( is_array( $get_hash ) ) {
 				$undo_hash 	= $get_hash[0];
 				$revert_url = '<a href="' .wp_nonce_url( admin_url( "admin-post.php?action=revert_db&db_hash=$undo_hash&branch={revisr()->git->branch}&backup_method=tables" ), 'revert_db', 'revert_db_nonce' ) . '">' . __( 'Undo', 'revisr') . '</a>';
 				revisr()->git->run( 'config', array( '--unset', 'revisr.last-db-backup' ) );
 			}
+
+			// Alert the user.
 			$msg = sprintf( __( 'Successfully imported the database. %s', 'revisr'), $revert_url );
 			Revisr_Admin::log( $msg, 'import' );
 			Revisr_Admin::alert( $msg );

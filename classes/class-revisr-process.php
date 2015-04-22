@@ -94,7 +94,7 @@ class Revisr_Process {
 
 				// Backup the database.
 				revisr()->db->backup();
-				$commit_hash 	= revisr()->git->current_commit();
+				$commit_hash = revisr()->git->current_commit();
 
 				// Add post-commit meta.
 				add_post_meta( $id, 'commit_hash', $commit_hash );
@@ -104,12 +104,12 @@ class Revisr_Process {
 				add_post_meta( $id, 'db_hash', $commit_hash );
 				add_post_meta( $id, 'backup_method', 'tables' );
 
-			}
-			else {
+			} else {
 
 				// There's nothing to do here!
 				wp_safe_redirect( $post_new . '&message=43' );
 				exit();
+
 			}
 
 
@@ -125,13 +125,17 @@ class Revisr_Process {
 
 		if ( wp_verify_nonce( $_REQUEST['revisr_create_branch_nonce'], 'process_create_branch' ) ) {
 
+			// Branches can't have spaces, so we replace them with hyphens.
 			$branch = str_replace( ' ', '-', $_REQUEST['branch_name'] );
+
+			// Create the branch.
 			$result = revisr()->git->create_branch( $branch );
 
 			if ( $result !== false ) {
 				$msg = sprintf( __( 'Created new branch: %s', 'revisr' ), $branch );
 				Revisr_Admin::log( $msg, 'branch' );
 
+				// Maybe checkout the new branch.
 				if ( isset( $_REQUEST['checkout_new_branch'] ) ) {
 					revisr()->git->checkout( $branch );
 				}

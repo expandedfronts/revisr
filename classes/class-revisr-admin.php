@@ -188,11 +188,11 @@ class Revisr_Admin {
 	 * Counts the number of commits in the database on a given branch.
 	 * @access public
 	 * @param  string $branch The name of the branch to count commits for.
+	 * @return int
 	 */
 	public static function count_commits( $branch ) {
 		global $wpdb;
 		if ( $branch == 'all' ) {
-
 			$num_commits = $wpdb->get_results( "SELECT meta_id FROM $wpdb->postmeta WHERE meta_key = 'branch'" );
 		} else {
 			$num_commits = $wpdb->get_results( $wpdb->prepare( "SELECT meta_id FROM $wpdb->postmeta WHERE meta_key = 'branch' AND meta_value = %s", $branch ) );
