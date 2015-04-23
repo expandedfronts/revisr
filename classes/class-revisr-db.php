@@ -336,13 +336,15 @@ class Revisr_DB {
 		}
 
 		// Run the backup.
-		$this->run( 'backup', $tables );
+		if ( $this->run( 'backup', $tables ) ) {
 
-		// Commit any changed database files and insert a post if necessary.
-		if ( isset( $_REQUEST['source'] ) && $_REQUEST['source'] == 'ajax_button' ) {
-			$this->commit_db( true );
-		} else {
-			$this->commit_db( false );
+			// Commit any changed database files and insert a post if necessary.
+			if ( isset( $_REQUEST['source'] ) && $_REQUEST['source'] == 'ajax_button' ) {
+				$this->commit_db( true );
+			} else {
+				$this->commit_db( false );
+			}
+
 		}
 
 	}
