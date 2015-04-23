@@ -281,7 +281,6 @@ class Revisr_DB {
 
 		if ( ! empty( $port_or_socket ) ) {
 
-			$host = substr( $host, 0, strpos( $host, ':' ) );
 			$port_or_socket = substr( $port_or_socket, 1);
 
 			if ( 0 !== strpos( $port_or_socket, '/' ) ) {
