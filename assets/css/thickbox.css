@@ -14,6 +14,9 @@ input[type="text"] {
 	height: 25px;
 	font-size: 13px;
 }
+a {
+	color: #0074a2 !important;
+}
 .revisr-tb-description {
 	padding: 10px 15px 10px 15px;
 }

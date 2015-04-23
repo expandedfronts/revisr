@@ -563,4 +563,20 @@ class Revisr_Admin {
 	public function revert_form() {
 		include_once REVISR_PATH . 'templates/partials/revert-form.php';
 	}
+
+	/**
+	 * Displays the form to push commits.
+	 * @access public
+	 */
+	public function push_form() {
+		include_once REVISR_PATH . 'templates/partials/push-form.php';
+	}
+
+	/**
+	 * Displays the form to pull commits.
+	 * @access public
+	 */
+	public function pull_form() {
+		include_once REVISR_PATH . 'templates/partials/pull-form.php';
+	}
 }

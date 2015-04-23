@@ -12,6 +12,8 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $loader_url = REVISR_URL . 'assets/img/loader.gif';
+$push_url 	= get_admin_url() . "admin-post.php?action=revisr_push_form&TB_iframe=true&width=400&height=225";
+$pull_url 	= get_admin_url() . "admin-post.php?action=revisr_pull_form&TB_iframe=true&width=400&height=225";
 
 // Enqueue any necessary scripts (Already registered in "Revisr_Admin_Setup").
 wp_enqueue_script( 'revisr_dashboard' );
@@ -55,8 +57,8 @@ revisr()->list_table->prepare_items();
 							<button id="commit-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Save Changes', 'revisr' ); ?></span></button>
 							<button id="discard-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Discard Changes', 'revisr' ); ?></span></button>
 							<button id="backup-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Backup Database', 'revisr' ); ?></span></button>
-							<button id="push-btn" class="button button-primary quick-action-btn"><span id="push-text" class="qb-text">| <?php _e( 'Push Changes ', 'revisr' ); ?> <span id="unpushed"></span></span></button>
-							<button id="pull-btn" class="button button-primary quick-action-btn"><span id="pull-text" class="qb-text">| <?php _e( 'Pull Changes', 'revisr' ); ?>  <span id="unpulled"></span></span></button>
+							<a id="push-btn" class="button button-primary quick-action-btn thickbox" title="<?php _e( 'Push Changes', 'revisr' ); ?>" href="<?php echo $push_url; ?>"><span id="push-text" class="qb-text">| <?php _e( 'Push Changes ', 'revisr' ); ?> <span id="unpushed"></span></span></a>
+							<a id="pull-btn" class="button button-primary quick-action-btn thickbox" title="<?php _e( 'Pull Changes' , 'revisr' ); ?>" href="<?php echo $pull_url; ?>"><span id="pull-text" class="qb-text">| <?php _e( 'Pull Changes', 'revisr' ); ?>  <span id="unpulled"></span></span></a>
 						</div> <!-- .inside -->
 					</div> <!-- .postbox -->
 					<!-- END QUICK ACTIONS -->
