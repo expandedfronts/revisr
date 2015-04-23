@@ -231,7 +231,7 @@ class Revisr_Admin {
 		$db_hash 			= get_post_meta( $id, 'db_hash', true );
 		$db_backup_method	= get_post_meta( $id, 'backup_method', true );
 		$files_changed 		= get_post_meta( $id, 'files_changed', true );
-		$committed_files 	= get_post_meta( $id, 'committed_files' );
+		$committed_files 	= get_post_meta( $id, 'committed_files', true );
 		$git_tag 			= get_post_meta( $id, 'git_tag', true );
 		$status 			= get_post_meta( $id, 'commit_status', true );
 		$error 				= get_post_meta( $id, 'error_details' );

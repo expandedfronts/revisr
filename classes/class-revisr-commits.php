@@ -390,33 +390,35 @@ class Revisr_Commits {
 	 */
 	public function committed_files_meta() {
 
+		// Grab any info about the commit.
 		$commit = Revisr_Admin::get_commit_details( get_the_ID() );
 
-		if ( count( $commit['committed_files'] ) !== 0 ) {
-			foreach ( $commit['committed_files']  as $file ) {
-				$output = maybe_unserialize( $file );
-			}
-		}
-
+		// Start outputting the metabox.
 		echo '<div id="message"></div><div id="committed_files_result">';
 
-		if ( isset( $output ) ) {
+		// Files were included in this commit.
+		if ( 0 !== count( $commit['committed_files'] ) ) {
+
 			printf( __('<br><strong>%s</strong> files were included in this commit. Double-click files marked as "Modified" to view the changes in a diff.', 'revisr' ), $commit['files_changed'] );
+
 			echo '<input id="commit_hash" name="commit_hash" value="' . $commit['commit_hash'] . '" type="hidden" />';
 			echo '<br><br><select id="committed" multiple="multiple" size="6">';
 
 				// Display the files that were included in the commit.
-				foreach ( $output as $result ) {
+				foreach ( $commit['committed_files'] as $result ) {
+
 					$result 		= str_replace( '"', '', $result );
 					$short_status 	= substr( $result, 0, 3 );
 					$file 			= substr( $result, 2 );
 					$status 		= Revisr_Git::get_status( $short_status );
+
 					printf( '<option class="committed" value="%s">%s [%s]</option>', $result, $file, $status );
 				}
 
 			echo '</select>';
+
 		} else {
-			_e( 'No files were included in this commit.', 'revisr' );
+			printf( '<p>%s</p>', __( 'No files were included in this commit.', 'revisr' ) );
 		}
 
 		echo '</div>';
