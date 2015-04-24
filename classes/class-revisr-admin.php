@@ -90,10 +90,10 @@ class Revisr_Admin {
 	 */
 	public function menus() {
 		$icon_svg = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOC4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjI0NS44IDM4MS4xIDgxLjkgODkuNSIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAyNDUuOCAzODEuMSA4MS45IDg5LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTI5NS4yLDM4Ny4yYy01LjEsNS4xLTUuMSwxMy4zLDAsMTguM2MzLjgsMy44LDkuMyw0LjcsMTMuOSwyLjlsNy4yLTcuMmMxLjgtNC43LDAuOS0xMC4yLTIuOS0xMy45DQoJQzMwOC41LDM4Mi4xLDMwMC4zLDM4Mi4xLDI5NS4yLDM4Ny4yeiBNMzA5LjcsNDAxLjZjLTIuOSwyLjktNy42LDIuOS0xMC42LDBjLTIuOS0yLjktMi45LTcuNiwwLTEwLjZjMi45LTIuOSw3LjYtMi45LDEwLjYsMA0KCUMzMTIuNiwzOTQsMzEyLjYsMzk4LjcsMzA5LjcsNDAxLjZ6Ii8+DQo8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMjY4LjEsNDU0Yy0xMy4yLTEwLjEtMTYuMS0yOS02LjQtNDIuNmM0LTUuNiw5LjQtOS40LDE1LjQtMTEuNGwtMi0xMC4yYy04LjUsMi41LTE2LjIsNy43LTIxLjcsMTUuNQ0KCWMtMTIuOSwxOC4yLTguOSw0My41LDguOCw1N2wtNS42LDguM2wyNS45LTEuMmwtOC42LTIzLjZMMjY4LjEsNDU0eiIvPg0KPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTMxOC4zLDQwMy4zYzEuMS0yLjEsMS43LTQuNSwxLjctN2MwLTguNC02LjgtMTUuMi0xNS4yLTE1LjJzLTE1LjIsNi44LTE1LjIsMTUuMnM2LjgsMTUuMiwxNS4yLDE1LjINCgljMi4xLDAsNC4xLTAuNCw1LjktMS4yYzguNCwxMC42LDkuMiwyNS44LDEsMzcuMmMtMy45LDUuNi05LjQsOS40LTE1LjQsMTEuNGwyLDEwLjJjOC41LTIuNSwxNi4yLTcuNywyMS43LTE1LjUNCglDMzMxLjIsNDM4LjEsMzI5LjksNDE3LjQsMzE4LjMsNDAzLjN6IE0zMDQuOCw0MDMuM2MtMy44LDAtNi45LTMuMS02LjktNi45czMuMS02LjksNi45LTYuOXM2LjksMy4xLDYuOSw2LjkNCglTMzA4LjcsNDAzLjMsMzA0LjgsNDAzLjN6Ii8+DQo8L3N2Zz4=';
-		$this->page_hooks['menu'] 		= add_menu_page( __( 'Dashboard', 'revisr' ), 'Revisr', 'manage_options', 'revisr', array( $this, 'revisr_dashboard' ), $icon_svg );
-		$this->page_hooks['dashboard'] 	= add_submenu_page( 'revisr', __( 'Revisr - Dashboard', 'revisr' ), __( 'Dashboard', 'revisr' ), 'manage_options', 'revisr', array( $this, 'revisr_dashboard' ) );
-		$this->page_hooks['branches'] 	= add_submenu_page( 'revisr', __( 'Revisr - Branches', 'revisr' ), __( 'Branches', 'revisr' ), 'manage_options', 'revisr_branches', array( $this, 'revisr_branches' ) );
-		$this->page_hooks['settings'] 	= add_submenu_page( 'revisr', __( 'Revisr - Settings', 'revisr' ), __( 'Settings', 'revisr' ), 'manage_options', 'revisr_settings', array( $this, 'revisr_settings' ) );
+		$this->page_hooks['menu'] 		= add_menu_page( __( 'Dashboard', 'revisr' ), 'Revisr', 'manage_options', 'revisr', array( $this, 'include_page' ), $icon_svg );
+		$this->page_hooks['dashboard'] 	= add_submenu_page( 'revisr', __( 'Revisr - Dashboard', 'revisr' ), __( 'Dashboard', 'revisr' ), 'manage_options', 'revisr', array( $this, 'include_page' ) );
+		$this->page_hooks['branches'] 	= add_submenu_page( 'revisr', __( 'Revisr - Branches', 'revisr' ), __( 'Branches', 'revisr' ), 'manage_options', 'revisr_branches', array( $this, 'include_page' ) );
+		$this->page_hooks['settings'] 	= add_submenu_page( 'revisr', __( 'Revisr - Settings', 'revisr' ), __( 'Settings', 'revisr' ), 'manage_options', 'revisr_settings', array( $this, 'include_page' ) );
 	}
 
 	/**
@@ -509,74 +509,43 @@ class Revisr_Admin {
 	}
 
 	/**
-	 * Includes the template for the main dashboard.
+	 * Includes custom page templates used in the backend.
 	 * @access public
 	 */
-	public function revisr_dashboard() {
-		include_once REVISR_PATH . 'templates/pages/dashboard.php';
+	public function include_page() {
+
+		switch ( $_REQUEST['page'] ) {
+			case 'revisr':
+				$file = 'dashboard.php';
+				break;
+			case 'revisr_branches':
+				$file = 'branches.php';
+				break;
+			case 'revisr_settings':
+				$file = 'settings.php';
+				break;
+			default:
+				$file = '';
+				break;
+		}
+
+		if ( '' !== $file ) {
+			include_once ( REVISR_PATH . "templates/pages/$file" );
+		}
+
 	}
 
 	/**
-	 * Includes the template for the branches page.
+	 * Includes a form template.
 	 * @access public
 	 */
-	public function revisr_branches() {
-		include_once REVISR_PATH . 'templates/pages/branches.php';
+	public function include_form() {
+		if ( isset( $_REQUEST['action'] ) && 'revisr_' === substr( $_REQUEST['action'], 0, 7 ) ) {
+			$file = REVISR_PATH . 'templates/partials/' . str_replace( '_', '-', substr( $_REQUEST['action'], 7 ) ) . '.php';
+			if ( file_exists( $file ) ) {
+				include_once( $file );
+			}
+		}
 	}
 
-	/**
-	 * Includes the template for the settings page.
-	 * @access public
-	 */
-	public function revisr_settings() {
-		include_once REVISR_PATH . 'templates/pages/settings.php';
-	}
-
-	/**
-	 * Displays the form to delete a branch.
-	 * @access public
-	 */
-	public function delete_branch_form() {
-		include_once REVISR_PATH . 'templates/partials/delete-branch-form.php';
-	}
-
-	/**
-	 * Displays the form to merge a branch.
-	 * @access public
-	 */
-	public function merge_branch_form() {
-		include_once REVISR_PATH . 'templates/partials/merge-form.php';
-	}
-
-	/**
-	 * Displays the form to pull a remote branch.
-	 * @access public
-	 */
-	public function import_tables_form() {
-		include_once REVISR_PATH . 'templates/partials/import-tables-form.php';
-	}
-
-	/**
-	 * Displays the form to revert a commit.
-	 * @access public
-	 */
-	public function revert_form() {
-		include_once REVISR_PATH . 'templates/partials/revert-form.php';
-	}
-
-	/**
-	 * Displays the form to push commits.
-	 * @access public
-	 */
-	public function push_form() {
-		include_once REVISR_PATH . 'templates/partials/push-form.php';
-	}
-
-	/**
-	 * Displays the form to pull commits.
-	 * @access public
-	 */
-	public function pull_form() {
-		include_once REVISR_PATH . 'templates/partials/pull-form.php';
-	}
 }

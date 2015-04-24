@@ -77,9 +77,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 								} else {
 
 									$checkout_url 		= wp_nonce_url( $admin_url . "admin-post.php?action=process_checkout&branch=" . $branch, 'process_checkout', 'revisr_checkout_nonce' );
-									$merge_url 			= $admin_url . "admin-post.php?action=merge_branch_form&branch=" . $branch . "&TB_iframe=true&width=350&height=200";
-									$delete_url 		= $admin_url . "admin-post.php?action=delete_branch_form&branch=" . $branch . "&TB_iframe=true&width=350&height=200";
-									$pull_remote_url 	= $admin_url . "admin-post.php?action=pull_remote_form&remote_branch=" . $branch . "&TB_iframe=true&width=350&height=200";
+									$merge_url 			= $admin_url . "admin-post.php?action=revisr_merge_branch_form&branch=" . $branch . "&TB_iframe=true&width=350&height=200";
+									$delete_url 		= $admin_url . "admin-post.php?action=revisr_delete_branch_form&branch=" . $branch . "&TB_iframe=true&width=350&height=200";
+									$pull_remote_url 	= $admin_url . "admin-post.php?action=revisr_pull_remote_form&remote_branch=" . $branch . "&TB_iframe=true&width=350&height=200";
 									?>
 									<tr>
 										<td><?php echo $branch; ?></td>

@@ -17,6 +17,7 @@ $styles_url = REVISR_URL . 'assets/css/thickbox.css?04162015';
 
 // Grab any unpushed commits.
 $unpushed 	= revisr()->git->run( 'log', array( revisr()->git->remote . '/' . revisr()->git->branch . '..' . revisr()->git->branch, '--format=%h - %s' ) );
+
 ?>
 
 <link href="<?php echo $styles_url; ?>" rel="stylesheet" type="text/css">

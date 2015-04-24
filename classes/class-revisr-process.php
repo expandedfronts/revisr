@@ -112,7 +112,6 @@ class Revisr_Process {
 
 			}
 
-
 		}
 
 	}

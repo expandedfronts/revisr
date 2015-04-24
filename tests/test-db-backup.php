@@ -38,7 +38,6 @@ class Revisr_DB_Backup_Test extends WP_UnitTestCase {
 
 	}
 
-
 	/**
 	 * Tests the Revisr_DB_Backup->backup_table_wpdb() method.
 	 * @access public

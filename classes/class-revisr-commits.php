@@ -495,7 +495,7 @@ class Revisr_Commits {
 
 		$post_id 			= get_the_ID();
 		$commit 			= Revisr_Admin::get_commit_details( $post_id );
-		$revert_url 		= get_admin_url() . "admin-post.php?action=revert_form&commit_id=" . $post_id . "&TB_iframe=true&width=350&height=200";
+		$revert_url 		= get_admin_url() . "admin-post.php?action=revisr_revert_form&commit_id=" . $post_id . "&TB_iframe=true&width=350&height=200";
 
 		$time_format 	 	= __( 'M j, Y @ G:i' );
 		$timestamp 		 	= sprintf( __( 'Committed on: <strong>%s</strong>', 'revisr' ), date_i18n( $time_format, get_the_time( 'U' ) ) );
