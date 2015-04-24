@@ -30,6 +30,6 @@ class RevisrCompatibilityTest extends WP_UnitTestCase {
 	 * Tests the server_has_permissions method.
 	 */
 	function test_server_has_permissions() {
-		$this->assertEquals( 'true', Revisr_Compatibility::server_has_permissions() );
+		$this->assertEquals( 'true', Revisr_Compatibility::server_has_permissions( revisr()->git->git_path ) );
 	}
 }
