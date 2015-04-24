@@ -35,7 +35,7 @@ function commit_files() {
         jQuery(this).attr("selected", "selected");
     });
     jQuery("#commit").val("Committing...");
-    jQuery(".spinner").show();
+    jQuery("#revisr-spinner").css('visibility', 'visible');
 }
 
 jQuery(document).ready(function($) {
