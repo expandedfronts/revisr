@@ -120,6 +120,10 @@ class Revisr_DB_Backup extends Revisr_DB {
 			$msg = __( 'Successfully backed up the database.', 'revisr' );
 			Revisr_Admin::alert( $msg );
 			Revisr_Admin::log( $msg, 'backup' );
+
+			// Fires after a successful database backup.
+			do_action( 'revisr_post_db_backup' );
+
 			return true;
 		}
 

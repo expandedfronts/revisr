@@ -46,6 +46,9 @@ class Revisr_Process {
 
 			$branch = $_REQUEST['branch'] ? $_REQUEST['branch'] : $args;
 
+			// Fires before the checkout.
+			do_action( 'revisr_pre_checkout', $branch );
+
 			revisr()->git->reset();
 			revisr()->git->checkout( $branch );
 
@@ -179,9 +182,19 @@ class Revisr_Process {
 
 		if ( wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
 
-			revisr()->git->reset( '--hard', 'HEAD', true );
-			Revisr_Admin::log( __('Discarded all uncommitted changes.', 'revisr'), 'discard' );
-			Revisr_Admin::alert( __('Successfully discarded any uncommitted changes.', 'revisr') );
+			// Fires prior to a discard.
+			do_action( 'revisr_pre_discard' );
+
+			if ( revisr()->git->reset( '--hard', 'HEAD', true ) ) {
+
+				Revisr_Admin::log( __('Discarded all uncommitted changes.', 'revisr'), 'discard' );
+				Revisr_Admin::alert( __('Successfully discarded any uncommitted changes.', 'revisr' ) );
+
+				// Fires after a successful discard.
+				do_action( 'revisr_post_discard' );
+
+			}
+
 
 		}
 
@@ -196,6 +209,10 @@ class Revisr_Process {
 		if ( ! wp_verify_nonce( $_REQUEST['revisr_init_nonce'], 'init_repo' ) ) {
 			wp_die( 'Cheatin&#8217; uh?', 'revisr' );
 		}
+
+		// Fires before a repo is created.
+		do_action( 'revisr_pre_init' );
+
 		revisr()->git->init_repo();
 	}
 
@@ -226,6 +243,9 @@ class Revisr_Process {
 	public function process_merge() {
 
 		if ( wp_verify_nonce( $_REQUEST['revisr_merge_nonce'], 'process_merge' ) ) {
+
+			// Fires immediately before a merge.
+			do_action( 'revisr_pre_merge' );
 
 			revisr()->git->merge( $_REQUEST['branch'] );
 
@@ -259,6 +279,9 @@ class Revisr_Process {
 			revisr()->git->set_config( 'revisr', 'last-db-backup', $undo_hash );
 		}
 
+		// Fires before the changes are pulled.
+		do_action( 'revisr_pre_pull', $commits_since );
+
 		// Pull the changes or return an error on failure.
 		revisr()->git->pull( $commits_since );
 	}
@@ -269,6 +292,10 @@ class Revisr_Process {
 	 */
 	public function process_push() {
 		if ( wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
+
+			// Fires before a push.
+			do_action( 'revisr_pre_push' );
+
 			revisr()->git->push();
 		}
 	}
@@ -290,6 +317,9 @@ class Revisr_Process {
 		} else {
 			$revert_type = $type;
 		}
+
+		// Fires before the revert.
+		do_action( 'revisr_pre_revert', $type );
 
 		// Run the action.
 		switch ( $revert_type ) {

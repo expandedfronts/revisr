@@ -127,6 +127,10 @@ class Revisr_DB_Import extends Revisr_DB {
 			$msg = sprintf( __( 'Successfully imported the database. %s', 'revisr'), $revert_url );
 			Revisr_Admin::log( $msg, 'import' );
 			Revisr_Admin::alert( $msg );
+
+			// Fires after a successful database import.
+			do_action( 'revisr_post_db_import' );
+
 			return true;
 		}
 

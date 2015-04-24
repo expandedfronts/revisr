@@ -94,6 +94,9 @@ class Revisr_Git_Callback {
 			add_post_meta( $id, 'git_tag', $_POST['tag_name'] );
 		}
 
+		// Fires after the commit has been made.
+		do_action( 'revisr_post_commit', $output );
+
 		// Push if necessary.
 		revisr()->git->auto_push();
 		return $commit_hash;
@@ -167,8 +170,12 @@ class Revisr_Git_Callback {
 	 * Sets up the '.git/config' file for the first time.
 	 * @access public
 	 */
-	public function success_init_repo() {
+	public function success_init_repo( $output, $args ) {
+
+		// Clear out any errors.
 		Revisr_Admin::clear_transients();
+
+		// Grab the current user.
 		$user = wp_get_current_user();
 
 		// Set the default username to use in Git.
@@ -202,6 +209,9 @@ class Revisr_Git_Callback {
 			file_put_contents( revisr()->git->git_dir . '/.git/.htaccess', 'Deny from all' . PHP_EOL );
 		}
 
+		// Fires after the repo has been created.
+		do_action( 'revisr_post_init', $output );
+
 		// Alerts the user.
 		Revisr_Admin::log( __( 'Successfully created a new repository.', 'revisr' ), 'init' );
 		wp_redirect( get_admin_url() . 'admin.php?page=revisr_settings&init=success' );
@@ -227,6 +237,10 @@ class Revisr_Git_Callback {
 		$log_msg 	= sprintf( __( 'Merged branch %s into branch %s.', 'revisr' ), $_REQUEST['branch'], revisr()->git->branch );
 		Revisr_Admin::alert( $alert_msg );
 		Revisr_Admin::log( $log_msg, 'merge' );
+
+		// Fires after a successful merge.
+		do_action( 'revisr_post_merge', $output );
+
 		_e( 'Merge completed successfully. Redirecting...', 'revisr' );
 		echo "<script>
 				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
@@ -287,6 +301,9 @@ class Revisr_Git_Callback {
 			$msg = sprintf( _n( 'Successfully pulled %s commit from %s/%s.', 'Successfully pulled %s commits from %s/%s.', $num_commits, 'revisr' ), $num_commits, revisr()->git->remote, revisr()->git->branch );
 			Revisr_Admin::alert( $msg );
 
+			// Fires just after a successful pull.
+			do_action( 'revisr_post_pull', $output );
+
 			if ( revisr()->git->get_config( 'revisr', 'import-pulls' ) === 'true' ) {
 				revisr()->db->import();
 			}
@@ -313,6 +330,10 @@ class Revisr_Git_Callback {
 		$msg = sprintf( _n( 'Successfully pushed %s commit to %s/%s.', 'Successfully pushed %s commits to %s/%s.', $args, 'revisr' ), $args, revisr()->git->remote, revisr()->git->branch );
 		Revisr_Admin::alert( $msg );
 		Revisr_Admin::log( $msg, 'push' );
+
+		// Fires after a successful push.
+		do_action( 'revisr_post_push', $output );
+
 		if ( revisr()->git->get_config( 'revisr', 'webhook-url' ) !== false ) {
 			$remote = new Revisr_Remote();
 			$remote->send_request();
