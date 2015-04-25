@@ -514,25 +514,26 @@ class Revisr_Admin {
 	 */
 	public function include_page() {
 
-		switch ( $_REQUEST['page'] ) {
-			case 'revisr':
-				$file = 'dashboard.php';
-				break;
+		$page = filter_input( INPUT_GET, 'page' );
+
+		switch ( $page ) {
+
 			case 'revisr_branches':
 				$file = 'branches.php';
 				break;
+
 			case 'revisr_settings':
 				$file = 'settings.php';
 				break;
+
+			case 'revisr':
 			default:
-				$file = '';
+				$file = 'dashboard.php';
 				break;
+
 		}
 
-		if ( '' !== $file ) {
-			include_once ( REVISR_PATH . "templates/pages/$file" );
-		}
-
+		require_once ( REVISR_PATH . "templates/pages/$file" );
 	}
 
 	/**
