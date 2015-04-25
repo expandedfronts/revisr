@@ -368,10 +368,11 @@ class Revisr_Commits {
 					</div>
 				</div><!-- /Staging -->
 				<br>
+
 				<!-- Unstaging -->
 				<div class="stage-container">
 					<p><strong><?php _e( 'Unstaged Files', 'revisr' ); ?></strong></p>
-					<select id="unstaged" multiple="multiple" size="6">
+					<select id="unstaged" multiple="multiple" name="unstaged_files[]" size="6">
 					</select>
 					<div class="stage-nav">
 						<input id="stage-file" type="button" class="button button-primary stage-nav-button" value="<?php _e( 'Stage Selected', 'revisr' ); ?>" onclick="stage_file()" />
@@ -379,6 +380,7 @@ class Revisr_Commits {
 						<input id="stage-all" type="button" class="button stage-nav-button" value="<?php _e( 'Stage All', 'revisr' ); ?>" onclick="stage_all()" />
 					</div>
 				</div><!-- /Unstaging -->
+
 			<?php
 		}
 		exit();

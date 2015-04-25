@@ -475,31 +475,49 @@ class Revisr_Git {
 	/**
 	 * Stages the array of files passed through the New Commit screen.
 	 * @access public
-	 * @param  array $staged_files The files to add/remove
+	 * @param  array 	$staged_files 	An array of files to add/remove.
+	 * @param  boolean 	$stage_all 		If set to true, skip the loop and add -A.
+	 * @return boolean
 	 */
-	public function stage_files( $staged_files ) {
+	public function stage_files( $staged_files, $stage_all = false ) {
+
+		// An empty array for errors.
 		$errors = array();
 
-		foreach ( $staged_files as $result ) {
-			$file 	= substr( $result, 3 );
-			$status = self::get_status( substr( $result, 0, 2 ) );
+		if ( true === $stage_all ) {
 
-			if ( $status == __( 'Deleted', 'revisr' ) ) {
-				if ( $this->run( 'rm', array( $file ) ) === false ) {
-					$errors[] = $file;
-				}
-			} else {
-				if ( $this->run( 'add', array( $file ) ) === false ) {
-					$errors[] = $file;
+			if ( $this->run( 'add', array( '-A' ) ) === false ) {
+				$errors[] = $staged_files;
+			}
+
+		} else {
+
+			foreach ( $staged_files as $result ) {
+
+				$file 	= substr( $result, 3 );
+				$status = self::get_status( substr( $result, 0, 2 ) );
+
+				if ( $status == __( 'Deleted', 'revisr' ) ) {
+					if ( $this->run( 'rm', array( $file ) ) === false ) {
+						$errors[] = $file;
+					}
+				} else {
+					if ( $this->run( 'add', array( $file ) ) === false ) {
+						$errors[] = $file;
+					}
 				}
 			}
+
 		}
 
 		if ( ! empty( $errors ) ) {
 			$msg = __( 'There was an error staging the files. Please check the settings and try again.', 'revisr' );
 			Revisr_Admin::alert( $msg, true );
 			Revisr_Admin::log( __( 'Error staging files.', 'revisr' ), 'error' );
+			return false;
 		}
+
+		return true;
 	}
 
 	/**

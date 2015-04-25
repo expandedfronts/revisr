@@ -84,9 +84,11 @@ class Revisr_Process {
 			// Determine what we want to do.
 			if ( isset( $_POST['staged_files'] ) ) {
 
-				// Stage any files.
-				revisr()->git->stage_files( $_POST['staged_files'] );
-				$staged_files = $_POST['staged_files'];
+				$staged_files 	= $_POST['staged_files'];
+				$quick_stage 	= isset( $_POST['unstaged_files'] ) ? false : true;
+
+				// Stage the files.
+				revisr()->git->stage_files( $staged_files, $quick_stage );
 
 				// Add the necessary post meta and make the commit in Git.
 				add_post_meta( $id, 'committed_files', $staged_files );
