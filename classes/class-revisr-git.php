@@ -260,9 +260,9 @@ class Revisr_Git {
 	 */
 	public function count_unpushed( $ajax_btn = true ) {
 		if ( $ajax_btn == true ) {
-			$this->run( 'log', array( $this->remote . '/' . $this->branch . '..' . $this->branch, '--pretty=oneline' ), 'count_ajax_btn' );
+			$this->run( 'log', array( $this->branch, '--not', '--remotes', '--oneline' ), 'count_ajax_btn' );
 		} else {
-			$unpushed = $this->run( 'log', array( $this->remote . '/' . $this->branch . '..' . $this->branch, '--pretty=oneline' ) );
+			$unpushed = $this->run( 'log', array( $this->branch, '--not', '--remotes', '--oneline' ) );
 			return count( $unpushed );
 		}
 	}
