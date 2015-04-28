@@ -53,6 +53,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			<td><?php echo Revisr_Compatibility::guess_path( 'mysql' ); ?></td>
 		</tr>
 
+		<tr>
+			<td><label><strong><?php _e( 'Server User', 'revisr' ); ?></strong></label></td>
+			<td><?php echo get_current_user(); ?></td>
+		</tr>
+
 		<?php if ( revisr()->git->is_repo ): ?>
 
 		<tr>
