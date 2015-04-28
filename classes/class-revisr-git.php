@@ -127,14 +127,14 @@ class Revisr_Git {
 
 		// Allow users to set a custom path for the .git directory.
 		if ( defined( 'REVISR_GIT_DIR' ) ) {
-			chdir( REVISR_GIT_DIR );
-		} else {
-			chdir( ABSPATH );
+			return REVISR_GIT_DIR;
 		}
 
+		// Try to guess the path.
+		chdir( ABSPATH );
 		$git_toplevel = exec( "$this->git_path rev-parse --show-toplevel" );
 
-		if ( !$git_toplevel ) {
+		if ( ! $git_toplevel ) {
 			$git_dir 		= getcwd();
 			$this->is_repo 	= false;
 		} else {
@@ -143,6 +143,7 @@ class Revisr_Git {
 
 		chdir( $this->current_dir );
 		return $git_dir;
+
 	}
 
 	/**
@@ -464,7 +465,11 @@ class Revisr_Git {
 		if ( $this->run( 'reset', array( $mode, $path ) ) ) {
 
 			if ( true === $clean ) {
-				$this->run( 'clean', array( '-f', '-d' ) );
+
+				if ( ! $this->run( 'clean', array( '-f', '-d' ) ) ) {
+					return false;
+				}
+
 			}
 
 			return true;
