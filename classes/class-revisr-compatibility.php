@@ -29,6 +29,15 @@ class Revisr_Compatibility {
 	}
 
 	/**
+	 * Gets the user running this PHP process.
+	 * @access public
+	 * @return string
+	 */
+	public static function get_user() {
+		return exec( 'whoami' );
+	}
+
+	/**
 	 * Tries to guess the install path to the provided program.
 	 * @access public
 	 * @param  string $program The program to check for.

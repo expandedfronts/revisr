@@ -55,7 +55,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 		<tr>
 			<td><label><strong><?php _e( 'Server User', 'revisr' ); ?></strong></label></td>
-			<td><?php echo get_current_user(); ?></td>
+			<td><?php echo Revisr_Compatibility::get_user(); ?></td>
 		</tr>
 
 		<?php if ( revisr()->git->is_repo ): ?>
