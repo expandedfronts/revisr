@@ -127,11 +127,11 @@ class Revisr_Git {
 
 		// Allow users to set a custom path for the .git directory.
 		if ( defined( 'REVISR_GIT_DIR' ) ) {
-			return REVISR_GIT_DIR;
+			chdir( REVISR_GIT_DIR );
+		} else {
+			chdir( ABSPATH );
 		}
 
-		// Try to guess the path.
-		chdir( ABSPATH );
 		$git_toplevel = exec( "$this->git_path rev-parse --show-toplevel" );
 
 		if ( ! $git_toplevel ) {
