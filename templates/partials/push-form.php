@@ -26,7 +26,11 @@ $unpushed = revisr()->git->run( 'log', array( revisr()->git->branch, '--not', '-
 
 	<div class="revisr-tb-description">
 
-	<?php if ( is_array( $unpushed ) && 0 !== count( $unpushed ) ): ?>
+	<?php if ( ! revisr()->git->has_remote() ): ?>
+
+		<p><?php _e( 'Are you sure you sure you want to push all committed changes to the remote?','revisr' ); ?></p>
+
+	<?php elseif ( is_array( $unpushed ) && 0 !== count( $unpushed ) ): ?>
 
 		<p><?php _e( 'Are you sure you want to push the following commits?', 'revisr' ); ?></p>
 

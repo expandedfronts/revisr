@@ -151,9 +151,13 @@ class Revisr_Git_Callback {
 	 * @access public
 	 */
 	public function success_count_ajax_btn( $output = array(), $args = '' ) {
-		if ( count( $output ) != 0 ) {
-			echo '(' . count( $output ) . ')';
+
+		$count = count( $output );
+
+		if ( 0 != $count && revisr()->git->has_remote() ) {
+			echo "($count)";
 		}
+
 		exit();
 	}
 

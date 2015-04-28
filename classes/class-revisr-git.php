@@ -385,6 +385,18 @@ class Revisr_Git {
 	}
 
 	/**
+	 * Checks if the repo has a remote.
+	 * @access public
+	 * @return boolean
+	 */
+	public function has_remote() {
+		if ( $this->get_config( 'remote', 'origin.url' ) || isset( revisr()->options['remote_url'] ) ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Initializes a new repository.
 	 * @access public
 	 */
