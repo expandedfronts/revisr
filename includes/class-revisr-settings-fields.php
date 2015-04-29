@@ -202,6 +202,34 @@ class Revisr_Settings_Fields {
 	}
 
 	/**
+	 * Displays/updates the "Git Path" settings field.
+	 * If the contant "REVISR_GIT_PATH" has been already defined, then that value is displayed.
+	 * @access public
+	 */
+	public function git_path_callback() {
+
+		$git_path = defined( 'REVISR_GIT_PATH' ) ? REVISR_GIT_PATH : null;
+
+		if( !$git_path ){
+			$git_path = isset( $this->revisr->options['git_path'] ) ? esc_attr( $this->revisr->options['git_path']) : '';
+		}
+
+		printf(
+			'<input type="text" id="git_path" name="revisr_remote_settings[git_path]" value="%s" class="regular-text revisr-text" placeholder="/usr/sbin" />
+			<p class="description revisr-description">%s</p>',
+			$git_path,
+			__( 'Set the path where git is installed in the server when is different than the defaults /usr/sbin /usr/bin', 'revisr' )
+		);
+
+		if( $this->is_updated( 'git_path' ) ){
+			if( !defined( 'REVISR_GIT_PATH' ) ){
+				define('REVISR_GIT_PATH', esc_attr( $this->revisr->options['git_path'] ) );
+			}
+		}
+
+	}
+
+	/**
 	 * Displays/updates the "Remote Name" settings field.
 	 * @access public
 	 */
