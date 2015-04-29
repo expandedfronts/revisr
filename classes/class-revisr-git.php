@@ -215,12 +215,10 @@ class Revisr_Git {
 	 * @return boolean
 	 */
 	public function set_config( $section, $key, $value ) {
-		$update = $this->run( 'config', array( "$section.$key", $value ) );
-		if ( $update !== false ) {
-			return true;
-		} else {
+		if ( ! $this->run( 'config', array( "$section.$key", $value ) ) ) {
 			return false;
 		}
+		return true;
 	}
 
 	/**
