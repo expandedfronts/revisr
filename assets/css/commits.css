@@ -71,6 +71,9 @@
 }
 
 /* === COMMIT LISTING === */
+.bulkactions {
+	display: none;
+}
 #hash {
 	width: 70px !important;
 }
