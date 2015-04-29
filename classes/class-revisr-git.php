@@ -53,12 +53,6 @@ class Revisr_Git {
 	public $git_path;
 
 	/**
-	 * Stores an array of user options/preferences.
-	 * @var array
-	 */
-	public $options;
-
-	/**
 	 * Stores the state of the repository
 	 * @var boolean
 	 */
@@ -73,7 +67,6 @@ class Revisr_Git {
 		// Necessary for execution of Revisr.
 		$this->current_dir 	= getcwd();
 		$this->is_repo 		= true;
-		$this->options 		= Revisr::get_options();
 		$this->git_path 	= $this->get_git_path();
 		$this->git_dir 		= $this->get_git_dir();
 
@@ -312,8 +305,8 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function current_remote() {
-		if ( isset( $this->options['remote_name'] ) && $this->options['remote_name'] != '' ) {
-			return $this->options['remote_name'];
+		if ( isset( revisr()->options['remote_name'] ) && revisr()->options['remote_name'] != '' ) {
+			return revisr()->options['remote_name'];
 		} else {
 			return 'origin';
 		}
@@ -562,13 +555,13 @@ class Revisr_Git {
 	 */
 	public function update_gitignore() {
 		// Store the content in the .gitignore.
-		file_put_contents( $this->git_dir . '/.gitignore', $this->options['gitignore'] );
+		file_put_contents( $this->git_dir . '/.gitignore', revisr()->options['gitignore'] );
 
 		// Add the .gitignore.
 		$this->run( 'add', array( '.gitignore' ) );
 
 		// Convert the .gitignore into an array we can work with.
-		$files = explode( PHP_EOL, $this->options['gitignore'] );
+		$files = explode( PHP_EOL, revisr()->options['gitignore'] );
 
 		foreach ( $files as $file ) {
 			if ( '' == $file || '!' === $file[0] ) {
