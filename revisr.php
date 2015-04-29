@@ -277,7 +277,7 @@ final class Revisr {
 		add_action( 'manage_edit-revisr_commits_columns', array( self::$instance->commits, 'columns' ) );
 		add_action( 'manage_revisr_commits_posts_custom_column', array( self::$instance->commits, 'custom_columns' ), 10, 2 );
 		add_filter( 'post_updated_messages', array( self::$instance->commits, 'custom_messages' ) );
-		add_filter( 'bulk_post_updated_messages', array( self::$instance->commits, 'bulk_messages' ), 10, 2 );
+		add_filter( 'bulk_actions-edit-revisr_commits', '__return_empty_array' );
 		add_action( 'wp_ajax_pending_files', array( self::$instance->commits, 'pending_files' ) );
 		add_action( 'load-post.php', array( self::$instance->commits, 'post_meta' ) );
 		add_action( 'load-post-new.php', array( self::$instance->commits, 'post_meta' ) );

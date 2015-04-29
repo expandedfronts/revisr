@@ -147,23 +147,6 @@ class Revisr_Commits {
 	}
 
 	/**
-	 * Custom bulk messages for Revisr.
-	 * @access public
-	 * @param  array $bulk_messages The messages to display.
-	 * @param  array $bulk_counts   The number of those messages.
-	 */
-	public function bulk_messages( $bulk_messages, $bulk_counts ) {
-		$bulk_messages['revisr_commits'] = array(
-			'updated' 	=> _n( '%s commit updated.', '%s commits updated.', $bulk_counts['updated'] ),
-			'locked'    => _n( '%s commit not updated, somebody is editing it.', '%s commits not updated, somebody is editing them.', $bulk_counts['locked'] ),
-			'deleted'   => _n( '%s commit permanently deleted.', '%s commits permanently deleted.', $bulk_counts['deleted'] ),
-			'trashed'   => _n( '%s commit moved to the Trash.', '%s commits moved to the Trash.', $bulk_counts['trashed'] ),
-	    	'untrashed' => _n( '%s commit restored from the Trash.', '%s commits restored from the Trash.', $bulk_counts['untrashed'] )
-	    	);
-		return $bulk_messages;
-	}
-
-	/**
 	 * Adds the custom actions to the Commits list.
 	 * @access public
 	 * @param  array $actions The default array of actions.
@@ -295,7 +278,6 @@ class Revisr_Commits {
 	 */
 	public function columns() {
 		$columns = array (
-			'cb' 			=> '<input type="checkbox" />',
 			'hash' 			=> __( 'ID', 'revisr' ),
 			'title' 		=> __( 'Commit', 'revisr' ),
 			'author'		=> __( 'Author', 'revisr' ),
