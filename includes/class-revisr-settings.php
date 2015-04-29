@@ -105,6 +105,13 @@ class Revisr_Settings {
     		'revisr_general_settings'
 		);
 		add_settings_field(
+            'git_path',
+            __( 'Custom Git Path', 'revisr'),
+            array( $this->settings_fields, 'git_path_callback' ),
+            'revisr_remote_settings',
+            'revisr_remote_settings'
+        );
+		add_settings_field(
             'remote_name',
             __( 'Remote Name', 'revisr'),
             array( $this->settings_fields, 'remote_name_callback' ),
