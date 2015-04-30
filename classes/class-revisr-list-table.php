@@ -63,6 +63,61 @@ class Revisr_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Loads additional filters into the table.
+	 * @access public
+	 * @return string
+	 */
+	public function extra_tablenav( $which ) {
+		if ( 'top' === $which ) {
+
+			$filter_event 	= isset( $_REQUEST['revisr_event'] ) ? $_REQUEST['revisr_event'] : 'all';
+			$filter_user 	= isset( $_REQUEST['revisr_user'] ) ? $_REQUEST['revisr_user'] : 'all';
+			$filter_time 	= isset( $_REQUEST['revisr_time'] ) ? $_REQUEST['revisr_time'] : 'all';
+
+			?>
+
+				<select id="revisr-events-select" name="revisr_event">
+					<option value="all"><?php _e( 'All Events', 'revisr' ); ?></option>
+					<option value="commit" <?php selected( 'commit', $filter_event ); ?>><?php _e( 'Commits', 'revisr' ); ?></option>
+					<option value="backup" <?php selected( 'backup', $filter_event ); ?>><?php _e( 'Database Backups', 'revisr' ); ?></option>
+					<option value="imports" <?php selected( 'import', $filter_event ); ?>><?php _e( 'Database Imports', 'revisr' ); ?></option>
+					<option value="discard" <?php selected( 'discard', $filter_event ); ?>><?php _e( 'File Discards', 'revisr' ); ?></option>
+					<option value="push" <?php selected( 'push', $filter_event ); ?>><?php _e( 'Pushes', 'revisr' ); ?></option>
+					<option value="pull" <?php selected( 'pull', $filter_event ); ?>><?php _e( 'Pulls', 'revisr' ); ?></option>
+				</select>
+
+				<select id="revisr-author-select" name="revisr_user">
+					<option value="all"><?php _e( 'All Users', 'revisr' ); ?></option>
+					<?php
+						global $wpdb;
+						$table = Revisr::get_table_name();
+						$users = $wpdb->get_results( "SELECT DISTINCT user FROM $table", ARRAY_A );
+						foreach ( $users as $user ) {
+							if ( $user['user'] != null ) {
+								printf( '<option value="%s" %s>%s</option>', esc_attr( $user['user'] ), selected( $user['user'], $filter_user, false ), esc_attr( $user['user'] ) );
+							}
+						}
+					?>
+				</select>
+
+				<select id="revisr-time-select" name="revisr_time">
+					<option value="all"><?php _e( 'All Time', 'revisr' ); ?></option>
+					<option value="halfday" <?php selected( 'halfday', $filter_time ); ?>><?php _e( 'Last 12 Hours', 'revisr' ); ?></option>
+					<option value="day" <?php selected( 'day', $filter_time ); ?>><?php _e( 'Last 24 Hours', 'revisr' ); ?></option>
+					<option value="week" <?php selected( 'week', $filter_time ); ?>><?php _e( 'Last Week', 'revisr' ); ?></option>
+					<option value="month" <?php selected( 'month', $filter_time ); ?>><?php _e( 'Last Month', 'revisr' ); ?></option>
+				</select>
+
+				<input type="submit" id="revisr-filter-submit" class="button" value="<?php _e( 'Filter', 'revisr' ); ?>" />
+			<?
+
+			if ( 'all' !== $filter_event || 'all' !== $filter_user || 'all' !== $filter_time ) {
+				echo '<a href="' . get_admin_url() . '?page=revisr" id="filter-reset"><span class="dashicons dashicons-dismiss"></span> <span class="filter-reset-text">' . __( 'Reset Filters', 'revisr' ) . '</span></a>';
+			}
+		}
+	}
+
+	/**
 	 * Sets the screen options for the Revisr dashboard.
 	 * @access public
 	 * @param  boolean 	$status This seems to be false
@@ -92,6 +147,8 @@ class Revisr_List_Table extends WP_List_Table {
 				$current 	= strtotime( current_time( 'mysql' ) );
 				$timestamp 	= strtotime( $item[$column_name] );
 				return sprintf( __( '%s ago', 'revisr' ), human_time_diff( $timestamp, $current ) );
+			case 'user':
+				return $item[$column_name];
 			default:
 				return print_r( $item, true );
 		}
@@ -105,9 +162,24 @@ class Revisr_List_Table extends WP_List_Table {
 	public function get_columns() {
 		$columns = array(
 			'message' 	=> __( 'Event', 'revisr' ),
+			'user'		=> __( 'User', 'revisr' ),
 			'time'		=> __( 'Time', 'revisr' )
 		);
 		return $columns;
+	}
+
+	/**
+	 * Returns an array of filters for the list table.
+	 * @access public
+	 * @return array
+	 */
+	public function get_filters() {
+		$filters = array();
+		$filters['revisr_event'] 	= 'event';
+		$filters['revisr_user'] 	= 'user';
+		$filters['revisr_time'] 	= 'time';
+
+		return apply_filters( 'revisr_list_table_filters', $filters );
 	}
 
 	/**
@@ -118,9 +190,63 @@ class Revisr_List_Table extends WP_List_Table {
 	public function get_sortable_columns() {
 		$sortable_columns = array(
 			'message'	=> array( 'message', false ),
+			'user' 		=> array( 'user', false ),
 			'time'		=> array( 'time', false )
 		);
 		return $sortable_columns;
+	}
+
+	/**
+	 * Creates a where query based on our custom filters.
+	 * @access public
+	 */
+	public function create_where() {
+
+        $where = array();
+
+        foreach ( $this->get_filters() as $filter => $col ) {
+
+			if ( isset( $_REQUEST[$filter] ) && $_REQUEST[$filter] != 'all' ) {
+
+	        	if ( 'revisr_time' === $filter ) {
+
+	        		$value 	= $_REQUEST[$filter];
+	        		$time 	= '';
+
+	        		switch( $value ) {
+	        			case 'halfday':
+	        				$time = DAY_IN_SECONDS / 2;
+	        				break;
+	        			case 'day':
+	        				$time = DAY_IN_SECONDS;
+	        				break;
+	    				case 'week':
+	    					$time = DAY_IN_SECONDS * 7;
+	    					break;
+						case 'month':
+							$time = DAY_IN_SECONDS * 28;
+							break;
+
+	        		}
+
+	        		if ( $time !== '' ) {
+	        			$time 		= esc_sql( date( 'Y-m-d H:i:s', time() - $time ) );
+	        			$where[] 	= "$col > '$time'";
+	        		}
+
+	        	} else {
+	        		$value 		= esc_sql( $_REQUEST[$filter] );
+        			$where[] 	= "$col = '$value'";
+	        	}
+
+        	}
+        }
+
+        // Build out the WHERE queries.
+        $where = empty( $where ) ? '' : 'WHERE ' . implode( ' AND ', $where );
+
+        // Return the WHERE queries.
+        return $where;
 	}
 
 	/**
@@ -141,8 +267,11 @@ class Revisr_List_Table extends WP_List_Table {
         // Builds the list of column headers.
         $this->_column_headers = array( $columns, $hidden, $sortable );
 
+        // Run any custom filters.
+        $where = $this->create_where();
+
         // Get the data to populate into the table.
-        $data = $wpdb->get_results( "SELECT message, time FROM {$wpdb->prefix}revisr", ARRAY_A );
+        $data = $wpdb->get_results( "SELECT message, time, user FROM {$wpdb->prefix}revisr $where", ARRAY_A );
 
         // Handle sorting of the data.
         function usort_reorder($a,$b){
@@ -175,10 +304,39 @@ class Revisr_List_Table extends WP_List_Table {
 	public function display() {
 		wp_nonce_field( 'revisr-list-nonce', 'revisr_list_nonce' );
 
+		$filter_event 	= esc_attr( isset( $_REQUEST['revisr_event'] ) ? $_REQUEST['revisr_event'] : 'all' );
+		$filter_user 	= esc_attr( isset( $_REQUEST['revisr_user'] ) ? $_REQUEST['revisr_user'] : 'all' );
+		$filter_time 	= esc_attr( isset( $_REQUEST['revisr_time'] ) ? $_REQUEST['revisr_time'] : 'all' );
+
+		echo '<input type="hidden" name="revisr_event" value="' . $filter_event . '" />';
+		echo '<input type="hidden" name="revisr_user" value="' . $filter_user . '" />';
+		echo '<input type="hidden" name="revisr_time" value="' . $filter_time . '" />';
+
 		echo '<input type="hidden" id="order" name="order" value="' . $this->_pagination_args['order'] . '" />';
 		echo '<input type="hidden" id="orderby" name="orderby" value="' . $this->_pagination_args['orderby'] . '" />';
 
 		parent::display();
+	}
+
+	/**
+	 * Renders the top or bottom tablenav.
+	 * @access public
+	 * @param  string $which Which tablenav to display (top or bottom)
+	 */
+	public function display_tablenav( $which ) {
+	    ?>
+	    <div class="tablenav <?php echo esc_attr( $which ); ?>">
+
+	        <div class="alignleft actions">
+	            <?php $this->bulk_actions(); ?>
+	        </div>
+	        <?php
+	        $this->extra_tablenav( $which );
+	        $this->pagination( $which );
+	        ?>
+	        <br class="clear" />
+	    </div>
+	    <?php
 	}
 
 	/**

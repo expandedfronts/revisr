@@ -85,7 +85,10 @@
 
 /* === Recent Activity === */
 .tablenav.top {
-	display: none !important;
+	/*display: none !important;*/
+}
+.bulkactions {
+	display: none;
 }
 th[id=message] {
 	width: 75%;
