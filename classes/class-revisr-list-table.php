@@ -299,7 +299,7 @@ class Revisr_List_Table extends WP_List_Table {
 	 * @access public
 	 */
 	public function display() {
-		wp_nonce_field( 'revisr-list-nonce', 'revisr_list_nonce' );
+		wp_nonce_field( 'revisr-list-nonce', 'revisr_list_nonce', false );
 
 		$filter_event 	= esc_attr( isset( $_REQUEST['revisr_event'] ) ? $_REQUEST['revisr_event'] : 'all' );
 		$filter_user 	= esc_attr( isset( $_REQUEST['revisr_user'] ) ? $_REQUEST['revisr_user'] : 'all' );
