@@ -111,9 +111,6 @@ class Revisr_List_Table extends WP_List_Table {
 				<input type="submit" id="revisr-filter-submit" class="button" value="<?php _e( 'Filter', 'revisr' ); ?>" />
 			<?
 
-			if ( 'all' !== $filter_event || 'all' !== $filter_user || 'all' !== $filter_time ) {
-				echo '<a href="' . get_admin_url() . '?page=revisr" id="filter-reset"><span class="dashicons dashicons-dismiss"></span> <span class="filter-reset-text">' . __( 'Reset Filters', 'revisr' ) . '</span></a>';
-			}
 		}
 	}
 
