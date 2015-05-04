@@ -110,6 +110,9 @@ th[id=message] {
 	text-align: center;
 	padding-bottom: 10px;
 }
+#revisr-list-table .alignleft.actions {
+  display: none;
+}
 
 /* === Branches === */
 #branches_box {
