@@ -177,8 +177,14 @@ class Revisr_Git {
 	 * @access public
 	 * @param string $branch The branch to checkout.
 	 */
-	public function checkout( $branch ) {
-		$this->run( 'checkout', array( $branch, '-q' ), __FUNCTION__ );
+	public function checkout( $branch, $new_branch = false ) {
+		if ( $new_branch ) {
+			$args = array( '-b', $branch, '-q' );
+		} else {
+			$args = array( $branch, '-q' );
+		}
+
+		$this->run( 'checkout', $args, __FUNCTION__ );
 	}
 
 	/**
@@ -313,17 +319,27 @@ class Revisr_Git {
 	}
 
 	/**
-	 * Deletes a branch.
+	 * Deletes a local or remote branch.
 	 * @access public
 	 * @param  string 	$branch 	The branch to delete.
 	 * @param  boolean 	$redirect 	Whether or not to redirect on completion.
+	 * @param  boolean 	$remote 	Whether $branch is a local or remote branch.
+	 * @return mixed
 	 */
-	public function delete_branch( $branch, $redirect = true ) {
-		if ( $redirect === false ) {
-			$deletion = $this->run( 'branch', array( '-D', $branch ) );
-		} else {
-			$deletion = $this->run( 'branch', array( '-D', $branch ), __FUNCTION__, $branch );
+	public function delete_branch( $branch, $redirect = true, $remote = false ) {
+
+		$callback = '';
+
+		if ( $redirect ) {
+			$callback = __FUNCTION__;
 		}
+
+		if ( $remote ) {
+			$deletion = $this->run( 'push', array( $this->remote, ":$branch" ), $callback, $branch );
+		} else {
+			$deletion = $this->run( 'branch', array( '-D', $branch ), $callback, $branch );
+		}
+
 		return $deletion;
 	}
 
@@ -348,6 +364,22 @@ class Revisr_Git {
 			$branches = $this->run( 'branch', array() );
 		}
 		return $branches;
+	}
+
+	/**
+	 * Returns the date of last update for a branch/ref.
+	 * @access public
+	 * @return string
+	 */
+	public function get_branch_last_updated( $branch, $format = '' ) {
+		$last_updated = $this->run( 'log', array( $branch, '-1', '--format=%cd', '--date=relative' ) );
+
+		if ( $last_updated ) {
+			return $last_updated[0];
+		} else {
+			return __( 'Unknown', 'revisr' );
+		}
+
 	}
 
 	/**

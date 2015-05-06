@@ -79,6 +79,12 @@ final class Revisr {
 	public $list_table;
 
 	/**
+	 * Stores the Revisr_Branch_Table object
+	 * @var Revisr_Branch_Table
+	 */
+	public $branch_table;
+
+	/**
 	 * Stores the Revisr_Settings object
 	 * @var Revisr_Settings
 	 */
@@ -263,6 +269,7 @@ final class Revisr {
 		self::$instance->process 		= new Revisr_Process();
 		self::$instance->settings 		= new Revisr_Settings();
 		self::$instance->list_table 	= new Revisr_List_Table();
+		self::$instance->branch_table 	= new Revisr_Branch_Table();
 
 		// Register the plugin settings link.
 		add_filter( 'plugin_action_links_'  . plugin_basename( __FILE__ ), array( __CLASS__, 'settings_link' ) );
@@ -305,6 +312,7 @@ final class Revisr {
 		add_action( 'admin_post_revisr_revert_form', array( self::$instance->admin, 'include_form' ) );
 		add_action( 'admin_post_revisr_push_form', array( self::$instance->admin, 'include_form' ) );
 		add_action( 'admin_post_revisr_pull_form', array( self::$instance->admin, 'include_form' ) );
+		add_action( 'admin_post_revisr_checkout_remote_form', array( self::$instance->admin, 'include_form' ) );
 		add_action( 'admin_post_revisr_view_status', array( self::$instance->admin, 'view_status' ) );
 		add_action( 'admin_post_revisr_view_error', array( self::$instance->admin, 'view_error' ) );
 

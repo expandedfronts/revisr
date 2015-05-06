@@ -1,6 +1,8 @@
 <?php
 /**
- * Displays the main dashboard page.
+ * branches.php
+ *
+ * Displays the branch management page.
  *
  * @package   Revisr
  * @license   GPLv3
@@ -11,10 +13,15 @@
 // Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+// Prepares the Revisr custom list table.
+revisr()->branch_table->prepare_items();
+
 ?>
 
 <div class="wrap">
+
 	<h2><?php _e( 'Revisr - Branches', 'revisr' ); ?></h2>
+
 	<?php
 		if ( isset( $_GET['status'] ) && isset( $_GET['branch'] ) ) {
 			switch ( $_GET['status'] ) {
@@ -33,80 +40,23 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					$msg = sprintf( esc_html__( 'Successfully deleted branch: %s.', 'revisr' ), $_GET['branch'] );
 					echo '<div id="revisr-alert" class="updated" style="margin-top:20px;"><p>' . $msg . '</p></div>';
 					break;
+				case "delete_fail":
+					$msg = sprintf( esc_html__( 'Failed to delete branch: %s.', 'revisr' ), $_GET['branch'] );
+					echo '<div id="revisr-alert" class="error" style="margin-top:20px;"><p>' . $msg . '</p></div>';
 				default:
 					// Do nothing.
 			}
 		}
 	?>
+
 	<div id="col-container" class="revisr_col_container">
+
 		<div id="col-right">
-			<form id="revisr_branch_form">
-				<table class="widefat" id="revisr_branch_table">
-				<thead>
-					<tr>
-						<th><?php _e( 'Branch', 'revisr' ); ?></th>
-						<th class="center-td"><?php _e( 'Commits', 'revisr' ); ?></th>
-						<th class="center-td"><?php _e( 'Actions', 'revisr' ); ?></th>
-					</tr>
-				</thead>
-					<?php
-						$output 	= revisr()->git->get_branches();
-						$admin_url 	= get_admin_url();
-
-						if ( is_array( $output ) ) {
-
-							foreach ( $output as $key => $value ) {
-
-								$branch 		= substr( $value, 2 );
-								$num_commits 	= Revisr_Admin::count_commits( $branch );
-
-								if ( substr( $value, 0, 1 ) === "*" ){
-
-									?>
-									<tr>
-										<td><strong><?php printf( __( '%s (current branch)', 'revisr' ), $branch ); ?></strong></td>
-										<td class='center-td'><?php echo $num_commits; ?></td>
-										<td class="center-td">
-											<a class="button disabled branch-btn" onclick="preventDefault()" href="#"><?php _e( 'Checkout', 'revisr' ); ?></a>
-											<a class="button disabled branch-btn" onclick="preventDefault()" href="#"><?php _e( 'Merge', 'revisr' ); ?></a>
-											<a class="button disabled branch-btn" onclick="preventDefault()" href="#"><?php _e( 'Delete', 'revisr' ); ?></a>
-										</td>
-									</tr>
-									<?php
-
-								} else {
-
-									$checkout_url 		= wp_nonce_url( $admin_url . "admin-post.php?action=process_checkout&branch=" . $branch, 'process_checkout', 'revisr_checkout_nonce' );
-									$merge_url 			= $admin_url . "admin-post.php?action=revisr_merge_branch_form&branch=" . $branch . "&TB_iframe=true&width=350&height=200";
-									$delete_url 		= $admin_url . "admin-post.php?action=revisr_delete_branch_form&branch=" . $branch . "&TB_iframe=true&width=350&height=200";
-									$pull_remote_url 	= $admin_url . "admin-post.php?action=revisr_pull_remote_form&remote_branch=" . $branch . "&TB_iframe=true&width=350&height=200";
-									?>
-									<tr>
-										<td><?php echo $branch; ?></td>
-										<td style='text-align:center;'><?php echo $num_commits; ?></td>
-										<td class="center-td">
-											<a class='button branch-btn' href='<?php echo $checkout_url; ?>'><?php _e( 'Checkout', 'revisr' ); ?></a>
-											<a class='button branch-btn merge-btn thickbox' href="<?php echo $merge_url; ?>" title="<?php _e( 'Merge Branch', 'revisr' ); ?>"><?php _e( 'Merge', 'revisr' ); ?></a>
-											<a class='button branch-btn delete-branch-btn thickbox' href='<?php echo $delete_url; ?>' title='<?php _e( 'Delete Branch', 'revisr' ); ?>'><?php _e( 'Delete', 'revisr' ); ?></a>
-										</td>
-									</tr>
-									<?php
-
-								}
-							}
-						}
-
-					?>
-					<tfoot>
-						<tr>
-							<th><?php _e( 'Branch', 'revisr' ); ?></th>
-							<th class="center-td"><?php _e( 'Commits', 'revisr' ); ?></th>
-							<th class="center-td"><?php _e( 'Actions', 'revisr' ); ?></th>
-						</tr>
-					</tfoot>
-				</table>
+			<form id="revisr-branch-form">
+				<?php revisr()->branch_table->display(); ?>
 			</form>
 		</div><!-- /#col-right -->
+
 		<div id="col-left">
 			<div id="add-branch-box" class="postbox">
 				<h3 id="add-branch-title"><?php _e( 'Add New Branch', 'revisr' ); ?></h3>
@@ -127,7 +77,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					</form>
 				</div>
 			</div>
-
 		</div><!-- /#col-left-->
 
 	</div><!-- /#col-container -->

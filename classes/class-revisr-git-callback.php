@@ -141,8 +141,9 @@ class Revisr_Git_Callback {
 	 * @access public
 	 */
 	public function null_delete_branch( $output = array(), $args = '' ) {
+		$branch = $args;
 		echo "<script>
-				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_fail'
+				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_fail&branch={$branch}'
 		</script>";
 	}
 

@@ -44,20 +44,29 @@ class Revisr_Process {
 				revisr()->db->backup();
 			}
 
-			$branch = $_REQUEST['branch'] ? $_REQUEST['branch'] : $args;
+			$branch 	= isset( $_REQUEST['branch'] ) ? $_REQUEST['branch'] : $args;
+			$new_branch = isset( $_REQUEST['new_branch'] ) ? $_REQUEST['new_branch'] : false;
 
 			// Fires before the checkout.
 			do_action( 'revisr_pre_checkout', $branch );
 
 			revisr()->git->reset();
-			revisr()->git->checkout( $branch );
+			revisr()->git->checkout( $branch, $new_branch );
 
 			if ( revisr()->git->get_config( 'revisr', 'import-checkouts' ) === 'true' && $new_branch === false ) {
 				revisr()->db->import();
 			}
 
-			wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr' );
-			exit();
+			// Maybe echo the redirect in javascript.
+			if ( isset( $_REQUEST['echo_redirect'] ) ) {
+				_e( 'Processing...', 'revisr' );
+				echo "<script>
+						window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
+				</script>";
+			} else {
+				wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr' );
+				exit();
+			}
 
 		}
 
@@ -162,12 +171,21 @@ class Revisr_Process {
 
 		if ( wp_verify_nonce( $_REQUEST['revisr_delete_branch_nonce'], 'process_delete_branch' ) ) {
 
-			if ( isset( $_POST['branch'] ) && $_POST['branch'] != revisr()->git->branch ) {
-				$branch = $_POST['branch'];
-				revisr()->git->delete_branch( $branch );
+			$branch = $_REQUEST['branch'];
 
-				if ( isset( $_POST['delete_remote_branch'] ) ) {
-					revisr()->git->run( 'push', array( revisr()->git->remote, '--delete', $branch ) );
+			// Allows deleting just the remote branch.
+			if ( isset( $_REQUEST['delete_remote_only'] ) ){
+				revisr()->git->delete_branch( $branch, true, true );
+				exit();
+			}
+
+			// Delete local, and maybe remote branches.
+			if ( isset( $_REQUEST['branch'] ) && $_REQUEST['branch'] != revisr()->git->branch ) {
+
+				revisr()->git->delete_branch( $branch, true );
+
+				if ( isset( $_REQUEST['delete_remote_branch'] ) ) {
+					revisr()->git->delete_branch( $branch, false, true );
 				}
 			}
 
