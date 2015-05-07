@@ -169,7 +169,10 @@ var revisr_list = {
 			var data = {
 				paged: revisr_list.__query( query, 'paged' ) || '1',
 				order: revisr_list.__query( query, 'order' ) || 'asc',
-				orderby: revisr_list.__query( query, 'orderby' ) || 'title'
+				orderby: revisr_list.__query( query, 'orderby' ) || 'title',
+				revisr_event: revisr_list.__query( query, 'revisr_event' ) || 'all',
+				revisr_user: revisr_list.__query( query, 'revisr_user' ) || 'all',
+				revisr_time: revisr_list.__query( query, 'revisr_time' ) || 'all'
 			};
 			revisr_list.update( data );
 		});
@@ -184,7 +187,10 @@ var revisr_list = {
 			var data = {
 				paged: parseInt( jQuery('input[name=paged]').val() ) || '1',
 				order: jQuery('input[name=order]').val() || 'asc',
-				orderby: jQuery('input[name=orderby]').val() || 'title'
+				orderby: jQuery('input[name=orderby]').val() || 'title',
+				revisr_event : jQuery('input[name=revisr_event]').val() || 'all',
+				revisr_user : jQuery('input[name=revisr_user]').val() || 'all',
+				revisr_time : jQuery('input[name=revisr_time]').val() || 'all'
 			};
 			// Now the timer comes to use: we wait half a second after
 			// the user stopped typing to actually send the call. If
@@ -263,3 +269,17 @@ revisr_list.init();
 update_alert();
 update_counts();
 jQuery('#loader').hide();
+
+/**
+ * Initializes select2 selects.
+ */
+ jQuery('#revisr-events-select').select2({
+ 	theme: "classic"
+ });
+ jQuery('#revisr-author-select').select2({
+ 	theme: "classic"
+ });
+ jQuery('#revisr-time-select').select2({
+ 	theme: "classic"
+ });
+

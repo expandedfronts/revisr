@@ -320,7 +320,7 @@ final class Revisr {
 		add_action( 'admin_notices', array( self::$instance->admin, 'site5_notice' ) );
 
 		// Update the database schema if necessary.
-		if ( get_option( 'revisr_db_version' ) === '1.0' ) {
+		if ( get_option( 'revisr_db_version' ) !== '1.2' ) {
 			add_action( 'admin_init', array( self::$instance->admin, 'do_upgrade' ) );
 		}
 
@@ -365,8 +365,7 @@ final class Revisr {
 	 */
 	public static function get_table_name() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . 'revisr';
-		return $table_name;
+		return esc_sql( $wpdb->prefix . 'revisr' );
 	}
 
 	/**
@@ -375,21 +374,19 @@ final class Revisr {
 	 */
 	public static function revisr_install() {
 		$table_name = Revisr::get_table_name();
-		$sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
+		$sql = "CREATE TABLE {$table_name} (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			message TEXT,
 			event VARCHAR(42) NOT NULL,
+			user VARCHAR(60),
 			UNIQUE KEY id (id)
 			);";
 
 	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	   	dbDelta( $sql );
 
-	   	if ( false === get_option( 'revisr_db_version' ) ) {
-	   		add_option( 'revisr_db_version', '1.1' );
-	   	}
-
+		update_option( 'revisr_db_version', '1.2' );
 	}
 
 	/**

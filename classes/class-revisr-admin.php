@@ -48,10 +48,13 @@ class Revisr_Admin {
 		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
 
 			wp_enqueue_style( 'revisr_dashboard_css' );
+			wp_enqueue_style( 'revisr_octicons_css' );
+			wp_enqueue_style( 'revisr_select2_css' );
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
 			wp_enqueue_script( 'revisr_settings' );
-			wp_enqueue_style( 'revisr_octicons_css' );
+			wp_enqueue_script( 'revisr_select2_js' );
+
 
 		}
 
@@ -288,17 +291,23 @@ class Revisr_Admin {
 	 * @param  string $event   Will be used for filtering later.
 	 */
 	public static function log( $message, $event ) {
+
 		global $wpdb;
-		$time  = current_time( 'mysql' );
-		$table = $wpdb->prefix . 'revisr';
+
+		$time  	= current_time( 'mysql' );
+		$user 	= wp_get_current_user();
+		$table 	= $wpdb->prefix . 'revisr';
+
 		$wpdb->insert(
 			"$table",
 			array(
 				'time' 		=> $time,
 				'message'	=> $message,
 				'event' 	=> $event,
+				'user' 		=> $user->user_login,
 			),
 			array(
+				'%s',
 				'%s',
 				'%s',
 				'%s',
@@ -450,31 +459,36 @@ class Revisr_Admin {
 	 */
 	public function do_upgrade() {
 
-		// Check for the "auto_push" option and save it to the config.
-		if ( isset( revisr()->options['auto_push'] ) ) {
-			revisr()->git->set_config( 'revisr', 'auto-push', 'true' );
+		// For users upgrading from 1.7 and older.
+		if ( get_option( 'revisr_db_version' ) === '1.0' ) {
+
+			// Check for the "auto_push" option and save it to the config.
+			if ( isset( revisr()->options['auto_push'] ) ) {
+				revisr()->git->set_config( 'revisr', 'auto-push', 'true' );
+			}
+
+			// Check for the "auto_pull" option and save it to the config.
+			if ( isset( revisr()->options['auto_pull'] ) ) {
+				revisr()->git->set_config( 'revisr', 'auto-pull', 'true' );
+			}
+
+			// Check for the "reset_db" option and save it to the config.
+			if ( isset( revisr()->options['reset_db'] ) ) {
+				revisr()->git->set_config( 'revisr', 'import-checkouts', 'true' );
+			}
+
+			// Check for the "mysql_path" option and save it to the config.
+			if ( isset( revisr()->options['mysql_path'] ) ) {
+				revisr()->git->set_config( 'revisr', 'mysql-path', revisr()->options['mysql_path'] );
+			}
+
+			// Configure the database tracking to use all tables, as this was how it behaved in 1.7.
+			revisr()->git->set_config( 'revisr', 'db_tracking', 'all_tables' );
 		}
 
-		// Check for the "auto_pull" option and save it to the config.
-		if ( isset( revisr()->options['auto_pull'] ) ) {
-			revisr()->git->set_config( 'revisr', 'auto-pull', 'true' );
-		}
+		// Update the database schema using dbDelta.
+		Revisr::revisr_install();
 
-		// Check for the "reset_db" option and save it to the config.
-		if ( isset( revisr()->options['reset_db'] ) ) {
-			revisr()->git->set_config( 'revisr', 'import-checkouts', 'true' );
-		}
-
-		// Check for the "mysql_path" option and save it to the config.
-		if ( isset( revisr()->options['mysql_path'] ) ) {
-			revisr()->git->set_config( 'revisr', 'mysql-path', revisr()->options['mysql_path'] );
-		}
-
-		// Configure the database tracking to use all tables, as this was how it behaved in 1.7.
-		revisr()->git->set_config( 'revisr', 'db_tracking', 'all_tables' );
-
-		// We're done here.
-		update_option( 'revisr_db_version', '1.1' );
 	}
 
 	/**

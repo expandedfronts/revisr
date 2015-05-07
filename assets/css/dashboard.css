@@ -85,7 +85,10 @@
 
 /* === Recent Activity === */
 .tablenav.top {
-	display: none !important;
+	/*display: none !important;*/
+}
+.bulkactions {
+	display: none;
 }
 th[id=message] {
 	width: 75%;
@@ -106,6 +109,9 @@ th[id=message] {
 #revisr_activity_no_results {
 	text-align: center;
 	padding-bottom: 10px;
+}
+#revisr-list-table .alignleft.actions {
+  display: none;
 }
 
 /* === Branches === */
