@@ -84,8 +84,8 @@
 }
 
 /* === Recent Activity === */
-.tablenav.top {
-	/*display: none !important;*/
+#revisr-branch-form .tablenav.top {
+	display: none !important;
 }
 .bulkactions {
 	display: none;
