@@ -52,7 +52,7 @@ class Revisr_Git_Callback {
 	 */
 	public function null_checkout( $output = array(), $args = '' ) {
 		$msg = __( 'There was an error checking out the branch. Check your configuration and try again.', 'revisr' );
-		Revisr_Admin::alert( $msg, true );
+		Revisr_Admin::alert( $msg, true, $output );
 		Revisr_Admin::log( $msg, 'error' );
 	}
 
