@@ -111,6 +111,10 @@ class Revisr_List_Table extends WP_List_Table {
 				<input type="submit" id="revisr-filter-submit" class="button" value="<?php _e( 'Filter', 'revisr' ); ?>" />
 			<?
 
+			if ( $filter_event != 'all' || $filter_time != 'all' || $filter_user != 'all' ) {
+				echo sprintf( '<a href="%s" id="reset"><span class="dashicons dashicons-dismiss" style="font-size:13px; text-decoration: none; margin-top: 7px;"></span><span class="record-query-reset-text">%s</span></a>', get_admin_url() . 'admin.php?page=revisr', __( 'Reset', 'revisr' ) );
+			}
+
 		}
 	}
 
@@ -252,6 +256,7 @@ class Revisr_List_Table extends WP_List_Table {
 	 */
 	public function prepare_items() {
 		global $wpdb;
+		$table = Revisr::get_table_name();
 
 		// Number of items per page.
 		$per_page = $this->get_items_per_page( 'edit_revisr_events_per_page', 15 );
@@ -268,7 +273,7 @@ class Revisr_List_Table extends WP_List_Table {
         $where = $this->create_where();
 
         // Get the data to populate into the table.
-        $data = $wpdb->get_results( "SELECT message, time, user FROM {$wpdb->prefix}revisr $where", ARRAY_A );
+        $data = $wpdb->get_results( "SELECT message, time, user FROM $table $where", ARRAY_A );
 
         // Handle sorting of the data.
         function usort_reorder($a,$b){
@@ -327,11 +332,14 @@ class Revisr_List_Table extends WP_List_Table {
 	        <div class="alignleft actions">
 	            <?php $this->bulk_actions(); ?>
 	        </div>
+
 	        <?php
-	        $this->extra_tablenav( $which );
-	        $this->pagination( $which );
+	        	$this->extra_tablenav( $which );
+	        	$this->pagination( $which );
 	        ?>
+
 	        <br class="clear" />
+
 	    </div>
 	    <?php
 	}
