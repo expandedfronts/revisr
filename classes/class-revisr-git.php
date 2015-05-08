@@ -383,6 +383,23 @@ class Revisr_Git {
 	}
 
 	/**
+	 * Returns the author of a provided commit.
+	 * @access public
+	 * @param  string $commit_hash The hash of the commit to get the author of.
+	 * @return string|boolean
+	 */
+	public function get_commit_author_by_hash( $commit_hash ) {
+
+		$author = $this->run( 'log', array( '-1', '--format="%an"', $commit_hash ) );
+
+		if ( is_array( $author ) ) {
+			return $author[0];
+		}
+
+		return false;
+	}
+
+	/**
 	 * Returns the status of a file.
 	 * @access public
 	 * @param  string $status The status code returned via 'git status --short'
