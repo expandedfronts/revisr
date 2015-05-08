@@ -24,7 +24,7 @@ wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
 );
 
 // Prepares the Revisr custom list table.
-revisr()->list_table->prepare_items();
+revisr()->activity_table->prepare_items();
 
 ?>
 <div class="wrap">
@@ -41,7 +41,7 @@ revisr()->list_table->prepare_items();
 				<div class="meta-box-sortables ui-sortable">
 					<form id="revisr-list-table">
 						<input type="hidden" name="page" value="<?php echo esc_attr( $_REQUEST['page'] ); ?>" />
-						<?php revisr()->list_table->display(); ?>
+						<?php revisr()->activity_table->display(); ?>
 					</form>
 				</div><!-- .meta-box-sortables .ui-sortable -->
 			</div><!-- post-body-content -->

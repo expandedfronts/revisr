@@ -73,10 +73,10 @@ final class Revisr {
 	public $process;
 
 	/**
-	 * Stores the Revisr_List_Table object.
-	 * @var Revisr_List_Table
+	 * Stores the Revisr_Activity_Table object.
+	 * @var Revisr_Activity_Table
 	 */
-	public $list_table;
+	public $activity_table;
 
 	/**
 	 * Stores the Revisr_Branch_Table object
@@ -210,7 +210,8 @@ final class Revisr {
 		if ( current_user_can( 'install_plugins' ) && is_admin() ) {
 			require_once REVISR_PATH . 'classes/class-revisr-compatibility.php';
 			require_once REVISR_PATH . 'classes/class-revisr-process.php';
-			require_once REVISR_PATH . 'classes/class-revisr-list-table.php';
+			require_once REVISR_PATH . 'classes/class-revisr-activity-table.php';
+			require_once REVISR_PATH . 'classes/class-revisr-branch-table.php';
 			require_once REVISR_PATH . 'classes/class-revisr-commits.php';
 			require_once REVISR_PATH . 'classes/class-revisr-settings.php';
 			require_once REVISR_PATH . 'classes/class-revisr-settings-fields.php';
@@ -262,14 +263,14 @@ final class Revisr {
 	 */
 	private function load_admin_hooks() {
 		// Load necessary classes into the instance.
-		self::$instance->git 			= new Revisr_Git();
-		self::$instance->commits 		= new Revisr_Commits();
-		self::$instance->admin 			= new Revisr_Admin();
-		self::$instance->db 			= new Revisr_DB();
-		self::$instance->process 		= new Revisr_Process();
-		self::$instance->settings 		= new Revisr_Settings();
-		self::$instance->list_table 	= new Revisr_List_Table();
-		self::$instance->branch_table 	= new Revisr_Branch_Table();
+		self::$instance->git 				= new Revisr_Git();
+		self::$instance->commits 			= new Revisr_Commits();
+		self::$instance->admin 				= new Revisr_Admin();
+		self::$instance->db 				= new Revisr_DB();
+		self::$instance->process 			= new Revisr_Process();
+		self::$instance->settings 			= new Revisr_Settings();
+		self::$instance->activity_table 	= new Revisr_Activity_Table();
+		self::$instance->branch_table 		= new Revisr_Branch_Table();
 
 		// Register the plugin settings link.
 		add_filter( 'plugin_action_links_'  . plugin_basename( __FILE__ ), array( __CLASS__, 'settings_link' ) );

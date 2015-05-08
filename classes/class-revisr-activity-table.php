@@ -1,6 +1,6 @@
 <?php
 /**
- * class-revisr-list-table.php
+ * class-revisr-activity-table.php
  *
  * Displays the custom WP_List_Table on the Revisr Dashboard.
  *
@@ -18,7 +18,7 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once( ABSPATH . '/wp-admin/includes/class-wp-list-table.php' );
 }
 
-class Revisr_List_Table extends WP_List_Table {
+class Revisr_Activity_Table extends WP_List_Table {
 
 	/**
 	 * Initiate the class and add necessary action hooks.
