@@ -31,15 +31,15 @@ class Revisr_Admin {
 		// Register all CSS files used by Revisr.
 		wp_register_style( 'revisr_dashboard_css', REVISR_URL . 'assets/css/dashboard.css', array(), '04242015' );
 		wp_register_style( 'revisr_commits_css', REVISR_URL . 'assets/css/commits.css', array(), '04242015' );
-		wp_register_style( 'revisr_octicons_css', REVISR_URL . 'assets/octicons/octicons.css', array(), '04242015' );
-		wp_register_style( 'revisr_select2_css', REVISR_URL . 'assets/select2/css/select2.min.css', array(), '04242015' );
+		wp_register_style( 'revisr_octicons_css', REVISR_URL . 'assets/lib/octicons/octicons.css', array(), '04242015' );
+		wp_register_style( 'revisr_select2_css', REVISR_URL . 'assets/lib/select2/css/select2.min.css', array(), '04242015' );
 
 		// Register all JS files used by Revisr.
 		wp_register_script( 'revisr_dashboard', REVISR_URL . 'assets/js/revisr-dashboard.js', 'jquery',  '04242015', true );
 		wp_register_script( 'revisr_staging', REVISR_URL . 'assets/js/revisr-staging.js', 'jquery', '04242015', false );
 		wp_register_script( 'revisr_committed', REVISR_URL . 'assets/js/revisr-committed.js', 'jquery', '04242015', false );
 		wp_register_script( 'revisr_settings', REVISR_URL . 'assets/js/revisr-settings.js', 'jquery', '04242015', true );
-		wp_register_script( 'revisr_select2_js', REVISR_URL . 'assets/select2/js/select2.min.js', 'jquery', '04242015', true );
+		wp_register_script( 'revisr_select2_js', REVISR_URL . 'assets/lib/select2/js/select2.min.js', 'jquery', '04242015', true );
 
 		// An array of pages that most scripts can be allowed on.
 		$allowed_pages = array( 'revisr', 'revisr_settings', 'revisr_branches' );
