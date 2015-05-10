@@ -145,7 +145,7 @@ final class Revisr {
 			self::$instance->define_constants();
 
 			// Load the rest of the plugin.
-			add_action( 'plugins_loaded', array( __CLASS__, 'load_instance' ) );
+			add_action( 'after_setup_theme', array( __CLASS__, 'load_instance' ) );
 
 		}
 
