@@ -7,6 +7,7 @@ class RevisrRemoteTest extends WP_UnitTestCase {
 	 */
 	function setUp() {
 		$this->remote = new Revisr_Remote();
+		revisr()->git = new Revisr_Git();
 	}
 
 	/**

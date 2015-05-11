@@ -43,18 +43,22 @@ class RevisrTest extends WP_UnitTestCase {
 	 * Tests the load_dependencies() method.
 	 */
 	function test_load_dependencies() {
-		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-i18n.php' );
-		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-git.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-activity-table.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-admin.php' );
-		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-remote.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-branch-table.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-commits.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-compatibility.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-cron.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-db-backup.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-db-import.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-db.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-git-callback.php' );
-		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-cron.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-git.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-i18n.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-process.php' );
-		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-list-table.php' );
-		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-commits.php' );
-		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-settings.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-remote.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-settings-fields.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-settings.php' );
 	}
 
 	/**
