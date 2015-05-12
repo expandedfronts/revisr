@@ -16,6 +16,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Revisr_Remote {
 
 	/**
+	 * Constructs the class.
+	 * @access public
+	 */
+	public function __construct() {
+		if ( ! is_object( revisr()->git ) ) {
+			revisr()->git = new Revisr_Git;
+		}
+	}
+
+	/**
 	 * Returns the current token, creating one if it does not exist.
 	 * @access public
 	 * @return string|boolean The token, or false on complete failure.

@@ -361,41 +361,36 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function view_diff() {
-		?>
-		<html>
-		<head>
-			<title><?php _e( 'View Diff', 'revisr' ); ?></title>
-		</head>
-		<body>
-		<?php
 
-			if ( isset( $_REQUEST['commit'] ) ) {
-				$diff = revisr()->git->run( 'show', array( $_REQUEST['commit'], $_REQUEST['file'] ) );
-			} else {
-				$diff = revisr()->git->run( 'diff', array( $_REQUEST['file'] ) );
-			}
+		if ( isset( $_REQUEST['commit'] ) ) {
+			$diff = revisr()->git->run( 'show', array( $_REQUEST['commit'], $_REQUEST['file'] ) );
+		} else {
+			$diff = revisr()->git->run( 'diff', array( $_REQUEST['file'] ) );
+		}
 
-			if ( is_array( $diff ) ) {
+		if ( is_array( $diff ) ) {
 
-				// Loop through the diff and echo the output.
-				foreach ( $diff as $line ) {
-					if ( substr( $line, 0, 1 ) === '+' ) {
-						echo '<span class="diff_added" style="background-color:#cfc;">' . htmlspecialchars( $line ) . '</span><br>';
-					} else if ( substr( $line, 0, 1 ) === '-' ) {
-						echo '<span class="diff_removed" style="background-color:#fdd;">' . htmlspecialchars( $line ) . '</span><br>';
-					} else {
-						echo htmlspecialchars( $line ) . '<br>';
-					}
+			// Loop through the diff and echo the output.
+			foreach ( $diff as $line ) {
+				
+				if ( substr( $line, 0, 1 ) === '+' ) {
+					echo '<span class="diff_added" style="background-color:#cfc;">' . htmlspecialchars( $line ) . '</span><br>';
+				} else if ( substr( $line, 0, 1 ) === '-' ) {
+					echo '<span class="diff_removed" style="background-color:#fdd;">' . htmlspecialchars( $line ) . '</span><br>';
+				} else {
+					echo htmlspecialchars( $line ) . '<br>';
 				}
-
-			} else {
-				_e( 'Oops! Revisr ran into an error rendering the diff.', 'revisr' );
+				
 			}
-		?>
-		</body>
-		</html>
-		<?php
-		exit();
+
+		} else {
+			_e( 'Oops! Revisr ran into an error rendering the diff.', 'revisr' );
+		}
+
+		// We may need to exit early if doing_ajax.
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			exit();
+		}
 	}
 
 	/**
@@ -403,24 +398,13 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function view_error() {
-		?>
-		<html>
-		<head>
-		<title><?php _e( 'Error Details', 'revisr' ); ?></title>
-		</head>
-		<body>
-			<?php
-				if ( isset( $_REQUEST['post_id'] ) && get_post_meta( $_REQUEST['post_id'], 'error_details', true ) ) {
-					echo implode( '<br>', get_post_meta( $_REQUEST['post_id'], 'error_details', true ) );
-				} elseif ( $revisr_error = get_transient( 'revisr_error_details' ) ) {
-					echo implode( '<br>', $revisr_error );
-				} else {
-					_e( 'Detailed error information not available.', 'revisr' );
-				}
-			?>
-		</body>
-		</html>
-		<?php
+		if ( isset( $_REQUEST['post_id'] ) && get_post_meta( $_REQUEST['post_id'], 'error_details', true ) ) {
+			echo implode( '<br>', get_post_meta( $_REQUEST['post_id'], 'error_details', true ) );
+		} elseif ( $revisr_error = get_transient( 'revisr_error_details' ) ) {
+			echo implode( '<br>', $revisr_error );
+		} else {
+			_e( 'Detailed error information not available.', 'revisr' );
+		}
 	}
 
 	/**
@@ -428,29 +412,17 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function view_status() {
-		?>
-		<html>
-		<head>
-		<title><?php _e( 'View Status', 'revisr' ); ?></title>
-		</head>
-		<body>
-		<?php
-			$status = revisr()->git->run( 'status', array() );
+		$status = revisr()->git->run( 'status', array() );
 
-			if ( is_array( $status ) ) {
-				echo '<pre>';
-				foreach ( $status as $line ) {
-					echo $line . PHP_EOL;
-				}
-				echo '</pre>';
-			} else {
-				_e( 'Error retrieving the status of the repository.', 'revisr' );
+		if ( is_array( $status ) ) {
+			echo '<pre>';
+			foreach ( $status as $line ) {
+				echo $line . PHP_EOL;
 			}
-		?>
-		</body>
-		</html>
-		<?php
-		exit();
+			echo '</pre>';
+		} else {
+			_e( 'Error retrieving the status of the repository.', 'revisr' );
+		}
 	}
 
 	/**
