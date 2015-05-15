@@ -25,12 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 		<tr>
 			<td><label><strong><?php _e( 'Operating System', 'revisr' ); ?></strong></label></td>
-			<td>
-			<?php
-				$os = Revisr_Compatibility::get_os();
-				echo $os['name'];
-			?>
-			</td>
+			<td><?php echo Revisr_Compatibility::get_os()['name']; ?></td>
 		</tr>
 
 		<tr>

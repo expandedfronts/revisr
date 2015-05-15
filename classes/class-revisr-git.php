@@ -244,12 +244,14 @@ class Revisr_Git {
 	 */
 	public function count_unpulled( $ajax_btn = true ) {
 		$this->fetch();
-		if ( $ajax_btn == true ) {
+
+		if ( true === $ajax_btn ) {
 			$this->run( 'log', array( $this->branch . '..' . $this->remote . '/' . $this->branch, '--pretty=oneline' ), 'count_ajax_btn' );
 		} else {
 			$unpulled = $this->run( 'log', array( $this->branch . '..' . $this->remote . '/' . $this->branch, '--pretty=oneline' ) );
-			return count( $unpulled );
+			return count( $unpulled );			
 		}
+
 	}
 
 	/**
@@ -257,12 +259,14 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function count_unpushed( $ajax_btn = true ) {
-		if ( $ajax_btn == true ) {
+
+		if ( true === $ajax_btn ) {
 			$this->run( 'log', array( $this->branch, '--not', '--remotes', '--oneline' ), 'count_ajax_btn' );
 		} else {
 			$unpushed = $this->run( 'log', array( $this->branch, '--not', '--remotes', '--oneline' ) );
 			return count( $unpushed );
 		}
+
 	}
 
 	/**
@@ -358,12 +362,14 @@ class Revisr_Git {
 	 * @param  boolean $remote If set to true, will retrieve the remote branches.
 	 */
 	public function get_branches( $remote = false ) {
-		if ( $remote == true ) {
-			$branches = $this->run( 'branch', array( '-r' ) );
-		} else {
-			$branches = $this->run( 'branch', array() );
+
+		$params = array();
+		
+		if ( true === $remote ) {
+			$params[] = '-r';
 		}
-		return $branches;
+
+		return $this->run( 'branch', $params );
 	}
 
 	/**

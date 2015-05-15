@@ -115,7 +115,7 @@ final class Revisr {
 	 * @access private
 	 */
 	private function __clone() {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'revisr'), '1.8' );
+		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'revisr' ), '1.8' );
 	}
 
 	/**
@@ -123,7 +123,7 @@ final class Revisr {
 	 * @access private
 	 */
 	private function __wakeup() {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'revisr'), '1.8' );
+		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'revisr' ), '1.8' );
 	}
 
 	/**
