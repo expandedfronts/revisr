@@ -48,6 +48,7 @@ revisr()->activity_table->prepare_items();
 			<!-- sidebar -->
 			<div id="postbox-container-1" class="postbox-container">
 				<div class="meta-box-sortables">
+					
 					<!-- BEGIN QUICK ACTIONS -->
 					<div class="postbox">
 						<h3><span><?php _e('Quick Actions', 'revisr'); ?></span> <div id='loader'><img src="<?php echo $loader_url; ?>"/></div></h3>
@@ -60,6 +61,7 @@ revisr()->activity_table->prepare_items();
 						</div> <!-- .inside -->
 					</div> <!-- .postbox -->
 					<!-- END QUICK ACTIONS -->
+					
 					<!-- BEGIN BRANCHES/TAGS WIDGET -->
 					<div id="branches_tags_widget" class="postbox ">
 						<h3 class="hndle"><span><?php _e( 'Branches/Tags', 'revisr' ); ?></span></h3>
@@ -74,38 +76,57 @@ revisr()->activity_table->prepare_items();
 										<?php
 
 											$admin_url 	= get_admin_url();
-											$output 	= revisr()->git->get_branches();
+											$branches 	= revisr()->git->get_branches();
 
-											if ( is_array( $output ) ) {
-												foreach ($output as $key => $value){
-													$branch = substr($value, 2);
-													if (substr( $value, 0, 1 ) === "*"){
-														echo "<tr><td><strong>$branch</strong></td><td width='70'><a class='button disabled branch-btn' onclick='preventDefault()' href='#'>Checked Out</a></td></tr>";
-													}
-													else {
+											if ( is_array( $branches ) && ! empty( $branches ) ) {
+												
+												foreach ( $branches as $key => $value ){
+													
+													$branch = substr( $value, 2 );
+
+													if ( '*' === substr( $value, 0, 1 ) ) {
+														printf( '<tr><td><strong>%s</strong></td><td width="70"><a class="button disabled branch-btn" onlick="preventDefault()" href="#">%s</a></td></tr>',
+															$branch,
+															__( 'Checked Out', 'revisr' )
+														);
+													} else {
 														$branch_url = wp_nonce_url( $admin_url . "admin-post.php?action=process_checkout&branch={$branch}", 'process_checkout', 'revisr_checkout_nonce' );
-														echo "<tr><td>$branch</td><td width='70'><a class='button branch-btn' href='" . $branch_url . "'>Checkout</a></td></tr>";
+														printf( '<tr><td>%s</td><td width="70"><a class="button branch-btn" href="%s">%s</a></td><tr>',
+															$branch,
+															$branch_url,
+															__( 'Checkout', 'revisr' )
+														);
 													}
+												
 												}
+
+											} else {
+												printf( '<tr><td>%s</td></tr>', __( 'No branches found.', 'revisr' ) ); 
 											}
 										?>
 									</table>
 								</div>
 								<div id="tags" class="tabs-panel" style="display: none;">
-								<?php
-									$tags = revisr()->git->run( 'tag', array() );
+									<?php
+										
+										$tags = revisr()->git->run( 'tag', array() );
 
-									if ( is_array( $tags ) ) {
+										if ( is_array( $tags ) && ! empty( $tags ) ) {
 
-										echo '<ul id="tags-list">';
-										foreach ( $tags as $tag ) {
-											$tag = esc_attr( $tag );
-											echo '<li class="revisr-tag"><a href="' . get_admin_url() . 'edit.php?post_type=revisr_commits&git_tag=' . $tag . '">' . $tag . '</a></li>';
+											echo '<ul id="tags-list">';
+											
+											foreach ( $tags as $tag ) {
+												$tag = esc_attr( $tag );
+												echo '<li class="revisr-tag"><a href="' . get_admin_url() . 'edit.php?post_type=revisr_commits&git_tag=' . $tag . '">' . $tag . '</a></li>';
+											}
+											
+											echo '</ul>';
+
+										} else {
+											printf( '<p>%s</p>', __( 'No tags found.', 'revisr' ) );
 										}
-										echo '</ul>';
 
-									}
-								?>
+									?>
 								</div>
 								<div id="manage_branches" class="wp-hidden-children">
 									<h4><a id="manage-branches-link" href="<?php echo get_admin_url() . 'admin.php?page=revisr_branches'; ?>" class="hide-if-no-js"><?php _e( 'Manage Branches', 'revisr' ); ?></a></h4>
@@ -114,6 +135,7 @@ revisr()->activity_table->prepare_items();
 						</div>
 					</div>
 					<!-- END BRANCHES/TAGS WIDGET -->
+
 					<div class="postbox">
 						<h3><span><?php _e( 'Documentation', 'revisr' ); ?></span></h3>
 						<div class="inside">
@@ -122,6 +144,7 @@ revisr()->activity_table->prepare_items();
 							<?php printf( __( '&copy; %d Expanded Fronts, LLC', 'revisr' ), date( 'Y' ) ); ?>
 						</div> <!-- .inside -->
 					</div> <!-- .postbox -->
+					
 				</div> <!-- .meta-box-sortables -->
 			</div> <!-- #postbox-container-1 .postbox-container -->
 		</div> <!-- #post-body .metabox-holder .columns-2 -->
