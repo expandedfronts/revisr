@@ -93,13 +93,13 @@ td.hash.column-hash {
 	text-align: center;
 }
 .column-branch {
-	text-align: center;
+	text-align: center !important;
 }
 .column-tag {
-	text-align: center;
+	text-align: center !important;
 }
 .column-files_changed {
-	text-align: center;
+	text-align: center !important;
 }
 #revisr_settings th {
 	width: 290px;
