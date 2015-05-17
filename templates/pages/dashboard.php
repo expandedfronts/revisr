@@ -15,7 +15,7 @@ $loader_url = REVISR_URL . 'assets/img/loader.gif';
 $push_url 	= get_admin_url() . "admin-post.php?action=revisr_push_form&TB_iframe=true&width=400&height=225";
 $pull_url 	= get_admin_url() . "admin-post.php?action=revisr_pull_form&TB_iframe=true&width=400&height=225";
 
-// Enqueue any necessary scripts (Already registered in "Revisr_Admin_Setup").
+// Enqueue any necessary scripts (Already registered in Revisr_Admin::revisr_scripts()).
 wp_enqueue_script( 'revisr_dashboard' );
 wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
 	'ajax_nonce' 	=> wp_create_nonce( 'revisr_dashboard_nonce' ),

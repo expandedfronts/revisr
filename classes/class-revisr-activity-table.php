@@ -78,6 +78,7 @@ class Revisr_Activity_Table extends WP_List_Table {
 
 				<select id="revisr-events-select" name="revisr_event">
 					<option value="all"><?php _e( 'All Events', 'revisr' ); ?></option>
+					<option value="branch" <?php selected( 'branch', $filter_event ); ?>><?php _e( 'Branches', 'revisr' ); ?></option>
 					<option value="commit" <?php selected( 'commit', $filter_event ); ?>><?php _e( 'Commits', 'revisr' ); ?></option>
 					<option value="backup" <?php selected( 'backup', $filter_event ); ?>><?php _e( 'Database Backups', 'revisr' ); ?></option>
 					<option value="imports" <?php selected( 'import', $filter_event ); ?>><?php _e( 'Database Imports', 'revisr' ); ?></option>
