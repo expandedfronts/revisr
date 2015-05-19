@@ -278,11 +278,13 @@ class Revisr_Git_Callback {
 			$msg = __( 'The local repository is already up-to-date with the remote repository.', 'revisr' );
 			Revisr_Admin::alert( $msg );
 		} else {
+			
 			foreach ( $commits_since as $commit ) {
 
 				$commit_hash 	= substr( $commit, 0, 7 );
 				$commit_msg 	= substr( $commit, 40 );
 				$show_files 	= revisr()->git->run( 'show', array( '--pretty=format:', '--name-status', $commit_hash ) );
+				$user 			= get_user_by( 'login', revisr()->git->get_commit_author_by_hash( $commit_hash ) );
 
 				if ( is_array( $show_files ) ) {
 					$files_changed = array_filter( $show_files );
@@ -292,6 +294,11 @@ class Revisr_Git_Callback {
 						'post_type'		=> 'revisr_commits',
 						'post_status'	=> 'publish',
 					);
+
+					if ( $user ) {
+						$post['post_author'] = $user->ID;
+					}
+
 					$post_id = wp_insert_post( $post );
 					add_post_meta( $post_id, 'commit_hash', $commit_hash );
 					add_post_meta( $post_id, 'branch', revisr()->git->branch );

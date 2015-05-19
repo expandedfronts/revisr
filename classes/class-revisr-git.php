@@ -390,7 +390,7 @@ class Revisr_Git {
 	 */
 	public function get_commit_author_by_hash( $commit_hash ) {
 
-		$author = $this->run( 'log', array( '-1', '--format="%an"', $commit_hash ) );
+		$author = $this->run( 'log', array( '-1', '--format=%an', $commit_hash ) );
 
 		if ( is_array( $author ) ) {
 			return $author[0];
