@@ -406,6 +406,7 @@ class Revisr_Commits {
 		}
 
 		echo '</div>';
+		
 	}
 
 	/**

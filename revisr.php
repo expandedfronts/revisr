@@ -176,6 +176,9 @@ final class Revisr {
 			self::$instance->load_admin_hooks();
 		}
 
+		// Fires after the plugin has loaded.
+		do_action( 'revisr_loaded' );
+
 	}
 
 	/**

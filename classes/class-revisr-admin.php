@@ -296,7 +296,7 @@ class Revisr_Admin {
 
 		$time  	= current_time( 'mysql' );
 		$user 	= wp_get_current_user();
-		$table 	= $wpdb->prefix . 'revisr';
+		$table 	= Revisr::get_table_name();
 
 		$wpdb->insert(
 			"$table",

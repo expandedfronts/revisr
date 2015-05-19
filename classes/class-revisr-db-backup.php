@@ -86,13 +86,12 @@ class Revisr_DB_Backup extends Revisr_DB {
 				$queries[] = sprintf( "(%s)", implode( ',', $vals ) );
 			}
 
-			if ( 0 !== count( $queries ) ) {
+			if ( ! empty( $queries ) ) {
 				// Implode the queries and generate the rest of the SQL file.
 				$results .= "LOCK TABLES `$table` WRITE;" . PHP_EOL;
 				$results .= "INSERT INTO `$table` VALUES " . implode( ', ', $queries ) . ';' . PHP_EOL;
 				$results .= 'UNLOCK TABLES;' . PHP_EOL;
 			}
-
 
 		}
 
