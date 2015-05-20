@@ -150,7 +150,8 @@ class Revisr_Activity_Table extends WP_List_Table {
 				$timestamp 	= strtotime( $item[$column_name] );
 				return sprintf( __( '%s ago', 'revisr' ), human_time_diff( $timestamp, $current ) );
 			case 'user':
-				return sprintf( '<a href="%s">%s</a>', esc_url( get_admin_url() . 'admin.php?page=revisr&revisr_user=' .$item[$column_name] ), $item[$column_name] );
+				$url = esc_url( add_query_arg( array( 'revisr_user' => $item[$column_name] ), $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) );
+				return sprintf( '<a href="%s">%s</a>', $url, esc_html( $item[$column_name] ) );
 			default:
 				return print_r( $item, true );
 		}
