@@ -92,7 +92,7 @@ class Revisr_Activity_Table extends WP_List_Table {
 					<?php
 						global $wpdb;
 						$table = Revisr::get_table_name();
-						$users = $wpdb->get_results( "SELECT DISTINCT user FROM $table", ARRAY_A );
+						$users = $wpdb->get_results( "SELECT DISTINCT user FROM $table ORDER BY user ASC", ARRAY_A );
 						foreach ( $users as $user ) {
 							if ( $user['user'] != null ) {
 								printf( '<option value="%s" %s>%s</option>', esc_attr( $user['user'] ), selected( $user['user'], $filter_user, false ), esc_attr( $user['user'] ) );
@@ -144,13 +144,13 @@ class Revisr_Activity_Table extends WP_List_Table {
 	public function column_default( $item, $column_name ) {
 		switch( $column_name ) {
 			case 'message':
-				return ucfirst( $item[$column_name] );
+				return wp_kses_post( ucfirst( $item[$column_name] ) );
 			case 'time':
 				$current 	= strtotime( current_time( 'mysql' ) );
 				$timestamp 	= strtotime( $item[$column_name] );
 				return sprintf( __( '%s ago', 'revisr' ), human_time_diff( $timestamp, $current ) );
 			case 'user':
-				return $item[$column_name];
+				return sprintf( '<a href="%s">%s</a>', esc_url( get_admin_url() . 'admin.php?page=revisr&revisr_user=' .$item[$column_name] ), $item[$column_name] );
 			default:
 				return print_r( $item, true );
 		}
