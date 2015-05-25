@@ -110,7 +110,7 @@ class Revisr_Activity_Table extends WP_List_Table {
 				</select>
 
 				<input type="submit" id="revisr-filter-submit" class="button" value="<?php _e( 'Filter', 'revisr' ); ?>" />
-			<?
+			<?php
 
 			if ( $filter_event != 'all' || $filter_time != 'all' || $filter_user != 'all' ) {
 				echo sprintf( '<a href="%s" id="reset"><span class="dashicons dashicons-dismiss" style="font-size:13px; text-decoration: none; margin-top: 7px;"></span><span class="record-query-reset-text">%s</span></a>', get_admin_url() . 'admin.php?page=revisr', __( 'Reset', 'revisr' ) );
