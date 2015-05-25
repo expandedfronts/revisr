@@ -111,6 +111,7 @@ body.post-type-revisr_commits.post-new-php .wrap { margin-top: 27px !important; 
 .revisr-text { width: 35em !important; }
 #post-hook-input { width: 35em; }
 #revisr-debug-table { max-width: 750px; }
+body.revisr_page_revisr_settings #site5_wrapper { margin-right: 20px; }
 
 /*--------------------------------------------------------------
 # Misc
