@@ -231,7 +231,8 @@ class Revisr_Admin {
 	 * @return string $string The escaped string.
 	 */
 	public static function escapeshellarg( $string ) {
-		if ( 'WIN' !== Revisr_Compatibility::get_os()['code'] ) {
+		$os = Revisr_Compatibility::get_os();
+		if ( 'WIN' !== $os['code'] ) {
 			return escapeshellarg( $string );
 		} else {
 			// Windows-friendly workaround.
