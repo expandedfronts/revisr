@@ -64,10 +64,10 @@ function delayed_refresh() {
  */
 function update_counts() {
 	jQuery.post(ajaxurl, {action: 'ajax_button_count', data: 'unpulled'}, function(response) {
-		document.getElementById('unpulled').innerHTML = response;
+		document.getElementById('revisr-unpulled').innerHTML = response;
 	});
 	jQuery.post(ajaxurl, {action: 'ajax_button_count',data: 'unpushed'}, function(response) {
-		document.getElementById('unpushed').innerHTML = response;
+		document.getElementById('revisr-unpushed').innerHTML = response;
 	});
 }
 
@@ -76,7 +76,7 @@ function update_counts() {
  */
 function processing() {
 	jQuery('.revisr-alert').hide();
-	jQuery('#loader').show();
+	jQuery('#revisr-loader').show();
 	jQuery('#revisr-processing-request').show();
 }
 
@@ -84,7 +84,7 @@ function processing() {
  * Run when an AJAX request from the dashboard has been completed.
  */
 function process_complete() {
-	jQuery('#loader').hide();
+	jQuery('#revisr-loader').hide();
 	update_alert();
 	revisr_list.update();
 	update_counts();
@@ -114,14 +114,14 @@ jQuery('#tags-link').click(function() {
 /**
  * Redirects to the new commit screen.
  */
-jQuery('#commit-btn').click(function() {
+jQuery('#revisr-commit-btn').click(function() {
 	window.location = 'post-new.php?post_type=revisr_commits';
 });
 
 /**
  * Runs when the 'Discard Changes' button is clicked.
  */
-jQuery('#discard-btn').click(function() {
+jQuery('#revisr-discard-btn').click(function() {
     if ( confirm( revisr_dashboard_vars.discard_msg ) == true ) {
     	processing();
 		jQuery.post(ajaxurl, {action: 'discard', revisr_dashboard_nonce: revisr_dashboard_vars.ajax_nonce}, function(response) {
@@ -133,7 +133,7 @@ jQuery('#discard-btn').click(function() {
 /**
  * Runs when the 'Backup Database' button is clicked.
  */
-jQuery('#backup-btn').click(function() {
+jQuery('#revisr-backup-btn').click(function() {
 	processing();
 	jQuery.post(ajaxurl, {action: 'backup_db', source: 'ajax_button', revisr_dashboard_nonce: revisr_dashboard_vars.ajax_nonce}, function(response) {
 		process_complete();
@@ -268,7 +268,7 @@ var revisr_list = {
 revisr_list.init();
 update_alert();
 update_counts();
-jQuery('#loader').hide();
+jQuery('#revisr-loader').hide();
 
 /**
  * Initializes select2 selects.

@@ -15,14 +15,6 @@ $loader_url = REVISR_URL . 'assets/img/loader.gif';
 $push_url 	= get_admin_url() . "admin-post.php?action=revisr_push_form&TB_iframe=true&width=400&height=225";
 $pull_url 	= get_admin_url() . "admin-post.php?action=revisr_pull_form&TB_iframe=true&width=400&height=225";
 
-// Enqueue any necessary scripts (Already registered in Revisr_Admin::revisr_scripts()).
-wp_enqueue_script( 'revisr_dashboard' );
-wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
-	'ajax_nonce' 	=> wp_create_nonce( 'revisr_dashboard_nonce' ),
-	'discard_msg' 	=> __( 'Are you sure you want to discard your uncommitted changes?', 'revisr' ),
-	)
-);
-
 // Prepares the Revisr custom list table.
 revisr()->activity_table->prepare_items();
 
@@ -34,36 +26,41 @@ revisr()->activity_table->prepare_items();
 		<div id="revisr-loading-alert" class="revisr-alert updated"><p><?php _e( 'Loading...', 'revisr' ); ?></p></div>
 		<div id="revisr-processing-request" class="revisr-alert updated" style="display:none;"><p><?php _e( 'Processing request...', 'revisr' ); ?></p></div>
 	</div>
-	<div id="poststuff">
+	
+	<div id="poststuff" class="revisr-poststuff">
 		<div id="post-body" class="metabox-holder columns-2">
+			
 			<!-- main content -->
 			<div id="post-body-content">
 				<div class="meta-box-sortables ui-sortable">
-					<form id="revisr-list-table">
+					
+					<form id="revisr-activity-form">
 						<input type="hidden" name="page" value="<?php echo esc_attr( $_REQUEST['page'] ); ?>" />
 						<?php revisr()->activity_table->display(); ?>
 					</form>
+
 				</div><!-- .meta-box-sortables .ui-sortable -->
 			</div><!-- post-body-content -->
+			
 			<!-- sidebar -->
 			<div id="postbox-container-1" class="postbox-container">
 				<div class="meta-box-sortables">
 					
 					<!-- BEGIN QUICK ACTIONS -->
 					<div class="postbox">
-						<h3><span><?php _e('Quick Actions', 'revisr'); ?></span> <div id='loader'><img src="<?php echo $loader_url; ?>"/></div></h3>
+						<h3><span><?php _e('Quick Actions', 'revisr'); ?></span> <div id="revisr-loader"><img src="<?php echo $loader_url; ?>"/></div></h3>
 						<div class="inside">
-							<button id="commit-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Save Changes', 'revisr' ); ?></span></button>
-							<button id="discard-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Discard Changes', 'revisr' ); ?></span></button>
-							<button id="backup-btn" class="button button-primary quick-action-btn"><span class="qb-text">| <?php _e( 'Backup Database', 'revisr' ); ?></span></button>
-							<a id="push-btn" class="button button-primary quick-action-btn thickbox" title="<?php _e( 'Push Changes', 'revisr' ); ?>" href="<?php echo $push_url; ?>"><span id="push-text" class="qb-text">| <?php _e( 'Push Changes ', 'revisr' ); ?> <span id="unpushed"></span></span></a>
-							<a id="pull-btn" class="button button-primary quick-action-btn thickbox" title="<?php _e( 'Pull Changes' , 'revisr' ); ?>" href="<?php echo $pull_url; ?>"><span id="pull-text" class="qb-text">| <?php _e( 'Pull Changes', 'revisr' ); ?>  <span id="unpulled"></span></span></a>
+							<button id="revisr-commit-btn" class="button button-primary revisr-quick-action-btn"><span class="revisr-quick-action-btn-txt">| <?php _e( 'Save Changes', 'revisr' ); ?></span></button>
+							<button id="revisr-discard-btn" class="button button-primary revisr-quick-action-btn"><span class="revisr-quick-action-btn-txt">| <?php _e( 'Discard Changes', 'revisr' ); ?></span></button>
+							<button id="revisr-backup-btn" class="button button-primary revisr-quick-action-btn"><span class="revisr-quick-action-btn-txt">| <?php _e( 'Backup Database', 'revisr' ); ?></span></button>
+							<a id="revisr-push-btn" class="button button-primary revisr-quick-action-btn thickbox" title="<?php _e( 'Push Changes', 'revisr' ); ?>" href="<?php echo $push_url; ?>"><span id="push-text" class="revisr-quick-action-btn-txt">| <?php _e( 'Push Changes ', 'revisr' ); ?> <span id="revisr-unpushed"></span></span></a>
+							<a id="revisr-pull-btn" class="button button-primary revisr-quick-action-btn thickbox" title="<?php _e( 'Pull Changes' , 'revisr' ); ?>" href="<?php echo $pull_url; ?>"><span id="pull-text" class="revisr-quick-action-btn-txt">| <?php _e( 'Pull Changes', 'revisr' ); ?>  <span id="revisr-unpulled"></span></span></a>
 						</div> <!-- .inside -->
 					</div> <!-- .postbox -->
 					<!-- END QUICK ACTIONS -->
 					
 					<!-- BEGIN BRANCHES/TAGS WIDGET -->
-					<div id="branches_tags_widget" class="postbox ">
+					<div id="revisr-branches-tags-widget" class="postbox ">
 						<h3 class="hndle"><span><?php _e( 'Branches/Tags', 'revisr' ); ?></span></h3>
 						<div class="inside">
 							<div id="taxonomy-category" class="categorydiv">
@@ -72,7 +69,8 @@ revisr()->activity_table->prepare_items();
 									<li id="tags-tab" class="hide-if-no-js"><a id="tags-link" href="#tags" onclick="return false;"><?php _e( 'Tags', 'revisr' ); ?></a></li>
 								</ul>
 								<div id="branches" class="tabs-panel" style="display: block;">
-									<table id="branches_table" class="widefat">
+									
+									<table id="branches-table" class="widefat">
 										<?php
 
 											$admin_url 	= get_admin_url();
@@ -106,6 +104,7 @@ revisr()->activity_table->prepare_items();
 										?>
 									</table>
 								</div>
+								
 								<div id="tags" class="tabs-panel" style="display: none;">
 									<?php
 										
@@ -128,8 +127,8 @@ revisr()->activity_table->prepare_items();
 
 									?>
 								</div>
-								<div id="manage_branches" class="wp-hidden-children">
-									<h4><a id="manage-branches-link" href="<?php echo get_admin_url() . 'admin.php?page=revisr_branches'; ?>" class="hide-if-no-js"><?php _e( 'Manage Branches', 'revisr' ); ?></a></h4>
+								<div id="manage-branches" class="wp-hidden-children">
+									<h4><a id="revisr-manage-branches-link" href="<?php echo get_admin_url() . 'admin.php?page=revisr_branches'; ?>" class="hide-if-no-js"><?php _e( 'Manage Branches', 'revisr' ); ?></a></h4>
 								</div>
 							</div>
 						</div>

@@ -28,63 +28,82 @@ class Revisr_Admin {
 	 */
 	public function revisr_scripts( $hook ) {
 
-		// Register all CSS files used by Revisr.
-		wp_register_style( 'revisr_dashboard_css', REVISR_URL . 'assets/css/dashboard.css', array(), '04242015' );
-		wp_register_style( 'revisr_commits_css', REVISR_URL . 'assets/css/commits.css', array(), '04242015' );
-		wp_register_style( 'revisr_octicons_css', REVISR_URL . 'assets/lib/octicons/octicons.css', array(), '04242015' );
-		wp_register_style( 'revisr_select2_css', REVISR_URL . 'assets/lib/select2/css/select2.min.css', array(), '04242015' );
+		// Pages that our styles/scripts will ALWAYS be allowed on.
+		$allowed_pages = $this->page_hooks;
 
-		// Register all JS files used by Revisr.
-		wp_register_script( 'revisr_dashboard', REVISR_URL . 'assets/js/revisr-dashboard.js', 'jquery',  '04242015', true );
-		wp_register_script( 'revisr_staging', REVISR_URL . 'assets/js/revisr-staging.js', 'jquery', '04242015', false );
-		wp_register_script( 'revisr_committed', REVISR_URL . 'assets/js/revisr-committed.js', 'jquery', '04242015', false );
-		wp_register_script( 'revisr_settings', REVISR_URL . 'assets/js/revisr-settings.js', 'jquery', '04242015', true );
-		wp_register_script( 'revisr_select2_js', REVISR_URL . 'assets/lib/select2/js/select2.min.js', 'jquery', '04242015', true );
-
-		// An array of pages that most scripts can be allowed on.
-		$allowed_pages = array( 'revisr', 'revisr_settings', 'revisr_branches' );
-
-		// Enqueue common scripts and styles.
-		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
-
-			wp_enqueue_style( 'revisr_dashboard_css' );
-			wp_enqueue_style( 'revisr_octicons_css' );
-			wp_enqueue_style( 'revisr_select2_css' );
-			wp_enqueue_style( 'thickbox' );
-			wp_enqueue_script( 'thickbox' );
-			wp_enqueue_script( 'revisr_settings' );
-			wp_enqueue_script( 'revisr_select2_js' );
-
-
+		// Pages that we should only include styles/scripts on if using the 'revisr_commits' post type.
+		if ( isset( $_GET['post_type'] ) && 'revisr_commits' === $_GET['post_type'] || 'revisr_commits' === get_post_type() ) {
+			$allowed_pages[] = 'edit.php';
+			$allowed_pages[] = 'post.php';
+			$allowed_pages[] = 'post-new.php';
 		}
 
-		// Enqueue scripts and styles for the 'revisr_commits' custom post type.
-		if ( 'revisr_commits' === get_post_type() ) {
+		// Start registering/enqueuing scripts if the hook is in our allowed pages.
+		if ( in_array( $hook, $allowed_pages ) ) {
 
-			if ( 'post-new.php' === $hook  || 'post.php' === $hook ) {
+			// Registers all CSS files used by Revisr.
+			wp_register_style( 'revisr_admin_css', REVISR_URL . 'assets/css/revisr-admin.css', array(), '05242015' );
+			wp_register_style( 'revisr_octicons_css', REVISR_URL . 'assets/lib/octicons/octicons.css', array(), '04242015' );
+			wp_register_style( 'revisr_select2_css', REVISR_URL . 'assets/lib/select2/css/select2.min.css', array(), '04242015' );
 
-				// Enqueue scripts for the "New Commit" screen.
-				wp_enqueue_script( 'revisr_staging' );
-				wp_localize_script( 'revisr_staging', 'pending_vars', array(
-					'ajax_nonce' 		=> wp_create_nonce( 'pending_nonce' ),
-					'empty_title_msg' 	=> __( 'Please enter a message for your commit.', 'revisr' ),
-					'empty_commit_msg' 	=> __( 'Nothing was added to the commit. Please use the section below to add files to use in the commit.', 'revisr' ),
-					'error_commit_msg' 	=> __( 'There was an error committing the files. Make sure that your Git username and email is set, and that Revisr has write permissions to the ".git" directory.', 'revisr' ),
-					'view_diff' 		=> __( 'View Diff', 'revisr' ),
-					)
-				);
+			// Registers all JS files used by Revisr.
+			wp_register_script( 'revisr_dashboard', REVISR_URL . 'assets/js/revisr-dashboard.js', 'jquery',  '05242015', true );
+			wp_register_script( 'revisr_staging', REVISR_URL . 'assets/js/revisr-staging.js', 'jquery', '04242015', false );
+			wp_register_script( 'revisr_settings', REVISR_URL . 'assets/js/revisr-settings.js', 'jquery', '04242015', true );
+			wp_register_script( 'revisr_select2_js', REVISR_URL . 'assets/lib/select2/js/select2.min.js', 'jquery', '04242015', true );
+
+			// Enqueues styles/scripts that should be loaded on all allowed pages.
+			wp_enqueue_style( 'revisr_admin_css' );
+			wp_enqueue_style( 'thickbox' );
+			wp_enqueue_style( 'revisr_select2_css' );
+			wp_enqueue_style( 'revisr_octicons_css' );
+			wp_enqueue_script( 'thickbox' );
+			wp_enqueue_script( 'revisr_select2_js' );
+
+			// Switch through page-dependant styles/scripts.
+			switch( $hook ) {				
+
+				// The main dashboard page.
+				case 'toplevel_page_revisr':
+				case 'revisr':
+					wp_enqueue_script( 'revisr_dashboard' );
+					wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
+						'ajax_nonce' 	=> wp_create_nonce( 'revisr_dashboard_nonce' ),
+						'discard_msg' 	=> __( 'Are you sure you want to discard your uncommitted changes?', 'revisr' ),
+						)
+					);
+					break;
+
+				// The branches page.
+				case 'revisr_page_revisr_branches':
+					break;
+
+				// The settings pages.
+				case 'revisr_page_revisr_settings':
+					wp_enqueue_script( 'revisr_settings' );
+					break;
+
+				// The WP_List_Table for the 'revisr_commits' post type.
+				case 'edit.php':
+					break;
+
+				// The "New Commit" screen and "View Commit" screen.
+				case 'post.php':
+				case 'post-new.php':
+					wp_enqueue_script( 'revisr_staging' );
+					wp_localize_script( 'revisr_staging', 'pending_vars', array(
+						'ajax_nonce' 		=> wp_create_nonce( 'pending_nonce' ),
+						'empty_title_msg' 	=> __( 'Please enter a message for your commit.', 'revisr' ),
+						'empty_commit_msg' 	=> __( 'Nothing was added to the commit. Please use the section below to add files to use in the commit.', 'revisr' ),
+						'error_commit_msg' 	=> __( 'There was an error committing the files. Make sure that your Git username and email is set, and that Revisr has write permissions to the ".git" directory.', 'revisr' ),
+						'view_diff' 		=> __( 'View Diff', 'revisr' ),
+						)
+					);
+					wp_dequeue_script( 'autosave' );
+					break;
 
 			}
 
-			wp_enqueue_style( 'revisr_commits_css' );
-			wp_enqueue_style( 'thickbox' );
-			wp_enqueue_style( 'revisr_octicons_css' );
-			wp_enqueue_script( 'thickbox' );
-			wp_dequeue_script( 'autosave' );
-
-		} elseif ( isset( $_GET['post_type'] ) && 'revisr_commits' === $_GET['post_type'] ) {
-			// Necessary for when there are no commits found in a branch.
-			wp_enqueue_style( 'revisr_commits_css' );
 		}
 
 	}
@@ -212,9 +231,7 @@ class Revisr_Admin {
 	 * @return string $string The escaped string.
 	 */
 	public static function escapeshellarg( $string ) {
-		$os = Revisr_Compatibility::get_os();
-
-		if ( 'WIN' !== $os['code'] ) {
+		if ( 'WIN' !== Revisr_Compatibility::get_os()['code'] ) {
 			return escapeshellarg( $string );
 		} else {
 			// Windows-friendly workaround.

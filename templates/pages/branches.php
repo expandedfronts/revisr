@@ -49,7 +49,7 @@ revisr()->branch_table->prepare_items();
 		}
 	?>
 
-	<div id="col-container" class="revisr_col_container">
+	<div id="col-container" class="revisr-col-container">
 
 		<div id="col-right">
 			<form id="revisr-branch-form">
@@ -58,13 +58,14 @@ revisr()->branch_table->prepare_items();
 		</div><!-- /#col-right -->
 
 		<div id="col-left">
-			<div id="add-branch-box" class="postbox">
-				<h3 id="add-branch-title"><?php _e( 'Add New Branch', 'revisr' ); ?></h3>
+			
+			<div id="revisr-add-branch-box" class="postbox">
+				<h3><?php _e( 'Add New Branch', 'revisr' ); ?></h3>
 				<div class="inside">
-					<form id="add_branch" method="post" action="<?php echo get_admin_url() . 'admin-post.php'; ?>">
+					<form id="revisr-add-branch-form" method="post" action="<?php echo get_admin_url() . 'admin-post.php'; ?>">
 						<div class="form-field form-required">
-							<label for="tag-name"><strong><?php _e( 'Name', 'revisr' ); ?></strong></label>
-							<input name="branch_name" id="branch-name" type="text" value="" size="40" aria-required="true">
+							<label for="revisr-branch-name"><strong><?php _e( 'Name', 'revisr' ); ?></strong></label>
+							<input id="revisr-branch-name" name="branch_name" type="text" value="" size="40" aria-required="true" />
 							<p class="description"><?php _e( 'The name of the new branch.', 'revisr' ); ?></p><br>
 						</div>
 						<div class="form-field">

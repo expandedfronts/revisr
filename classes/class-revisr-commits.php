@@ -437,7 +437,7 @@ class Revisr_Commits {
 				</div>
 
 				<div class="misc-pub-section revisr-pub-branch">
-					<label for="revisr-branch"><?php _e( 'Branch:', 'revisr' ); ?></label>
+					<label for="revisr-branch" class="revisr-octicon-label"><?php _e( 'Branch:', 'revisr' ); ?></label>
 					<span><strong><?php echo revisr()->git->branch; ?></strong></span>
 				</div>
 
@@ -503,7 +503,7 @@ class Revisr_Commits {
 				</div>
 
 				<div class="misc-pub-section revisr-pub-branch">
-					<label for="revisr-branch"><?php _e( 'Branch:', 'revisr' ); ?></label>
+					<label for="revisr-branch" class="revisr-octicon-label"><?php _e( 'Branch:', 'revisr' ); ?></label>
 					<span><strong><?php echo $commit['branch']; ?></strong></span>
 				</div>
 
@@ -513,7 +513,7 @@ class Revisr_Commits {
 
 				<?php if ( $commit['tag'] !== '' ): ?>
 				<div class="misc-pub-section revisr-git-tag">
-					<label for="revisr-tag"><?php _e( 'Tagged:', 'revisr' ); ?></label>
+					<label for="revisr-tag" class="revisr-octicon-label"><?php _e( 'Tagged:', 'revisr' ); ?></label>
 					<span><strong><?php echo $commit['tag']; ?></strong></span>
 				</div>
 				<?php endif; ?>

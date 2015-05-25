@@ -1,0 +1,120 @@
+/**
+ * revisr-admin.css
+ *
+ * @package 	Revisr
+ * @license 	GPLv3
+ * @link 		https://revisr.io
+ * @copyright 	Expanded Fronts, LLC
+ */
+
+/*--------------------------------------------------------------
+>>> TABLE OF CONTENTS:
+----------------------------------------------------------------
+# Dashboard Page
+	## Recent Activity
+	## "Quick Actions" metabox
+	## "Branches/Tags" metabox
+# Branches Page
+# Commits Pages
+	## Committed
+	## Staging
+# Settings Pages
+# Misc
+--------------------------------------------------------------*/
+
+/*--------------------------------------------------------------
+# Dashboard Page
+--------------------------------------------------------------*/
+.revisr-poststuff { padding-top: 0px !important; }
+
+/*--------------------------------------------------------------
+## Recent Activity
+--------------------------------------------------------------*/
+#revisr-activity-form table th[id=message] { width: 75%; }
+#revisr-activity-form .alignleft { display: none; }
+
+/*--------------------------------------------------------------
+## "Quick Actions" metabox
+--------------------------------------------------------------*/
+.revisr-quick-action-btn { width: 100%; text-align: left !important; margin-bottom: 4px !important; }
+.revisr-quick-action-btn:before { margin: 5px; display: inline-block; float: left; color: #fff; -webkit-font-smoothing: antialiased; }
+.revisr-quick-action-btn-txt { float: left; }
+#revisr-commit-btn { background-color: #5cb85c; border-color: #4cae4c; }
+#revisr-commit-btn:before { content: "\f132"; margin: 5px 1px !important; font: normal 20px/1 'dashicons'; }
+#revisr-commit-btn:hover {	background-color: #4cae4c; border-color: #4cae4c; }
+#revisr-discard-btn { background-color: #d9534f; border-color: #d43f3a; }
+#revisr-discard-btn:before { content: "\f158"; margin: 4px 1px !important; font: normal 20px/1 'dashicons'; }
+#revisr-discard-btn:hover { background-color: #d43f3a; border-color: #d43f3a; }
+#revisr-backup-btn:before { content: "\f096"; font: normal 17px/1 'octicons'; }
+#revisr-push-btn:before { content: "\f03d"; font: normal 20px/1 'octicons'; }
+#revisr-pull-btn:before { content: "\f03f"; font: normal 20px/1 'octicons'; }
+#revisr-loader { float: right; }
+
+/*--------------------------------------------------------------
+## "Branches/Tags" metabox
+--------------------------------------------------------------*/
+#revisr-branches-tags-widget #branches { padding: 0; }
+#revisr-branches-tags-widget #branches-table { border: 0; }
+#revisr-branches-tags-widget #branches-table tr:nth-child(odd) { background-color: #f9f9f9; }
+#revisr-manage-branches-link { font-size: 12px; }
+
+/*--------------------------------------------------------------
+# Branches Page
+--------------------------------------------------------------*/
+.revisr-col-container { margin-top: 25px !important; }
+#revisr-branch-form .tablenav.top { display: none; }
+#revisr-add-branch-box { max-width: 280px; }
+#revisr-add-branch-box h3 { font-size: 14px; padding: 8px 12px; margin: 0; line-height: 1.4; }
+#revisr-add-branch-box #add-branch-submit { text-align: center; margin-bottom: 0; padding-bottom: 0; }
+
+/*--------------------------------------------------------------
+# Commits
+--------------------------------------------------------------*/
+#posts-filter .alignleft.actions.bulkactions { display: none; }
+#posts-filter #hash, .column-hash { width:70px !important; }
+#posts-filter .column-title { width: 400px !important; }
+#posts-filter #branch, #posts-filter #tag, #posts-filter #files_changed, #posts-filter .column-branch, #posts-filter .column-tag, #posts-filter .column-files_changed { text-align: center !important; }
+body.post-type-revisr_commits.edit-php .wrap { margin-top: 27px !important; }
+
+/*--------------------------------------------------------------
+## Committed
+--------------------------------------------------------------*/
+#committed { width: 90%; }
+body.post-type-revisr_commits.post-php .wrap { margin-top: 27px !important; }
+
+/*--------------------------------------------------------------
+## Staging
+--------------------------------------------------------------*/
+#revisr_save_commit .inside, #revisr_view_commit .inside { padding: 0; }
+.revisr-timestamp:before { margin-right: 3px; }
+#misc-publishing-actions .revisr-octicon-label:before { color: #888; display: inline-block; font: 400 20px/1 octicons; speak: none; left: -1px; position: relative; top: 0; text-decoration: none!important; vertical-align: top; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+#misc-publishing-actions label[for=revisr-branch]:before { content: '\f020'; padding: 0 7px 0 5px; }
+#misc-publishing-actions label[for=revisr-tag]:before { content: '\f015'; padding: 0 5px 0 3px; }
+.stage-container { width: 100%; display: inline-block; }
+#staged { width: 80%; float: left; overflow-y: scroll; }
+#unstaged { width: 80%; float: left; overflow-y: scroll; }
+.stage-nav { float: left; margin: 5px; }
+.stage-nav-button { margin-top: 7px !important; }
+.diff_added { background-color: #cfc; }
+.diff_removed { background-color: #fdd; }
+body.post-type-revisr_commits.post-new-php .wrap { margin-top: 27px !important; }
+
+/*--------------------------------------------------------------
+# Settings
+--------------------------------------------------------------*/
+#revisr-settings-form { margin-left: 15px; }
+#verify-remote { margin-left: 10px; padding: 4px; font-size: 11px; border-radius: 4px; color: #fff; margin-left: 10px; }
+.verify-remote-success { background-color: #5cb85c; }
+.verify-remote-error { background-color: #AFAFAF; }
+#gitignore { width: 35em; }
+.revisr-description { width: 35em; }
+.revisr-text { width: 35em !important; }
+#post-hook-input { width: 35em; }
+#revisr-debug-table { max-width: 750px; }
+
+/*--------------------------------------------------------------
+# Misc
+--------------------------------------------------------------*/
+#site5_wrapper { width: 80px; text-align: center; font-size: 11px; float: right; margin: 0px 10px 10px 10px; padding: 0 5px; background-color: #fff; border: 1px solid #ddd; }
+#site5_logo { width: 80px; margin-top: -5px; }
+.revisr-alert { margin: 20px 0 !important;}

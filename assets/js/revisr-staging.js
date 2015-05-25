@@ -40,14 +40,19 @@ function commit_files() {
 
 jQuery(document).ready(function($) {
 
-    var data = {
-        action: 'pending_files',
-        security: pending_vars.ajax_nonce
-    };
+    // Load any pending/untracked files via AJAX in case there are a lot of results.
+    if ( 'post-new-php' === adminpage ) {
 
-    $.post(ajaxurl, data, function(response) {
-        document.getElementById('pending_files_result').innerHTML = response;
-    });
+        var data = {
+            action: 'pending_files',
+            security: pending_vars.ajax_nonce
+        };
+
+        $.post(ajaxurl, data, function(response) {
+            document.getElementById('pending_files_result').innerHTML = response;
+        });
+
+    }
 
     var url = document.URL;
     var empty_title  = url.indexOf("message=42");
