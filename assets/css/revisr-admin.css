@@ -19,6 +19,7 @@
 	## Committed
 	## Staging
 # Settings Pages
+# Setup
 # Misc
 --------------------------------------------------------------*/
 
@@ -113,6 +114,12 @@ body.post-type-revisr_commits.post-new-php .wrap { margin-top: 27px !important; 
 #revisr-debug-table { max-width: 750px; }
 body.revisr_page_revisr_settings #site5_wrapper { margin-right: 20px; }
 
+/*--------------------------------------------------------------
+# Setup
+--------------------------------------------------------------*/
+#revisr-setup-container { max-width: 400px; background-color: #fff; color: #444; margin: 140px auto 25px; padding: 20px; -webkit-font-smoothing: subpixel-antialiased; -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.13); box-shadow: 0 1px 3px rgba(0,0,0,.13); }
+.revisr-setup-input	{ width: 100% !important; }
+.select2-hidden { display:none; }
 /*--------------------------------------------------------------
 # Misc
 --------------------------------------------------------------*/
