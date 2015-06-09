@@ -50,7 +50,7 @@ class Revisr_Admin {
 			wp_register_script( 'revisr_dashboard', REVISR_URL . 'assets/js/revisr-dashboard.js', 'jquery',  '05242015', true );
 			wp_register_script( 'revisr_staging', REVISR_URL . 'assets/js/revisr-staging.js', 'jquery', '04242015', false );
 			wp_register_script( 'revisr_settings', REVISR_URL . 'assets/js/revisr-settings.js', 'jquery', '04242015', true );
-			wp_register_script( 'revisr_setup', REVISR_URL . 'assets/js/revisr-setup.js', 'jquery', '0602015', true );
+			wp_register_script( 'revisr_setup', REVISR_URL . 'assets/js/revisr-setup.js', 'jquery', '0603015', true );
 			wp_register_script( 'revisr_select2_js', REVISR_URL . 'assets/lib/select2/js/select2.min.js', 'jquery', '04242015', true );
 
 			// Enqueues styles/scripts that should be loaded on all allowed pages.
@@ -87,6 +87,10 @@ class Revisr_Admin {
 				// The setup page.
 				case 'toplevel_page_revisr_setup':
 					wp_enqueue_script( 'revisr_setup' );
+					wp_localize_script( 'revisr_setup', 'revisr_setup_vars', array(
+						'plugin_or_theme_placeholder' => __( 'Please select...', 'revisr' )
+						)
+					);
 					break;	
 
 				// The WP_List_Table for the 'revisr_commits' post type.

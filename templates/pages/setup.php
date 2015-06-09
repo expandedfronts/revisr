@@ -76,7 +76,7 @@ $action = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
 					<p><?php _e( 'Please select a plugin or theme...', 'revisr' ); ?></p>
 
 						<select id="revisr-plugin-or-theme" name="plugin_or_theme_select" style="display:none;" />
-							
+							<option></option>
 							<optgroup label="<?php _e( 'Plugins', 'revisr' ); ?>">
 								<?php 
 									foreach( get_plugins() as $k => $v ) {
@@ -156,7 +156,10 @@ $action = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
 					define( 'REVISR_SETUP_INIT', true );
 
 					if ( revisr()->git->init_repo() ) {
-						printf( '<p>%s</p>', __( 'Repository created successfully.', 'revisr' ) );
+						printf( '<p>%s</p><br><a href="%s">%s</a>',
+							__( 'Repository created successfully.', 'revisr' ),
+							get_admin_url() . 'admin.php?page=revisr',
+							__( 'Continue to dashboard.') );
 					} else {
 						printf( '<p>%s</p>', __( 'Error creating repository.', 'revisr' ) );
 					}

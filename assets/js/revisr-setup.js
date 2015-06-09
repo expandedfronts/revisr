@@ -18,6 +18,7 @@ jQuery('#revisr-tracking-options').select2({
 });
 jQuery('#revisr-plugin-or-theme').select2({
 	theme: 'classic',
+	placeholder: revisr_setup_vars.plugin_or_theme_placeholder,
 	width: '100%'
 });
 
