@@ -131,9 +131,13 @@ class Revisr_DB {
 		$sizes 	= array();
 		$tables = $this->wpdb->get_results( 'SHOW TABLE STATUS', ARRAY_A );
 
-		foreach ( $tables as $table ) {
-			$size = round( $table['Data_length'] / 1024 / 1024, 2 );
-			$sizes[$table['Name']] = sprintf( __( '(%s MB)', 'revisr' ), $size );
+		if ( is_array( $tables ) ) {
+
+			foreach ( $tables as $table ) {
+				$size = round( $table['Data_length'] / 1024 / 1024, 2 );
+				$sizes[$table['Name']] = sprintf( __( '(%s MB)', 'revisr' ), $size );
+			}
+
 		}
 
 		return $sizes;

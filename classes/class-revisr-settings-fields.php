@@ -361,15 +361,24 @@ class Revisr_Settings_Fields {
 		$tables = $db->get_tables();
 		$sizes  = $db->get_sizes();
 		echo '<div id="advanced-db-tracking" style="display:none;"><br><select name="revisr_database_settings[tracked_tables][]" multiple="multiple" style="width:35em;height:250px;">';
+
 		if ( is_array( $tables ) ) {
+
 			foreach ( $tables as $table ) {
+
+				$size = isset( $sizes[$table] ) ? $sizes[$table] : '';
 				$table_selected = '';
+
 				if ( in_array( $table, $db->get_tracked_tables() ) ) {
 					$table_selected = ' selected';
 				}
-				echo "<option value='$table'$table_selected>$table $sizes[$table]</option>";
+
+				echo "<option value='$table'$table_selected>$table $size</option>";
+
 			}
+
 		}
+
 		echo '</select></div>';
 	}
 
