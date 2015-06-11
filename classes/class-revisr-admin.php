@@ -62,7 +62,7 @@ class Revisr_Admin {
 			wp_enqueue_script( 'revisr_select2_js' );
 
 			// Switch through page-dependant styles/scripts.
-			switch( $hook ) {				
+			switch( $hook ) {
 
 				// The main dashboard page.
 				case 'toplevel_page_revisr':
@@ -91,7 +91,7 @@ class Revisr_Admin {
 						'plugin_or_theme_placeholder' => __( 'Please select...', 'revisr' )
 						)
 					);
-					break;	
+					break;
 
 				// The WP_List_Table for the 'revisr_commits' post type.
 				case 'edit.php':
@@ -124,8 +124,7 @@ class Revisr_Admin {
 	 */
 	public function menus() {
 		$icon_svg = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOC4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjI0NS44IDM4MS4xIDgxLjkgODkuNSIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAyNDUuOCAzODEuMSA4MS45IDg5LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTI5NS4yLDM4Ny4yYy01LjEsNS4xLTUuMSwxMy4zLDAsMTguM2MzLjgsMy44LDkuMyw0LjcsMTMuOSwyLjlsNy4yLTcuMmMxLjgtNC43LDAuOS0xMC4yLTIuOS0xMy45DQoJQzMwOC41LDM4Mi4xLDMwMC4zLDM4Mi4xLDI5NS4yLDM4Ny4yeiBNMzA5LjcsNDAxLjZjLTIuOSwyLjktNy42LDIuOS0xMC42LDBjLTIuOS0yLjktMi45LTcuNiwwLTEwLjZjMi45LTIuOSw3LjYtMi45LDEwLjYsMA0KCUMzMTIuNiwzOTQsMzEyLjYsMzk4LjcsMzA5LjcsNDAxLjZ6Ii8+DQo8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMjY4LjEsNDU0Yy0xMy4yLTEwLjEtMTYuMS0yOS02LjQtNDIuNmM0LTUuNiw5LjQtOS40LDE1LjQtMTEuNGwtMi0xMC4yYy04LjUsMi41LTE2LjIsNy43LTIxLjcsMTUuNQ0KCWMtMTIuOSwxOC4yLTguOSw0My41LDguOCw1N2wtNS42LDguM2wyNS45LTEuMmwtOC42LTIzLjZMMjY4LjEsNDU0eiIvPg0KPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTMxOC4zLDQwMy4zYzEuMS0yLjEsMS43LTQuNSwxLjctN2MwLTguNC02LjgtMTUuMi0xNS4yLTE1LjJzLTE1LjIsNi44LTE1LjIsMTUuMnM2LjgsMTUuMiwxNS4yLDE1LjINCgljMi4xLDAsNC4xLTAuNCw1LjktMS4yYzguNCwxMC42LDkuMiwyNS44LDEsMzcuMmMtMy45LDUuNi05LjQsOS40LTE1LjQsMTEuNGwyLDEwLjJjOC41LTIuNSwxNi4yLTcuNywyMS43LTE1LjUNCglDMzMxLjIsNDM4LjEsMzI5LjksNDE3LjQsMzE4LjMsNDAzLjN6IE0zMDQuOCw0MDMuM2MtMy44LDAtNi45LTMuMS02LjktNi45czMuMS02LjksNi45LTYuOXM2LjksMy4xLDYuOSw2LjkNCglTMzA4LjcsNDAzLjMsMzA0LjgsNDAzLjN6Ii8+DQo8L3N2Zz4=';
-		
-		if ( revisr()->git->is_repo ) {
+		if ( ! Revisr_Admin::is_doing_setup() ) {
 			$this->page_hooks['menu'] 		= add_menu_page( __( 'Dashboard', 'revisr' ), __( 'Revisr', 'revisr' ), 'manage_options', 'revisr', array( $this, 'include_page' ), $icon_svg );
 			$this->page_hooks['dashboard'] 	= add_submenu_page( 'revisr', __( 'Revisr - Dashboard', 'revisr' ), __( 'Dashboard', 'revisr' ), 'manage_options', 'revisr', array( $this, 'include_page' ) );
 			$this->page_hooks['branches'] 	= add_submenu_page( 'revisr', __( 'Revisr - Branches', 'revisr' ), __( 'Branches', 'revisr' ), 'manage_options', 'revisr_branches', array( $this, 'include_page' ) );
@@ -145,7 +144,7 @@ class Revisr_Admin {
 		global $submenu;
 	    $arr = array();
 
-		if ( isset( $submenu['revisr'] ) && revisr()->git->is_repo ) {
+		if ( isset( $submenu['revisr'] ) && ! Revisr_Admin::is_doing_setup()  ) {
 		    $arr[] = $submenu['revisr'][0];
 		    $arr[] = $submenu['revisr'][3];
 		    $arr[] = $submenu['revisr'][1];
@@ -239,6 +238,24 @@ class Revisr_Admin {
 			$num_commits = $wpdb->get_results( $wpdb->prepare( "SELECT meta_id FROM $wpdb->postmeta WHERE meta_key = 'branch' AND meta_value = %s", $branch ) );
 		}
 		return count( $num_commits );
+	}
+
+	/**
+	 * Helper function for determining if we're in setup mode.
+	 * @access public
+	 * @return boolean
+	 */
+	public static function is_doing_setup() {
+
+		if ( revisr()->git->is_repo ) {
+			return false;
+		} else {
+			if ( defined( 'REVISR_SKIP_SETUP' ) || get_transient( 'revisr_skip_setup' ) ) {
+				return false;
+			}
+			return true;
+		}
+
 	}
 
 	/**
@@ -407,7 +424,7 @@ class Revisr_Admin {
 
 			// Loop through the diff and echo the output.
 			foreach ( $diff as $line ) {
-				
+
 				if ( substr( $line, 0, 1 ) === '+' ) {
 					echo '<span class="diff_added" style="background-color:#cfc;">' . htmlspecialchars( $line ) . '</span><br>';
 				} else if ( substr( $line, 0, 1 ) === '-' ) {
@@ -415,7 +432,7 @@ class Revisr_Admin {
 				} else {
 					echo htmlspecialchars( $line ) . '<br>';
 				}
-				
+
 			}
 
 		} else {

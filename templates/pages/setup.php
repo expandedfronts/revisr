@@ -11,9 +11,11 @@
 // Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Grab the step and current action. 
+// Grab the step and current action.
 $step 	= filter_input( INPUT_GET, 'step', FILTER_SANITIZE_NUMBER_INT );
 $action = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
+
+delete_transient( 'revisr_skip_setup' );
 
 ?>
 
@@ -25,7 +27,7 @@ $action = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
 
 			<input type="hidden" name="page" value="revisr_setup" />
 
-			<h2><?php _e( 'Revisr - Installation', 'revisr' ); ?></h2>
+			<h2><div class="revisr-arrow-logo"></div><?php _e( 'Revisr - Installation', 'revisr' ); ?></h2>
 
 			<?php if ( revisr()->git->is_repo ): ?>
 
@@ -46,6 +48,7 @@ $action = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
 				<select name="action" class="revisr-setup-input">
 					<option value="create"><?php _e( 'Yes, create a new repository.', 'revisr' ); ?></option>
 					<option value="find"><?php _e( 'No, find an existing repository.', 'revisr' ); ?></option>
+					<option value="skip"><?php _e( 'Skip setup...', 'revisr' ); ?></option>
 				</select>
 
 				<br /><br />
@@ -62,7 +65,7 @@ $action = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
 					<input id="revisr-create-path" class="regular-text revisr-setup-input disabled" type="text" disabled="disabled" value="<?php echo revisr()->git->git_dir; ?>" />
 
 					<p><?php _e( 'What would you like to track?', 'revisr' ); ?></p>
-					
+
 					<select id="revisr-tracking-options" name="tracking_options">
 						<option value="everything"><?php _e( 'Everything', 'revisr' ); ?></option>
 						<option value="wp_content"><?php _e( 'Plugins, Themes, and Uploads', 'revisr' ); ?></option>
@@ -78,7 +81,7 @@ $action = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
 						<select id="revisr-plugin-or-theme" name="plugin_or_theme_select" style="display:none;" />
 							<option></option>
 							<optgroup label="<?php _e( 'Plugins', 'revisr' ); ?>">
-								<?php 
+								<?php
 									foreach( get_plugins() as $k => $v ) {
 										printf( '<option value="%s">%s</option>', $k, $v['Name'] );
 									}
@@ -106,6 +109,17 @@ $action = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
 
 					<p><?php _e( 'Revisr wasn\'t able to automatically detect your repository.', 'revisr' ); ?></p>
 
+				<?php elseif ( 'skip' === $action ): ?>
+
+					<?php set_transient( 'revisr_skip_setup', true, 12 * HOUR_IN_SECONDS ); ?>
+
+					<p><?php _e( 'Setup has been skipped for this session.', 'revisr' ); ?></p>
+					<p><?php _e( 'If you want to permanently skip the setup, you can do so by adding the following to your "wp-config.php" file:', 'revisr' ); ?></p>
+
+					<pre>define( 'REVISR_SKIP_SETUP', true );</pre>
+
+					<?php printf( '<p><a href="%s">%s</a></p>', get_admin_url() . 'admin.php?page=revisr', __( 'Continue to dashboard', 'revisr' ) ); ?>
+
 				<?php else: ?>
 
 				<?php endif; ?>
@@ -119,14 +133,14 @@ $action = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
 					$gitignore 	= array();
 
 					switch ( $tracking ) {
-						
+
 						case 'everything':
 							$gitignore = array(
 								'.htaccess',
 								'wp-config.php',
 							);
 							break;
-						
+
 						case 'wp_content':
 							$gitignore = array(
 								'/*',
@@ -134,7 +148,7 @@ $action = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
 								'!/wp-content/'
 								);
 							break;
-							
+
 						case 'single':
 						default:
 							break;
