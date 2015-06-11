@@ -34,7 +34,7 @@ delete_transient( 'revisr_skip_setup' );
 				<?php
 					printf( '<p>%s<br><a href="%s">%s</a></p>',
 						__( 'Revisr has succesfully detected a Git repository.', 'revisr' ),
-						get_admin_url() . 'admin.php?page=revisr',
+						get_admin_url( null, 'admin.php?page=revisr' ),
 						__( 'Continue to dashboard.', 'revisr' )
 					);
 				?>
@@ -61,9 +61,6 @@ delete_transient( 'revisr_skip_setup' );
 
 				<?php if ( 'create' === $action ): ?>
 
-					<p><?php _e( 'Revisr will try to create a repository in the following directory:', 'revisr' ); ?></p>
-					<input id="revisr-create-path" class="regular-text revisr-setup-input disabled" type="text" disabled="disabled" value="<?php echo revisr()->git->git_dir; ?>" />
-
 					<p><?php _e( 'What would you like to track?', 'revisr' ); ?></p>
 
 					<select id="revisr-tracking-options" name="tracking_options">
@@ -76,12 +73,13 @@ delete_transient( 'revisr_skip_setup' );
 
 					<div id="revisr-plugin-or-theme-wrap" style="display:none;">
 
-					<p><?php _e( 'Please select a plugin or theme...', 'revisr' ); ?></p>
+						<p><?php _e( 'Please select a plugin or theme...', 'revisr' ); ?></p>
 
-						<select id="revisr-plugin-or-theme" name="plugin_or_theme_select" style="display:none;" />
+						<select id="revisr-plugin-or-theme" name="plugin_or_theme_select" style="display:none;">
 							<option></option>
 							<optgroup label="<?php _e( 'Plugins', 'revisr' ); ?>">
 								<?php
+
 									foreach( get_plugins() as $k => $v ) {
 										printf( '<option value="%s">%s</option>', $k, $v['Name'] );
 									}
@@ -97,8 +95,12 @@ delete_transient( 'revisr_skip_setup' );
 							</optgroup>
 
 						</select>
+						<br /><br />
 
 					</div>
+
+					<p><?php _e( 'Revisr will try to create a repository in the following directory:', 'revisr' ); ?></p>
+					<input id="revisr-create-path" class="regular-text revisr-setup-input disabled" type="text" disabled="disabled" value="<?php echo revisr()->git->git_dir; ?>" />
 
 					<br /><br />
 
@@ -118,7 +120,7 @@ delete_transient( 'revisr_skip_setup' );
 
 					<pre>define( 'REVISR_SKIP_SETUP', true );</pre>
 
-					<?php printf( '<p><a href="%s">%s</a></p>', get_admin_url() . 'admin.php?page=revisr', __( 'Continue to dashboard', 'revisr' ) ); ?>
+					<?php printf( '<p><a href="%s">%s</a></p>', get_admin_url( null, 'admin.php?page=revisr' ), __( 'Continue to dashboard', 'revisr' ) ); ?>
 
 				<?php else: ?>
 
@@ -172,7 +174,7 @@ delete_transient( 'revisr_skip_setup' );
 					if ( revisr()->git->init_repo() ) {
 						printf( '<p>%s</p><br><a href="%s">%s</a>',
 							__( 'Repository created successfully.', 'revisr' ),
-							get_admin_url() . 'admin.php?page=revisr',
+							get_admin_url( null, 'admin.php?page=revisr' ),
 							__( 'Continue to dashboard.') );
 					} else {
 						printf( '<p>%s</p>', __( 'Error creating repository.', 'revisr' ) );
