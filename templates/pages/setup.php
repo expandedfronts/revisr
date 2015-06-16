@@ -168,9 +168,6 @@ delete_transient( 'revisr_skip_setup' );
 
 					}
 
-					// Set the 'REVISR_GIT_DIR' constant.
-					define( 'REVISR_GIT_DIR', $dir );
-
 					// Write it to the wp-config file if necessary.
 					$line = "define('REVISR_GIT_DIR', '$dir');";
 					Revisr_Admin::replace_config_line( 'define *\( *\'REVISR_GIT_DIR\'', $line );
