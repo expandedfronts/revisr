@@ -64,9 +64,14 @@ delete_transient( 'revisr_skip_setup' );
 					<p><?php _e( 'What would you like to track?', 'revisr' ); ?></p>
 
 					<select id="revisr-tracking-options" name="tracking_options">
-						<option value="everything"><?php _e( 'Everything', 'revisr' ); ?></option>
-						<option value="wp_content"><?php _e( 'Plugins, Themes, and Uploads', 'revisr' ); ?></option>
-						<option value="single"><?php _e( 'A single plugin or theme...', 'revisr' ); ?></option>
+						<option value="<?php echo ABSPATH; ?>"><?php _e( 'Everything', 'revisr' ); ?></option>
+						<option value="<?php echo WP_CONTENT_DIR; ?>"><?php _e( 'Plugins, Themes, and Uploads', 'revisr' ); ?></option>
+						<option value="single"><?php _e( 'A plugin or theme...', 'revisr' ); ?></option>
+						<?php
+							if ( defined( 'REVISR_GIT_DIR' ) && constant( 'REVISR_GIT_DIR' ) !== false ) {
+								echo '<option value="' . REVISR_GIT_DIR . '">' . __( 'Custom...', 'revisr' ) . '</option>';
+							}
+						?>
 					</select>
 
 					<br /><br />
@@ -79,9 +84,16 @@ delete_transient( 'revisr_skip_setup' );
 							<option></option>
 							<optgroup label="<?php _e( 'Plugins', 'revisr' ); ?>">
 								<?php
-
 									foreach( get_plugins() as $k => $v ) {
-										printf( '<option value="%s">%s</option>', $k, $v['Name'] );
+
+										// Get the path to the plugin.
+										$plugin_folder 	= explode( '/', $k );
+										$plugin_path 	= WP_PLUGIN_DIR . '/' .$plugin_folder[0];
+
+										// Only allow plugins that are in a subdirectory.
+										if ( is_dir( $plugin_path ) ) {
+											printf( '<option value="%s">%s</option>', $plugin_path, $v['Name'] );
+										}
 									}
 								?>
 							</optgroup>
@@ -89,7 +101,7 @@ delete_transient( 'revisr_skip_setup' );
 							<optgroup label="<?php _e( 'Themes', 'revisr' ); ?>">
 								<?php
 									foreach ( wp_get_themes() as $theme ) {
-										echo '<option value="' . $theme->Template . '">' . $theme->Name . '</option>';
+										echo '<option value="' . get_theme_root() . DIRECTORY_SEPARATOR . $theme->Template . '">' . $theme->Name . '</option>';
 									}
 								?>
 							</optgroup>
@@ -100,7 +112,9 @@ delete_transient( 'revisr_skip_setup' );
 					</div>
 
 					<p><?php _e( 'Revisr will try to create a repository in the following directory:', 'revisr' ); ?></p>
-					<input id="revisr-create-path" class="regular-text revisr-setup-input disabled" type="text" disabled="disabled" value="<?php echo revisr()->git->git_dir; ?>" />
+					<input id="revisr-create-path" class="regular-text revisr-setup-input disabled" name="revisr_git_dir" type="text" disabled="disabled" value="<?php echo ABSPATH; ?>" />
+
+					<?php printf( '<p><strong>%s</strong>%s</p>', __( 'Note: ', 'revisr' ), __( 'You can always ignore specific files/directories later by going to the Revisr settings page.', 'revisr' ) ); ?>
 
 					<br /><br />
 
@@ -126,38 +140,45 @@ delete_transient( 'revisr_skip_setup' );
 
 				<?php endif; ?>
 
-
-			<?php elseif ( '3' === $step ): ?>
+			<?php elseif( '3' === $step ): ?>
 
 				<?php
 
-					$tracking 	= filter_input( INPUT_GET, 'tracking_options', FILTER_SANITIZE_STRING );
-					$gitignore 	= array();
+					$tracking 			= filter_input( INPUT_GET, 'tracking_options', FILTER_SANITIZE_STRING );
+					$plugin_or_theme 	= filter_input( INPUT_GET, 'plugin_or_theme_select', FILTER_SANITIZE_STRING );
+					$gitignore 			= array();
+					$dir 				= $tracking;
 
+					// Customize .gitignore & git dir as necessary.
 					switch ( $tracking ) {
 
-						case 'everything':
+						case ABSPATH:
 							$gitignore = array(
 								'.htaccess',
 								'wp-config.php',
 							);
 							break;
 
-						case 'wp_content':
-							$gitignore = array(
-								'/*',
-								'/*/',
-								'!/wp-content/'
-								);
+						case WP_CONTENT_DIR:
 							break;
 
 						case 'single':
-						default:
+							$dir = $plugin_or_theme;
 							break;
 
 					}
 
-					// Create .gitiginore BEFORE repo creation.
+					// Set the 'REVISR_GIT_DIR' constant.
+					define( 'REVISR_GIT_DIR', $dir );
+
+					// Write it to the wp-config file if necessary.
+					$line = "define('REVISR_GIT_DIR', '$dir');";
+					Revisr_Admin::replace_config_line( 'define *\( *\'REVISR_GIT_DIR\'', $line );
+
+					// Refresh the 'Revisr_Git' instance.
+					revisr()->git = new Revisr_Git;
+
+					// Create the .gitignore file BEFORE repo creation.
 					$gitignore_file = revisr()->git->get_git_dir() . '/.gitignore';
 					if ( ! file_exists( $gitignore_file ) && ! empty( $gitignore ) ) {
 						file_put_contents( $gitignore_file, implode( PHP_EOL, $gitignore ) );

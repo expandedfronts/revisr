@@ -132,6 +132,9 @@ class Revisr_Admin {
 			$this->page_hooks['setup'] 		= add_submenu_page( NULL, __( 'Revisr - Setup', 'revisr' ), 'Revisr', 'manage_options', 'revisr_setup', array( $this, 'include_page' ) );
 		} else {
 			$this->page_hooks['setup'] 		= add_menu_page( __( 'Revisr Setup', 'revisr' ), __( 'Revisr', 'revisr' ), 'manage_options', 'revisr_setup', array( $this, 'include_page' ), $icon_svg );
+			$this->page_hooks['dashboard'] 	= add_submenu_page( null, __( 'Revisr - Dashboard', 'revisr' ), __( 'Dashboard', 'revisr' ), 'manage_options', 'revisr', array( $this, 'include_page' ) );
+			$this->page_hooks['branches'] 	= add_submenu_page( NULL, __( 'Revisr - Branches', 'revisr' ), __( 'Branches', 'revisr' ), 'manage_options', 'revisr_branches', array( $this, 'include_page' ) );
+			$this->page_hooks['settings'] 	= add_submenu_page( NULL, __( 'Revisr - Settings', 'revisr' ), __( 'Settings', 'revisr' ), 'manage_options', 'revisr_settings', array( $this, 'include_page' ) );
 		}
 
 	}
@@ -591,6 +594,64 @@ class Revisr_Admin {
 				include_once( $file );
 			}
 		}
+	}
+	/**
+	 * Helper function for writing to the wp-config.php file,
+	 * taken from WP Super Cache.
+	 *
+	 * @access public
+	 * @return boolean
+	 */
+	public static function replace_config_line( $old, $new, $file = '' ) {
+
+		if ( $file === '' ) {
+			if ( file_exists( ABSPATH . 'wp-config.php') ) {
+				$file = ABSPATH . 'wp-config.php';
+			} else {
+				$file = dirname(ABSPATH) . '/wp-config.php';
+			}
+		}
+
+		if ( @is_file( $file ) == false ) {
+			return false;
+		}
+		if (!is_writeable( $file ) ) {
+			return false;
+		}
+
+		$found = false;
+		$lines = file($file);
+		foreach( (array)$lines as $line ) {
+		 	if ( preg_match("/$old/", $line)) {
+				$found = true;
+				break;
+			}
+		}
+		if ($found) {
+			$fd = fopen($file, 'w');
+			foreach( (array)$lines as $line ) {
+				if ( !preg_match("/$old/", $line))
+					fputs($fd, $line);
+				else {
+					fputs($fd, "$new // Added by Revisr\n");
+				}
+			}
+			fclose($fd);
+			return true;
+		}
+		$fd = fopen($file, 'w');
+		$done = false;
+		foreach( (array)$lines as $line ) {
+			if ( $done || !preg_match('/^(if\ \(\ \!\ )?define|\$|\?>/', $line) ) {
+				fputs($fd, $line);
+			} else {
+				fputs($fd, "$new // Added by Revisr\n");
+				fputs($fd, $line);
+				$done = true;
+			}
+		}
+		fclose($fd);
+		return true;
 	}
 
 }

@@ -22,11 +22,21 @@ jQuery('#revisr-plugin-or-theme').select2({
 	width: '100%'
 });
 
+// Fades in the plugin/theme picker.
 jQuery('#revisr-tracking-options').change(function(){
 	if (this.value == 'single') {
 		jQuery('#revisr-plugin-or-theme-wrap').fadeIn('fast');
-
 	} else {
+		update_repo_dir(this.value);
 		jQuery('#revisr-plugin-or-theme-wrap').fadeOut('fast');
 	}
 });
+
+// Updates the repo dir for plugins/themes.
+jQuery('#revisr-plugin-or-theme').change(function(){
+	update_repo_dir(this.value);
+});
+
+function update_repo_dir( value ) {
+	jQuery('#revisr-create-path').val(value);
+}
