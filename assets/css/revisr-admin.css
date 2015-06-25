@@ -120,6 +120,9 @@ body.revisr_page_revisr_settings #site5_wrapper { margin-right: 20px; }
 #revisr-setup-container { max-width: 400px; background-color: #fff; color: #444; margin: 140px auto 25px; padding: 30px; -webkit-font-smoothing: subpixel-antialiased; -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.13); box-shadow: 0 1px 3px rgba(0,0,0,.13); }
 .revisr-setup-input	{ width: 100% !important; }
 .select2-hidden { display:none; }
+.revisr-setup-nav { margin-top: 10px; width: 100%; }
+.revisr-setup-nav button { width: 48%; }
+.revisr-setup-nav:last-child { float: right; }
 /*--------------------------------------------------------------
 # Misc
 --------------------------------------------------------------*/

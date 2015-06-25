@@ -69,7 +69,7 @@ delete_transient( 'revisr_skip_setup' );
 						<option value="single"><?php _e( 'A plugin or theme...', 'revisr' ); ?></option>
 						<?php
 							if ( defined( 'REVISR_GIT_DIR' ) && constant( 'REVISR_GIT_DIR' ) !== false ) {
-								echo '<option value="' . REVISR_GIT_DIR . '">' . __( 'Custom...', 'revisr' ) . '</option>';
+								echo '<option value="' . REVISR_GIT_DIR . '">' . __( 'Custom (REVISR_GIT_DIR)', 'revisr' ) . '</option>';
 							}
 						?>
 					</select>
@@ -114,7 +114,7 @@ delete_transient( 'revisr_skip_setup' );
 					<p><?php _e( 'Revisr will try to create a repository in the following directory:', 'revisr' ); ?></p>
 					<input id="revisr-create-path" class="regular-text revisr-setup-input disabled" name="revisr_git_dir" type="text" disabled="disabled" value="<?php echo ABSPATH; ?>" />
 
-					<?php printf( '<p><strong>%s</strong>%s</p>', __( 'Note: ', 'revisr' ), __( 'You can always ignore specific files/directories later by going to the Revisr settings page.', 'revisr' ) ); ?>
+					<?php printf( '<p><strong>%s</strong>%s</p>', __( 'Note: ', 'revisr' ), __( 'You can always ignore specific files/directories within the repository later by going to the Revisr Settings page.', 'revisr' ) ); ?>
 
 					<br /><br />
 
@@ -124,6 +124,16 @@ delete_transient( 'revisr_skip_setup' );
 				<?php elseif ( 'find' === $action ): ?>
 
 					<p><?php _e( 'Revisr wasn\'t able to automatically detect your repository.', 'revisr' ); ?></p>
+					<p><?php _e( 'Enter the path to the repository below to try to detect it manually.', 'revisr' ); ?></p>
+
+					<input id="revisr-manual-repo-path" class="regular-text revisr-setup-input" name="revisr_manual_git_dir" value="<?php echo ABSPATH; ?>" />
+					<input type="hidden" name="action" value="check" />
+
+					<div class="revisr-setup-nav">
+						<button class="button" type="submit" name="step" value="1"><?php _e( 'Go Back', 'revisr' ); ?></button>
+						<button class="button button-primary" type="submit" style="float:right;" name="step" value="2"><?php _e( 'Check path...', 'revisr' ); ?></button>
+					</div>
+					<div style="clear:both;"></div>
 
 				<?php elseif ( 'skip' === $action ): ?>
 
@@ -135,6 +145,41 @@ delete_transient( 'revisr_skip_setup' );
 					<pre>define( 'REVISR_SKIP_SETUP', true );</pre>
 
 					<?php printf( '<p><a href="%s">%s</a></p>', get_admin_url( null, 'admin.php?page=revisr' ), __( 'Continue to dashboard', 'revisr' ) ); ?>
+
+				<?php elseif( 'check' === $action ): ?>
+
+					<?php
+
+						$dir = filter_input( INPUT_GET, 'revisr_manual_git_dir', FILTER_SANITIZE_STRING );
+
+						if ( revisr()->git->check_git_dir( $dir ) ) {
+							// Write it to the wp-config file if necessary.
+							$line = "define('REVISR_GIT_DIR', '$dir');";
+							Revisr_Admin::replace_config_line( 'define *\( *\'REVISR_GIT_DIR\'', $line );
+							Revisr_Admin::clear_transients();
+
+							printf( '<p>%s</p><br><a href="%s">%s</a>',
+								__( 'Repository detected succesfully.', 'revisr' ),
+								get_admin_url( 'admin.php?page=revisr' ),
+								__( 'Continue to dashboard.', 'revisr' )
+							);
+
+						} else {
+						?>
+							<div class="alert"><p class="alert error"><?php _e( 'Repository not found. Double-check the path and try again.', 'revisr' ); ?></p></div>
+
+							<input id="revisr-manual-repo-path" class="regular-text revisr-setup-input" name="revisr_manual_git_dir" value="<?php echo ABSPATH; ?>" />
+							<input type="hidden" name="action" value="check" />
+
+							<div class="revisr-setup-nav">
+								<button class="button" type="submit" name="step" value="1"><?php _e( 'Go Back', 'revisr' ); ?></button>
+								<button class="button button-primary" type="submit" style="float:right;" name="step" value="2"><?php _e( 'Check path...', 'revisr' ); ?></button>
+							</div>
+							<div style="clear:both;"></div>
+						<?php
+						}
+
+					?>
 
 				<?php else: ?>
 
