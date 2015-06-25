@@ -20,7 +20,7 @@ class Revisr_Remote {
 	 * @access public
 	 */
 	public function __construct() {
-		if ( ! is_object( revisr()->git ) ) {
+		if ( ! revisr()->git ) {
 			revisr()->git = new Revisr_Git;
 		}
 	}

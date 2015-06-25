@@ -460,7 +460,7 @@ class Revisr_Git {
 	 * @return boolean
 	 */
 	public function has_remote() {
-		if ( $this->get_config( 'remote', 'origin.url' ) || isset( revisr()->options['remote_url'] ) ) {
+		if ( $this->get_config( 'remote', 'origin.url' ) ) {
 			return true;
 		}
 		return false;
