@@ -22,14 +22,16 @@ class Revisr_Process {
 	 * @return boolean
 	 */
 	public function process_is_repo() {
-		if ( revisr()->git->is_repo ) {
-			return true;
-		} else {
-			$init_url 	= wp_nonce_url( get_admin_url() . 'admin-post.php?action=init_repo', 'init_repo', 'revisr_init_nonce' );
-			$alert 		= sprintf( __( 'Thanks for installing Revisr! No Git repository was detected, <a href="%s">click here</a> to create one.', 'revisr' ), $init_url );
-			Revisr_Admin::alert( $alert );
+		if ( defined( 'REVISR_SKIP_SETUP' ) || get_transient( 'revisr_skip_setup' ) ) {
+			if ( revisr()->git->is_repo ) {
+				return true;
+			} else {
+				$init_url 	= wp_nonce_url( get_admin_url() . 'admin-post.php?action=init_repo', 'init_repo', 'revisr_init_nonce' );
+				$alert 		= sprintf( __( 'Thanks for installing Revisr! No Git repository was detected, <a href="%s">click here</a> to create one.', 'revisr' ), $init_url );
+				Revisr_Admin::alert( $alert );
+			}
+			return false;
 		}
-		return false;
 	}
 
 	/**

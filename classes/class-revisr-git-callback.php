@@ -219,8 +219,15 @@ class Revisr_Git_Callback {
 
 		// Alerts the user.
 		Revisr_Admin::log( __( 'Successfully created a new repository.', 'revisr' ), 'init' );
-		wp_redirect( get_admin_url() . 'admin.php?page=revisr_settings&init=success' );
-		exit();
+
+		// Redirect if necessary (through skipped/legacy setup).
+		if ( ! defined( 'REVISR_SETUP_INIT' ) ) {
+			wp_redirect( get_admin_url() . 'admin.php?page=revisr_settings&init=success' );
+			exit();	
+		}
+	
+		// Return true if we haven't exited already.
+		return true;
 	}
 
 	/**
@@ -228,9 +235,16 @@ class Revisr_Git_Callback {
 	 * @access public
 	 */
 	public function null_init_repo() {
-		Revisr_Admin::log( __( 'Failed to initialize a new repository. Please make sure that Git is installed on the server and that Revisr has write permissons to the WordPress install.', 'revisr' ), 'error' );
-		wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
-		exit();
+
+		// Redirect if necessary (through skipped/legacy setup).
+		if ( ! defined( 'REVISR_SETUP_INIT' ) ) {
+			Revisr_Admin::log( __( 'Failed to initialize a new repository. Please make sure that Git is installed on the server and that Revisr has write permissons to the WordPress install.', 'revisr' ), 'error' );
+			wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
+			exit();
+		}
+
+		// Return false if we haven't exited already.
+		return false;
 	}
 
 	/**

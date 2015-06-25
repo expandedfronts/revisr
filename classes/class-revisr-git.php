@@ -70,12 +70,16 @@ class Revisr_Git {
 		$this->git_path 	= $this->get_git_path();
 		$this->git_dir 		= $this->get_git_dir();
 
+		// Make sure the provided Git directory is valid.
+		$this->check_git_dir();
+
 		// Load up information about the current repository.
 		if ( $this->is_repo ) {
 			$this->branch 			= $this->current_branch();
 			$this->remote 			= $this->current_remote();
 			$this->current_commit 	= $this->current_commit();
 		}
+
 	}
 
 	/**
@@ -112,30 +116,49 @@ class Revisr_Git {
 	}
 
 	/**
+	 * Checks if the provided path is a Git repository.
+	 * @access public
+	 * @param  string $dir The directory to check (optional).
+	 * @return boolean
+	 */
+	public function check_git_dir( $dir = '' ) {
+
+		// If no dir provided, use constant.
+		if ( '' === $dir ) {
+			$dir = $this->get_git_dir();
+		}
+
+		// Definitely bail if not a directory.
+		if ( ! is_dir( $dir ) ) {
+			return false;
+		}
+
+		// Check with Git binary if repo is detected.
+		chdir( $dir );
+		$git_toplevel = exec( "$this->git_path rev-parse --show-toplevel" );
+		chdir( $this->current_dir );
+
+		// If not, set the is_repo flag to false.
+		if ( ! $git_toplevel ) {
+			$this->is_repo = false;
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Returns the path to the top-level Git directory.
 	 * @access public
 	 * @return string The path to the top-level Git directory.
 	 */
 	public function get_git_dir() {
 
-		// Allow users to set a custom path for the .git directory.
-		if ( defined( 'REVISR_GIT_DIR' ) ) {
-			chdir( REVISR_GIT_DIR );
+		if ( defined( 'REVISR_GIT_DIR' ) && is_dir( REVISR_GIT_DIR ) ) {
+			return REVISR_GIT_DIR;
 		} else {
-			chdir( ABSPATH );
+			return ABSPATH;
 		}
-
-		$git_toplevel = exec( "$this->git_path rev-parse --show-toplevel" );
-
-		if ( ! $git_toplevel ) {
-			$git_dir 		= getcwd();
-			$this->is_repo 	= false;
-		} else {
-			$git_dir = $git_toplevel;
-		}
-
-		chdir( $this->current_dir );
-		return $git_dir;
 
 	}
 
@@ -249,7 +272,7 @@ class Revisr_Git {
 			$this->run( 'log', array( $this->branch . '..' . $this->remote . '/' . $this->branch, '--pretty=oneline' ), 'count_ajax_btn' );
 		} else {
 			$unpulled = $this->run( 'log', array( $this->branch . '..' . $this->remote . '/' . $this->branch, '--pretty=oneline' ) );
-			return count( $unpulled );			
+			return count( $unpulled );
 		}
 
 	}
@@ -364,7 +387,7 @@ class Revisr_Git {
 	public function get_branches( $remote = false ) {
 
 		$params = array();
-		
+
 		if ( true === $remote ) {
 			$params[] = '-r';
 		}

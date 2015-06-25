@@ -28,6 +28,7 @@ delete_option( 'revisr_database_settings' );
 delete_transient( 'revisr_error_details' );
 delete_transient( 'revisr_error' );
 delete_transient( 'revisr_alert' );
+delete_transient( 'revisr_skip_setup' );
 
 // Delete any commits.
 $commits = get_posts( array( 'post_type' => 'revisr_commits', 'post_status' => 'any', 'number_posts' => -1, 'fields' => 'ids' ) );
