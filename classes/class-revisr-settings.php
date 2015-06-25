@@ -105,6 +105,13 @@ class Revisr_Settings {
     		'revisr_general_settings'
 		);
 		add_settings_field(
+			'uninstall_on_delete',
+			__( 'Remove data on uninstall?', 'revisr' ),
+			array( $this->settings_fields, 'uninstall_on_delete_callback' ),
+			'revisr_general_settings',
+			'revisr_general_settings'
+		);
+		add_settings_field(
             'remote_name',
             __( 'Remote Name', 'revisr'),
             array( $this->settings_fields, 'remote_name_callback' ),

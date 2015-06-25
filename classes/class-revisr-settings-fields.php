@@ -188,6 +188,19 @@ class Revisr_Settings_Fields {
 	}
 
 	/**
+	 * Displays/updates the "Uninstall on Delete" settings field.
+	 * @access public
+	 */
+	public function uninstall_on_delete_callback() {
+		printf(
+			'<input type="checkbox" id="uninstall_on_delete" name="revisr_general_settings[uninstall_on_delete]" %s  />
+			<label for="uninstall_on_delete"><span class="description">%s</span></label>',
+			isset( revisr()->options['uninstall_on_delete'] ) ? "checked" : '',
+			__( 'Check to delete all settings and history stored in the database when this plugin is deleted. Settings in the .git/config will not be affected.', 'revisr' )
+		);
+	}
+
+	/**
 	 * Displays/updates the "Remote Name" settings field.
 	 * @access public
 	 */
