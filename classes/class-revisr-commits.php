@@ -35,14 +35,16 @@ class Revisr_Commits {
 			'not_found'           => __( 'No commits found yet, why not create a new one?', 'revisr' ),
 			'not_found_in_trash'  => __( 'No commits in trash.', 'revisr' ),
 		);
+
+		$cap = Revisr::get_capability();
 		$capabilities = array(
-			'edit_post'           => 'activate_plugins',
-			'read_post'           => 'activate_plugins',
-			'delete_posts'        => 'activate_plugins',
-			'edit_posts'          => 'activate_plugins',
-			'edit_others_posts'   => 'activate_plugins',
-			'publish_posts'       => 'activate_plugins',
-			'read_private_posts'  => 'activate_plugins',
+			'edit_post'           => $cap,
+			'read_post'           => $cap,
+			'delete_posts'        => $cap,
+			'edit_posts'          => $cap,
+			'edit_others_posts'   => $cap,
+			'publish_posts'       => $cap,
+			'read_private_posts'  => $cap,
 		);
 		$args = array(
 			'label'               => 'revisr_commits',
@@ -406,7 +408,7 @@ class Revisr_Commits {
 		}
 
 		echo '</div>';
-		
+
 	}
 
 	/**
