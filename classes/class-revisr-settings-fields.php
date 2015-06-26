@@ -111,6 +111,30 @@ class Revisr_Settings_Fields {
 	}
 
 	/**
+	 * Displays/updates the "Git Path" settings field.
+	 * @access public
+	 */
+	public function git_path_callback() {
+
+		$git_path = defined( 'REVISR_GIT_PATH' ) ? REVISR_GIT_PATH : '';
+
+		if ( isset( $_GET['settings-updated'] ) ) {
+
+			$dir 	= revisr()->options['git_path'];
+			$line 	= "define('REVISR_GIT_PATH', '$dir');";
+			Revisr_Admin::replace_config_line( 'define *\( *\'REVISR_GIT_PATH\'', $line );
+			$git_path = revisr()->options['git_path'];
+		}
+
+		printf(
+			'<input type="text" id="git_path" name="revisr_general_settings[git_path]" class="regular-text revisr-text" value="%s" />
+			<p class="description revisr-description">%s</p>',
+			esc_attr( $git_path ),
+			__( 'If necessary, you can define the installation path to Git here.', 'revisr' )
+		);
+	}
+
+	/**
 	 * Displays/updates the ".gitignore" settings field.
 	 * @access public
 	 */

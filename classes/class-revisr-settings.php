@@ -84,6 +84,13 @@ class Revisr_Settings {
             'revisr_general_settings'
         );
         add_settings_field(
+        	'git_path',
+        	__( 'Git Path', 'revisr' ),
+        	array( $this->settings_fields, 'git_path_callback' ),
+        	'revisr_general_settings',
+        	'revisr_general_settings'
+    	);
+        add_settings_field(
         	'gitignore',
         	__( 'Files/Directories to ignore', 'revisr'),
         	array( $this->settings_fields, 'gitignore_callback' ),

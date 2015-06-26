@@ -168,7 +168,7 @@ class Revisr_Git {
 	 * @return string The path to the installation of Git.
 	 */
 	public function get_git_path() {
-		if ( defined( 'REVISR_GIT_PATH' ) ) {
+		if ( defined( 'REVISR_GIT_PATH' ) && file_exists( REVISR_GIT_PATH ) ) {
 			return REVISR_GIT_PATH;
 		} else {
 			// This is surprisingly still the best option
