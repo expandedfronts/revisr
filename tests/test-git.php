@@ -66,7 +66,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	function test_git_dir() {
 		$dir = $this->revisr->git->get_git_dir();
 		$this->assertFileExists( $dir );
-		$this->assertFileExists( $dir . '/.git/config' );
+		$this->assertFileExists( $dir . '/config' );
 	}
 
 	/**
