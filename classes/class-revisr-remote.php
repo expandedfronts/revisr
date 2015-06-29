@@ -25,9 +25,9 @@ class Revisr_Remote {
 
 		if ( $check === false ) {
 
-			// If there is no token, generate a new one.
+			// If there is no token, generate a new one and save it.
 			$token 	= wp_generate_password( 16, false, false );
-			$save 	= revisr()->git->set_config( 'revisr', 'token', $token );
+			revisr()->git->set_config( 'revisr', 'token', $token );
 
 			// Make sure that the token saved correctly.
 			$new_token = revisr()->git->get_config( 'revisr', 'token' );

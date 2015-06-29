@@ -79,7 +79,7 @@ class Revisr_Compatibility {
 	 * @return string
 	 */
 	public static function server_has_permissions( $path ) {
-		if ( ! is_writable( $path ) || ! is_writeable( $path . '/.git/config' ) ) {
+		if ( ! is_writable( $path ) || ! is_writeable( $path . DIRECTORY_SEPARATOR . 'config' ) ) {
 			return 'false';
 		}
 		return 'true';

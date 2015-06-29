@@ -172,7 +172,7 @@ final class Revisr {
 		self::$instance->load_public_hooks();
 
 		// Load any admin-side hooks.
-		if ( current_user_can( Revisr::get_capability() ) && is_admin() ) {
+		if ( current_user_can( self::get_capability() ) && is_admin() ) {
 			self::$instance->load_admin_hooks();
 		}
 
@@ -210,7 +210,7 @@ final class Revisr {
 		require_once REVISR_PATH . 'classes/class-revisr-cron.php';
 
 		// Classes that should only be loaded for admins.
-		if ( current_user_can( Revisr::get_capability() ) && is_admin() ) {
+		if ( current_user_can( self::get_capability() ) && is_admin() ) {
 			require_once REVISR_PATH . 'classes/class-revisr-compatibility.php';
 			require_once REVISR_PATH . 'classes/class-revisr-process.php';
 			require_once REVISR_PATH . 'classes/class-revisr-activity-table.php';
