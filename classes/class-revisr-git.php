@@ -41,10 +41,16 @@ class Revisr_Git {
 	public $current_dir;
 
 	/**
-	 * Stores the top-level git directory.
+	 * Stores the path to the .git directory.
 	 * @var string
 	 */
 	public $git_dir;
+
+	/**
+	 * Stores the path to the working directory.
+	 * @var string
+	 */
+	public $work_tree;
 
 	/**
 	 * Stores the path to Git.

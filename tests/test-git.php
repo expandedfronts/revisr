@@ -28,6 +28,9 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the init function.
 	 */
 	function test_init_repo() {
+
+		define( 'REVISR_SETUP_INIT', true );
+
 		if ( ! $this->revisr->git->is_repo ) {
 			$this->revisr->git->init_repo();
 		}
@@ -137,7 +140,7 @@ class RevisrGitTest extends WP_UnitTestCase {
 	 * Tests the count_untracked() function.
 	 */
 	function test_count_untracked() {
-		$dir 	= $this->revisr->git->get_git_dir();
+		$dir 	= $this->revisr->git->get_work_tree();
 		$time 	= time();
 		fopen( $dir . "/sample-file_$time.txt", "w" );
 		$new_untracked = $this->revisr->git->count_untracked();

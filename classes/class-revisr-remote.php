@@ -16,16 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Revisr_Remote {
 
 	/**
-	 * Constructs the class.
-	 * @access public
-	 */
-	public function __construct() {
-		if ( ! revisr()->git ) {
-			revisr()->git = new Revisr_Git;
-		}
-	}
-
-	/**
 	 * Returns the current token, creating one if it does not exist.
 	 * @access public
 	 * @return string|boolean The token, or false on complete failure.
@@ -34,16 +24,23 @@ class Revisr_Remote {
 		$check = revisr()->git->get_config( 'revisr', 'token' );
 
 		if ( $check === false ) {
+
 			// If there is no token, generate a new one.
 			$token 	= wp_generate_password( 16, false, false );
 			$save 	= revisr()->git->set_config( 'revisr', 'token', $token );
 
-			if ( $save !== false ) {
-				return $token;
+			// Make sure that the token saved correctly.
+			$new_token = revisr()->git->get_config( 'revisr', 'token' );
+			if ( hash_equals( $new_token, $token ) ) {
+				if ( $new_token !== false ) {
+					return $new_token;
+				}
 			} else {
 				return false;
 			}
+
 		} else {
+			// Return the already saved token.
 			return $check;
 		}
 	}
