@@ -68,8 +68,8 @@ delete_transient( 'revisr_skip_setup' );
 						<option value="<?php echo WP_CONTENT_DIR; ?>"><?php _e( 'Plugins, Themes, and Uploads', 'revisr' ); ?></option>
 						<option value="single"><?php _e( 'A plugin or theme...', 'revisr' ); ?></option>
 						<?php
-							if ( defined( 'REVISR_GIT_DIR' ) && constant( 'REVISR_GIT_DIR' ) !== false ) {
-								echo '<option value="' . REVISR_GIT_DIR . '">' . __( 'Custom (REVISR_GIT_DIR)', 'revisr' ) . '</option>';
+							if ( defined( 'REVISR_WORK_TREE' ) && constant( 'REVISR_WORK_TREE' ) !== false ) {
+								echo '<option value="' . REVISR_WORK_TREE . '">' . __( 'Custom (REVISR_WORK_TREE)', 'revisr' ) . '</option>';
 							}
 						?>
 					</select>
@@ -152,9 +152,9 @@ delete_transient( 'revisr_skip_setup' );
 
 						$dir = filter_input( INPUT_GET, 'revisr_manual_git_dir', FILTER_SANITIZE_STRING );
 
-						if ( revisr()->git->check_git_dir( $dir ) ) {
+						if ( revisr()->git->check_work_tree( $dir ) ) {
 							// Write it to the wp-config file if necessary.
-							$line = "define('REVISR_GIT_DIR', '$dir');";
+							$line = "define('REVISR_WORK_TREE', '$dir');";
 							Revisr_Admin::replace_config_line( 'define *\( *\'REVISR_GIT_DIR\'', $line );
 							Revisr_Admin::clear_transients();
 
@@ -214,14 +214,14 @@ delete_transient( 'revisr_skip_setup' );
 					}
 
 					// Write it to the wp-config file if necessary.
-					$line = "define('REVISR_GIT_DIR', '$dir');";
-					Revisr_Admin::replace_config_line( 'define *\( *\'REVISR_GIT_DIR\'', $line );
+					$line = "define('REVISR_WORK_TREE', '$dir');";
+					Revisr_Admin::replace_config_line( 'define *\( *\'REVISR_WORK_TREE\'', $line );
 
 					// Refresh the 'Revisr_Git' instance.
 					revisr()->git = new Revisr_Git;
 
 					// Create the .gitignore file BEFORE repo creation.
-					$gitignore_file = revisr()->git->get_git_dir() . '/.gitignore';
+					$gitignore_file = revisr()->git->get_work_tree() . DIRECTORY_SEPARATOR . '.gitignore';
 					if ( ! file_exists( $gitignore_file ) && ! empty( $gitignore ) ) {
 						file_put_contents( $gitignore_file, implode( PHP_EOL, $gitignore ) );
 					}

@@ -65,13 +65,14 @@ class Revisr_Git {
 	public function __construct() {
 
 		// Necessary for execution of Revisr.
-		$this->current_dir 	= getcwd();
 		$this->is_repo 		= true;
+		$this->current_dir 	= getcwd();
 		$this->git_path 	= $this->get_git_path();
 		$this->git_dir 		= $this->get_git_dir();
+		$this->work_tree 	= $this->get_work_tree();
 
 		// Make sure the provided Git directory is valid.
-		$this->check_git_dir();
+		$this->check_work_tree();
 
 		// Load up information about the current repository.
 		if ( $this->is_repo ) {
@@ -97,9 +98,13 @@ class Revisr_Git {
 		$safe_cmd 		= Revisr_Admin::escapeshellarg( $command );
 		$safe_args 		= join( ' ', array_map( array( 'Revisr_Admin', 'escapeshellarg' ), $args ) );
 
+		// Allow for customizing the git work-tree and git-dir paths.
+		$git_dir 	= Revisr_Admin::escapeshellarg( "--git-dir=$this->git_dir" );
+		$work_tree 	= Revisr_Admin::escapeshellarg( "--work-tree=$this->work_tree" );
+
 		// Run the command.
-		chdir( $this->git_dir );
-		exec( "$safe_path $safe_cmd $safe_args 2>&1", $output, $return_code );
+		chdir( $this->work_tree );
+		exec( "$safe_path $git_dir $work_tree $safe_cmd $safe_args 2>&1", $output, $return_code );
 		chdir( $this->current_dir );
 
 		// Process the response.
@@ -121,11 +126,11 @@ class Revisr_Git {
 	 * @param  string $dir The directory to check (optional).
 	 * @return boolean
 	 */
-	public function check_git_dir( $dir = '' ) {
+	public function check_work_tree( $dir = '' ) {
 
 		// If no dir provided, use constant.
 		if ( '' === $dir ) {
-			$dir = $this->get_git_dir();
+			$dir = $this->get_work_tree();
 		}
 
 		// Definitely bail if not a directory.
@@ -133,10 +138,10 @@ class Revisr_Git {
 			return false;
 		}
 
+		$this->work_tree = $dir;
+
 		// Check with Git binary if repo is detected.
-		chdir( $dir );
-		$git_toplevel = exec( "$this->git_path rev-parse --show-toplevel" );
-		chdir( $this->current_dir );
+		$git_toplevel = $this->run( 'rev-parse', array( '--show-toplevel' ) );
 
 		// If not, set the is_repo flag to false.
 		if ( ! $git_toplevel ) {
@@ -155,11 +160,39 @@ class Revisr_Git {
 	public function get_git_dir() {
 
 		if ( defined( 'REVISR_GIT_DIR' ) && is_dir( REVISR_GIT_DIR ) ) {
-			return REVISR_GIT_DIR;
+
+			// Force removal of trailing slash upfront.
+			$git_dir = rtrim( REVISR_GIT_DIR, DIRECTORY_SEPARATOR );
+
+			if ( is_dir( REVISR_GIT_DIR . DIRECTORY_SEPARATOR . '.git' ) ) {
+
+				// Workaround for backwards compatibility.
+				if ( ! defined( 'REVISR_WORK_TREE' ) ) {
+
+					// Define the REVISR_WORK_TREE constant to match the old REVISR_GIT_DIR constant.
+					define( 'REVISR_WORK_TREE', REVISR_GIT_DIR );
+					$line = "define('REVISR_WORK_TREE', '" . REVISR_GIT_DIR . "');";
+					Revisr_Admin::replace_config_line( 'define *\( *\'REVISR_WORK_TREE\'', $line );
+
+					// Update the old REVISR_GIT_DIR constant.
+					$git_dir 	= REVISR_GIT_DIR . DIRECTORY_SEPARATOR . '.git';
+					$line 		= "define('REVISR_GIT_DIR', '" . REVISR_GIT_DIR . DIRECTORY_SEPARATOR . ".git');";
+					Revisr_Admin::replace_config_line( 'define *\( *\'REVISR_GIT_DIR\'', $line );
+
+				}
+
+			} else {
+				$git_dir = REVISR_GIT_DIR;
+			}
+
 		} else {
-			return ABSPATH;
+
+			// Best guess.
+			$git_dir = $this->get_work_tree() . DIRECTORY_SEPARATOR . '.git';
+
 		}
 
+		return $git_dir;
 	}
 
 	/**
@@ -176,6 +209,24 @@ class Revisr_Git {
 			// and ~90% of the time this will work anyway.
 			return 'git';
 		}
+	}
+
+	/**
+	 * Returns the path to the Git work-tree in exec() friendly format.
+	 * @access public
+	 * @return string
+	 */
+	public function get_work_tree() {
+
+		if ( defined( 'REVISR_WORK_TREE' ) && is_dir( REVISR_WORK_TREE ) ) {
+			$work_tree = REVISR_WORK_TREE;
+		} else {
+			$work_tree = ABSPATH;
+		}
+
+		// Remove trailing slash.
+		$work_tree = rtrim( $work_tree, DIRECTORY_SEPARATOR );
+		return $work_tree;
 	}
 
 	/**

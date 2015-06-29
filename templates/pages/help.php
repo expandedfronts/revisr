@@ -62,7 +62,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 		<tr>
 			<td><label><strong><?php _e( 'Repository Path', 'revisr' ); ?></strong></label></td>
-			<td><?php echo revisr()->git->get_git_dir(); ?></td>
+			<td><?php echo revisr()->git->get_work_tree(); ?></td>
 		</tr>
 
 		<tr>
