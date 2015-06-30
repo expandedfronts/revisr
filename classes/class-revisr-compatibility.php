@@ -91,7 +91,8 @@ class Revisr_Compatibility {
 
 		// Server Configuration
 		$return .= "\n" . '-- Server Configuration' . "\n\n";
-		$return .= 'Operating System:         ' . Revisr_Compatibility::get_os()['name'] . "\n";
+		$os = Revisr_Compatibility::get_os();
+		$return .= 'Operating System:         ' . $os['name'] . "\n";
 		$return .= 'PHP Version:              ' . PHP_VERSION . "\n";
 		$return .= 'MySQL Version:            ' . $wpdb->db_version() . "\n";
 		$return .= 'Git Version:              ' . revisr()->git->version() . "\n";
