@@ -38,7 +38,7 @@ $active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general_settings';
 		    <a href="?page=revisr_settings&tab=help" class="nav-tab <?php echo $active_tab == 'help' ? 'nav-tab-active' : ''; ?>"><?php _e( 'Help', 'revisr' ); ?></a>
 		</h2>
 
-		<form id="revisr-settings-form" method="post" action="options.php">
+		<form class="revisr-settings-form" method="post" action="options.php">
 			<?php
 
 				// Renders the settings page.

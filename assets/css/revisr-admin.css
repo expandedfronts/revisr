@@ -103,7 +103,7 @@ body.post-type-revisr_commits.post-new-php .wrap { margin-top: 27px !important; 
 /*--------------------------------------------------------------
 # Settings
 --------------------------------------------------------------*/
-#revisr-settings-form { margin-left: 15px; }
+.revisr-settings-form { margin-left: 15px; }
 #verify-remote { margin-left: 10px; padding: 4px; font-size: 11px; border-radius: 4px; color: #fff; margin-left: 10px; }
 .verify-remote-success { background-color: #5cb85c; }
 .verify-remote-error { background-color: #AFAFAF; }

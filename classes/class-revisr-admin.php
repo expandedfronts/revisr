@@ -245,6 +245,24 @@ class Revisr_Admin {
 	}
 
 	/**
+	 * Downloads the system info.
+	 * @access public
+	 */
+	public function download_sysinfo() {
+		if ( ! current_user_can( Revisr::get_capability() ) ) {
+			return;
+		}
+
+		nocache_headers();
+
+		header( 'Content-Type: text/plain' );
+		header( 'Content-Disposition: attachment; filename="revisr-system-info.txt"' );
+
+		echo wp_strip_all_tags( $_POST['revisr-sysinfo'] );
+		die();
+	}
+
+	/**
 	 * Helper function for determining if we're in setup mode.
 	 * @access public
 	 * @return boolean
