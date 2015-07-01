@@ -10,6 +10,18 @@
  */
 
 /**
+ * Discards uncommitted changes.
+ */
+function revisr_discard() {
+	tb_remove();
+	processing();
+
+	jQuery.post(ajaxurl, {action: 'process_discard', revisr_dashboard_nonce: revisr_dashboard_vars.ajax_nonce}, function(response) {
+		process_complete();
+	});
+}
+
+/**
  * Pushes changes to a remote server.
  */
 function revisr_push() {
@@ -116,18 +128,6 @@ jQuery('#tags-link').click(function() {
  */
 jQuery('#revisr-commit-btn').click(function() {
 	window.location = 'post-new.php?post_type=revisr_commits';
-});
-
-/**
- * Runs when the 'Discard Changes' button is clicked.
- */
-jQuery('#revisr-discard-btn').click(function() {
-    if ( confirm( revisr_dashboard_vars.discard_msg ) == true ) {
-    	processing();
-		jQuery.post(ajaxurl, {action: 'discard', revisr_dashboard_nonce: revisr_dashboard_vars.ajax_nonce}, function(response) {
-			process_complete();
-		});
-    }
 });
 
 /**

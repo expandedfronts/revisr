@@ -314,6 +314,7 @@ final class Revisr {
 		add_action( 'admin_post_revisr_merge_branch_form', array ( self::$instance->admin, 'include_form' ) );
 		add_action( 'admin_post_revisr_import_tables_form', array( self::$instance->admin, 'include_form' ) );
 		add_action( 'admin_post_revisr_revert_form', array( self::$instance->admin, 'include_form' ) );
+		add_action( 'admin_post_revisr_discard_form', array( self::$instance->admin, 'include_form' ) );
 		add_action( 'admin_post_revisr_push_form', array( self::$instance->admin, 'include_form' ) );
 		add_action( 'admin_post_revisr_pull_form', array( self::$instance->admin, 'include_form' ) );
 		add_action( 'admin_post_revisr_checkout_remote_form', array( self::$instance->admin, 'include_form' ) );
@@ -340,7 +341,7 @@ final class Revisr {
 		add_action( 'admin_post_init_repo', array( self::$instance->process, 'process_init' ) );
 		add_action( 'admin_post_process_revert', array( self::$instance->process, 'process_revert' ) );
 		add_action( 'admin_post_process_view_diff', array( self::$instance->process, 'process_view_diff' ) );
-		add_action( 'wp_ajax_discard', array( self::$instance->process, 'process_discard' ) );
+		add_action( 'wp_ajax_process_discard', array( self::$instance->process, 'process_discard' ) );
 		add_action( 'wp_ajax_process_push', array( self::$instance->process, 'process_push' ) );
 		add_action( 'wp_ajax_process_pull', array( self::$instance->process, 'process_pull' ) );
 		add_action( 'wp_ajax_backup_db', array( self::$instance->db, 'backup' ) );

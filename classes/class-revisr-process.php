@@ -202,21 +202,20 @@ class Revisr_Process {
 	 */
 	public function process_discard() {
 
-		if ( wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
 
-			// Fires prior to a discard.
-			do_action( 'revisr_pre_discard' );
+		// Fires prior to a discard.
+		do_action( 'revisr_pre_discard' );
 
-			if ( revisr()->git->reset( '--hard', 'HEAD', true ) ) {
+		if ( revisr()->git->reset( '--hard', 'HEAD', true ) ) {
 
-				Revisr_Admin::log( __('Discarded all uncommitted changes.', 'revisr'), 'discard' );
-				Revisr_Admin::alert( __('Successfully discarded any uncommitted changes.', 'revisr' ) );
+			Revisr_Admin::log( __('Discarded all uncommitted changes.', 'revisr'), 'discard' );
+			Revisr_Admin::alert( __('Successfully discarded any uncommitted changes.', 'revisr' ) );
 
-				// Fires after a successful discard.
-				do_action( 'revisr_post_discard' );
-
-			}
-
+			// Fires after a successful discard.
+			do_action( 'revisr_post_discard' );
 
 		}
 
