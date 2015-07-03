@@ -64,9 +64,13 @@ function delayed_refresh() {
 		url : ajaxurl,
 		data : {action: 'render_alert'},
 		success : function(response){
-			jQuery('#revisr-loading-alert').hide();
-			jQuery('#revisr-processing-request').hide();
-			document.getElementById('revisr-alert-container').innerHTML = response;
+			if ( 0 == response ) {
+				document.getElementById('revisr-processing-request').innerHTML = '<p>Session Expired: Please click <a href="'+revisr_dashboard_vars.login_url+'">here</a> to login again.</p>';
+			} else {
+				jQuery('#revisr-loading-alert').hide();
+				jQuery('#revisr-processing-request').hide();
+				document.getElementById('revisr-alert-container').innerHTML = response;
+			}
 		}
 	});
  }
@@ -76,9 +80,15 @@ function delayed_refresh() {
  */
 function update_counts() {
 	jQuery.post(ajaxurl, {action: 'ajax_button_count', data: 'unpulled'}, function(response) {
+		if ( 0 == response ) {
+			response = '';
+		}
 		document.getElementById('revisr-unpulled').innerHTML = response;
 	});
 	jQuery.post(ajaxurl, {action: 'ajax_button_count',data: 'unpushed'}, function(response) {
+		if ( 0 == response ) {
+			response = '';
+		}
 		document.getElementById('revisr-unpushed').innerHTML = response;
 	});
 }

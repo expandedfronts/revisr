@@ -70,7 +70,7 @@ class Revisr_Admin {
 					wp_enqueue_script( 'revisr_dashboard' );
 					wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
 						'ajax_nonce' 	=> wp_create_nonce( 'revisr_dashboard_nonce' ),
-						'discard_msg' 	=> __( 'Are you sure you want to discard your uncommitted changes?', 'revisr' ),
+						'login_url' 	=> wp_login_url( get_admin_url() . 'admin.php?page=revisr' )
 						)
 					);
 					break;
