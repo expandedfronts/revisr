@@ -13,11 +13,17 @@
  // Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-//
 $styles_url = REVISR_URL . 'assets/css/thickbox.css?04162015';
 
 // Grab any unpulled commits.
 $unpulled 	= revisr()->git->run( 'log', array( revisr()->git->branch . '..' . revisr()->git->remote . '/' . revisr()->git->branch, '--format=%h - %s' ) );
+
+// If none are detected, do an extra fetch, just to be sure.
+if ( is_array( $unpulled ) && 0 === count( $unpulled ) ) {
+	revisr()->git->fetch();
+	$unpulled = revisr()->git->run( 'log', array( revisr()->git->branch . '..' . revisr()->git->remote . '/' . revisr()->git->branch, '--format=%h - %s' ) );
+}
+
 ?>
 
 <link href="<?php echo $styles_url; ?>" rel="stylesheet" type="text/css">
