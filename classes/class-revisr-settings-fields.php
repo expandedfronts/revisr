@@ -166,35 +166,41 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function automatic_backups_callback() {
-		if ( isset( revisr()->options['automatic_backups'] ) ) {
+		if ( $this->is_updated( 'automatic_backups' ) ) {
+
 			$schedule = revisr()->options['automatic_backups'];
+
+			// Only do anything if the value has been changed.
+			if ( revisr()->git->get_config( 'revisr', 'automatic-backups' ) != $schedule ) {
+
+				// Set the new value.
+				revisr()->git->set_config( 'revisr', 'automatic-backups', $schedule );
+
+				// Clear the existing cron.
+				wp_clear_scheduled_hook( 'revisr_cron' );
+
+				// Schedule the next one!
+				if ( 'none' != $schedule ) {
+					$next_time = time();
+					wp_schedule_event( $next_time, revisr()->options['automatic_backups'], 'revisr_cron' );
+				}
+
+			}
+
 		} else {
-			$schedule = 'none';
+			$schedule = revisr()->git->get_config( 'revisr', 'automatic-backups' ) ? revisr()->git->get_config( 'revisr', 'automatic-backups' ) : 'none';
 		}
+
 		?>
+
 			<select id="automatic_backups" name="revisr_general_settings[automatic_backups]">
 				<option value="none" <?php selected( $schedule, 'none' ); ?>><?php _e( 'None', 'revisr' ); ?></option>
 				<option value="daily" <?php selected( $schedule, 'daily' ); ?>><?php _e( 'Daily', 'revisr' ); ?></option>
 				<option value="weekly" <?php selected( $schedule, 'weekly' ); ?>><?php _e( 'Weekly', 'revisr' ); ?></option>
 			</select>
 			<span class="description"><?php _e( 'Automatic backups will backup both the files and database at the interval of your choosing.', 'revisr' ); ?></span>
+
 		<?php
-
-		// Update the cron settings/clear if necessary on save.
-		if ( $this->is_updated( 'automatic_backups' ) ) {
-
-			// Clear the existing cron.
-			wp_clear_scheduled_hook( 'revisr_cron' );
-
-
-			if ( isset( revisr()->options['automatic_backups'] ) && revisr()->options['automatic_backups'] != 'none' ) {
-
-				// Schedule the next one!
-				$next_time = time() + 300;
-				wp_schedule_event( $next_time, revisr()->options['automatic_backups'], 'revisr_cron' );
-
-			}
-		}
 
 	}
 

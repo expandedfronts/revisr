@@ -34,36 +34,47 @@ class Revisr_Cron {
 	 * @access public
 	 */
 	public function run_automatic_backup() {
+
 		revisr()->git 	= new Revisr_Git();
 		revisr()->db 	= new Revisr_DB();
+		$backup_type 	= revisr()->git->get_config( 'revisr', 'automatic-backups' ) ? revisr()->git->get_config( 'revisr', 'automatic-backups' ) : 'none';
 
-		$date 				= date("F j, Y");
-		$files 				= revisr()->git->status();
-		$backup_type 		= ucfirst( revisr()->options['automatic_backups'] );
-		$commit_msg 		= sprintf( __( '%s backup - %s', 'revisr' ), $backup_type, $date );
+		// Make sure backups have been enabled for this environment.
+		if ( 'none' !== $backup_type ) {
 
-		// In case there are no files to commit.
-		if ( $files == false ) {
-			$files = array();
+			// Defaults.
+			$date 			= date("F j, Y");
+			$files 			= revisr()->git->status() ? revisr()->git->status() : array();
+			$commit_msg 	= sprintf( __( '%s backup - %s', 'revisr' ), ucfirst( $backup_type ), $date );
+
+			// Stage the files and commit.
+			revisr()->git->stage_files( $files );
+			revisr()->git->commit( $commit_msg );
+
+			// Create a new commit in Revisr/WP.
+			$post = array(
+				'post_title'	=> $commit_msg,
+				'post_content'	=> '',
+				'post_type'		=> 'revisr_commits',
+				'post_status'	=> 'publish',
+			);
+			$post_id = wp_insert_post( $post );
+			add_post_meta( $post_id, 'branch', revisr()->git->branch );
+			add_post_meta( $post_id, 'commit_hash', revisr()->git->current_commit() );
+			add_post_meta( $post_id, 'files_changed', count( $files ) );
+			add_post_meta( $post_id, 'committed_files', $files );
+
+			// Backup the DB.
+			revisr()->db->backup();
+			add_post_meta( $post_id, 'db_hash', revisr()->git->current_commit() );
+
+			// Log result - TODO: improve error handling as necessary.
+			$log_msg = sprintf( __( 'The %s backup was successful.', 'revisr' ), $backup_type );
+			Revisr_Admin::log( $log_msg, 'backup' );
+
 		}
 
-		revisr()->git->stage_files( $files );
-		revisr()->git->commit( $commit_msg );
-		$post = array(
-			'post_title'	=> $commit_msg,
-			'post_content'	=> '',
-			'post_type'		=> 'revisr_commits',
-			'post_status'	=> 'publish',
-		);
-		$post_id = wp_insert_post( $post );
-		add_post_meta( $post_id, 'branch', revisr()->git->branch );
-		add_post_meta( $post_id, 'commit_hash', revisr()->git->current_commit() );
-		add_post_meta( $post_id, 'files_changed', count( $files ) );
-		add_post_meta( $post_id, 'committed_files', $files );
-		revisr()->db->backup();
-		add_post_meta( $post_id, 'db_hash', revisr()->git->current_commit() );
-		$log_msg = sprintf( __( 'The %s backup was successful.', 'revisr' ), revisr()->options['automatic_backups'] );
-		Revisr_Admin::log( $log_msg, 'backup' );
+
 	}
 
 	/**
