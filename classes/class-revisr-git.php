@@ -689,8 +689,9 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function update_gitignore() {
+
 		// Store the content in the .gitignore.
-		file_put_contents( $this->git_dir . '/.gitignore', revisr()->options['gitignore'] );
+		file_put_contents( $this->work_tree . DIRECTORY_SEPARATOR . '.gitignore', revisr()->options['gitignore'] );
 
 		// Add the .gitignore.
 		$this->run( 'add', array( '.gitignore' ) );

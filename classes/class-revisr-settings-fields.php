@@ -146,8 +146,8 @@ class Revisr_Settings_Fields {
 		}
 
 		// Grab the contents from the .gitignore.
-		if ( file_exists( revisr()->git->git_dir . '/.gitignore' ) ) {
-			$gitignore = file_get_contents( revisr()->git->git_dir . '/.gitignore' );
+		if ( file_exists( revisr()->git->work_tree . '/.gitignore' ) ) {
+			$gitignore = file_get_contents( revisr()->git->work_tree . '/.gitignore' );
 		} else {
 			$gitignore = isset( revisr()->options['gitignore'] ) ? revisr()->options['gitignore'] : '';
 		}
