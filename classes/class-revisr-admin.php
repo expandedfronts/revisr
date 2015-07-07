@@ -309,6 +309,7 @@ class Revisr_Admin {
 		$hash 				= get_post_meta( $id, 'commit_hash', true );
 		$db_hash 			= get_post_meta( $id, 'db_hash', true );
 		$db_backup_method	= get_post_meta( $id, 'backup_method', true );
+		$backed_up_tables 	= get_post_meta( $id, 'backed_up_tables' );
 		$files_changed 		= get_post_meta( $id, 'files_changed', true );
 		$committed_files 	= get_post_meta( $id, 'committed_files', true );
 		$git_tag 			= get_post_meta( $id, 'git_tag', true );
@@ -321,6 +322,7 @@ class Revisr_Admin {
 			'commit_hash' 		=> $hash ? $hash : __( 'Unknown', 'revisr' ),
 			'db_hash' 			=> $db_hash ? $db_hash : '',
 			'db_backup_method'	=> $db_backup_method ? $db_backup_method : '',
+			'backed_up_tables'	=> $backed_up_tables ? $backed_up_tables[0] : array(),
 			'files_changed' 	=> $files_changed ? $files_changed : 0,
 			'committed_files' 	=> $committed_files ? $committed_files : array(),
 			'tag'				=> $git_tag ? $git_tag : '',

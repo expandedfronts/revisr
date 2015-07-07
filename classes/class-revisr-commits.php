@@ -407,6 +407,19 @@ class Revisr_Commits {
 			printf( '<p>%s</p>', __( 'No files were included in this commit.', 'revisr' ) );
 		}
 
+		// Database tables that were included in this commit.
+		if ( 0 !== count( $commit['backed_up_tables'] ) ) {
+
+			printf( __( '<p><strong>%d</strong> database tables were backed up in this commit.', 'revisr' ), count( $commit['backed_up_tables'] ) );
+
+			echo '<br><br><select id="committed" multiple="multiple" size="6">';
+			foreach ( $commit['backed_up_tables'] as $table ) {
+				printf( '<option class="committed" value="%s">%s</option>', $table, $table );
+			}
+			echo '</select>';
+
+		}
+
 		echo '</div>';
 
 	}

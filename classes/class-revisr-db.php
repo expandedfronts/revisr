@@ -174,14 +174,21 @@ class Revisr_DB {
 	 * @return array
 	 */
 	public function get_tracked_tables() {
-		$stored_tables = revisr()->git->run( 'config', array( '--get-all', 'revisr.tracked-tables' ) );
-		if ( isset( revisr()->options['db_tracking'] ) && revisr()->options['db_tracking'] == 'all_tables' ) {
+
+		// Get our saved tracking preferences from the .git/config.
+		$db_tracking 	= revisr()->git->get_config( 'revisr', 'db-tracking' );
+		$stored_tables 	= revisr()->git->run( 'config', array( '--get-all', 'revisr.tracked-tables' ) );
+
+		// Determine which tables we want to track.
+		if ( 'all_tables' == $db_tracking ) {
 			$tracked_tables = $this->get_tables();
-		} elseif ( is_array( $stored_tables ) ) {
+		} elseif ( 'custom' == $db_tracking && is_array( $stored_tables ) ) {
 			$tracked_tables = array_intersect( $stored_tables, $this->get_tables() );
 		} else {
 			$tracked_tables = array();
 		}
+
+		// Return an array of tables we should track.
 		return $tracked_tables;
 	}
 
@@ -329,6 +336,7 @@ class Revisr_DB {
 	/**
 	 * Callback for database backups (AJAX button and via New Commit)
 	 * @access public
+	 * @return boolean
 	 */
 	public function backup() {
 
@@ -348,8 +356,10 @@ class Revisr_DB {
 				$this->commit_db( false );
 			}
 
+			return true;
 		}
 
+		return false;
 	}
 
 	/**
@@ -507,6 +517,8 @@ class Revisr_DB {
 			add_post_meta( $post_id, 'commit_hash', $commit_hash );
 			add_post_meta( $post_id, 'db_hash', $commit_hash );
 			add_post_meta( $post_id, 'backup_method', 'tables' );
+			add_post_meta( $post_id, 'backed_up_tables', revisr()->db->get_tracked_tables() );
+			add_post_meta( $post_id, 'commit_status', __( 'Committed', 'revisr' ) );
 			add_post_meta( $post_id, 'branch', revisr()->git->branch );
 			add_post_meta( $post_id, 'files_changed', '0' );
 			add_post_meta( $post_id, 'committed_files', array() );
