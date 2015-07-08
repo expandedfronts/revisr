@@ -46,17 +46,17 @@ jQuery(document).ready(function($) {
     });
 
     var url = document.URL;
-    var empty_title  = url.indexOf("message=42");
-    var empty_commit = url.indexOf("message=43");
-    var error_commit = url.indexOf("message=44");
 
-    if ( empty_title != "-1" ) {
+    // empty_title
+    if (url.indexOf("message=42") != "-1") {
         document.getElementById('message').innerHTML = "<div class='error'><p>" + pending_vars.empty_title_msg + "</p></div>";
     }
-    if ( empty_commit != "-1" ) {
+    // empty_commit
+    if (url.indexOf("message=43") != "-1") {
         document.getElementById('message').innerHTML = "<div class='error'><p>" + pending_vars.empty_commit_msg + "</p></div>";
     }
-    if ( error_commit != "-1" ) {
+    // error_commit
+    if (url.indexOf("message=44") != "-1") {
         document.getElementById('message').innerHTML = "<div class='error'><p>" + pending_vars.error_commit_msg + "</p></div>";
     }
 
