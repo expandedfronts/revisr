@@ -2,32 +2,28 @@ function stage_file() {
     jQuery("#unstaged > option:selected").each(function () {
         jQuery(this).remove().appendTo("#staged");
     });
-    var num_staged = jQuery("#staged option").length;
-    jQuery('#count_staged').innerHTML = num_staged;
+    jQuery('#count_staged').innerHTML = jQuery("#staged option").length;
 }
 
 function unstage_file() {
     jQuery("#staged > option:selected").each(function () {
         jQuery(this).remove().appendTo("#unstaged");
     });
-    var num_staged = jQuery("#staged option").length;
-    jQuery('#count_staged').innerHTML = num_staged;
+    jQuery('#count_staged').innerHTML = jQuery("#staged option").length;
 }
 
 function stage_all() {
     jQuery("#unstaged > option").each(function () {
         jQuery(this).remove().appendTo("#staged");
     });
-    var num_staged = jQuery("#staged option").length;
-    jQuery('#count_staged').innerHTML = num_staged;
+    jQuery('#count_staged').innerHTML = jQuery("#staged option").length;
 }
 
 function unstage_all() {
     jQuery("#staged > option").each(function () {
         jQuery(this).remove().appendTo("#unstaged");
     });
-    var num_staged = jQuery("#staged option").length;
-    jQuery('#count_staged').innerHTML = num_staged;
+    jQuery('#count_staged').innerHTML = jQuery("#staged option").length;
 }
 
 function commit_files() {
