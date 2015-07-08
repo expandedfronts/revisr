@@ -65,4 +65,4 @@
 		} else {
 			jQuery(this).closest('tr').next('tr').fadeOut('fast');
 		}
-	})
+	});
