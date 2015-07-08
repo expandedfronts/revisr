@@ -1,33 +1,33 @@
 function stage_file() {
-    jQuery('#unstaged > option:selected').each(function () {
+    jQuery('option:selected', ('#unstaged')).each(function () {
         jQuery(this).remove().appendTo('#staged');
     });
-    jQuery('#count_staged').innerHTML = jQuery('#staged option').length;
+    jQuery('#count_staged').innerHTML = jQuery('option', ('#staged')).length;
 }
 
 function unstage_file() {
-    jQuery('#staged > option:selected').each(function () {
+    jQuery('option:selected', ('#staged')).each(function () {
         jQuery(this).remove().appendTo('#unstaged');
     });
-    jQuery('#count_staged').innerHTML = jQuery('#staged option').length;
+    jQuery('#count_staged').innerHTML = jQuery('option', ('#staged')).length;
 }
 
 function stage_all() {
-    jQuery('#unstaged > option').each(function () {
+    jQuery('option', ('#unstaged')).each(function () {
         jQuery(this).remove().appendTo('#staged');
     });
-    jQuery('#count_staged').innerHTML = jQuery('#staged option').length;
+    jQuery('#count_staged').innerHTML = jQuery('option', ('#staged')).length;
 }
 
 function unstage_all() {
-    jQuery('#staged > option').each(function () {
+    jQuery('option', ('#staged')).each(function () {
         jQuery(this).remove().appendTo('#unstaged');
     });
-    jQuery('#count_staged').innerHTML = jQuery('#staged option').length;
+    jQuery('#count_staged').innerHTML = jQuery('option', ('#staged')).length;
 }
 
 function commit_files() {
-    jQuery('#staged option').each(function() {
+    jQuery('option', ('#staged')).each(function () {
         jQuery(this).attr('selected', 'selected');
     });
     jQuery('#commit').val('Committing...');
