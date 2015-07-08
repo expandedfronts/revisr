@@ -24,11 +24,13 @@ $styles_url = REVISR_URL . 'assets/css/thickbox.css?02162015';
 
 		<div class="revisr-tb-description">
 
-		<p><?php _e( 'Are you sure you want to revert to this commit?', 'revisr' ); ?></p>
+		<p>
+			<label for="revert_type"><?php _e( 'Are you sure you want to revert to this commit?', 'revisr' ); ?></label>
+		</p>
 
 		<?php if ( $commit['db_hash'] !== '' ): ?>
 			<p>
-				<select name="revert_type">
+				<select id="revert_type" name="revert_type">
 					<option value="files"><?php _e( 'Revert files', 'revisr' ); ?></option>
 					<option value="db"><?php _e( 'Revert database', 'revisr' ); ?></option>
 					<option value="files_and_db"><?php _e( 'Revert files and database', 'revisr' ); ?></option>

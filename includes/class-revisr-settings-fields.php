@@ -139,7 +139,7 @@ class Revisr_Settings_Fields {
 		if ( file_exists( $this->revisr->git->git_dir . '/.gitignore' ) ) {
 			$gitignore = file_get_contents( $this->revisr->git->git_dir . '/.gitignore' );
 		} else {
-			$gitignore = $this->revisr->options['gitignore'] ? $this->revisr->options['gitignore'] : '';
+			$gitignore = isset($this->revisr->options['gitignore']) ? $this->revisr->options['gitignore'] : '';
 		}
 
 		// Display the settings field.

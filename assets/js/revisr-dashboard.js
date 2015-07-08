@@ -203,7 +203,7 @@
 		 * 
 		 * Send the call and replace table parts with updated version!
 		 * 
-		 * @param    object    data The data to pass through AJAX
+		 * @param   data    object    data The data to pass through AJAX
 		 */
 		update: function( data ) {
 			$.ajax({
@@ -242,8 +242,8 @@
 		 * 
 		 * @see http://css-tricks.com/snippets/javascript/get-url-variables/
 		 * 
-		 * @param    string    query The URL query part containing the variables
-		 * @param    string    variable Name of the variable we want to get
+		 * @param    query      string    query The URL query part containing the variables
+		 * @param    variable   string    variable Name of the variable we want to get
 		 * 
 		 * @return   string|boolean The variable value if available, false else.
 		 */
