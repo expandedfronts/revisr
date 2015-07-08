@@ -48,15 +48,15 @@ jQuery(document).ready(function($) {
 
     // empty_title
     if (url.indexOf('message=42') != '-1') {
-        document.getElementById('message').innerHTML = '<div class='error'><p>' + pending_vars.empty_title_msg + '</p></div>';
+        document.getElementById('message').innerHTML = '<div class="error"><p>' + pending_vars.empty_title_msg + '</p></div>';
     }
     // empty_commit
     if (url.indexOf('message=43') != '-1') {
-        document.getElementById('message').innerHTML = '<div class='error'><p>' + pending_vars.empty_commit_msg + '</p></div>';
+        document.getElementById('message').innerHTML = '<div class="error"><p>' + pending_vars.empty_commit_msg + '</p></div>';
     }
     // error_commit
     if (url.indexOf('message=44') != '-1') {
-        document.getElementById('message').innerHTML = '<div class='error'><p>' + pending_vars.error_commit_msg + '</p></div>';
+        document.getElementById('message').innerHTML = '<div class="error"><p>' + pending_vars.error_commit_msg + '</p></div>';
     }
 
 });
