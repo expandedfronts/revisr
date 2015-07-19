@@ -279,10 +279,15 @@ class Revisr_Activity_Table extends WP_List_Table {
 
         // Handle sorting of the data.
         function usort_reorder($a,$b){
-            $orderby 	= ( ! empty( $_REQUEST['orderby'] ) ) ? $_REQUEST['orderby'] : 'time'; //If no sort, default to time.
-            $order 		= ( ! empty( $_REQUEST['order'] ) ) ? $_REQUEST['order'] : 'desc'; //If no order, default to desc
-            $result 	= strcmp($a[$orderby], $b[$orderby]); //Determine sort order
-            return ( $order==='asc' ) ? $result : -$result; //Send final sort direction to usort
+        	// Default to time for default sort.
+        	$orderby 	= isset( $_REQUEST['orderby'] ) ? $_REQUEST['orderby'] : 'time';
+
+        	// Default to descending for default sort order.
+        	$order 		= isset( $_REQUEST['order'] ) ? $_REQUEST['order'] : 'desc';
+
+        	// Determine the sort order and send to usort.
+        	$result 	= strcmp( $a[$orderby], $b[$orderby] );
+        	return ( $order === 'asc' ) ? $result : -$result;
         }
         usort( $data, 'usort_reorder' );
 
@@ -296,8 +301,8 @@ class Revisr_Activity_Table extends WP_List_Table {
             'total_items' 	=> $total_items,
             'per_page'    	=> $per_page,
             'total_pages' 	=> ceil($total_items/$per_page),
-            'orderby'		=> ! empty( $_REQUEST['orderby'] ) && '' != $_REQUEST['orderby'] ? $_REQUEST['orderby'] : 'time',
-            'order'			=> ! empty( $_REQUEST['order'] ) && '' != $_REQUEST['order'] ? $_REQUEST['order'] : 'desc'
+            'orderby'		=> isset( $_REQUEST['orderby'] ) ? $_REQUEST['orderby'] : 'time',
+            'order'			=> isset( $_REQUEST['order'] ) ? $_REQUEST['order'] : 'desc'
         ) );
 	}
 

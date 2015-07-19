@@ -231,6 +231,7 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function remote_name_callback() {
+
 		printf(
 			'<input type="text" id="remote_name" name="revisr_remote_settings[remote_name]" value="%s" class="regular-text revisr-text" placeholder="origin" />
 			<p class="description revisr-description">%s</p>',
@@ -259,11 +260,10 @@ class Revisr_Settings_Fields {
 	 */
 	public function remote_url_callback() {
 
-		$check_remote = revisr()->git->get_config( 'remote', 'origin.url' );
+		$check_remote = revisr()->git->run( 'ls-remote', array( '--get-url' ) );
 
-
-		if ( false !== $check_remote ) {
-			$remote = $check_remote;
+		if ( false !== $check_remote && is_array( $check_remote ) ) {
+			$remote = $check_remote[0];
 		} else {
 			$remote = '';
 		}

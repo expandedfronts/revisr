@@ -178,8 +178,8 @@ var revisr_list = {
 
 			var data = {
 				paged: revisr_list.__query( query, 'paged' ) || '1',
-				order: revisr_list.__query( query, 'order' ) || 'asc',
-				orderby: revisr_list.__query( query, 'orderby' ) || 'title',
+				order: revisr_list.__query( query, 'order' ) || 'desc',
+				orderby: revisr_list.__query( query, 'orderby' ) || 'time',
 				revisr_event: revisr_list.__query( query, 'revisr_event' ) || 'all',
 				revisr_user: revisr_list.__query( query, 'revisr_user' ) || 'all',
 				revisr_time: revisr_list.__query( query, 'revisr_time' ) || 'all'
