@@ -177,7 +177,10 @@ class Revisr_Compatibility {
 	 * @return string
 	 */
 	public static function get_user() {
-		return exec( 'whoami' );
+		if ( function_exists( 'exec' ) ) {
+			return exec( 'whoami' );
+		}
+		return __( 'Unknown', 'revisr' );
 	}
 
 	/**

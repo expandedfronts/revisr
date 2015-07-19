@@ -68,8 +68,6 @@ class Revisr_Settings_Fields {
 		$check_username = revisr()->git->get_config( 'user', 'name' );
 		if ( $check_username ) {
 			$username = $check_username;
-		} elseif ( isset( revisr()->options['username'] ) ) {
-			$username = revisr()->options['username'];
 		} else {
 			$username = '';
 		}
@@ -96,9 +94,7 @@ class Revisr_Settings_Fields {
 		$check_email = revisr()->git->get_config( 'user', 'email' );
 		if ( $check_email ) {
 			$email = $check_email;
-		} elseif ( isset( revisr()->options['email'] ) ) {
-			$email = revisr()->options['email'];
-		} else {
+		}else {
 			$email = '';
 		}
 
@@ -149,7 +145,7 @@ class Revisr_Settings_Fields {
 		if ( file_exists( revisr()->git->work_tree . '/.gitignore' ) ) {
 			$gitignore = file_get_contents( revisr()->git->work_tree . '/.gitignore' );
 		} else {
-			$gitignore = isset( revisr()->options['gitignore'] ) ? revisr()->options['gitignore'] : '';
+			$gitignore = '';
 		}
 
 		// Display the settings field.
@@ -269,7 +265,7 @@ class Revisr_Settings_Fields {
 		if ( false !== $check_remote ) {
 			$remote = $check_remote;
 		} else {
-			$remote = isset( revisr()->options['remote_url'] ) ? revisr()->options['remote_url'] : '';
+			$remote = '';
 		}
 
 		printf(
