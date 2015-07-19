@@ -393,13 +393,14 @@ class Revisr_Git {
 	/**
 	 * Returns the name of the current remote.
 	 * @access public
+	 * @return string
 	 */
 	public function current_remote() {
-		if ( isset( revisr()->options['remote_name'] ) && revisr()->options['remote_name'] != '' ) {
-			return revisr()->options['remote_name'];
-		} else {
-			return 'origin';
+		$remote = $this->get_config( 'revisr', 'current-remote' );
+		if ( ! $remote ) {
+			$remote = 'origin';
 		}
+		return $remote;
 	}
 
 	/**

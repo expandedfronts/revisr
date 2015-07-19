@@ -137,7 +137,7 @@ class Revisr_Settings_Fields {
 	public function gitignore_callback() {
 
 		// Update the .gitignore if necessary.
-		if ( $this->is_updated( 'gitignore' ) ) {
+		if ( isset( $_GET['settings-updated'] ) ) {
 			revisr()->git->update_gitignore();
 		}
 
@@ -205,10 +205,18 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function notifications_callback() {
+
+		if ( isset( $_GET['settings-updated'] ) ) {
+			$notifications = isset( revisr()->options['notifications'] ) ? revisr()->options['notifications'] : 'off';
+			revisr()->git->set_config( 'revisr', 'notifications', $notifications );
+		}
+
+		$notifications = revisr()->git->get_config( 'revisr', 'notifications' );
+
 		printf(
 			'<input type="checkbox" id="notifications" name="revisr_general_settings[notifications]" %s />
 			<label for="notifications"><span class="description">%s</span></label>',
-			isset( revisr()->options['notifications'] ) ? "checked" : '',
+			checked( $notifications, 'on', false ),
 			__( 'Enabling notifications will send updates about new commits, pulls, and pushes to the email address above.', 'revisr' )
 		);
 	}
@@ -218,10 +226,18 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function uninstall_on_delete_callback() {
+
+		if ( isset( $_GET['settings-updated'] ) ) {
+			$uninstall_on_delete = isset( revisr()->options['uninstall_on_delete'] ) ? 'on' : 'off';
+			revisr()->git->set_config( 'revisr', 'uninstall-on-delete', $uninstall_on_delete );
+		}
+
+		$uninstall_on_delete = revisr()->git->get_config( 'revisr', 'uninstall-on-delete' );
+
 		printf(
 			'<input type="checkbox" id="uninstall_on_delete" name="revisr_general_settings[uninstall_on_delete]" %s  />
 			<label for="uninstall_on_delete"><span class="description">%s</span></label>',
-			isset( revisr()->options['uninstall_on_delete'] ) ? "checked" : '',
+			checked( $uninstall_on_delete, 'on', false ),
 			__( 'Check to delete all settings and history stored in the database when this plugin is deleted. Settings in the .git/config will not be affected.', 'revisr' )
 		);
 	}
@@ -232,26 +248,31 @@ class Revisr_Settings_Fields {
 	 */
 	public function remote_name_callback() {
 
+		if ( isset( $_GET['settings-updated'] ) ) {
+
+			// Set this remote as the current remote.
+			$remote = isset( revisr()->options['remote_name'] ) ? revisr()->options['remote_name'] : 'origin';
+			revisr()->git->set_config( 'revisr', 'current-remote', $remote );
+
+			// Sets the remote name and/or URL if necessary.
+			if ( isset( revisr()->options['remote_url'] ) ) {
+				$add = revisr()->git->run( 'remote',  array( 'add', $remote, revisr()->options['remote_url'] ) );
+				if ( $add == false ) {
+					revisr()->git->run( 'remote', array( 'set-url', $remote, revisr()->options['remote_url'] ) );
+				}
+			}
+
+		}
+
+		$remote = revisr()->git->get_config( 'revisr', 'current-remote' );
+
 		printf(
 			'<input type="text" id="remote_name" name="revisr_remote_settings[remote_name]" value="%s" class="regular-text revisr-text" placeholder="origin" />
 			<p class="description revisr-description">%s</p>',
-			isset( revisr()->options['remote_name'] ) ? esc_attr( revisr()->options['remote_name']) : '',
+			isset( $remote ) ? esc_attr( $remote ) : '',
 			__( 'Git sets this to "origin" by default when you clone a repository, and this should be sufficient in most cases. If you\'ve changed the remote name or have more than one remote, you can specify that here.', 'revisr' )
 		);
 
-		if ( $this->is_updated( 'remote_name' ) ) {
-			$remote_name = revisr()->options['remote_name'];
-		} else {
-			$remote_name = 'origin';
-		}
-
-		// Sets the remote name and/or URL if necessary.
-		if ( isset( revisr()->options['remote_url'] ) ) {
-			$add = revisr()->git->run( 'remote',  array( 'add', $remote_name, revisr()->options['remote_url'] ) );
-			if ( $add == false ) {
-				revisr()->git->run( 'remote', array( 'set-url', $remote_name, revisr()->options['remote_url'] ) );
-			}
-		}
 	}
 
 	/**
@@ -515,6 +536,7 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function reset_db_callback() {
+
 		if ( isset( $_GET['settings-updated'] ) ) {
 
 			if ( isset( revisr()->options['reset_db'] ) ) {
