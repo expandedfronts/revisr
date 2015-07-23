@@ -152,6 +152,8 @@ class Revisr_DB_Import extends Revisr_DB {
 	 */
 	private function revisr_srdb( $table, $search = '', $replace = '' ) {
 
+		$table = esc_sql( $table );
+
 		// Get a list of columns in this table.
 		$columns = array();
 		$fields  = $this->wpdb->get_results( 'DESCRIBE ' . $table );
@@ -161,10 +163,10 @@ class Revisr_DB_Import extends Revisr_DB {
 		$this->wpdb->flush();
 
 		// Count the number of rows we have in the table if large we'll split into blocks, This is a mod from Simon Wheatley
-		$this->wpdb->get_results( 'SELECT COUNT(*) FROM ' . $table );
-		$row_count = $this->wpdb->num_rows;
-		if ( $row_count == 0 )
+		$row_count = $this->wpdb->get_var( "SELECT COUNT(*) FROM $table" );
+		if ( $row_count == 0 ) {
 			continue;
+		}
 
 		$page_size 	= 50000;
 		$pages 		= ceil( $row_count / $page_size );
@@ -173,7 +175,7 @@ class Revisr_DB_Import extends Revisr_DB {
 
 			$current_row 	= 0;
 			$start 			= $page * $page_size;
-			$end 			= $start + $page_size;
+			$end 			= $page_size;
 
 			// Grab the content of the table.
 			$data = $this->wpdb->get_results( "SELECT * FROM $table LIMIT $start, $end", ARRAY_A );
@@ -212,11 +214,13 @@ class Revisr_DB_Import extends Revisr_DB {
 				}
 			}
 		}
+
 		$this->wpdb->flush();
 		if ( isset( $error_msg ) ) {
 			Revisr_Admin::log( $error_msg, 'error' );
 			return false;
 		}
+
 	}
 
 	/**
