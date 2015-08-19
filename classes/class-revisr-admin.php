@@ -70,7 +70,7 @@ class Revisr_Admin {
 					wp_enqueue_script( 'revisr_dashboard' );
 					wp_localize_script( 'revisr_dashboard', 'revisr_dashboard_vars', array(
 						'ajax_nonce' 	=> wp_create_nonce( 'revisr_dashboard_nonce' ),
-						'login_url' 	=> wp_login_url( get_admin_url() . 'admin.php?page=revisr' )
+						'login_prompt' 	=> sprintf( __( 'Session Expired: Please <a href="%s">click here</a> to log in again.', 'revisr' ), wp_login_url( get_admin_url() . 'admin.php?page=revisr' ) )
 						)
 					);
 					break;

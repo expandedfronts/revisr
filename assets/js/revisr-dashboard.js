@@ -65,7 +65,7 @@ function delayed_refresh() {
 		data : {action: 'render_alert'},
 		success : function(response){
 			if ( 0 == response ) {
-				document.getElementById('revisr-processing-request').innerHTML = '<p>Session Expired: Please click <a href="'+revisr_dashboard_vars.login_url+'">here</a> to login again.</p>';
+				document.getElementById('revisr-processing-request').innerHTML = '<p>' + revisr_dashboard_vars.login_prompt + '</p>';
 			} else {
 				jQuery('#revisr-loading-alert').hide();
 				jQuery('#revisr-processing-request').hide();
