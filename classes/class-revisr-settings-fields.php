@@ -248,20 +248,12 @@ class Revisr_Settings_Fields {
 	 */
 	public function remote_name_callback() {
 
+		// Default to orign as the remote name.
+		$remote = $this->is_updated( 'remote_name' ) ? revisr()->options['remote_name'] : 'origin';
+
+		// Set the current remote.
 		if ( isset( $_GET['settings-updated'] ) ) {
-
-			// Set this remote as the current remote.
-			$remote = isset( revisr()->options['remote_name'] ) ? revisr()->options['remote_name'] : 'origin';
 			revisr()->git->set_config( 'revisr', 'current-remote', $remote );
-
-			// Sets the remote name and/or URL if necessary.
-			if ( isset( revisr()->options['remote_url'] ) ) {
-				$add = revisr()->git->run( 'remote',  array( 'add', $remote, revisr()->options['remote_url'] ) );
-				if ( $add == false ) {
-					revisr()->git->run( 'remote', array( 'set-url', $remote, revisr()->options['remote_url'] ) );
-				}
-			}
-
 		}
 
 		$remote = revisr()->git->get_config( 'revisr', 'current-remote' );
@@ -280,6 +272,18 @@ class Revisr_Settings_Fields {
 	 * @access public
 	 */
 	public function remote_url_callback() {
+
+		if ( isset( $_GET['settings-updated'] ) ) {
+
+			// Stores the Remote URL.
+			$remote = $this->is_updated( 'remote_name' ) ? revisr()->options['remote_name'] : 'origin';
+			$add 	= revisr()->git->run( 'remote',  array( 'add', $remote, revisr()->options['remote_url'] ) );
+
+			if ( false == $add ) {
+				revisr()->git->run( 'remote', array( 'set-url', $remote, revisr()->options['remote_url'] ) );
+			}
+
+		}
 
 		$check_remote = revisr()->git->run( 'ls-remote', array( '--get-url' ) );
 
