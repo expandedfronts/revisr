@@ -25,15 +25,9 @@ class Revisr_Branch_Table extends WP_List_Table {
 	 * @access public
 	 */
 	public function __construct() {
-		// Prevent PHP notices from breaking AJAX.
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			error_reporting( ~E_NOTICE & ~E_STRICT );
-		}
-
 		// Load the parent class on the appropriate hook.
 		add_action( 'load-revisr_page_revisr_branches', array( $this, 'load' ) );
 		add_filter( 'set-screen-option', array( $this, 'set_screen_option' ), 10, 3 );
-
 	}
 
 	/**
