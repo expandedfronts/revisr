@@ -45,8 +45,7 @@ class Revisr_Branch_Table extends WP_List_Table {
 
 		parent::__construct( array(
 			'singular' 	=> 'branch',
-			'plural'	=> 'branches',
-			'ajax'		=> true
+			'plural'	=> 'branches'
 		) );
 
 		add_screen_option(
