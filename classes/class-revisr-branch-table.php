@@ -32,7 +32,6 @@ class Revisr_Branch_Table extends WP_List_Table {
 
 		// Load the parent class on the appropriate hook.
 		add_action( 'load-revisr_page_revisr_branches', array( $this, 'load' ) );
-		add_action( 'wp_ajax_revisr_get_custom_list', array( $this, 'ajax_callback' ) );
 		add_filter( 'set-screen-option', array( $this, 'set_screen_option' ), 10, 3 );
 
 	}
