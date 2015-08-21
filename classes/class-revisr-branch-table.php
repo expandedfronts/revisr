@@ -4,10 +4,10 @@
  *
  * Displays the custom WP_List_Table on the Revisr Branches page.
  *
- * @package Revisr
- * @license GPLv3
- * @link https://revisr.io
- * @copyright Expanded Fronts
+ * @package 	Revisr
+ * @license 	GPLv3
+ * @link 		https://revisr.io
+ * @copyright 	Expanded Fronts
  */
 
  // Prevent direct access.
