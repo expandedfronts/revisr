@@ -71,11 +71,11 @@
 /*--------------------------------------------------------------
 # Commits
 --------------------------------------------------------------*/
-#posts-filter .alignleft.actions.bulkactions { display: none; }
-#posts-filter #hash, .column-hash { width:70px !important; }
-#posts-filter .column-title { width: 400px !important; }
-#posts-filter #branch, #posts-filter #tag, #posts-filter #files_changed, #posts-filter .column-branch, #posts-filter .column-tag, #posts-filter .column-files_changed { text-align: center !important; }
-body.post-type-revisr_commits.edit-php .wrap { margin-top: 27px !important; }
+.revisr_page_revisr_commits .alignleft.actions.bulkactions { display: none; }
+#revisr-commits-filter #hash, #revisr-commits-filter .column-hash { width:70px !important; }
+#revisr-commits-filter .column-title { width: 400px !important; }
+#revisr-commits-filter #branch, #revisr-commits-filter #tag, #files_changed, #revisr-commits-filter .column-branch, #revisr-commits-filter .column-tag, .column-files_changed { text-align: center !important; }
+.revisr_page_revisr_commits .wrap { margin-top: 27px !important; }
 
 /*--------------------------------------------------------------
 ## Committed

@@ -128,6 +128,7 @@ class Revisr_Admin {
 		if ( ! Revisr_Admin::is_doing_setup() ) {
 			$this->page_hooks['menu'] 		= add_menu_page( __( 'Dashboard', 'revisr' ), __( 'Revisr', 'revisr' ), $cap, 'revisr', array( $this, 'include_page' ), $icon_svg );
 			$this->page_hooks['dashboard'] 	= add_submenu_page( 'revisr', __( 'Revisr - Dashboard', 'revisr' ), __( 'Dashboard', 'revisr' ), $cap, 'revisr', array( $this, 'include_page' ) );
+			$this->page_hooks['commits'] 	= add_submenu_page( 'revisr', __( 'Revisr - Commits', 'revisr' ), __( 'Commits', 'revisr' ), $cap, 'revisr_commits', array( $this, 'include_page' ) );
 			$this->page_hooks['branches'] 	= add_submenu_page( 'revisr', __( 'Revisr - Branches', 'revisr' ), __( 'Branches', 'revisr' ), $cap, 'revisr_branches', array( $this, 'include_page' ) );
 			$this->page_hooks['settings'] 	= add_submenu_page( 'revisr', __( 'Revisr - Settings', 'revisr' ), __( 'Settings', 'revisr' ), $cap, 'revisr_settings', array( $this, 'include_page' ) );
 			$this->page_hooks['setup'] 		= add_submenu_page( NULL, __( 'Revisr - Setup', 'revisr' ), 'Revisr', $cap, 'revisr_setup', array( $this, 'include_page' ) );
@@ -584,6 +585,10 @@ class Revisr_Admin {
 
 			case 'revisr_branches':
 				$file = 'branches.php';
+				break;
+
+			case 'revisr_commits':
+				$file = 'commits.php';
 				break;
 
 			case 'revisr_settings':

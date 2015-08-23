@@ -79,10 +79,16 @@ final class Revisr {
 	public $activity_table;
 
 	/**
-	 * Stores the Revisr_Branch_Table object
+	 * Stores the Revisr_Branch_Table object.
 	 * @var Revisr_Branch_Table
 	 */
 	public $branch_table;
+
+	/**
+	 * Stores the Revisr_Commits_Table object.
+	 * @var Revisr_Commits_Table
+	 */
+	public $commits_table;
 
 	/**
 	 * Stores the Revisr_Settings object
@@ -274,6 +280,7 @@ final class Revisr {
 		self::$instance->settings 			= new Revisr_Settings();
 		self::$instance->activity_table 	= new Revisr_Activity_Table();
 		self::$instance->branch_table 		= new Revisr_Branch_Table();
+		self::$instance->commits_table 		= new Revisr_Commits_Table();
 
 		// Register the plugin settings link.
 		add_filter( 'plugin_action_links_'  . plugin_basename( __FILE__ ), array( __CLASS__, 'settings_link' ) );
