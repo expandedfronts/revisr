@@ -69,23 +69,36 @@ class Revisr_Commits {
 	}
 
 	/**
+	 * Adds actions responsible for triggering our custom meta boxes.
+	 * @access public
+	 */
+	public function add_meta_box_actions() {
+		do_action( 'add_meta_boxes_admin_page_revisr_new_commit', null );
+		do_action( 'add_meta_boxes', 'admin_page_revisr_new_commit', null );
+		do_action( 'add_meta_boxes_admin_page_revisr_view_commit', null );
+		do_action( 'add_meta_boxes', 'admin_page_revisr_view_commit', null );
+
+		wp_enqueue_script( 'postbox' );
+
+		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
+	}
+
+	public function init_meta_boxes() {
+		?>
+ 		<script>jQuery(document).ready(function(){ postboxes.add_postbox_toggles(pagenow); });</script>
+		<?php
+	}
+
+	/**
 	 * Adds/removes meta boxes for the "revisr_commits" post type.
 	 * @access public
 	 */
 	public function post_meta() {
-		if ( isset( $_GET['action'] ) ) {
-			if ( 'edit' == $_GET['action'] ) {
-				add_meta_box( 'revisr_committed_files', __( 'Committed Files', 'revisr' ), array( $this, 'committed_files_meta' ), 'revisr_commits', 'normal', 'high' );
-				add_meta_box( 'revisr_view_commit', __( 'Commit Details', 'revisr' ), array( $this, 'view_commit_meta' ), 'revisr_commits', 'side', 'core' );
-				remove_meta_box( 'submitdiv', 'revisr_commits', 'side' );
-			}
-		} else {
-			add_meta_box( 'revisr_pending_files', __( 'Stage Changes', 'revisr' ), array( $this, 'pending_files_meta' ), 'revisr_commits', 'normal', 'high' );
-			add_meta_box( 'revisr_add_tag', __( 'Add Tag', 'revisr' ), array( $this, 'add_tag_meta' ), 'revisr_commits', 'side', 'default' );
-			add_meta_box( 'revisr_save_commit', __( 'Save Commit', 'revisr' ), array( $this, 'save_commit_meta' ), 'revisr_commits', 'side', 'core' );
-			remove_meta_box( 'submitdiv', 'revisr_commits', 'side' );
-		}
-		remove_meta_box( 'authordiv', 'revisr_commits', 'normal' );
+		add_meta_box( 'revisr_committed_files', __( 'Committed Files', 'revisr' ), array( $this, 'committed_files_meta' ), 'admin_page_revisr_view_commit', 'normal', 'high' );
+		add_meta_box( 'revisr_view_commit', __( 'Commit Details', 'revisr' ), array( $this, 'view_commit_meta' ), 'admin_page_revisr_view_commit', 'side', 'core' );
+		add_meta_box( 'revisr_pending_files', __( 'Stage Changes', 'revisr' ), array( $this, 'pending_files_meta' ), 'admin_page_revisr_new_commit', 'normal', 'high' );
+		add_meta_box( 'revisr_add_tag', __( 'Add Tag', 'revisr' ), array( $this, 'add_tag_meta' ), 'admin_page_revisr_new_commit', 'side', 'default' );
+		add_meta_box( 'revisr_save_commit', __( 'Save Commit', 'revisr' ), array( $this, 'save_commit_meta' ), 'admin_page_revisr_new_commit', 'side', 'core' );
 	}
 
 	/**

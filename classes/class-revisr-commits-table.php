@@ -180,9 +180,9 @@ class Revisr_Commits_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_title( $item ) {
-
-		$title 				= '<strong><a href="#">' . $item['title'] . '</a></strong>';
-		$actions['view'] 	= '<a href="#">' . __( 'View Commit', 'revisr' ) . '</a>';
+		$url 				= get_admin_url() . 'admin.php?page=revisr_view_commit&commit=' . $item['hash'];
+		$title 				= '<strong><a href="' . $url . '">' . $item['title'] . '</a></strong>';
+		$actions['view'] 	= '<a href="' . $url . '">' . __( 'View Commit', 'revisr' ) . '</a>';
 
 		return $title . $this->row_actions( $actions );
 	}

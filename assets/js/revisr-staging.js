@@ -41,7 +41,7 @@ function commit_files() {
 jQuery(document).ready(function($) {
 
     // Load any pending/untracked files via AJAX in case there are a lot of results.
-    if ( 'post-new-php' === adminpage ) {
+    if ( 'admin_page_revisr_new_commit' === adminpage ) {
 
         var data = {
             action: 'pending_files',

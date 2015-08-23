@@ -137,7 +137,7 @@ jQuery('#tags-link').click(function() {
  * Redirects to the new commit screen.
  */
 jQuery('#revisr-commit-btn').click(function() {
-	window.location = 'post-new.php?post_type=revisr_commits';
+	window.location = 'admin.php?page=revisr_new_commit';
 });
 
 /**

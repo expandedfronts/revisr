@@ -302,6 +302,12 @@ final class Revisr {
 		add_filter( 'enter_title_here', array( self::$instance->commits, 'custom_enter_title' ) );
 		add_filter( 'posts_where', array( self::$instance->commits, 'posts_where' ) );
 
+		// New metaboxes.
+		add_action( 'load-admin_page_revisr_new_commit', array( self::$instance->commits, 'add_meta_box_actions' ) );
+		add_action( 'load-admin_page_revisr_view_commit', array( self::$instance->commits, 'add_meta_box_actions' ) );
+		add_action( 'admin_footer-admin_page_revisr_new_commit', array( self::$instance->commits, 'init_meta_boxes' ) );
+		add_action( 'add_meta_boxes_admin_page_revisr_new_commit', array( self::$instance->commits, 'post_meta' ) );
+
 		// Enqueue styles and scripts.
 		add_action( 'admin_enqueue_scripts', array( self::$instance->admin, 'revisr_scripts' ) );
 
@@ -309,6 +315,7 @@ final class Revisr {
 		add_action( 'admin_menu', array( self::$instance->admin, 'menus' ), 2 );
 		add_action( 'admin_bar_menu', array( self::$instance->admin, 'admin_bar' ), 999 );
 		add_filter( 'custom_menu_order', array( self::$instance->admin, 'revisr_submenu_order' ) );
+		add_filter( 'parent_file', array( self::$instance->admin, 'revisr_parent_file' ) );
 
 		// Callbacks for AJAX UI
 		add_action( 'wp_ajax_render_alert', array( self::$instance->admin, 'render_alert' ) );

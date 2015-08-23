@@ -100,6 +100,8 @@ class Revisr_Admin {
 				// The "New Commit" screen and "View Commit" screen.
 				case 'post.php':
 				case 'post-new.php':
+				case 'admin_page_revisr_new_commit':
+				case 'admin_page_revisr_view_commit':
 					wp_enqueue_script( 'revisr_staging' );
 					wp_localize_script( 'revisr_staging', 'pending_vars', array(
 						'ajax_nonce' 		=> wp_create_nonce( 'pending_nonce' ),
@@ -126,17 +128,19 @@ class Revisr_Admin {
 		$cap 		= Revisr::get_capability();
 		$icon_svg 	= 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOC4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjI0NS44IDM4MS4xIDgxLjkgODkuNSIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAyNDUuOCAzODEuMSA4MS45IDg5LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTI5NS4yLDM4Ny4yYy01LjEsNS4xLTUuMSwxMy4zLDAsMTguM2MzLjgsMy44LDkuMyw0LjcsMTMuOSwyLjlsNy4yLTcuMmMxLjgtNC43LDAuOS0xMC4yLTIuOS0xMy45DQoJQzMwOC41LDM4Mi4xLDMwMC4zLDM4Mi4xLDI5NS4yLDM4Ny4yeiBNMzA5LjcsNDAxLjZjLTIuOSwyLjktNy42LDIuOS0xMC42LDBjLTIuOS0yLjktMi45LTcuNiwwLTEwLjZjMi45LTIuOSw3LjYtMi45LDEwLjYsMA0KCUMzMTIuNiwzOTQsMzEyLjYsMzk4LjcsMzA5LjcsNDAxLjZ6Ii8+DQo8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMjY4LjEsNDU0Yy0xMy4yLTEwLjEtMTYuMS0yOS02LjQtNDIuNmM0LTUuNiw5LjQtOS40LDE1LjQtMTEuNGwtMi0xMC4yYy04LjUsMi41LTE2LjIsNy43LTIxLjcsMTUuNQ0KCWMtMTIuOSwxOC4yLTguOSw0My41LDguOCw1N2wtNS42LDguM2wyNS45LTEuMmwtOC42LTIzLjZMMjY4LjEsNDU0eiIvPg0KPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTMxOC4zLDQwMy4zYzEuMS0yLjEsMS43LTQuNSwxLjctN2MwLTguNC02LjgtMTUuMi0xNS4yLTE1LjJzLTE1LjIsNi44LTE1LjIsMTUuMnM2LjgsMTUuMiwxNS4yLDE1LjINCgljMi4xLDAsNC4xLTAuNCw1LjktMS4yYzguNCwxMC42LDkuMiwyNS44LDEsMzcuMmMtMy45LDUuNi05LjQsOS40LTE1LjQsMTEuNGwyLDEwLjJjOC41LTIuNSwxNi4yLTcuNywyMS43LTE1LjUNCglDMzMxLjIsNDM4LjEsMzI5LjksNDE3LjQsMzE4LjMsNDAzLjN6IE0zMDQuOCw0MDMuM2MtMy44LDAtNi45LTMuMS02LjktNi45czMuMS02LjksNi45LTYuOXM2LjksMy4xLDYuOSw2LjkNCglTMzA4LjcsNDAzLjMsMzA0LjgsNDAzLjN6Ii8+DQo8L3N2Zz4=';
 		if ( ! Revisr_Admin::is_doing_setup() ) {
-			$this->page_hooks['menu'] 		= add_menu_page( __( 'Dashboard', 'revisr' ), __( 'Revisr', 'revisr' ), $cap, 'revisr', array( $this, 'include_page' ), $icon_svg );
-			$this->page_hooks['dashboard'] 	= add_submenu_page( 'revisr', __( 'Revisr - Dashboard', 'revisr' ), __( 'Dashboard', 'revisr' ), $cap, 'revisr', array( $this, 'include_page' ) );
-			$this->page_hooks['commits'] 	= add_submenu_page( 'revisr', __( 'Revisr - Commits', 'revisr' ), __( 'Commits', 'revisr' ), $cap, 'revisr_commits', array( $this, 'include_page' ) );
-			$this->page_hooks['branches'] 	= add_submenu_page( 'revisr', __( 'Revisr - Branches', 'revisr' ), __( 'Branches', 'revisr' ), $cap, 'revisr_branches', array( $this, 'include_page' ) );
-			$this->page_hooks['settings'] 	= add_submenu_page( 'revisr', __( 'Revisr - Settings', 'revisr' ), __( 'Settings', 'revisr' ), $cap, 'revisr_settings', array( $this, 'include_page' ) );
-			$this->page_hooks['setup'] 		= add_submenu_page( NULL, __( 'Revisr - Setup', 'revisr' ), 'Revisr', $cap, 'revisr_setup', array( $this, 'include_page' ) );
+			$this->page_hooks['menu'] 			= add_menu_page( __( 'Dashboard', 'revisr' ), __( 'Revisr', 'revisr' ), $cap, 'revisr', array( $this, 'include_page' ), $icon_svg );
+			$this->page_hooks['dashboard'] 		= add_submenu_page( 'revisr', __( 'Revisr - Dashboard', 'revisr' ), __( 'Dashboard', 'revisr' ), $cap, 'revisr', array( $this, 'include_page' ) );
+			$this->page_hooks['commits'] 		= add_submenu_page( 'revisr', __( 'Revisr - Commits', 'revisr' ), __( 'Commits', 'revisr' ), $cap, 'revisr_commits', array( $this, 'include_page' ) );
+			$this->page_hooks['new_commit'] 	= add_submenu_page( NULL, __( 'Revisr - New Commit', 'revisr' ), __( 'New Commit', 'revisr' ), $cap, 'revisr_new_commit', array( $this, 'include_page' ) );
+			$this->page_hooks['view_commit'] 	= add_submenu_page( NULL, __( 'Revisr - View Commit', 'revisr' ), __( 'View Commit', 'revisr' ), $cap, 'revisr_view_commit', array( $this, 'include_page' ) );
+			$this->page_hooks['branches'] 		= add_submenu_page( 'revisr', __( 'Revisr - Branches', 'revisr' ), __( 'Branches', 'revisr' ), $cap, 'revisr_branches', array( $this, 'include_page' ) );
+			$this->page_hooks['settings'] 		= add_submenu_page( 'revisr', __( 'Revisr - Settings', 'revisr' ), __( 'Settings', 'revisr' ), $cap, 'revisr_settings', array( $this, 'include_page' ) );
+			$this->page_hooks['setup'] 			= add_submenu_page( NULL, __( 'Revisr - Setup', 'revisr' ), 'Revisr', $cap, 'revisr_setup', array( $this, 'include_page' ) );
 		} else {
-			$this->page_hooks['setup'] 		= add_menu_page( __( 'Revisr Setup', 'revisr' ), __( 'Revisr', 'revisr' ), $cap, 'revisr_setup', array( $this, 'include_page' ), $icon_svg );
-			$this->page_hooks['dashboard'] 	= add_submenu_page( null, __( 'Revisr - Dashboard', 'revisr' ), __( 'Dashboard', 'revisr' ), $cap, 'revisr', array( $this, 'include_page' ) );
-			$this->page_hooks['branches'] 	= add_submenu_page( NULL, __( 'Revisr - Branches', 'revisr' ), __( 'Branches', 'revisr' ), $cap, 'revisr_branches', array( $this, 'include_page' ) );
-			$this->page_hooks['settings'] 	= add_submenu_page( NULL, __( 'Revisr - Settings', 'revisr' ), __( 'Settings', 'revisr' ), $cap, 'revisr_settings', array( $this, 'include_page' ) );
+			$this->page_hooks['setup'] 			= add_menu_page( __( 'Revisr Setup', 'revisr' ), __( 'Revisr', 'revisr' ), $cap, 'revisr_setup', array( $this, 'include_page' ), $icon_svg );
+			$this->page_hooks['dashboard'] 		= add_submenu_page( null, __( 'Revisr - Dashboard', 'revisr' ), __( 'Dashboard', 'revisr' ), $cap, 'revisr', array( $this, 'include_page' ) );
+			$this->page_hooks['branches'] 		= add_submenu_page( NULL, __( 'Revisr - Branches', 'revisr' ), __( 'Branches', 'revisr' ), $cap, 'revisr_branches', array( $this, 'include_page' ) );
+			$this->page_hooks['settings'] 		= add_submenu_page( NULL, __( 'Revisr - Settings', 'revisr' ), __( 'Settings', 'revisr' ), $cap, 'revisr_settings', array( $this, 'include_page' ) );
 		}
 
 	}
@@ -151,12 +155,28 @@ class Revisr_Admin {
 
 		if ( isset( $submenu['revisr'] ) && ! Revisr_Admin::is_doing_setup()  ) {
 		    $arr[] = $submenu['revisr'][0];
-		    $arr[] = $submenu['revisr'][3];
 		    $arr[] = $submenu['revisr'][1];
 		    $arr[] = $submenu['revisr'][2];
+		    $arr[] = $submenu['revisr'][3];
 		    $submenu['revisr'] = $arr;
 		}
 	    return $menu_ord;
+	}
+
+	/**
+	 * Filters the parent_file for the new/view commit pages.
+	 * @access public
+	 * @param  string $file
+	 * @return string
+	 */
+	public function revisr_parent_file( $file ) {
+		global $plugin_page;
+
+		if ( 'revisr_new_commit' === $plugin_page || 'revisr_view_commit' === $plugin_page ) {
+			$plugin_page = 'revisr_commits';
+		}
+
+		return $file;
 	}
 
 	/**
@@ -196,7 +216,7 @@ class Revisr_Admin {
 			$args 		= array(
 				'id'    => 'revisr',
 				'title' => $text,
-				'href'  => get_admin_url() . 'post-new.php?post_type=revisr_commits',
+				'href'  => get_admin_url() . 'admin.php?page=revisr_new_commit',
 				'meta'  => array( 'class' => 'revisr_commits' ),
 			);
 			$wp_admin_bar->add_node( $args );
@@ -589,6 +609,14 @@ class Revisr_Admin {
 
 			case 'revisr_commits':
 				$file = 'commits.php';
+				break;
+
+			case 'revisr_new_commit':
+				$file = 'new-commit.php';
+				break;
+
+			case 'revisr_view_commit':
+				$file = 'view-commit.php';
 				break;
 
 			case 'revisr_settings':

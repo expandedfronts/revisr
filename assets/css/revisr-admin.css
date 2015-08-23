@@ -98,7 +98,8 @@ body.post-type-revisr_commits.post-php .wrap { margin-top: 27px !important; }
 .stage-nav-button { margin-top: 7px !important; }
 .diff_added { background-color: #cfc; }
 .diff_removed { background-color: #fdd; }
-body.post-type-revisr_commits.post-new-php .wrap { margin-top: 27px !important; }
+.admin_page_revisr_new_commit .wrap { margin-top: 27px !important; }
+#revisr-commit-form #title { line-height: normal; }
 
 /*--------------------------------------------------------------
 # Settings
