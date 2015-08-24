@@ -346,7 +346,7 @@ final class Revisr {
 
 		// Processes actions taken from within the WordPress dashboard.
 		add_action( 'init', array( self::$instance->process, 'process_is_repo' ) );
-		add_action( 'publish_revisr_commits', array( self::$instance->process, 'process_commit' ) );
+		add_action( 'admin_post_process_commit', array( self::$instance->process, 'process_commit' ) );
 		add_action( 'admin_post_process_checkout', array( self::$instance->process, 'process_checkout' ) );
 		add_action( 'admin_post_process_create_branch', array( self::$instance->process, 'process_create_branch' ) );
 		add_action( 'admin_post_process_delete_branch', array( self::$instance->process, 'process_delete_branch' ) );

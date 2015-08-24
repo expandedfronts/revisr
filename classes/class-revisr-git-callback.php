@@ -61,17 +61,12 @@ class Revisr_Git_Callback {
 	 * @access public
 	 */
 	public function success_commit( $output = array(), $args = '' ) {
-		$id 			= get_the_ID();
-		$view_link 		= get_admin_url() . "post.php?post={$id}&action=edit";
+
 
 		$branch 		= revisr()->git->current_branch();
 		$commit_hash 	= revisr()->git->current_commit();
 		$commit_msg 	= $_REQUEST['post_title'];
-
-		// Add post-commit meta.
-		add_post_meta( $id, 'commit_hash', $commit_hash );
-		add_post_meta( $id, 'branch', $branch );
-		add_post_meta( $id, 'commit_status', __( 'Committed', 'revisr' ) );
+		$view_link 		= get_admin_url() . 'admin.php?page=revisr_view_commit&commit=' . $commit_hash;
 
 		// Backup the database if necessary
 		if ( isset( $_REQUEST['backup_db'] ) && $_REQUEST['backup_db'] == 'on' ) {
@@ -95,7 +90,6 @@ class Revisr_Git_Callback {
 		// Add a tag if necessary.
 		if ( isset( $_REQUEST['tag_name'] ) ) {
 			revisr()->git->tag( $_POST['tag_name'] );
-			add_post_meta( $id, 'git_tag', $_POST['tag_name'] );
 		}
 
 		// Fires after the commit has been made.
@@ -103,7 +97,10 @@ class Revisr_Git_Callback {
 
 		// Push if necessary.
 		revisr()->git->auto_push();
-		return $commit_hash;
+
+		// View the commit.
+		wp_redirect( $view_link );
+		exit;
 	}
 
 	/**

@@ -13,6 +13,10 @@
 // Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+// Get details about the commit.
+$commit_hash        = isset( $_GET['commit'] ) ? esc_attr( $_GET['commit'] ) : '';
+$commit             = Revisr_Admin::get_commit_details( $commit_hash );
+$subject            = $commit['subject'];
 ?>
 
 <div class="wrap">
@@ -35,7 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
                 <div id="post-body-content">
 					<div id="titlediv">
 						<div id="titlewrap">
-							<input type="text" name="post_title" size="30" value="" id="title" spellcheck="true" autocomplete="off" placeholder="<?php _e( 'Enter a message for your commit', 'revisr' ); ?>">
+							<input type="text" name="post_title" size="30" id="title" spellcheck="true" autocomplete="off" value="<?php echo $subject; ?>">
 						</div>
 					</div><!-- /titlediv -->
                 </div>

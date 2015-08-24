@@ -82,12 +82,11 @@ class Revisr_Process {
 
 		if ( wp_verify_nonce( $_REQUEST['revisr_commit_nonce'], 'process_commit' ) ) {
 
-			$id 			= get_the_ID();
 			$commit_msg 	= $_REQUEST['post_title'];
-			$post_new 		= get_admin_url() . 'post-new.php?post_type=revisr_commits';
+			$post_new 		= get_admin_url() . 'admin.php?page=revisr_new_commit';
 
 			// Require a message to be entered for the commit.
-			if ( $commit_msg == 'Auto Draft' || $commit_msg == '' ) {
+			if ( $commit_msg == '' ) {
 				wp_safe_redirect( $post_new . '&message=42' );
 				exit();
 			}
@@ -101,9 +100,7 @@ class Revisr_Process {
 				// Stage the files.
 				revisr()->git->stage_files( $staged_files, $quick_stage );
 
-				// Add the necessary post meta and make the commit in Git.
-				add_post_meta( $id, 'committed_files', $staged_files );
-				add_post_meta( $id, 'files_changed', count( $staged_files ) );
+				// Make the commit.
 				revisr()->git->commit( $commit_msg, 'commit' );
 
 			} elseif ( isset( $_POST['backup_db'] ) ) {
@@ -111,14 +108,6 @@ class Revisr_Process {
 				// Backup the database.
 				revisr()->db->backup();
 				$commit_hash = revisr()->git->current_commit();
-
-				// Add post-commit meta.
-				add_post_meta( $id, 'commit_hash', $commit_hash );
-				add_post_meta( $id, 'branch', revisr()->git->branch );
-				add_post_meta( $id, 'files_changed', '0' );
-				add_post_meta( $id, 'commit_status', __( 'Committed', 'revisr' ) );
-				add_post_meta( $id, 'db_hash', $commit_hash );
-				add_post_meta( $id, 'backup_method', 'tables' );
 
 			} else {
 
@@ -128,6 +117,8 @@ class Revisr_Process {
 
 			}
 
+		} else {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
 
 	}

@@ -41,14 +41,10 @@ $unpushed = revisr()->git->run( 'log', array( revisr()->git->branch, '--not', '-
 				<?php
 
 					$hash 	= substr( $commit, 0, 7 );
-					$link 	= Revisr_Admin::get_the_id_by_hash( $hash, true );
+					$link 	= '<a href="' . get_admin_url() . 'admin.php?page=revisr_view_commit&commit=' . $hash . '" target="_blank">' . $hash . '</a>';
 					$title 	= substr( $commit, 7 );
 
-					if ( $link ) {
-						$commit_li = $link . $title;
-					} else {
-						$commit_li = $commit;
-					}
+					$commit_li = $link . $title;
 				?>
 
 				<li><?php echo $commit_li; ?></li>

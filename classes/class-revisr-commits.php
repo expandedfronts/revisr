@@ -389,8 +389,9 @@ class Revisr_Commits {
 	 */
 	public function committed_files_meta() {
 
-		// Grab any info about the commit.
-		$commit = Revisr_Admin::get_commit_details( get_the_ID() );
+		// Get details about the commit.
+		$commit_hash 	= isset( $_GET['commit'] ) ? esc_attr( $_GET['commit'] ) : '';
+		$commit 		= Revisr_Admin::get_commit_details( $commit_hash );
 
 		// Start outputting the metabox.
 		echo '<div id="message"></div><div id="committed_files_result">';
@@ -400,7 +401,7 @@ class Revisr_Commits {
 
 			printf( __('<br><strong>%s</strong> files were included in this commit. Double-click files marked as "Modified" to view the changes in a diff.', 'revisr' ), $commit['files_changed'] );
 
-			echo '<input id="commit_hash" name="commit_hash" value="' . $commit['commit_hash'] . '" type="hidden" />';
+			echo '<input id="commit_hash" name="commit_hash" value="' . $commit['hash'] . '" type="hidden" />';
 			echo '<br><br><select id="committed" multiple="multiple" size="6">';
 
 				// Display the files that were included in the commit.
@@ -418,19 +419,6 @@ class Revisr_Commits {
 
 		} else {
 			printf( '<p>%s</p>', __( 'No files were included in this commit.', 'revisr' ) );
-		}
-
-		// Database tables that were included in this commit.
-		if ( 0 !== count( $commit['backed_up_tables'] ) ) {
-
-			printf( __( '<p><strong>%d</strong> database tables were backed up in this commit.', 'revisr' ), count( $commit['backed_up_tables'] ) );
-
-			echo '<br><br><select id="committed" multiple="multiple" size="6">';
-			foreach ( $commit['backed_up_tables'] as $table ) {
-				printf( '<option class="committed" value="%s">%s</option>', $table, $table );
-			}
-			echo '</select>';
-
 		}
 
 		echo '</div>';
@@ -506,19 +494,20 @@ class Revisr_Commits {
 	 */
 	public function view_commit_meta() {
 
-		$post_id 			= get_the_ID();
-		$commit 			= Revisr_Admin::get_commit_details( $post_id );
-		$revert_url 		= get_admin_url() . "admin-post.php?action=revisr_revert_form&commit_id=" . $post_id . "&TB_iframe=true&width=350&height=200";
+		// Get details about the commit.
+		$commit_hash 		= isset( $_GET['commit'] ) ? esc_attr( $_GET['commit'] ) : '';
+		$commit 			= Revisr_Admin::get_commit_details( $commit_hash );
+
+		$revert_url 		= get_admin_url() . "admin-post.php?action=revisr_revert_form&commit_id=" . $commit_hash . "&TB_iframe=true&width=350&height=200";
 
 		$time_format 	 	= __( 'M j, Y @ G:i' );
-		$timestamp 		 	= sprintf( __( 'Committed on: <strong>%s</strong>', 'revisr' ), date_i18n( $time_format, get_the_time( 'U' ) ) );
+		$timestamp 		 	= sprintf( __( 'Committed on: <strong>%s</strong>', 'revisr' ), date_i18n( $time_format, $commit['time'] ) );
 
-		if ( false !== $commit['error_details'] ) {
-			$details = ' <a class="thickbox" title="' . __( 'Error Details', 'revisr' ) . '" href="' . wp_nonce_url( admin_url( 'admin-post.php?action=revisr_view_error&post_id=' . $post_id . '&TB_iframe=true&width=350&height=300' ), 'revisr_view_error', 'revisr_error_nonce' ) . '">View Details</a>';
+		if ( false === $commit['status'] ) {
+			$commit['status'] = __( 'Error', 'revisr' );
 			$revert_btn = '<a class="button button-primary disabled" href="#">' . __( 'Revert to this Commit', 'revisr' ) . '</a>';
 		} else {
 			$revert_btn = '<a class="button button-primary thickbox" href="' . $revert_url . '" title="' . __( 'Revert', 'revisr' ) . '">' . __( 'Revert to this Commit', 'revisr' ) . '</a>';
-			$details = '';
 		}
 
 		?>
@@ -527,7 +516,7 @@ class Revisr_Commits {
 
 				<div class="misc-pub-section revisr-pub-status">
 					<label for="post_status"><?php _e( 'Status:', 'revisr' ); ?></label>
-					<span><strong><?php echo $commit['status'] . $details; ?></strong></span>
+					<span><strong><?php echo $commit['status']; ?></strong></span>
 				</div>
 
 				<div class="misc-pub-section revisr-pub-branch">
