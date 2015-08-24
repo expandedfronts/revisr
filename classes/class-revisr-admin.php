@@ -413,7 +413,7 @@ class Revisr_Admin {
 			if ( revisr()->git->count_untracked() == '0' ) {
 				printf( __( '<div class="revisr-alert updated"><p>There are currently no untracked files on branch %s.', 'revisr' ), revisr()->git->branch );
 			} else {
-				$commit_link = get_admin_url() . 'post-new.php?post_type=revisr_commits';
+				$commit_link = get_admin_url() . 'admin.php?page=revisr_new_commit';
 				printf( __('<div class="revisr-alert updated"><p>There are currently %s untracked files on branch %s. <a href="%s">Commit</a> your changes to save them.</p></div>', 'revisr' ), revisr()->git->count_untracked(), revisr()->git->branch, $commit_link );
 			}
 		}

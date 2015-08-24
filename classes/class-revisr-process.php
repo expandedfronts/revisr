@@ -380,9 +380,9 @@ class Revisr_Process {
 		revisr()->git->commit( $commit_msg );
 		revisr()->git->auto_push();
 
-		$post_url = get_admin_url() . "post.php?post=" . $_REQUEST['post_id'] . "&action=edit";
+		$commit_url = get_admin_url() . 'admin.php?page=revisr_view_commit&commit=' . $commit;
 
-		$msg = sprintf( __( 'Reverted to commit <a href="%s">#%s</a>.', 'revisr' ), $post_url, $commit );
+		$msg = sprintf( __( 'Reverted to commit <a href="%s">#%s</a>.', 'revisr' ), $commit_url, $commit );
 		$email_msg = sprintf( __( '%s was reverted to commit #%s', 'revisr' ), get_bloginfo(), $commit );
 		Revisr_Admin::log( $msg, 'revert' );
 		Revisr_Admin::notify( get_bloginfo() . __( ' - Commit Reverted', 'revisr' ), $email_msg );

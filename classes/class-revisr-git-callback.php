@@ -70,13 +70,7 @@ class Revisr_Git_Callback {
 
 		// Backup the database if necessary
 		if ( isset( $_REQUEST['backup_db'] ) && $_REQUEST['backup_db'] == 'on' ) {
-
-			if ( revisr()->db->backup() ) {
-				add_post_meta( $id, 'db_hash', revisr()->git->current_commit() );
-				add_post_meta( $id, 'backup_method', 'tables' );
-				add_post_meta( $id, 'backed_up_tables', revisr()->db->get_tracked_tables() );
-			}
-
+			revisr()->db->backup();
 		}
 
 		// Log the event.
@@ -108,12 +102,10 @@ class Revisr_Git_Callback {
 	 * @access public
 	 */
 	public function null_commit( $output = array(), $args = '' ) {
-		$id 	= get_the_ID();
-		$msg 	= __( 'Error committing the changes to the local repository.', 'revisr' );
-		$url 	= get_admin_url() . 'post.php?post=' . $id . '&action=edit&message=44';
 
-		add_post_meta( $id, 'commit_status', __( 'Error', 'revisr' ) );
-		add_post_meta( $id, 'error_details', $output );
+		$msg 	= __( 'Error committing the changes to the local repository.', 'revisr' );
+		$url 	= get_admin_url() . 'admin.php?page=revisr_new_commit';
+
 		Revisr_Admin::alert( $msg, true, $output );
 		Revisr_Admin::log( $msg, 'error' );
 
@@ -302,32 +294,10 @@ class Revisr_Git_Callback {
 			foreach ( $commits_since as $commit ) {
 
 				$commit_hash 	= substr( $commit, 0, 7 );
-				$commit_msg 	= substr( $commit, 40 );
-				$show_files 	= revisr()->git->run( 'show', array( '--pretty=format:', '--name-status', $commit_hash ) );
-				$user 			= get_user_by( 'login', revisr()->git->get_commit_author_by_hash( $commit_hash ) );
+				$view_link 		= get_admin_url() . 'admin.php?page=revisr_view_commit&commit=' . $commit_hash;
+				$msg 			= sprintf( __( 'Pulled <a href="%s">#%s</a> from %s/%s.', 'revisr' ), $view_link, $commit_hash, revisr()->git->remote, revisr()->git->branch );
+				Revisr_Admin::log( $msg, 'pull' );
 
-				if ( is_array( $show_files ) ) {
-					$files_changed = array_filter( $show_files );
-					$post = array(
-						'post_title'	=> $commit_msg,
-						'post_content'	=> '',
-						'post_type'		=> 'revisr_commits',
-						'post_status'	=> 'publish',
-					);
-
-					if ( $user ) {
-						$post['post_author'] = $user->ID;
-					}
-
-					$post_id = wp_insert_post( $post );
-					add_post_meta( $post_id, 'commit_hash', $commit_hash );
-					add_post_meta( $post_id, 'branch', revisr()->git->branch );
-					add_post_meta( $post_id, 'files_changed', count( $files_changed ) );
-					add_post_meta( $post_id, 'committed_files', $files_changed );
-					$view_link = get_admin_url() . "post.php?post=$post_id&action=edit";
-					$msg = sprintf( __( 'Pulled <a href="%s">#%s</a> from %s/%s.', 'revisr' ), $view_link, $commit_hash, revisr()->git->remote, revisr()->git->branch );
-					Revisr_Admin::log( $msg, 'pull' );
-				}
 			}
 
 			$msg = sprintf( _n( 'Successfully pulled %s commit from %s/%s.', 'Successfully pulled %s commits from %s/%s.', $num_commits, 'revisr' ), $num_commits, revisr()->git->remote, revisr()->git->branch );

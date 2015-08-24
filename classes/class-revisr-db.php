@@ -348,14 +348,8 @@ class Revisr_DB {
 
 		// Run the backup.
 		if ( $this->run( 'backup', $tables ) ) {
-
-			// Commit any changed database files and insert a post if necessary.
-			if ( isset( $_REQUEST['source'] ) && $_REQUEST['source'] == 'ajax_button' ) {
-				$this->commit_db( true );
-			} else {
-				$this->commit_db( false );
-			}
-
+			// Commit the backed up database tables.
+			$this->commit_db();
 			return true;
 		}
 
@@ -490,9 +484,8 @@ class Revisr_DB {
 	/**
 	 * Commits the database to the repository and pushes if needed.
 	 * @access public
-	 * @param  boolean $insert_post Whether to insert a new commit custom_post_type.
 	 */
-	public function commit_db( $insert_post = false ) {
+	public function commit_db() {
 
 		$commit_msg  = __( 'Backed up the database with Revisr.', 'revisr' );
 
@@ -503,26 +496,6 @@ class Revisr_DB {
 
 		// Make the commit.
 		revisr()->git->commit( $commit_msg );
-
-		// Insert the corresponding post if necessary.
-		if ( true === $insert_post ) {
-			$post = array(
-				'post_title' 	=> $commit_msg,
-				'post_content' 	=> '',
-				'post_type' 	=> 'revisr_commits',
-				'post_status' 	=> 'publish',
-			);
-			$post_id 		= wp_insert_post( $post );
-			$commit_hash 	= revisr()->git->current_commit();
-			add_post_meta( $post_id, 'commit_hash', $commit_hash );
-			add_post_meta( $post_id, 'db_hash', $commit_hash );
-			add_post_meta( $post_id, 'backup_method', 'tables' );
-			add_post_meta( $post_id, 'backed_up_tables', revisr()->db->get_tracked_tables() );
-			add_post_meta( $post_id, 'commit_status', __( 'Committed', 'revisr' ) );
-			add_post_meta( $post_id, 'branch', revisr()->git->branch );
-			add_post_meta( $post_id, 'files_changed', '0' );
-			add_post_meta( $post_id, 'committed_files', array() );
-		}
 
 		// Push changes if necessary.
 		revisr()->git->auto_push();

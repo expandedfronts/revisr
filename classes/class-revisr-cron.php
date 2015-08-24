@@ -51,22 +51,8 @@ class Revisr_Cron {
 			revisr()->git->stage_files( $files );
 			revisr()->git->commit( $commit_msg );
 
-			// Create a new commit in Revisr/WP.
-			$post = array(
-				'post_title'	=> $commit_msg,
-				'post_content'	=> '',
-				'post_type'		=> 'revisr_commits',
-				'post_status'	=> 'publish',
-			);
-			$post_id = wp_insert_post( $post );
-			add_post_meta( $post_id, 'branch', revisr()->git->branch );
-			add_post_meta( $post_id, 'commit_hash', revisr()->git->current_commit() );
-			add_post_meta( $post_id, 'files_changed', count( $files ) );
-			add_post_meta( $post_id, 'committed_files', $files );
-
 			// Backup the DB.
 			revisr()->db->backup();
-			add_post_meta( $post_id, 'db_hash', revisr()->git->current_commit() );
 
 			// Log result - TODO: improve error handling as necessary.
 			$log_msg = sprintf( __( 'The %s backup was successful.', 'revisr' ), $backup_type );
