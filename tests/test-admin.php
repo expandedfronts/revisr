@@ -50,13 +50,15 @@ class RevisrAdminTest extends WP_UnitTestCase {
 	 * Tests the Revisr_Admin::get_commit_details() method.
 	 */
 	function test_get_commit_details() {
-		$commit = Revisr_Admin::get_commit_details( 42 );
+		$commit = Revisr_Admin::get_commit_details( abc1234 );
+		$this->assertArrayHasKey( 'hash', $commit );
 		$this->assertArrayHasKey( 'branch', $commit );
-		$this->assertArrayHasKey( 'commit_hash', $commit );
-		$this->assertArrayHasKey( 'db_hash', $commit );
-		$this->assertArrayHasKey( 'db_backup_method', $commit );
+		$this->assertArrayHasKey( 'author', $commit );
+		$this->assertArrayHasKey( 'subject', $commit );
+		$this->assertArrayHasKey( 'time', $commit );
 		$this->assertArrayHasKey( 'files_changed', $commit );
 		$this->assertArrayHasKey( 'committed_files', $commit );
 		$this->assertArrayHasKey( 'tag', $commit );
+		$this->assertArrayHasKey( 'status', $commit );
 	}
 }

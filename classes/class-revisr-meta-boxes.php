@@ -1,8 +1,8 @@
 <?php
 /**
- * class-revisr-commits.php
+ * class-revisr-meta-boxes.php
  *
- * Configures the 'revisr_commits' custom post type.
+ * Configures custom metaboxes for the plugin.
  *
  * @package   	Revisr
  * @license   	GPLv3
@@ -13,66 +13,14 @@
 // Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Revisr_Commits {
-
-	/**
-	 * Registers the "revisr_commits" post type.
-	 * @access public
-	 */
-	public function post_types() {
-		$labels = array(
-			'name'                => __( 'Commits', 'revisr' ),
-			'singular_name'       => __( 'Commit', 'revisr' ),
-			'menu_name'           => __( 'Commits', 'revisr' ),
-			'parent_item_colon'   => '',
-			'all_items'           => __( 'Commits', 'revisr' ),
-			'view_item'           => __( 'View Commit', 'revisr' ),
-			'add_new_item'        => __( 'New Commit', 'revisr' ),
-			'add_new'             => __( 'New Commit', 'revisr' ),
-			'edit_item'           => __( 'Edit Commit', 'revisr' ),
-			'update_item'         => __( 'Update Commit', 'revisr' ),
-			'search_items'        => __( 'Search Commits', 'revisr' ),
-			'not_found'           => __( 'No commits found yet, why not create a new one?', 'revisr' ),
-			'not_found_in_trash'  => __( 'No commits in trash.', 'revisr' ),
-		);
-
-		$cap = Revisr::get_capability();
-		$capabilities = array(
-			'edit_post'           => $cap,
-			'read_post'           => $cap,
-			'delete_posts'        => $cap,
-			'edit_posts'          => $cap,
-			'edit_others_posts'   => $cap,
-			'publish_posts'       => $cap,
-			'read_private_posts'  => $cap,
-		);
-		$args = array(
-			'label'               => 'revisr_commits',
-			'description'         => __( 'Commits made through Revisr', 'revisr' ),
-			'labels'              => $labels,
-			'supports'            => array( 'title', 'author' ),
-			'hierarchical'        => false,
-			'public'              => false,
-			'show_ui'             => true,
-			'show_in_menu'        => 'revisr',
-			'show_in_nav_menus'   => true,
-			'show_in_admin_bar'   => true,
-			'menu_position'       => 5,
-			'menu_icon'           => '',
-			'can_export'          => true,
-			'has_archive'         => true,
-			'exclude_from_search' => true,
-			'publicly_queryable'  => false,
-			'capabilities'        => $capabilities,
-		);
-		register_post_type( 'revisr_commits', $args );
-	}
+class Revisr_Meta_Boxes {
 
 	/**
 	 * Adds actions responsible for triggering our custom meta boxes.
 	 * @access public
 	 */
 	public function add_meta_box_actions() {
+
 		do_action( 'add_meta_boxes_admin_page_revisr_new_commit', null );
 		do_action( 'add_meta_boxes', 'admin_page_revisr_new_commit', null );
 		do_action( 'add_meta_boxes_admin_page_revisr_view_commit', null );
@@ -83,6 +31,10 @@ class Revisr_Commits {
 		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
 	}
 
+	/**
+	 * Initializes JS for the Revisr custom meta boxes.
+	 * @access public
+	 */
 	public function init_meta_boxes() {
 		?>
  		<script>jQuery(document).ready(function(){ postboxes.add_postbox_toggles(pagenow); });</script>
@@ -99,235 +51,6 @@ class Revisr_Commits {
 		add_meta_box( 'revisr_pending_files', __( 'Stage Changes', 'revisr' ), array( $this, 'pending_files_meta' ), 'admin_page_revisr_new_commit', 'normal', 'high' );
 		add_meta_box( 'revisr_add_tag', __( 'Add Tag', 'revisr' ), array( $this, 'add_tag_meta' ), 'admin_page_revisr_new_commit', 'side', 'default' );
 		add_meta_box( 'revisr_save_commit', __( 'Save Commit', 'revisr' ), array( $this, 'save_commit_meta' ), 'admin_page_revisr_new_commit', 'side', 'core' );
-	}
-
-	/**
-	 * Registers all postmeta keys used and assigns the default
-	 * method used for escaping when using add_post_meta or edit_post_meta
-	 * @access public
-	 */
-	public function register_meta_keys() {
-		register_meta( 'post', 'files_changed', 'absint' );
-		register_meta( 'post', 'branch', 'wp_kses' );
-		register_meta( 'post', 'commit_hash', 'wp_kses' );
-		register_meta( 'post', 'db_hash', 'wp_kses' );
-		register_meta( 'post', 'committed_files', array( 'Revisr_Admin', 'esc_attr_array' ) );
-		register_meta( 'post', 'git_tag', 'esc_attr' );
-		register_meta( 'post', 'backup_method', 'esc_attr' );
-		register_meta( 'post', 'commit_status', 'esc_attr' );
-		register_meta( 'post', 'error_details', array( 'Revisr_Admin', 'esc_attr_array' ) );
-	}
-
-	/**
-	 * Custom title message for the revisr_commits custom post type.
-	 * @access public
-	 * @return string
-	 */
-	public function custom_enter_title( $input ) {
-	    global $post_type;
-
-	    if ( is_admin() && 'revisr_commits' == $post_type ) {
-	        return __( 'Enter a message for your commit', 'revisr' );
-	    }
-
-	    return $input;
-	}
-
-	/**
-	 * Custom messages for commits.
-	 * @access public
-	 * @param  array $messages The messages to pass back to the commits.
-	 */
-	public function custom_messages( $messages ) {
-		$post = get_post();
-		$messages['revisr_commits'] = array(
-			0  => '', // Unused. Messages start at index 1.
-			1  => __( 'Commit updated.', 'revisr' ),
-			2  => __( 'Custom field updated.', 'revisr' ),
-			3  => __( 'Custom field deleted.', 'revisr' ),
-			4  => __( 'Commit updated.', 'revisr' ),
-			/* translators: %s: date and time of the revision */
-			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Commit restored to revision from %s', 'revisr' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => sprintf( __( 'Committed files on branch <strong>%s</strong>.', 'revisr' ), revisr()->git->branch ),
-			7  => __( 'Commit saved.', 'revisr' ),
-			8  => __( 'Commit submitted.', 'revisr' ),
-			9  => sprintf(
-				__( 'Commit scheduled for: <strong>%1$s</strong>.', 'revisr' ),
-				// translators: Publish box date format, see http://php.net/date
-				date_i18n( __( 'M j, Y @ G:i', 'revisr' ), strtotime( $post->post_date ) )
-			),
-			10 => __( 'Commit draft updated.', 'revisr' ),
-		);
-		return $messages;
-	}
-
-	/**
-	 * Adds the custom actions to the Commits list.
-	 * @access public
-	 * @param  array $actions The default array of actions.
-	 */
-	public function custom_actions( $actions ) {
-
-		if ( 'revisr_commits' === get_post_type() && isset( $actions ) ) {
-
-			// Unset the default WordPress actions
-			unset( $actions['edit'] );
-	        unset( $actions['view'] );
-	        unset( $actions['trash'] );
-	        unset( $actions['inline hide-if-no-js'] );
-
-	        // Display the View and Revert links
-	        $id 				= get_the_ID();
-	        $commit 			= Revisr_Admin::get_commit_details( $id );
-	        $url 				= get_admin_url() . 'post.php?post=' . $id . '&action=edit';
-	        $actions['view'] 	= "<a href='{$url}'>" . __( 'View', 'revisr' ) . "</a>";
-	        $revert_nonce 		= wp_nonce_url( admin_url( 'admin-post.php?action=process_revert&revert_type=files&commit_hash=' . $commit['commit_hash'] . '&branch=' . $commit['branch'] . '&post_id=' . $id ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
-	        $actions['revert'] 	= "<a href='" . $revert_nonce . "'>" . __( 'Revert Files', 'revisr' ) . "</a>";
-
-	        // If there is a database backup available to revert to, display the revert link.
-	        if ( $commit['db_hash'] !== '' ) {
-	        	$revert_db_nonce = wp_nonce_url( admin_url( 'admin-post.php?action=process_revert&revert_type=db&db_hash=' . $commit['db_hash'] . '&branch=' . $commit['branch'] . '&backup_method=' . $commit['db_backup_method'] . '&post_id=' . $id ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
-	        	$actions['revert_db'] = '<a href="' . $revert_db_nonce . '">' . __( 'Revert Database', 'revisr' ) . '</a>';
-	        }
-
-		}
-
-		// Return the actions for display.
-		return $actions;
-	}
-
-	/**
-	 * Filters for edit.php.
-	 * @access public
-	 * @param  object $commits The commits query.
-	 */
-	public function filters( $commits ) {
-		if ( isset( $commits->query_vars['post_type'] ) && 'revisr_commits' === $commits->query_vars['post_type'] ) {
-
-			// Filter by tag.
-			if ( isset( $_GET['git_tag'] ) && '' !== $_GET['git_tag'] ) {
-				$commits->set( 'meta_key', 'git_tag' );
-				$commits->set( 'meta_value', esc_sql( $_GET['git_tag'] ) );
-
-				// Bail out early so the filter isn't potentially overwritten.
-				return $commits;
-			}
-
-			// Filter by branch.
-			if ( isset( $_GET['branch'] ) && $_GET['branch'] != 'all' ) {
-				$commits->set( 'meta_key', 'branch' );
-				$commits->set( 'meta_value', esc_sql( $_GET['branch'] ) );
-			}
-		}
-		return $commits;
-	}
-
-	/**
-	 * Allows for searching by the 7 digit commit hash on edit.php.
-	 * @access public
-	 * @param  string $where The WordPress "WHERE" queries being ran.
-	 * @return string
-	 */
-	public function posts_where( $where ) {
-		global $pagenow, $wpdb;
-		if ( 'edit.php' === $pagenow && isset( $_GET['post_type'] ) && 'revisr_commits' === $_GET['post_type'] ) {
-			if ( isset( $_GET['s'] ) && 7 === strlen( trim( $_GET['s'] ) ) ) {
-				$hash 	= esc_sql( $_GET['s'] );
-				$where .= " OR $wpdb->postmeta.meta_key = 'commit_hash'  AND $wpdb->postmeta.meta_value = '$hash'";
-			}
-		}
-		return $where;
-	}
-
-	/**
-	 * Unsets unused views, replaced with branches.
-	 * @access public
-	 * @param  array $views The global views for the post type.
-	 */
-	public function custom_views( $views ) {
-
-		$output = revisr()->git->get_branches();
-
-		global $wp_query;
-
-		if ( is_array( $output ) ) {
-			foreach ( $output as $key => $value ) {
-				$branch = substr( $value, 2 );
-	    	    $class = ( $wp_query->query_vars['meta_value'] == $branch ) ? ' class="current"' : '';
-		    	$views["$branch"] = sprintf( __( '<a href="%s"'. $class .'>' . ucwords( $branch ) . ' <span class="count">(%d)</span></a>' ),
-		        admin_url( 'edit.php?post_type=revisr_commits&branch='.$branch ),
-		        Revisr_Admin::count_commits( $branch ) );
-			}
-			$class = '';
-			if ( $_GET['branch'] == 'all' ) {
-				$class = ' class="current"';
-			}
-			$views['all'] = sprintf(
-				__( '<a href="%s"%s>All Branches <span class="count">(%d)</span></a>', 'revisr' ),
-				admin_url( 'edit.php?post_type=revisr_commits&branch=all' ),
-				$class,
-				Revisr_Admin::count_commits( 'all' )
-			);
-			unset( $views['publish'] );
-			unset( $views['draft'] );
-			unset( $views['trash'] );
-			if ( isset( $views ) ) {
-				return $views;
-			}
-		}
-	}
-
-	/**
-	 * Sets the default view to the current branch on the commit listing.
-	 * @access public
-	 */
-	public function default_views() {
-		if( !isset( $_GET['branch'] ) && isset( $_GET['post_type'] ) && $_GET['post_type'] == 'revisr_commits' ) {
-			$_GET['branch'] = revisr()->git->branch;
-		}
-	}
-
-	/**
-	 * Displays custom columns for the commits post type.
-	 * @access public
-	 */
-	public function columns() {
-		$columns = array (
-			'hash' 			=> __( 'ID', 'revisr' ),
-			'title' 		=> __( 'Commit', 'revisr' ),
-			'author'		=> __( 'Author', 'revisr' ),
-			'branch' 		=> __( 'Branch', 'revisr' ),
-			'tag' 			=> __( 'Tag', 'revisr' ),
-			'files_changed' => __( 'Files Changed', 'revisr' ),
-			'date' 			=> __( 'Date', 'revisr' ),
-		);
-		return $columns;
-	}
-
-	/**
-	 * Displays the number of committed files and the commit hash for commits.
-	 * @access public
-	 * @param  string 	$column_name 	The name of the column to display.
-	 * @param  int 		$post_id 		The ID of the current post.
-	 */
-	public function custom_columns( $column_name, $post_id ) {
-
-		$commit = Revisr_Admin::get_commit_details( $post_id );
-
-		switch ( $column_name ) {
-			case 'hash':
-				echo $commit['commit_hash'];
-				break;
-			case 'branch':
-				echo $commit['branch'];
-				break;
-			case 'tag':
-				echo $commit['tag'];
-				break;
-			case 'files_changed':
-				echo $commit['files_changed'];
-				break;
-		}
 	}
 
 	/**

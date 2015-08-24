@@ -221,7 +221,7 @@ final class Revisr {
 			require_once REVISR_PATH . 'classes/class-revisr-process.php';
 			require_once REVISR_PATH . 'classes/class-revisr-activity-table.php';
 			require_once REVISR_PATH . 'classes/class-revisr-branch-table.php';
-			require_once REVISR_PATH . 'classes/class-revisr-commits.php';
+			require_once REVISR_PATH . 'classes/class-revisr-meta-boxes.php';
 			require_once REVISR_PATH . 'classes/class-revisr-settings.php';
 			require_once REVISR_PATH . 'classes/class-revisr-settings-fields.php';
 		}
@@ -271,9 +271,9 @@ final class Revisr {
 	 * @access private
 	 */
 	private function load_admin_hooks() {
+
 		// Load necessary classes into the instance.
 		self::$instance->git 				= new Revisr_Git();
-		self::$instance->commits 			= new Revisr_Commits();
 		self::$instance->admin 				= new Revisr_Admin();
 		self::$instance->db 				= new Revisr_DB();
 		self::$instance->process 			= new Revisr_Process();
@@ -281,32 +281,17 @@ final class Revisr {
 		self::$instance->activity_table 	= new Revisr_Activity_Table();
 		self::$instance->branch_table 		= new Revisr_Branch_Table();
 		self::$instance->commits_table 		= new Revisr_Commits_Table();
+		self::$instance->meta_boxes 		= new Revisr_Meta_Boxes();
 
 		// Register the plugin settings link.
 		add_filter( 'plugin_action_links_'  . plugin_basename( __FILE__ ), array( __CLASS__, 'settings_link' ) );
 
-		// Create and configure the "revisr_commits" custom post type.
-		add_action( 'init', array( self::$instance->commits, 'post_types' ) );
-		add_action( 'init', array( self::$instance->commits, 'register_meta_keys' ) );
-		add_action( 'pre_get_posts', array( self::$instance->commits, 'filters' ) );
-		add_action( 'views_edit-revisr_commits', array( self::$instance->commits, 'custom_views' ) );
-		add_action( 'load-edit.php', array( self::$instance->commits, 'default_views' ) );
-		add_action( 'post_row_actions', array( self::$instance->commits, 'custom_actions' ) );
-		add_action( 'manage_edit-revisr_commits_columns', array( self::$instance->commits, 'columns' ) );
-		add_action( 'manage_revisr_commits_posts_custom_column', array( self::$instance->commits, 'custom_columns' ), 10, 2 );
-		add_filter( 'post_updated_messages', array( self::$instance->commits, 'custom_messages' ) );
-		add_filter( 'bulk_actions-edit-revisr_commits', '__return_empty_array' );
-		add_action( 'wp_ajax_pending_files', array( self::$instance->commits, 'pending_files' ) );
-		add_action( 'load-post.php', array( self::$instance->commits, 'post_meta' ) );
-		add_action( 'load-post-new.php', array( self::$instance->commits, 'post_meta' ) );
-		add_filter( 'enter_title_here', array( self::$instance->commits, 'custom_enter_title' ) );
-		add_filter( 'posts_where', array( self::$instance->commits, 'posts_where' ) );
-
-		// New metaboxes.
-		add_action( 'load-admin_page_revisr_new_commit', array( self::$instance->commits, 'add_meta_box_actions' ) );
-		add_action( 'load-admin_page_revisr_view_commit', array( self::$instance->commits, 'add_meta_box_actions' ) );
-		add_action( 'admin_footer-admin_page_revisr_new_commit', array( self::$instance->commits, 'init_meta_boxes' ) );
-		add_action( 'add_meta_boxes_admin_page_revisr_new_commit', array( self::$instance->commits, 'post_meta' ) );
+		// Add custom meta boxes.
+		add_action( 'load-admin_page_revisr_new_commit', array( self::$instance->meta_boxes, 'add_meta_box_actions' ) );
+		add_action( 'load-admin_page_revisr_view_commit', array( self::$instance->meta_boxes, 'add_meta_box_actions' ) );
+		add_action( 'admin_footer-admin_page_revisr_new_commit', array( self::$instance->meta_boxes, 'init_meta_boxes' ) );
+		add_action( 'add_meta_boxes_admin_page_revisr_new_commit', array( self::$instance->meta_boxes, 'post_meta' ) );
+		add_action( 'wp_ajax_pending_files', array( self::$instance->meta_boxes, 'pending_files' ) );
 
 		// Enqueue styles and scripts.
 		add_action( 'admin_enqueue_scripts', array( self::$instance->admin, 'revisr_scripts' ) );

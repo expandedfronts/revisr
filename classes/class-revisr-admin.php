@@ -28,18 +28,8 @@ class Revisr_Admin {
 	 */
 	public function revisr_scripts( $hook ) {
 
-		// Pages that our styles/scripts will ALWAYS be allowed on.
-		$allowed_pages = $this->page_hooks;
-
-		// Pages that we should only include styles/scripts on if using the 'revisr_commits' post type.
-		if ( isset( $_GET['post_type'] ) && 'revisr_commits' === $_GET['post_type'] || 'revisr_commits' === get_post_type() ) {
-			$allowed_pages[] = 'edit.php';
-			$allowed_pages[] = 'post.php';
-			$allowed_pages[] = 'post-new.php';
-		}
-
 		// Start registering/enqueuing scripts if the hook is in our allowed pages.
-		if ( in_array( $hook, $allowed_pages ) ) {
+		if ( in_array( $hook, $this->page_hooks ) ) {
 
 			// Registers all CSS files used by Revisr.
 			wp_register_style( 'revisr_admin_css', REVISR_URL . 'assets/css/revisr-admin.css', array(), '05242015' );
@@ -93,13 +83,7 @@ class Revisr_Admin {
 					);
 					break;
 
-				// The WP_List_Table for the 'revisr_commits' post type.
-				case 'edit.php':
-					break;
-
 				// The "New Commit" screen and "View Commit" screen.
-				case 'post.php':
-				case 'post-new.php':
 				case 'admin_page_revisr_new_commit':
 				case 'admin_page_revisr_view_commit':
 					wp_enqueue_script( 'revisr_staging' );
@@ -111,7 +95,6 @@ class Revisr_Admin {
 						'view_diff' 		=> __( 'View Diff', 'revisr' ),
 						)
 					);
-					wp_dequeue_script( 'autosave' );
 					break;
 
 			}
@@ -366,70 +349,6 @@ class Revisr_Admin {
 	}
 
 	/**
-	 * Gets an array of details on a saved commit.
-	 * @access public
-	 * @param  string $id The WordPress Post ID associated with the commit.
-	 * @return array
-	 */
-	public static function get_commit_details2( $id ) {
-
-		// Grab the values from the post meta.
-		$branch 			= get_post_meta( $id, 'branch', true );
-		$hash 				= get_post_meta( $id, 'commit_hash', true );
-		$db_hash 			= get_post_meta( $id, 'db_hash', true );
-		$db_backup_method	= get_post_meta( $id, 'backup_method', true );
-		$backed_up_tables 	= get_post_meta( $id, 'backed_up_tables' );
-		$files_changed 		= get_post_meta( $id, 'files_changed', true );
-		$committed_files 	= get_post_meta( $id, 'committed_files', true );
-		$git_tag 			= get_post_meta( $id, 'git_tag', true );
-		$status 			= get_post_meta( $id, 'commit_status', true );
-		$error 				= get_post_meta( $id, 'error_details' );
-
-		// Store the values in an array.
-		$commit_details = array(
-			'branch' 			=> $branch ? $branch : __( 'Unknown', 'revisr' ),
-			'commit_hash' 		=> $hash ? $hash : __( 'Unknown', 'revisr' ),
-			'db_hash' 			=> $db_hash ? $db_hash : '',
-			'db_backup_method'	=> $db_backup_method ? $db_backup_method : '',
-			'backed_up_tables'	=> $backed_up_tables ? $backed_up_tables[0] : array(),
-			'files_changed' 	=> $files_changed ? $files_changed : 0,
-			'committed_files' 	=> $committed_files ? $committed_files : array(),
-			'tag'				=> $git_tag ? $git_tag : '',
-			'status'			=> $status ? $status : '',
-			'error_details' 	=> $error ? $error : false
-		);
-
-		// Return the array.
-		return $commit_details;
-	}
-
-	/**
-	 * Returns the ID of a commit with a provided commit hash.
-	 * @access public
-	 * @param  string 	$commit_hash The commit hash to check.
-	 * @param  boolean 	$return_link If set to true, will return as a link.
-	 * @return mixed
-	 */
-	public static function get_the_id_by_hash( $commit_hash, $return_link = false ) {
-		global $wpdb;
-		$query 	= $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'commit_hash' AND meta_value = %s", $commit_hash );
-		$result = $wpdb->get_results( $query, ARRAY_A );
-
-		if ( $result ) {
-
-			if ( true === $return_link ) {
-				$url 	= wp_nonce_url( get_admin_url() . 'post.php?post=' . $result[0]['post_id'] . '&action=edit', 'edit', 'revisr_edit_nonce' );
-				$link 	= sprintf( '<a href="%s" target="_blank">%s</a>', $url, $commit_hash );
-				return $link;
-			}
-
-			return $result[0]['post_id'];
-		}
-
-		return false;
-	}
-
-	/**
 	 * Logs an event to the database.
 	 * @access public
 	 * @param  string $message The message to show in the Recent Activity.
@@ -543,9 +462,7 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function view_error() {
-		if ( isset( $_REQUEST['post_id'] ) && get_post_meta( $_REQUEST['post_id'], 'error_details', true ) ) {
-			echo implode( '<br>', get_post_meta( $_REQUEST['post_id'], 'error_details', true ) );
-		} elseif ( $revisr_error = get_transient( 'revisr_error_details' ) ) {
+		if ( $revisr_error = get_transient( 'revisr_error_details' ) ) {
 			echo implode( '<br>', $revisr_error );
 		} else {
 			_e( 'Detailed error information not available.', 'revisr' );
