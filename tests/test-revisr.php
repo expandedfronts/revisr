@@ -46,7 +46,7 @@ class RevisrTest extends WP_UnitTestCase {
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-activity-table.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-admin.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-branch-table.php' );
-		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-commits.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-meta-boxes.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-compatibility.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-cron.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-db-backup.php' );
