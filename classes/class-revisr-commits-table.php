@@ -112,7 +112,7 @@ class Revisr_Commits_Table extends WP_List_Table {
 		// Get the commits.
 		if ( isset( $_GET['branch'] ) && 'all' !== $_GET['branch'] ) {
 			$branch 	= $_GET['branch'];
-			$commits 	= revisr()->git->run( '--no-pager', array( 'log', "$branch", '--format=%h|#|%s|#|%an|#|%at' ) );
+			$commits 	= revisr()->git->run( '--no-pager', array( 'log', $branch, '--format=%h|#|%s|#|%an|#|%at' ) );
 		} elseif ( isset( $_GET['branch'] ) && 'all' === $_GET['branch'] ) {
 			$commits = revisr()->git->run( '--no-pager', array( 'log', '--all', '--format=%h|#|%s|#|%an|#|%at' ) );
 		} else {

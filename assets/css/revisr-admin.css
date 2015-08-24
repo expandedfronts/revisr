@@ -81,7 +81,7 @@
 ## Committed
 --------------------------------------------------------------*/
 #committed { width: 90%; }
-body.post-type-revisr_commits.post-php .wrap { margin-top: 27px !important; }
+.admin_page_revisr_view_commit .wrap { margin-top: 27px !important; }
 
 /*--------------------------------------------------------------
 ## Staging
