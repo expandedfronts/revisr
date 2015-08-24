@@ -109,15 +109,62 @@ class Revisr_Commits_Table extends WP_List_Table {
 	 */
 	public function get_data() {
 
-		// Get the commits.
-		if ( isset( $_GET['branch'] ) && 'all' !== $_GET['branch'] ) {
-			$branch 	= $_GET['branch'];
-			$commits 	= revisr()->git->run( '--no-pager', array( 'log', $branch, '--format=%h|#|%s|#|%an|#|%at' ) );
-		} elseif ( isset( $_GET['branch'] ) && 'all' === $_GET['branch'] ) {
-			$commits = revisr()->git->run( '--no-pager', array( 'log', '--all', '--format=%h|#|%s|#|%an|#|%at' ) );
-		} else {
-			$commits 	= revisr()->git->run( '--no-pager', array( 'log', '--format=%h|#|%s|#|%an|#|%at' ) );
+		// Determine which branch to check, if any.
+		$branch = isset( $_GET['branch'] ) ? $_GET['branch'] : revisr()->git->branch;
+		if ( 'all' === $branch ) {
+			$branch = '--all';
 		}
+
+		// Build the search string if necessary..
+		if ( isset( $_GET['s'] ) ) {
+			$search = '--grep=' . $_GET['s'];
+		} else {
+			$search = false;
+		}
+
+		// Get the date to start from.
+		if ( isset( $_GET['revisr_time'] ) && $_GET['revisr_time'] != 'all' ) {
+			$now = time();
+			switch ( $_GET['revisr_time'] ) {
+				case 'halfday':
+					$offset = DAY_IN_SECONDS / 2;
+					break;
+				case 'day':
+					$offset = DAY_IN_SECONDS;
+					break;
+				case 'week':
+					$offset = DAY_IN_SECONDS * 7;
+					break;
+				case 'month':
+					$offset = DAY_IN_SECONDS * 28;
+					break;
+			}
+			$date = $now - $offset;
+			$date = '--since=' . $date;
+		} else {
+			$date = false;
+		}
+
+		// Build the arguements to pass to Git.
+		$args = array(
+			'log',
+			$branch,
+			'--pretty=format:%h|#|%s|#|%an|#|%at',
+		);
+
+		// Add in search field if needed.
+		if ( false !== $search ) {
+			$args[] = '-i'; // case-insensitve
+			$args[] = $search;
+		}
+
+		// Add in date field if needed.
+		if ( false !== $date ) {
+			$args[] = $date;
+		}
+
+		// Get the commits.
+		$commits = revisr()->git->run( '--no-pager', $args );
 
 		$commits_array 	= array();
 
@@ -246,7 +293,7 @@ class Revisr_Commits_Table extends WP_List_Table {
 	 * @access public
 	 */
 	public function display() {
-		wp_nonce_field( 'revisr-commits-nonce', 'revisr_commits_nonce' );
+		wp_nonce_field( 'revisr-commits-nonce', 'revisr_commits_nonce', false );
 
 		echo '<input type="hidden" id="order" name="order" value="' . $this->_pagination_args['order'] . '" />';
 		echo '<input type="hidden" id="orderby" name="orderby" value="' . $this->_pagination_args['orderby'] . '" />';
@@ -330,6 +377,26 @@ class Revisr_Commits_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Renders the top or bottom tablenav.
+	 * @access public
+	 * @param  string $which Which tablenav to display (top or bottom)
+	 */
+	public function display_tablenav( $which ) {
+	    ?>
+	    <div class="tablenav <?php echo esc_attr( $which ); ?>">
+
+	        <?php
+	        	$this->extra_tablenav( $which );
+	        	$this->pagination( $which );
+	        ?>
+
+	        <br class="clear" />
+
+	    </div>
+	    <?php
+	}
+
+	/**
 	 * Extra table navigation.
 	 * @access public
 	 * @param  string $which
@@ -337,7 +404,6 @@ class Revisr_Commits_Table extends WP_List_Table {
 	 */
 	public function extra_tablenav( $which ) {
 		$filter_time 	= isset( $_REQUEST['revisr_time'] ) ? $_REQUEST['revisr_time'] : 'all';
-
 		if ( 'top' === $which ) {
 			?>
 				<select id="revisr-time-select" name="revisr_time">
