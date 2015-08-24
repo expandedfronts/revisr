@@ -204,6 +204,15 @@ class Revisr_Admin {
 			);
 			$wp_admin_bar->add_node( $args );
 		}
+
+		$wp_admin_bar->add_menu( array(
+			'id' => 'revisr-new-commit',
+			'title' => __( 'Commit', 'revisr' ),
+			'parent' => 'new-content',
+			'href' => get_admin_url() . 'admin.php?page=revisr_new_commit',
+			)
+		);
+
 	}
 
 	/**
