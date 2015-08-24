@@ -107,7 +107,6 @@ class Revisr_Process {
 
 				// Backup the database.
 				revisr()->db->backup();
-				$commit_hash = revisr()->git->current_commit();
 
 			} else {
 

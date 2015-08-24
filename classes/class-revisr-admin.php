@@ -530,14 +530,21 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function site5_notice() {
-		$allowed_on = array( 'revisr', 'revisr_settings', 'revisr_commits', 'revisr_settings', 'revisr_branches' );
-		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_on ) ) {
-			$output = true;
-		} else if ( isset( $_GET['post_type'] ) && in_array( $_GET['post_type'], $allowed_on ) || get_post_type() == 'revisr_commits' ) {
+		$allowed_pages = array(
+			'revisr',
+			'revisr_branches',
+			'revisr_commits',
+			'revisr_settings',
+			'revisr_new_commit',
+			'revisr_view_commit'
+		);
+
+		if ( isset( $_GET['page'] ) && in_array( $_GET['page'], $allowed_pages ) ) {
 			$output = true;
 		} else {
 			$output = false;
 		}
+
 		if ( $output === true ) {
 			?>
 			<div id="site5_wrapper">

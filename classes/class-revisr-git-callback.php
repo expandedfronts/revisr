@@ -62,8 +62,6 @@ class Revisr_Git_Callback {
 	 */
 	public function success_commit( $output = array(), $args = '' ) {
 
-
-		$branch 		= revisr()->git->current_branch();
 		$commit_hash 	= revisr()->git->current_commit();
 		$commit_msg 	= $_REQUEST['post_title'];
 		$view_link 		= get_admin_url() . 'admin.php?page=revisr_view_commit&commit=' . $commit_hash;
