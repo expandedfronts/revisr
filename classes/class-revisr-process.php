@@ -80,46 +80,33 @@ class Revisr_Process {
 	 */
 	public function process_commit() {
 
-		if ( wp_verify_nonce( $_REQUEST['revisr_commit_nonce'], 'process_commit' ) ) {
-
-			$commit_msg 	= $_REQUEST['post_title'];
-			$post_new 		= get_admin_url() . 'admin.php?page=revisr_new_commit';
-
-			// Require a message to be entered for the commit.
-			if ( $commit_msg == '' ) {
-				wp_safe_redirect( $post_new . '&message=42' );
-				exit();
-			}
-
-			// Determine what we want to do.
-			if ( isset( $_POST['staged_files'] ) ) {
-
-				$staged_files 	= $_POST['staged_files'];
-				$quick_stage 	= isset( $_POST['unstaged_files'] ) ? false : true;
-
-				// Stage the files.
-				revisr()->git->stage_files( $staged_files, $quick_stage );
-
-				// Make the commit.
-				revisr()->git->commit( $commit_msg, 'commit' );
-
-			} elseif ( isset( $_POST['backup_db'] ) ) {
-
-				// Backup the database.
-				revisr()->db->backup();
-
-			} else {
-
-				// There's nothing to do here!
-				wp_safe_redirect( $post_new . '&message=43' );
-				exit();
-
-			}
-
-		} else {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_commit_nonce'], 'process_commit' ) ) {
 			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
 
+		$commit_msg 	= $_REQUEST['post_title'];
+		$new_commit 	= get_admin_url() . 'admin.php?page=revisr_new_commit';
+
+		// Require a message to be entered for the commit.
+		if ( '' == $commit_msg ) {
+			wp_safe_redirect( $new_commit . '&message=42' );
+			exit();
+		}
+
+		// Backup the database if necessary.
+		if ( isset( $_POST['backup_db'] ) ) {
+			revisr()->db->backup( '', false );
+		}
+
+		// Add any staged files.
+		if ( isset( $_POST['staged_files'] ) ) {
+			$staged_files 	= $_POST['staged_files'];
+			$quick_stage 	= isset( $_POST['unstaged_files'] ) ? false : true;
+			revisr()->git->stage_files( $staged_files, $quick_stage );
+		}
+
+		// Make the commit.
+		revisr()->git->commit( $commit_msg, 'commit' );
 	}
 
 	/**

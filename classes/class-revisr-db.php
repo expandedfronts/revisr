@@ -338,10 +338,11 @@ class Revisr_DB {
 	/**
 	 * Callback for database backups (AJAX button and via New Commit)
 	 * @access public
-	 * @param  string $commit_msg A commit message to pass to $this->commit_db() (optional)
+	 * @param  string  $commit_msg A commit message to pass to $this->commit_db() (optional)
+	 * @param  boolean $commit_db  Whether or not to commit the DB immediately.
 	 * @return boolean
 	 */
-	public function backup( $commit_msg = '' ) {
+	public function backup( $commit_msg = '', $commit_db = true ) {
 
 		// Get the tables to backup.
 		$tables = $this->get_tracked_tables();
@@ -351,8 +352,12 @@ class Revisr_DB {
 
 		// Run the backup.
 		if ( $this->run( 'backup', $tables ) ) {
-			// Commit the backed up database tables.
-			$this->commit_db( $commit_msg );
+
+			// Commit the backed up database tables if necessary.
+			if ( true === $commit_db ) {
+				$this->commit_db( $commit_msg );
+			}
+
 			return true;
 		}
 

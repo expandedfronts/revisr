@@ -66,11 +66,6 @@ class Revisr_Git_Callback {
 		$commit_msg 	= $_REQUEST['post_title'];
 		$view_link 		= get_admin_url() . 'admin.php?page=revisr_view_commit&commit=' . $commit_hash;
 
-		// Backup the database if necessary
-		if ( isset( $_REQUEST['backup_db'] ) && $_REQUEST['backup_db'] == 'on' ) {
-			revisr()->db->backup();
-		}
-
 		// Log the event.
 		$msg = sprintf( __( 'Committed <a href="%s">#%s</a> to the local repository.', 'revisr' ), $view_link, $commit_hash );
 		Revisr_Admin::log( $msg, 'commit' );
