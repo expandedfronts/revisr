@@ -80,8 +80,6 @@ class Revisr_Commits_Table extends WP_List_Table {
 			'hash' 		=> __( 'ID', 'revisr' ),
 			'title' 	=> __( 'Commit', 'revisr' ),
 			'author' 	=> __( 'Author', 'revisr' ),
-			'branch' 	=> __( 'Branch', 'revisr' ),
-			'tag' 		=> __( 'Tag(s)', 'revisr' ),
 			'date' 		=> __( 'Date', 'revisr' )
 		);
 
@@ -172,24 +170,12 @@ class Revisr_Commits_Table extends WP_List_Table {
 		if ( is_array( $commits ) && ! empty( $commits ) ) {
 
 			foreach ( $commits as $key => $value ) {
-
 				// Get data from Git log.
 				$commit 						= explode( '|#|', $value );
 				$commits_array[$key]['hash'] 	= $commit[0];
 				$commits_array[$key]['title'] 	= $commit[1];
 				$commits_array[$key]['author'] 	= $commit[2];
 				$commits_array[$key]['date'] 	= $commit[3];
-
-				// Get any branches with this commit.
-				$branches = revisr()->git->run( 'branch', array( '--contains', $commit[0] ) );
-				$branches = is_array( $branches ) ? implode( ', ', $branches ) : __( 'Unknown', 'revisr' );
-				$commits_array[$key]['branch'] 	= $branches;
-
-				// Get any tags pointing at this commit.
-				$tags = revisr()->git->run( 'tag', array( '--points-at', $commit[0] ) );
-				$tags = is_array( $tags ) ? implode( ', ', $tags ) : '';
-				$commits_array[$key]['tag'] = $tags;
-
 			}
 
 		}
