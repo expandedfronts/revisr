@@ -364,13 +364,8 @@ class Revisr_Process {
 			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
 
-		$branch 	= $_REQUEST['branch'];
 		$commit 	= $_REQUEST['commit_hash'];
 		$commit_msg = sprintf( __( 'Reverted to commit: #%s.', 'revisr' ), $commit );
-
-		if ( $branch != revisr()->git->branch ) {
-			revisr()->git->checkout( $branch );
-		}
 
 		revisr()->git->reset( '--hard', 'HEAD', true );
 		revisr()->git->reset( '--hard', $commit );

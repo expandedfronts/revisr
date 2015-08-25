@@ -221,7 +221,7 @@ class Revisr_Meta_Boxes {
 		$commit_hash 		= isset( $_GET['commit'] ) ? esc_attr( $_GET['commit'] ) : '';
 		$commit 			= Revisr_Admin::get_commit_details( $commit_hash );
 
-		$revert_url 		= get_admin_url() . "admin-post.php?action=revisr_revert_form&commit_id=" . $commit_hash . "&TB_iframe=true&width=350&height=200";
+		$revert_url 		= get_admin_url() . 'admin-post.php?action=revisr_revert_form&commit=' . $commit_hash . '&TB_iframe=true&width=350&height=200';
 
 		$time_format 	 	= __( 'M j, Y @ G:i' );
 		$timestamp 		 	= sprintf( __( 'Committed on: <strong>%s</strong>', 'revisr' ), date_i18n( $time_format, $commit['time'] ) );

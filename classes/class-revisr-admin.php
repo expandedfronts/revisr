@@ -326,6 +326,7 @@ class Revisr_Admin {
 			'time' 				=> time(),
 			'files_changed' 	=> 0,
 			'committed_files' 	=> array(),
+			'has_db_backup'		=> false,
 			'tag' 				=> '',
 			'status' 			=> false,
 		);
@@ -344,6 +345,12 @@ class Revisr_Admin {
 			$commit_details['time'] 	= $commit_meta[2];
 
 			$commit = array_filter( $commit );
+			$backed_up_tables = preg_grep( '/revisr.*sql/', $commit );
+
+			if ( 0 !== count( $backed_up_tables ) ) {
+				$commit_details['has_db_backup'] = true;
+			}
+
 			$commit_details['files_changed'] 	= count( $commit );
 			$commit_details['committed_files'] 	= $commit;
 

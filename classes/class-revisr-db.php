@@ -184,8 +184,10 @@ class Revisr_DB {
 			$tracked_tables = $this->get_tables();
 		} elseif ( 'custom' == $db_tracking && is_array( $stored_tables ) ) {
 			$tracked_tables = array_intersect( $stored_tables, $this->get_tables() );
-		} else {
+		} elseif ( 'none' == $db_tracking) {
 			$tracked_tables = array();
+		} else {
+			$tracked_tables = $this->get_tables();
 		}
 
 		// Return an array of tables we should track.
@@ -336,9 +338,10 @@ class Revisr_DB {
 	/**
 	 * Callback for database backups (AJAX button and via New Commit)
 	 * @access public
+	 * @param  string $commit_msg A commit message to pass to $this->commit_db() (optional)
 	 * @return boolean
 	 */
-	public function backup() {
+	public function backup( $commit_msg = '' ) {
 
 		// Get the tables to backup.
 		$tables = $this->get_tracked_tables();
@@ -349,7 +352,7 @@ class Revisr_DB {
 		// Run the backup.
 		if ( $this->run( 'backup', $tables ) ) {
 			// Commit the backed up database tables.
-			$this->commit_db();
+			$this->commit_db( $commit_msg );
 			return true;
 		}
 
@@ -369,18 +372,13 @@ class Revisr_DB {
 		}
 
 		$commit = $_REQUEST['db_hash'];
-		$branch = $_REQUEST['branch'];
-
-		// Checkout the appropriate branch if necessary.
-		if ( $branch != revisr()->git->branch ) {
-			revisr()->git->checkout( $branch );
-		}
 
 		/**
 		 * Backup the database and store the resulting commit hash
 		 * in memory so we can use it to create the revert link later.
 		 */
-		$this->backup();
+		$msg = sprintf( __( 'Database backup before revert to #%s.', 'revisr' ), $commit );
+		$this->backup( $msg );
 		$current_temp = revisr()->git->current_commit();
 
 		if ( $current_temp ) {
@@ -403,7 +401,7 @@ class Revisr_DB {
 				if ( $import ) {
 
 					// Create a link to undo the revert if necessary.
-					$undo_nonce = wp_nonce_url( admin_url( "admin-post.php?action=process_revert&revert_type=db&db_hash=" . $current_temp . "&branch=" . $_REQUEST['branch'] . "&backup_method=tables" ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
+					$undo_nonce = wp_nonce_url( admin_url( "admin-post.php?action=process_revert&revert_type=db&db_hash=" . $current_temp ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
 					$undo_msg 	= sprintf( __( 'Successfully reverted the database to a previous commit. <a href="%s">Undo</a>', 'revisr' ), $undo_nonce );
 
 					// Store the undo link and alert the user.
@@ -484,10 +482,13 @@ class Revisr_DB {
 	/**
 	 * Commits the database to the repository and pushes if needed.
 	 * @access public
+	 * @param  string $commit_msg A custom commit message.
 	 */
-	public function commit_db() {
+	public function commit_db( $commit_msg = '' ) {
 
-		$commit_msg  = __( 'Backed up the database with Revisr.', 'revisr' );
+		if ( '' === $commit_msg ) {
+			$commit_msg  = __( 'Backed up the database with Revisr.', 'revisr' );
+		}
 
 		// Allow for overriding default commit message through the "New Commit" screen.
 		if ( isset( $_REQUEST['post_title'] ) && $_REQUEST['post_title'] !== '' ) {

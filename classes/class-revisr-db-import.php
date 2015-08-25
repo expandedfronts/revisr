@@ -119,7 +119,7 @@ class Revisr_DB_Import extends Revisr_DB {
 
 			if ( is_array( $get_hash ) ) {
 				$undo_hash 	= $get_hash[0];
-				$undo_nonce = wp_nonce_url( admin_url( "admin-post.php?action=process_revert&revert_type=db&db_hash=" . $undo_hash . "&branch=" . $_REQUEST['branch'] . "&backup_method=tables" ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
+				$undo_nonce = wp_nonce_url( admin_url( "admin-post.php?action=process_revert&revert_type=db&db_hash=" . $undo_hash . "&branch=" . $_REQUEST['branch'] ), 'revisr_revert_nonce', 'revisr_revert_nonce' );
 				$revert_url = '<a href="' . $undo_nonce . '">' . __( 'Undo', 'revisr') . '</a>';
 				revisr()->git->run( 'config', array( '--unset', 'revisr.last-db-backup' ) );
 			}
