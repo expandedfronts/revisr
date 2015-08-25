@@ -332,7 +332,7 @@ class Revisr_Admin {
 		);
 
 		// Try to get some basic data about the commit.
-		$commit = revisr()->git->run( 'diff-tree', array( '--pretty=format:%s|#|%an|#|%at', '--name-status', '--root', '-r', $hash ) );
+		$commit = revisr()->git->run( 'show', array( '--pretty=format:%s|#|%an|#|%at', '--name-status', '--root', '-r', $hash ) );
 
 		if ( is_array( $commit ) ) {
 
