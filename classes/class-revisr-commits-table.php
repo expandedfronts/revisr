@@ -134,6 +134,7 @@ class Revisr_Commits_Table extends WP_List_Table {
 					$offset = DAY_IN_SECONDS * 7;
 					break;
 				case 'month':
+				default:
 					$offset = DAY_IN_SECONDS * 28;
 					break;
 			}
