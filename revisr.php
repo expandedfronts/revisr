@@ -325,7 +325,7 @@ final class Revisr {
 		add_action( 'admin_notices', array( self::$instance->admin, 'site5_notice' ) );
 
 		// Update the database schema if necessary.
-		if ( get_option( 'revisr_db_version' ) !== '1.2' ) {
+		if ( get_option( 'revisr_db_version' ) !== '2.0' ) {
 			add_action( 'admin_init', array( self::$instance->admin, 'do_upgrade' ) );
 		}
 
@@ -400,7 +400,7 @@ final class Revisr {
 	  	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	   	dbDelta( $sql );
 
-		update_option( 'revisr_db_version', '1.2' );
+		update_option( 'revisr_db_version', '2.0' );
 	}
 
 	/**

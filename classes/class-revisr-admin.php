@@ -508,6 +508,7 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function do_upgrade() {
+		global $wpdb;
 
 		// For users upgrading from 1.7 and older.
 		if ( get_option( 'revisr_db_version' ) === '1.0' ) {
@@ -534,6 +535,36 @@ class Revisr_Admin {
 
 			// Configure the database tracking to use all tables, as this was how it behaved in 1.7.
 			revisr()->git->set_config( 'revisr', 'db_tracking', 'all_tables' );
+		}
+
+		// Upgrades from the "revisr_commits" custom post type to pure Git.
+		$table 		= Revisr::get_table_name();
+		$commits 	= $wpdb->get_results( "SELECT * FROM $table WHERE event = 'commit'", ARRAY_A );
+
+		if ( is_array( $commits ) && ! empty( $commits ) ) {
+
+			foreach ( $commits as $commit ) {
+				// Get the commit short hash from the message.
+				$msg_array 	= explode( '#', $commit['message'] );
+				$commit_id 	= substr( $msg_array[1], 0, 7 );
+
+				// Prepare the new message.
+				$new_msg 	= sprintf(
+					__( 'Committed <a href="%s">#%s</a> to the local repository.', 'revisr' ),
+					get_admin_url() . 'admin.php?page=revisr_view_commit&commit=' . $commit_id,
+					$commit_id
+				);
+
+				// Update the existing message.
+				$query = $wpdb->prepare(
+					"UPDATE $table SET message = %s WHERE id = '%d'",
+					$new_msg,
+					$commit['id']
+				);
+
+				$wpdb->query( $query );
+			}
+
 		}
 
 		// Update the database schema using dbDelta.
