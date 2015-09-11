@@ -354,7 +354,7 @@ class Revisr_Git {
 	 * @access public
 	 */
 	public function count_untracked() {
-		$untracked = $this->run( 'status', array( '--short' ) );
+		$untracked = $this->run( 'status', array( '--short', '--untracked-files=all' ) );
 		return count( $untracked );
 	}
 
@@ -667,10 +667,10 @@ class Revisr_Git {
 	/**
 	 * Returns the current status.
 	 * @access public
-	 * @param  string $args Defaults to "--short".
+	 * @param  array $args Defaults to "--short".
 	 */
-	public function status( $args = '--short' ) {
-		$status = $this->run( 'status', array( $args ) );
+	public function status( $args = array( '--short', '--untracked-files=all' ) ) {
+		$status = $this->run( 'status', $args );
 		return $status;
 	}
 
