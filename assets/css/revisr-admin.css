@@ -40,15 +40,11 @@
 .revisr-quick-action-btn { width: 100%; text-align: left !important; margin-bottom: 4px !important; }
 .revisr-quick-action-btn:before { margin: 5px; display: inline-block; float: left; color: #fff; -webkit-font-smoothing: antialiased; }
 .revisr-quick-action-btn-txt { float: left; }
-#revisr-commit-btn { background-color: #5cb85c; border-color: #4cae4c; }
-#revisr-commit-btn:before { content: "\f132"; margin: 5px 1px !important; font: normal 20px/1 'dashicons'; }
-#revisr-commit-btn:hover {	background-color: #4cae4c; border-color: #4cae4c; }
-#revisr-discard-btn { background-color: #d9534f; border-color: #d43f3a; }
-#revisr-discard-btn:before { content: "\f158"; margin: 4px 1px !important; font: normal 20px/1 'dashicons'; }
-#revisr-discard-btn:hover { background-color: #d43f3a; border-color: #d43f3a; }
-#revisr-backup-btn:before { content: "\f096"; font: normal 17px/1 'octicons'; }
-#revisr-push-btn:before { content: "\f03d"; font: normal 20px/1 'octicons'; }
-#revisr-pull-btn:before { content: "\f03f"; font: normal 20px/1 'octicons'; }
+#revisr-commit-btn:before { content: "\f132"; margin: 5px 1px !important; font: normal 20px/1 'dashicons'; color: #444; }
+#revisr-discard-btn:before { content: "\f158"; margin: 4px 1px !important; font: normal 20px/1 'dashicons'; color: #444; }
+#revisr-backup-btn:before { content: "\f096"; font: normal 17px/1 'octicons'; color: #444; }
+#revisr-push-btn:before { content: "\f03d"; font: normal 20px/1 'octicons'; color: #444; }
+#revisr-pull-btn:before { content: "\f03f"; font: normal 20px/1 'octicons'; color: #444; }
 #revisr-loader { float: right; }
 
 /*--------------------------------------------------------------

@@ -51,11 +51,11 @@ revisr()->activity_table->prepare_items();
 					<div class="postbox">
 						<h3><span><?php _e('Quick Actions', 'revisr'); ?></span> <div id="revisr-loader"><img src="<?php echo $loader_url; ?>"/></div></h3>
 						<div class="inside">
-							<button id="revisr-commit-btn" class="button button-primary revisr-quick-action-btn"><span class="revisr-quick-action-btn-txt">| <?php _e( 'Save Changes', 'revisr' ); ?></span></button>
-							<a id="revisr-discard-btn" class="button button-primary revisr-quick-action-btn thickbox" title="<?php _e( 'Discard Changes', 'revisr' ); ?>" href="<?php echo $discard_url; ?>"><span class="revisr-quick-action-btn-txt">| <?php _e( 'Discard Changes', 'revisr' ); ?></span></a>
-							<button id="revisr-backup-btn" class="button button-primary revisr-quick-action-btn"><span class="revisr-quick-action-btn-txt">| <?php _e( 'Backup Database', 'revisr' ); ?></span></button>
-							<a id="revisr-push-btn" class="button button-primary revisr-quick-action-btn thickbox" title="<?php _e( 'Push Changes', 'revisr' ); ?>" href="<?php echo $push_url; ?>"><span id="push-text" class="revisr-quick-action-btn-txt">| <?php _e( 'Push Changes ', 'revisr' ); ?> <span id="revisr-unpushed"></span></span></a>
-							<a id="revisr-pull-btn" class="button button-primary revisr-quick-action-btn thickbox" title="<?php _e( 'Pull Changes' , 'revisr' ); ?>" href="<?php echo $pull_url; ?>"><span id="pull-text" class="revisr-quick-action-btn-txt">| <?php _e( 'Pull Changes', 'revisr' ); ?>  <span id="revisr-unpulled"></span></span></a>
+							<button id="revisr-commit-btn" class="button revisr-quick-action-btn"><span class="revisr-quick-action-btn-txt">| <?php _e( 'Save Changes', 'revisr' ); ?></span></button>
+							<a id="revisr-discard-btn" class="button revisr-quick-action-btn thickbox" title="<?php _e( 'Discard Changes', 'revisr' ); ?>" href="<?php echo $discard_url; ?>"><span class="revisr-quick-action-btn-txt">| <?php _e( 'Discard Changes', 'revisr' ); ?></span></a>
+							<button id="revisr-backup-btn" class="button revisr-quick-action-btn"><span class="revisr-quick-action-btn-txt">| <?php _e( 'Backup Database', 'revisr' ); ?></span></button>
+							<a id="revisr-push-btn" class="button revisr-quick-action-btn thickbox" title="<?php _e( 'Push Changes', 'revisr' ); ?>" href="<?php echo $push_url; ?>"><span id="push-text" class="revisr-quick-action-btn-txt">| <?php _e( 'Push Changes ', 'revisr' ); ?> <span id="revisr-unpushed"></span></span></a>
+							<a id="revisr-pull-btn" class="button revisr-quick-action-btn thickbox" title="<?php _e( 'Pull Changes' , 'revisr' ); ?>" href="<?php echo $pull_url; ?>"><span id="pull-text" class="revisr-quick-action-btn-txt">| <?php _e( 'Pull Changes', 'revisr' ); ?>  <span id="revisr-unpulled"></span></span></a>
 						</div> <!-- .inside -->
 					</div> <!-- .postbox -->
 					<!-- END QUICK ACTIONS -->
@@ -90,7 +90,7 @@ revisr()->activity_table->prepare_items();
 														);
 													} else {
 														$branch_url = wp_nonce_url( $admin_url . "admin-post.php?action=process_checkout&branch={$branch}", 'process_checkout', 'revisr_checkout_nonce' );
-														printf( '<tr><td>%s</td><td width="70"><a class="button branch-btn" href="%s">%s</a></td><tr>',
+														printf( '<tr><td>%s</td><td width="70"><a class="button branch-btn" href="%s">%s</a></td></tr>',
 															$branch,
 															$branch_url,
 															__( 'Checkout', 'revisr' )
