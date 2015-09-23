@@ -299,37 +299,38 @@ class Revisr_Commits_Table extends WP_List_Table {
 		$views 		= array();
 		$base_url 	= get_admin_url() . 'admin.php?page=revisr_commits';
 
+		if ( is_array( $branches ) && ! empty( $branches ) ) {
+			foreach ( $branches as $branch ) {
 
-		foreach ( $branches as $branch ) {
+				if ( substr( $branch, 0, 2) === '* ' ) {
 
-			if ( substr( $branch, 0, 2) === '* ' ) {
+					$branch = substr( $branch, 2 );
+					$count 	= revisr()->git->run( 'rev-list', array( '--count', $branch ) );
+					$count 	= is_array( $count ) ? absint( $count[0] ) : 0;
 
-				$branch = substr( $branch, 2 );
-				$count 	= revisr()->git->run( 'rev-list', array( '--count', $branch ) );
-				$count 	= is_array( $count ) ? absint( $count[0] ) : 0;
+					if ( ! isset( $_GET['branch'] ) || $_GET['branch'] === $branch ) {
+						$views[$branch] = '<a class="current" href="#">' . $branch . ' <span class="count">(' . $count . ')</span></a>';
+					} else {
+						$views[$branch] = '<a href="' . $base_url . '&branch=' . $branch . '">' . $branch . ' <span class="count">(' . $count . ')</span></a>';
+					}
 
-				if ( ! isset( $_GET['branch'] ) || $_GET['branch'] === $branch ) {
-					$views[$branch] = '<a class="current" href="#">' . $branch . ' <span class="count">(' . $count . ')</span></a>';
 				} else {
-					$views[$branch] = '<a href="' . $base_url . '&branch=' . $branch . '">' . $branch . ' <span class="count">(' . $count . ')</span></a>';
-				}
 
-			} else {
+					$branch = trim( $branch );
+					$count 	= revisr()->git->run( 'rev-list', array( '--count', $branch ) );
+					$count 	= is_array( $count ) ? absint( $count[0] ) : 0;
 
-				$branch = trim( $branch );
-				$count 	= revisr()->git->run( 'rev-list', array( '--count', $branch ) );
-				$count 	= is_array( $count ) ? absint( $count[0] ) : 0;
+					if ( isset( $_GET['branch'] ) && $_GET['branch'] === $branch ) {
+						$views[$branch] = '<a class="current" href="#">' . $branch . ' <span class="count">(' . $count . ')</span></a>';
+					} elseif ( isset( $_GET['branch'] ) && 'all' === $branch ) {
+						$views[$branch] = '<a href="' . $base_url . '&branch=' . $branch . '">' . $branch . '</a>';
+					} else {
+						$views[$branch] = '<a href="' . $base_url . '&branch=' . $branch . '">' . $branch . ' <span class="count">(' . $count . ')</span></a>';
+					}
 
-				if ( isset( $_GET['branch'] ) && $_GET['branch'] === $branch ) {
-					$views[$branch] = '<a class="current" href="#">' . $branch . ' <span class="count">(' . $count . ')</span></a>';
-				} elseif ( isset( $_GET['branch'] ) && 'all' === $branch ) {
-					$views[$branch] = '<a href="' . $base_url . '&branch=' . $branch . '">' . $branch . '</a>';
-				} else {
-					$views[$branch] = '<a href="' . $base_url . '&branch=' . $branch . '">' . $branch . ' <span class="count">(' . $count . ')</span></a>';
 				}
 
 			}
-
 		}
 
 		// Start outputting the list.
