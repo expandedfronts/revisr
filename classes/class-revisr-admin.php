@@ -193,25 +193,30 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function admin_bar( $wp_admin_bar ) {
-		if ( revisr()->git->is_repo && revisr()->git->count_untracked() != 0 ) {
-			$untracked 	= revisr()->git->count_untracked();
-			$text 		= sprintf( _n( '%s Untracked File', '%s Untracked Files', $untracked, 'revisr' ), $untracked );
-			$args 		= array(
-				'id'    => 'revisr',
-				'title' => $text,
-				'href'  => get_admin_url() . 'admin.php?page=revisr_new_commit',
-				'meta'  => array( 'class' => 'revisr_commits' ),
-			);
-			$wp_admin_bar->add_node( $args );
-		}
+		if ( revisr()->git->is_repo ) {
 
-		$wp_admin_bar->add_menu( array(
-			'id' => 'revisr-new-commit',
-			'title' => __( 'Commit', 'revisr' ),
-			'parent' => 'new-content',
-			'href' => get_admin_url() . 'admin.php?page=revisr_new_commit',
-			)
-		);
+			$untracked = revisr()->git->count_untracked();
+
+			if ( $untracked != 0 ) {
+				$text 		= sprintf( _n( '%d Untracked File', '%d Untracked Files', $untracked, 'revisr' ), $untracked );
+				$args 		= array(
+					'id'    => 'revisr',
+					'title' => $text,
+					'href'  => get_admin_url() . 'admin.php?page=revisr_new_commit',
+					'meta'  => array( 'class' => 'revisr_commits' ),
+				);
+				$wp_admin_bar->add_node( $args );
+			}
+
+			$wp_admin_bar->add_menu( array(
+				'id' => 'revisr-new-commit',
+				'title' => __( 'Commit', 'revisr' ),
+				'parent' => 'new-content',
+				'href' => get_admin_url() . 'admin.php?page=revisr_new_commit',
+				)
+			);
+
+		}
 
 	}
 
