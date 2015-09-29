@@ -31,7 +31,7 @@ class Revisr_Remote {
 
 			// Make sure that the token saved correctly.
 			$new_token = revisr()->git->get_config( 'revisr', 'token' );
-			if ( hash_equals( $new_token, $token ) ) {
+			if ( is_string( $new_token ) && hash_equals( $new_token, $token ) ) {
 				if ( $new_token !== false ) {
 					return $new_token;
 				}
