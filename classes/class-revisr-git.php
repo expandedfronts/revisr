@@ -715,7 +715,7 @@ class Revisr_Git {
 
 		// Commit the updates.
 		$commit_msg = __( 'Updated .gitignore.', 'revisr' );
-		$this->run('commit', array( '-m', $commit_msg ) );
+		$this->run( 'commit', array( '-m', $commit_msg ) );
 		$this->auto_push();
 	}
 
@@ -741,4 +741,5 @@ class Revisr_Git {
 		$version = $this->run( 'version', array(), __FUNCTION__ );
 		return $version;
 	}
+
 }
