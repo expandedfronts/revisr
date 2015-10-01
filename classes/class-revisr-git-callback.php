@@ -64,7 +64,7 @@ class Revisr_Git_Callback {
 
 		$commit_hash 	= revisr()->git->current_commit();
 		$commit_msg 	= $_REQUEST['post_title'];
-		$view_link 		= get_admin_url() . 'admin.php?page=revisr_view_commit&commit=' . $commit_hash;
+		$view_link 		= get_admin_url() . 'admin.php?page=revisr_view_commit&commit=' . $commit_hash . '&success=true';
 
 		// Log the event.
 		$msg = sprintf( __( 'Committed <a href="%s">#%s</a> to the local repository.', 'revisr' ), $view_link, $commit_hash );
@@ -96,8 +96,8 @@ class Revisr_Git_Callback {
 	 */
 	public function null_commit( $output = array(), $args = '' ) {
 
-		$msg 	= __( 'Error committing the changes to the local repository.', 'revisr' );
-		$url 	= get_admin_url() . 'admin.php?page=revisr_new_commit';
+		$msg 	= __( 'There was an error committing the changes to the local repository.', 'revisr' );
+		$url 	= get_admin_url() . 'admin.php?page=revisr_new_commit&error=true';
 
 		Revisr_Admin::alert( $msg, true, $output );
 		Revisr_Admin::log( $msg, 'error' );

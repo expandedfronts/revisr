@@ -178,7 +178,7 @@ class Revisr_Admin {
 
 				// Provide a link to view the error.
 				$error_url 	= wp_nonce_url( admin_url( 'admin-post.php?action=revisr_view_error&TB_iframe=true&width=350&height=300' ), 'revisr_view_error', 'revisr_error_nonce' );
-				$message 	.= sprintf( __( '<br>Click <a href="%s" class="thickbox" title="Error Details">here</a> for more details.', 'revisr' ), $error_url );
+				$message 	.= sprintf( __( '<br>Click <a href="%s" class="thickbox" title="Error Details">here</a> for more details, or try again.', 'revisr' ), $error_url );
 			}
 
 			set_transient( 'revisr_error', $message, 10 );
@@ -422,23 +422,37 @@ class Revisr_Admin {
 	/**
 	 * Renders an alert and removes the old data.
 	 * @access public
+	 * @param  boolean $errors_only Whether or not to only display errors.
 	 */
-	public function render_alert() {
+	public function render_alert( $errors_only = false ) {
 		$alert = get_transient( 'revisr_alert' );
 		$error = get_transient( 'revisr_error' );
+
 		if ( $error ) {
-			echo "<div class='revisr-alert error'>" . wpautop( $error ) . "</div>";
+			$alert = '<div class="revisr-alert error">' . wpautop( $error ) . '</div>';
 		} else if ( $alert ) {
-			echo "<div class='revisr-alert updated'>" . wpautop( $alert ) . "</div>";
+			$alert = '<div class="revisr-alert updated">' . wpautop( $alert ) . '</div>';
 		} else {
 			if ( revisr()->git->count_untracked() == '0' ) {
-				printf( __( '<div class="revisr-alert updated"><p>There are currently no untracked files on branch %s.', 'revisr' ), revisr()->git->branch );
+				$msg 	= sprintf( __( 'There are currently no untracked files on branch %s.', 'revisr' ), revisr()->git->branch );
+				$alert 	= '<div class="revisr-alert updated"><p>' . $msg . '</p></div>';
 			} else {
-				$commit_link = get_admin_url() . 'admin.php?page=revisr_new_commit';
-				printf( __('<div class="revisr-alert updated"><p>There are currently %s untracked files on branch %s. <a href="%s">Commit</a> your changes to save them.</p></div>', 'revisr' ), revisr()->git->count_untracked(), revisr()->git->branch, $commit_link );
+				$link 	= get_admin_url() . 'admin.php?page=revisr_new_commit';
+				$msg 	= sprintf( __( 'There are currently %d untracked files on branch %s. <a href="%s">Commit</a> your changes to save them.', 'revisr' ), revisr()->git->count_untracked(), revisr()->git->branch, $link );
+				$alert 	= '<div class="revisr-alert updated"><p>' . $msg . '</p></div>';
 			}
 		}
-		exit();
+
+		if ( $errors_only && false !== $error ) {
+			echo $alert;
+		} else if ( ! $errors_only ) {
+			echo $alert;
+		}
+
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			exit();
+		}
+
 	}
 
 	/**

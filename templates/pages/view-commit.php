@@ -14,14 +14,21 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Get details about the commit.
-$commit_hash        = isset( $_GET['commit'] ) ? esc_attr( $_GET['commit'] ) : '';
-$commit             = Revisr_Admin::get_commit_details( $commit_hash );
-$subject            = $commit['subject'];
+$commit_hash    = isset( $_GET['commit'] ) ? esc_attr( $_GET['commit'] ) : '';
+$commit         = Revisr_Admin::get_commit_details( $commit_hash );
+$subject        = esc_attr( $commit['subject'] );
 ?>
 
 <div class="wrap">
 
     <h1><?php _e( 'View Commit', 'revisr' ); ?></h1>
+
+    <?php
+        if ( isset( $_GET['success'] ) ) {
+            $msg = sprintf( __( 'Committed files on branch <strong>%s</strong>.', 'revisr' ), revisr()->git->branch );
+            echo '<div class="revisr-alert updated"><p>' . $msg . '</p></div>';
+        }
+    ?>
 
     <form id="revisr-commit-form" method="post" action="<?php echo get_admin_url(); ?>admin-post.php">
 

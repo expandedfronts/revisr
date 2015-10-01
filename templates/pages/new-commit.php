@@ -19,6 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
     <h1><?php _e( 'New Commit', 'revisr' ); ?></h1>
 
+    <?php if ( isset( $_GET['error'] ) ) Revisr_Admin::render_alert( true ); ?>
+
     <form id="revisr-commit-form" method="post" action="<?php echo get_admin_url(); ?>admin-post.php">
 
         <input type="hidden" name="action" value="process_commit">

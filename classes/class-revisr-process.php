@@ -87,12 +87,6 @@ class Revisr_Process {
 		$commit_msg 	= $_REQUEST['post_title'];
 		$new_commit 	= get_admin_url() . 'admin.php?page=revisr_new_commit';
 
-		// Require a message to be entered for the commit.
-		if ( '' == $commit_msg ) {
-			wp_safe_redirect( $new_commit . '&message=42' );
-			exit();
-		}
-
 		// Backup the database if necessary.
 		if ( isset( $_POST['backup_db'] ) ) {
 			revisr()->db->backup( '', false );
