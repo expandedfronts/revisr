@@ -24,5 +24,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	<p class="submit">
 		<input type="hidden" name="action" value="revisr_download_sysinfo" />
 		<?php submit_button( 'Download System Info', 'primary', 'revisr-download-sysinfo', false ); ?>
+		<?php
+			if ( revisr()->git->is_repo ) {
+				$status_text = __( 'View Status', 'revisr' );
+				$status_nonce = wp_create_nonce( 'revisr_view_status' );
+				printf( '<a href="%s" title="%s" class="button thickbox">%s</a>',
+					get_admin_url() . 'admin-post.php?action=revisr_view_status&revisr_status_nonce=' . $status_nonce . '&TB_iframe=true',
+					$status_text,
+					$status_text
+				);
+			}
+		?>
 	</p>
 </form>

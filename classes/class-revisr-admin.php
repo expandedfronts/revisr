@@ -509,16 +509,18 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function view_status() {
-		$status = revisr()->git->run( 'status', array() );
+		if ( wp_verify_nonce( $_GET['revisr_status_nonce'], 'revisr_view_status' ) ) {
+			$status = revisr()->git->run( 'status', array() );
 
-		if ( is_array( $status ) ) {
-			echo '<pre>';
-			foreach ( $status as $line ) {
-				echo $line . PHP_EOL;
+			if ( is_array( $status ) ) {
+				echo '<pre>';
+				foreach ( $status as $line ) {
+					echo $line . PHP_EOL;
+				}
+				echo '</pre>';
+			} else {
+				_e( 'Error retrieving the status of the repository.', 'revisr' );
 			}
-			echo '</pre>';
-		} else {
-			_e( 'Error retrieving the status of the repository.', 'revisr' );
 		}
 	}
 
