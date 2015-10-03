@@ -85,7 +85,6 @@ class Revisr_Process {
 		}
 
 		$commit_msg 	= $_REQUEST['post_title'];
-		$new_commit 	= get_admin_url() . 'admin.php?page=revisr_new_commit';
 
 		// Backup the database if necessary.
 		if ( isset( $_POST['backup_db'] ) ) {
