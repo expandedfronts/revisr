@@ -139,6 +139,29 @@ class Revisr_DB_Import extends Revisr_DB {
 	}
 
 	/**
+	 * Gets the columns in a table.
+	 * @access public
+	 * @param  string $table The table to check.
+	 * @return array
+	 */
+	public function get_columns( $table ) {
+		$primary_key 	= null;
+		$columns 		= array();
+		$fields  		= $this->wpdb->get_results( 'DESCRIBE ' . $table );
+
+		if ( is_array( $fields ) ) {
+			foreach ( $fields as $column ) {
+				$columns[] = $column->Field;
+				if ( $column->Key == 'PRI' ) {
+					$primary_key = $column->Field;
+				}
+			}
+		}
+
+		return array( $primary_key, $columns );
+	}
+
+	/**
 	 * Adapated from interconnect/it's search/replace script.
 	 * Modified to use WordPress wpdb functions instead of PHP's native mysql/pdo functions.
 	 *
@@ -148,24 +171,24 @@ class Revisr_DB_Import extends Revisr_DB {
 	 * @param  string $table 	The table to run the replacement on.
 	 * @param  string $search 	The string to replace.
 	 * @param  string $replace 	The string to replace with.
-	 * @return array   			Collection of information gathered during the run.
+	 * @return boolean
 	 */
 	private function revisr_srdb( $table, $search = '', $replace = '' ) {
 
 		$table = esc_sql( $table );
 
 		// Get a list of columns in this table.
-		$columns = array();
-		$fields  = $this->wpdb->get_results( 'DESCRIBE ' . $table );
-		foreach ( $fields as $column ) {
-			$columns[$column->Field] = $column->Key == 'PRI' ? true : false;
+		list( $primary_key, $columns ) = $this->get_columns( $table );
+
+		// Bail out early if there isn't a primary key.
+		if ( null === $primary_key ) {
+			return false;
 		}
-		$this->wpdb->flush();
 
 		// Count the number of rows we have in the table if large we'll split into blocks, This is a mod from Simon Wheatley
 		$row_count = $this->wpdb->get_var( "SELECT COUNT(*) FROM $table" );
 		if ( $row_count == 0 ) {
-			continue;
+			return true;
 		}
 
 		$page_size 	= 50000;
@@ -187,8 +210,14 @@ class Revisr_DB_Import extends Revisr_DB {
 				$where_sql 	= array();
 				$upd 		= false;
 
-				foreach( $columns as $column => $primary_key ) {
+				foreach( $columns as $column ) {
+
 					$data_to_fix = $row[ $column ];
+
+					if ( $column == $primary_key ) {
+						$where_sql[] = $column . ' = "' .  $this->mysql_escape_mimic( $data_to_fix ) . '"';
+						continue;
+					}
 
 					// Run a search replace on the data that'll respect the serialisation.
 					$edited_data = $this->recursive_unserialize_replace( $search, $replace, $data_to_fix );
@@ -199,8 +228,6 @@ class Revisr_DB_Import extends Revisr_DB {
 						$upd = true;
 					}
 
-					if ( $primary_key )
-						$where_sql[] = $column . ' = "' .  $this->mysql_escape_mimic( $data_to_fix ) . '"';
 				}
 
 				if ( $upd && ! empty( $where_sql ) ) {
@@ -209,10 +236,10 @@ class Revisr_DB_Import extends Revisr_DB {
 					if ( ! $result ) {
 						$error_msg = sprintf( __( 'Error updating the table: %s.', 'revisr' ), $table );
 					}
-				} elseif ( $upd ) {
-					$error_msg = sprintf( __( 'The table "%s" has no primary key. Manual change needed on row %s.', 'revisr' ), $table, $current_row );
 				}
+
 			}
+
 		}
 
 		$this->wpdb->flush();
