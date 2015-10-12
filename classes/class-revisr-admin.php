@@ -193,6 +193,7 @@ class Revisr_Admin {
 	 * @access public
 	 */
 	public function admin_bar( $wp_admin_bar ) {
+
 		if ( revisr()->git->is_repo ) {
 
 			$untracked = revisr()->git->count_untracked();
@@ -209,10 +210,10 @@ class Revisr_Admin {
 			}
 
 			$wp_admin_bar->add_menu( array(
-				'id' => 'revisr-new-commit',
-				'title' => __( 'Commit', 'revisr' ),
-				'parent' => 'new-content',
-				'href' => get_admin_url() . 'admin.php?page=revisr_new_commit',
+				'id' 		=> 'revisr-new-commit',
+				'title' 	=> __( 'Commit', 'revisr' ),
+				'parent' 	=> 'new-content',
+				'href' 		=> get_admin_url() . 'admin.php?page=revisr_new_commit',
 				)
 			);
 
@@ -244,22 +245,6 @@ class Revisr_Admin {
 		} else {
 			delete_transient( 'revisr_alert' );
 		}
-	}
-
-	/**
-	 * Counts the number of commits in the database on a given branch.
-	 * @access public
-	 * @param  string $branch The name of the branch to count commits for.
-	 * @return int
-	 */
-	public static function count_commits( $branch ) {
-		global $wpdb;
-		if ( $branch == 'all' ) {
-			$num_commits = $wpdb->get_results( "SELECT meta_id FROM $wpdb->postmeta WHERE meta_key = 'branch'" );
-		} else {
-			$num_commits = $wpdb->get_results( $wpdb->prepare( "SELECT meta_id FROM $wpdb->postmeta WHERE meta_key = 'branch' AND meta_value = %s", $branch ) );
-		}
-		return count( $num_commits );
 	}
 
 	/**
@@ -621,16 +606,6 @@ class Revisr_Admin {
 			</div>
 			<?php
 		}
-	}
-
-	/**
-	 * Returns an escaped array suitable for attributes.
-	 * @access public
-	 * @param  array $input An array of input to filter.
-	 * @return array
-	 */
-	public static function esc_attr_array( $input ) {
-		return array_map( 'esc_attr', $input );
 	}
 
 	/**
