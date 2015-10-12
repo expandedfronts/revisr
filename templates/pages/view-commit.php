@@ -21,7 +21,7 @@ $subject        = esc_attr( $commit['subject'] );
 
 <div class="wrap">
 
-    <h1><?php _e( 'View Commit', 'revisr' ); ?></h1>
+    <h1><?php _e( 'View Commit', 'revisr' ); ?> <a href="<?php echo get_admin_url(); ?>admin.php?page=revisr_new_commit" class="page-title-action"><?php _e( 'Add New', 'revisr' ); ?></a></h1>
 
     <?php
         if ( isset( $_GET['success'] ) ) {
