@@ -22,6 +22,7 @@ class Revisr_Process {
 	 * @return boolean
 	 */
 	public function process_is_repo() {
+
 		if ( defined( 'REVISR_SKIP_SETUP' ) || get_transient( 'revisr_skip_setup' ) ) {
 			if ( revisr()->git->is_repo ) {
 				return true;
@@ -32,6 +33,7 @@ class Revisr_Process {
 			}
 			return false;
 		}
+
 	}
 
 	/**
@@ -40,36 +42,36 @@ class Revisr_Process {
 	 */
 	public function process_checkout( $args = '', $new_branch = false ) {
 
-		if ( wp_verify_nonce( $_REQUEST['revisr_checkout_nonce'], 'process_checkout' ) ) {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_checkout_nonce'], 'process_checkout' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
 
-			if ( revisr()->git->get_config( 'revisr', 'import-checkouts' ) === 'true' ) {
-				revisr()->db->backup();
-			}
+		if ( revisr()->git->get_config( 'revisr', 'import-checkouts' ) === 'true' ) {
+			revisr()->db->backup();
+		}
 
-			$branch 	= isset( $_REQUEST['branch'] ) ? $_REQUEST['branch'] : $args;
-			$new_branch = isset( $_REQUEST['new_branch'] ) ? $_REQUEST['new_branch'] : false;
+		$branch 	= isset( $_REQUEST['branch'] ) ? $_REQUEST['branch'] : $args;
+		$new_branch = isset( $_REQUEST['new_branch'] ) ? $_REQUEST['new_branch'] : false;
 
-			// Fires before the checkout.
-			do_action( 'revisr_pre_checkout', $branch );
+		// Fires before the checkout.
+		do_action( 'revisr_pre_checkout', $branch );
 
-			revisr()->git->reset();
-			revisr()->git->checkout( $branch, $new_branch );
+		revisr()->git->reset();
+		revisr()->git->checkout( $branch, $new_branch );
 
-			if ( revisr()->git->get_config( 'revisr', 'import-checkouts' ) === 'true' && $new_branch === false ) {
-				revisr()->db->import();
-			}
+		if ( revisr()->git->get_config( 'revisr', 'import-checkouts' ) === 'true' && $new_branch === false ) {
+			revisr()->db->import();
+		}
 
-			// Maybe echo the redirect in javascript.
-			if ( isset( $_REQUEST['echo_redirect'] ) ) {
-				_e( 'Processing...', 'revisr' );
-				echo "<script>
-						window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
-				</script>";
-			} else {
-				wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr' );
-				exit();
-			}
-
+		// Maybe echo the redirect in javascript.
+		if ( isset( $_REQUEST['echo_redirect'] ) ) {
+			_e( 'Processing...', 'revisr' );
+			echo "<script>
+					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
+			</script>";
+		} else {
+			wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr' );
+			exit();
 		}
 
 	}
@@ -100,6 +102,7 @@ class Revisr_Process {
 
 		// Make the commit.
 		revisr()->git->commit( $commit_msg, 'commit' );
+
 	}
 
 	/**
@@ -108,31 +111,32 @@ class Revisr_Process {
 	 */
 	public function process_create_branch() {
 
-		if ( wp_verify_nonce( $_REQUEST['revisr_create_branch_nonce'], 'process_create_branch' ) ) {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_create_branch_nonce'], 'process_create_branch' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
 
-			// Branches can't have spaces, so we replace them with hyphens.
-			$branch = str_replace( ' ', '-', $_REQUEST['branch_name'] );
+		// Branches can't have spaces, so we replace them with hyphens.
+		$branch = str_replace( ' ', '-', $_REQUEST['branch_name'] );
 
-			// Create the branch.
-			$result = revisr()->git->create_branch( $branch );
+		// Create the branch.
+		$result = revisr()->git->create_branch( $branch );
 
-			if ( $result !== false ) {
-				$msg = sprintf( __( 'Created new branch: %s', 'revisr' ), $branch );
-				Revisr_Admin::log( $msg, 'branch' );
+		if ( $result !== false ) {
+			$msg = sprintf( __( 'Created new branch: %s', 'revisr' ), $branch );
+			Revisr_Admin::log( $msg, 'branch' );
 
-				// Maybe checkout the new branch.
-				if ( isset( $_REQUEST['checkout_new_branch'] ) ) {
-					revisr()->git->checkout( $branch );
-				}
-
-				wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_success&branch=' . $branch );
-			} else {
-				wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_error&branch=' . $branch );
+			// Maybe checkout the new branch.
+			if ( isset( $_REQUEST['checkout_new_branch'] ) ) {
+				revisr()->git->checkout( $branch );
 			}
 
+			wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_success&branch=' . $branch );
+		} else {
+			wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_error&branch=' . $branch );
 		}
 
 		exit();
+
 	}
 
 	/**
@@ -141,29 +145,30 @@ class Revisr_Process {
 	 */
 	public function process_delete_branch() {
 
-		if ( wp_verify_nonce( $_REQUEST['revisr_delete_branch_nonce'], 'process_delete_branch' ) ) {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_delete_branch_nonce'], 'process_delete_branch' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
 
-			$branch = $_REQUEST['branch'];
+		$branch = $_REQUEST['branch'];
 
-			// Allows deleting just the remote branch.
-			if ( isset( $_REQUEST['delete_remote_only'] ) ){
-				revisr()->git->delete_branch( $branch, true, true );
-				exit();
+		// Allows deleting just the remote branch.
+		if ( isset( $_REQUEST['delete_remote_only'] ) ){
+			revisr()->git->delete_branch( $branch, true, true );
+			exit();
+		}
+
+		// Delete local, and maybe remote branches.
+		if ( isset( $_REQUEST['branch'] ) && $_REQUEST['branch'] != revisr()->git->branch ) {
+
+			revisr()->git->delete_branch( $branch, true );
+
+			if ( isset( $_REQUEST['delete_remote_branch'] ) ) {
+				revisr()->git->delete_branch( $branch, false, true );
 			}
-
-			// Delete local, and maybe remote branches.
-			if ( isset( $_REQUEST['branch'] ) && $_REQUEST['branch'] != revisr()->git->branch ) {
-
-				revisr()->git->delete_branch( $branch, true );
-
-				if ( isset( $_REQUEST['delete_remote_branch'] ) ) {
-					revisr()->git->delete_branch( $branch, false, true );
-				}
-			}
-
 		}
 
 		exit();
+
 	}
 
 	/**
@@ -190,6 +195,7 @@ class Revisr_Process {
 		}
 
 		exit();
+
 	}
 
 	/**
@@ -197,6 +203,7 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_init() {
+
 		if ( ! wp_verify_nonce( $_REQUEST['revisr_init_nonce'], 'init_repo' ) ) {
 			wp_die( 'Cheatin&#8217; uh?', 'revisr' );
 		}
@@ -205,6 +212,7 @@ class Revisr_Process {
 		do_action( 'revisr_pre_init' );
 
 		revisr()->git->init_repo();
+
 	}
 
 	/**
@@ -213,16 +221,16 @@ class Revisr_Process {
 	 */
 	public function process_import() {
 
-		if ( wp_verify_nonce( $_REQUEST['revisr_import_nonce'], 'process_import' ) ) {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_import_nonce'], 'process_import' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
 
-			if ( isset( $_REQUEST['revisr_import_untracked'] ) && is_array( $_REQUEST['revisr_import_untracked'] ) ) {
-				revisr()->db->import( $_REQUEST['revisr_import_untracked'] );
-				_e( 'Importing...', 'revisr' );
-				echo "<script>
-						window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
-				</script>";
-			}
-
+		if ( isset( $_REQUEST['revisr_import_untracked'] ) && is_array( $_REQUEST['revisr_import_untracked'] ) ) {
+			revisr()->db->import( $_REQUEST['revisr_import_untracked'] );
+			_e( 'Importing...', 'revisr' );
+			echo "<script>
+					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
+			</script>";
 		}
 
 	}
@@ -233,16 +241,17 @@ class Revisr_Process {
 	 */
 	public function process_merge() {
 
-		if ( wp_verify_nonce( $_REQUEST['revisr_merge_nonce'], 'process_merge' ) ) {
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_merge_nonce'], 'process_merge' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
 
-			// Fires immediately before a merge.
-			do_action( 'revisr_pre_merge' );
+		// Fires immediately before a merge.
+		do_action( 'revisr_pre_merge' );
 
-			revisr()->git->merge( $_REQUEST['branch'] );
+		revisr()->git->merge( $_REQUEST['branch'] );
 
-			if ( isset( $_REQUEST['import_db'] ) && $_REQUEST['import_db'] == 'on' ) {
-				revisr()->db->import();
-			}
+		if ( isset( $_REQUEST['import_db'] ) && $_REQUEST['import_db'] == 'on' ) {
+			revisr()->db->import();
 		}
 
 	}
@@ -252,6 +261,7 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_pull() {
+
 		if ( ! wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
 			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
@@ -282,13 +292,16 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_push() {
-		if ( wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
 
-			// Fires before a push.
-			do_action( 'revisr_pre_push' );
-
-			revisr()->git->push();
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
+
+		// Fires before a push.
+		do_action( 'revisr_pre_push' );
+
+		revisr()->git->push();
+
 	}
 
 	/**
@@ -298,6 +311,7 @@ class Revisr_Process {
 	 * @return null
 	 */
 	public function process_revert( $type = '' ) {
+
 		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
 			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
@@ -333,6 +347,7 @@ class Revisr_Process {
 		} else {
 			wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr' );
 		}
+
 	}
 
 	/**
@@ -340,6 +355,7 @@ class Revisr_Process {
 	 * @access public
 	 */
 	public function process_revert_files( $redirect = true ) {
+
 		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
 			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
 		}
@@ -365,5 +381,7 @@ class Revisr_Process {
 			$redirect = get_admin_url() . "admin.php?page=revisr";
 			wp_safe_redirect( $redirect );
 		}
+
 	}
+
 }
