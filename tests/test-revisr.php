@@ -45,6 +45,7 @@ class RevisrTest extends WP_UnitTestCase {
 	function test_load_dependencies() {
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-activity-table.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-admin.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-admin-pages.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-branch-table.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-meta-boxes.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-compatibility.php' );
@@ -80,14 +81,6 @@ class RevisrTest extends WP_UnitTestCase {
 			$result = false;
 		}
 		$this->assertTrue( $result );
-	}
-
-	/**
-	 * Tests the settings_link() method.
-	 */
-	function test_settings_link() {
-		$settings_links = serialize( Revisr::settings_link( $links = array() ) );
-		$this->assertContains( 'revisr', $settings_links );
 	}
 
 	/**

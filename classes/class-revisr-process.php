@@ -384,4 +384,108 @@ class Revisr_Process {
 
 	}
 
+	/**
+	 * Processes a diff request.
+	 * @access public
+	 */
+	public function process_view_diff() {
+
+		if ( ! wp_verify_nonce( $_GET['security'], 'staging_nonce' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
+
+		if ( isset( $_REQUEST['commit'] ) ) {
+			$diff = revisr()->git->run( 'show', array( $_REQUEST['commit'], $_REQUEST['file'] ) );
+		} else {
+			$diff = revisr()->git->run( 'diff', array( $_REQUEST['file'] ) );
+		}
+
+		if ( is_array( $diff ) ) {
+
+			// Loop through the diff and echo the output.
+			foreach ( $diff as $line ) {
+
+				if ( substr( $line, 0, 1 ) === '+' ) {
+					echo '<span class="diff_added" style="background-color:#cfc;">' . htmlspecialchars( $line ) . '</span><br>';
+				} else if ( substr( $line, 0, 1 ) === '-' ) {
+					echo '<span class="diff_removed" style="background-color:#fdd;">' . htmlspecialchars( $line ) . '</span><br>';
+				} else {
+					echo htmlspecialchars( $line ) . '<br>';
+				}
+
+			}
+
+		} else {
+			_e( 'Oops! Revisr ran into an error rendering the diff.', 'revisr' );
+		}
+
+		// We may need to exit early if doing_ajax.
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			exit();
+		}
+
+	}
+
+	/**
+	 * Processes a view error request.
+	 * @access public
+	 */
+	public function process_view_error() {
+
+		if ( $revisr_error = get_transient( 'revisr_error_details' ) ) {
+			echo implode( '<br>', $revisr_error );
+		} else {
+			_e( 'Detailed error information not available.', 'revisr' );
+		}
+
+	}
+
+	/**
+	 * Processes a view status request.
+	 * @access public
+	 */
+	public function process_view_status() {
+
+		if ( ! wp_verify_nonce( $_GET['revisr_status_nonce'], 'revisr_view_status' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
+
+		$status = revisr()->git->run( 'status', array() );
+
+		if ( is_array( $status ) ) {
+			echo '<pre>';
+			foreach ( $status as $line ) {
+				echo $line . PHP_EOL;
+			}
+			echo '</pre>';
+		} else {
+			_e( 'Error retrieving the status of the repository.', 'revisr' );
+		}
+
+	}
+
+	/**
+	 * Downloads the system info.
+	 * @access public
+	 */
+	public function process_download_sysinfo() {
+
+		if ( ! wp_verify_nonce( $_REQUEST['revisr_info_nonce'], 'process_download_sysinfo' ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
+
+		if ( ! current_user_can( Revisr::get_capability() ) ) {
+			return;
+		}
+
+		nocache_headers();
+
+		header( 'Content-Type: text/plain' );
+		header( 'Content-Disposition: attachment; filename="revisr-system-info.txt"' );
+
+		echo wp_strip_all_tags( $_POST['revisr-sysinfo'] );
+		die();
+
+	}
+
 }

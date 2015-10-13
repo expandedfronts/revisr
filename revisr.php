@@ -49,12 +49,6 @@ final class Revisr {
 	private static $instance;
 
 	/**
-	 * Stores the Revisr_Admin object.
-	 * @var Revisr_Admin
-	 */
-	public $admin;
-
-	/**
 	 * Stores the Revisr_DB object.
 	 * @var Revisr_DB
 	 */
@@ -65,12 +59,6 @@ final class Revisr {
 	 * @var Revisr_Git
 	 */
 	public $git;
-
-	/**
-	 * Stores the Revisr_Process object.
-	 * @var Revisr_Process
-	 */
-	public $process;
 
 	/**
 	 * Stores the Revisr_Activity_Table object.
@@ -89,12 +77,6 @@ final class Revisr {
 	 * @var Revisr_Commits_Table
 	 */
 	public $commits_table;
-
-	/**
-	 * Stores the Revisr_Settings object
-	 * @var Revisr_Settings
-	 */
-	public $settings;
 
 	/**
 	 * The name of the plugin.
@@ -205,6 +187,7 @@ final class Revisr {
 	 * @access private
 	 */
 	private function load_dependencies() {
+
 		require_once REVISR_PATH . 'classes/class-revisr-i18n.php';
 		require_once REVISR_PATH . 'classes/class-revisr-git.php';
 		require_once REVISR_PATH . 'classes/class-revisr-admin.php';
@@ -217,6 +200,7 @@ final class Revisr {
 
 		// Classes that should only be loaded for admins.
 		if ( current_user_can( self::get_capability() ) && is_admin() ) {
+			require_once REVISR_PATH . 'classes/class-revisr-admin-pages.php';
 			require_once REVISR_PATH . 'classes/class-revisr-compatibility.php';
 			require_once REVISR_PATH . 'classes/class-revisr-process.php';
 			require_once REVISR_PATH . 'classes/class-revisr-activity-table.php';
@@ -225,6 +209,7 @@ final class Revisr {
 			require_once REVISR_PATH . 'classes/class-revisr-settings.php';
 			require_once REVISR_PATH . 'classes/class-revisr-settings-fields.php';
 		}
+
 	}
 
 	/**
@@ -274,79 +259,74 @@ final class Revisr {
 
 		// Load necessary classes into the instance.
 		self::$instance->git 				= new Revisr_Git();
-		self::$instance->admin 				= new Revisr_Admin();
 		self::$instance->db 				= new Revisr_DB();
-		self::$instance->process 			= new Revisr_Process();
-		self::$instance->settings 			= new Revisr_Settings();
 		self::$instance->activity_table 	= new Revisr_Activity_Table();
 		self::$instance->branch_table 		= new Revisr_Branch_Table();
 		self::$instance->commits_table 		= new Revisr_Commits_Table();
-		self::$instance->meta_boxes 		= new Revisr_Meta_Boxes();
 
-		// Register the plugin settings link.
-		add_filter( 'plugin_action_links_'  . plugin_basename( __FILE__ ), array( __CLASS__, 'settings_link' ) );
-
-		// Add custom meta boxes.
-		add_action( 'load-admin_page_revisr_new_commit', array( self::$instance->meta_boxes, 'add_meta_box_actions' ) );
-		add_action( 'load-admin_page_revisr_view_commit', array( self::$instance->meta_boxes, 'add_meta_box_actions' ) );
-		add_action( 'admin_footer-admin_page_revisr_new_commit', array( self::$instance->meta_boxes, 'init_meta_boxes' ) );
-		add_action( 'add_meta_boxes_admin_page_revisr_new_commit', array( self::$instance->meta_boxes, 'post_meta' ) );
-		add_action( 'wp_ajax_pending_files', array( self::$instance->meta_boxes, 'pending_files' ) );
-
-		// Enqueue styles and scripts.
-		add_action( 'admin_enqueue_scripts', array( self::$instance->admin, 'revisr_scripts' ) );
-
-		// Initiate the admin menus.
-		add_action( 'admin_menu', array( self::$instance->admin, 'menus' ), 2 );
-		add_action( 'admin_bar_menu', array( self::$instance->admin, 'admin_bar' ), 999 );
-		add_filter( 'custom_menu_order', array( self::$instance->admin, 'revisr_submenu_order' ) );
-		add_filter( 'parent_file', array( self::$instance->admin, 'revisr_parent_file' ) );
-
-		// Callbacks for AJAX UI
-		add_action( 'wp_ajax_render_alert', array( self::$instance->admin, 'render_alert' ) );
-		add_action( 'wp_ajax_ajax_button_count', array( self::$instance->admin, 'ajax_button_count' ) );
-		add_action( 'wp_ajax_view_diff', array( self::$instance->admin, 'view_diff' ) );
-		add_action( 'wp_ajax_verify_remote', array( self::$instance->git, 'verify_remote' ) );
+		// Create/configure custom admin pages and menus.
+		$admin_pages = new Revisr_Admin_Pages();
+		add_action( 'admin_menu', array( $admin_pages, 'menus' ), 2 );
+		add_action( 'admin_enqueue_scripts', array( $admin_pages, 'scripts' ) );
+		add_filter( 'custom_menu_order', array( $admin_pages, 'submenu_order' ) );
+		add_filter( 'parent_file', array( $admin_pages, 'parent_file' ) );
+		add_action( 'admin_bar_menu', array( $admin_pages, 'admin_bar' ), 999 );
+		add_action( 'admin_notices', array( $admin_pages, 'site5_notice' ) );
+		add_filter( 'plugin_action_links_'  . plugin_basename( __FILE__ ), array( $admin_pages, 'settings_link' ) );
 
 		// Load the thickbox forms used by Revisr.
-		add_action( 'admin_post_revisr_delete_branch_form', array( self::$instance->admin, 'include_form' ) );
-		add_action( 'admin_post_revisr_merge_branch_form', array ( self::$instance->admin, 'include_form' ) );
-		add_action( 'admin_post_revisr_import_tables_form', array( self::$instance->admin, 'include_form' ) );
-		add_action( 'admin_post_revisr_revert_form', array( self::$instance->admin, 'include_form' ) );
-		add_action( 'admin_post_revisr_discard_form', array( self::$instance->admin, 'include_form' ) );
-		add_action( 'admin_post_revisr_push_form', array( self::$instance->admin, 'include_form' ) );
-		add_action( 'admin_post_revisr_pull_form', array( self::$instance->admin, 'include_form' ) );
-		add_action( 'admin_post_revisr_checkout_remote_form', array( self::$instance->admin, 'include_form' ) );
-		add_action( 'admin_post_revisr_view_status', array( self::$instance->admin, 'view_status' ) );
-		add_action( 'admin_post_revisr_view_error', array( self::$instance->admin, 'view_error' ) );
-		add_action( 'admin_post_revisr_download_sysinfo', array( self::$instance->admin, 'download_sysinfo' ) );
+		add_action( 'admin_post_revisr_delete_branch_form', array( $admin_pages, 'include_form' ) );
+		add_action( 'admin_post_revisr_merge_branch_form', array ( $admin_pages, 'include_form' ) );
+		add_action( 'admin_post_revisr_import_tables_form', array( $admin_pages, 'include_form' ) );
+		add_action( 'admin_post_revisr_revert_form', array( $admin_pages, 'include_form' ) );
+		add_action( 'admin_post_revisr_discard_form', array( $admin_pages, 'include_form' ) );
+		add_action( 'admin_post_revisr_push_form', array( $admin_pages, 'include_form' ) );
+		add_action( 'admin_post_revisr_pull_form', array( $admin_pages, 'include_form' ) );
+		add_action( 'admin_post_revisr_checkout_remote_form', array( $admin_pages, 'include_form' ) );
 
-		// Displays the "Sponsored by Site5" logo.
-		add_action( 'admin_notices', array( self::$instance->admin, 'site5_notice' ) );
+		// Add custom meta boxes.
+		$meta_boxes = new Revisr_Meta_Boxes();
+		add_action( 'load-admin_page_revisr_new_commit', array( $meta_boxes, 'add_meta_box_actions' ) );
+		add_action( 'load-admin_page_revisr_view_commit', array( $meta_boxes, 'add_meta_box_actions' ) );
+		add_action( 'admin_footer-admin_page_revisr_new_commit', array( $meta_boxes, 'init_meta_boxes' ) );
+		add_action( 'add_meta_boxes_admin_page_revisr_new_commit', array( $meta_boxes, 'post_meta' ) );
+		add_action( 'wp_ajax_pending_files', array( $meta_boxes, 'pending_files' ) );
+
+		// Callbacks for AJAX UI
+		$admin = new Revisr_Admin();
+		add_action( 'wp_ajax_render_alert', array( 'Revisr_Admin', 'render_alert' ) );
+		add_action( 'wp_ajax_ajax_button_count', array( $admin, 'ajax_button_count' ) );
+		add_action( 'wp_ajax_verify_remote', array( self::$instance->git, 'verify_remote' ) );
 
 		// Update the database schema if necessary.
 		if ( get_option( 'revisr_db_version' ) !== '2.0' ) {
-			add_action( 'admin_init', array( self::$instance->admin, 'do_upgrade' ) );
+			add_action( 'admin_init', array( $admin, 'do_upgrade' ) );
 		}
 
 		// Processes actions taken from within the WordPress dashboard.
-		add_action( 'init', array( self::$instance->process, 'process_is_repo' ) );
-		add_action( 'admin_post_process_commit', array( self::$instance->process, 'process_commit' ) );
-		add_action( 'admin_post_process_checkout', array( self::$instance->process, 'process_checkout' ) );
-		add_action( 'admin_post_process_create_branch', array( self::$instance->process, 'process_create_branch' ) );
-		add_action( 'admin_post_process_delete_branch', array( self::$instance->process, 'process_delete_branch' ) );
-		add_action( 'admin_post_process_merge', array( self::$instance->process, 'process_merge' ) );
-		add_action( 'admin_post_process_import', array( self::$instance->process, 'process_import' ) );
-		add_action( 'admin_post_init_repo', array( self::$instance->process, 'process_init' ) );
-		add_action( 'admin_post_process_revert', array( self::$instance->process, 'process_revert' ) );
-		add_action( 'admin_post_process_view_diff', array( self::$instance->process, 'process_view_diff' ) );
-		add_action( 'wp_ajax_process_discard', array( self::$instance->process, 'process_discard' ) );
-		add_action( 'wp_ajax_process_push', array( self::$instance->process, 'process_push' ) );
-		add_action( 'wp_ajax_process_pull', array( self::$instance->process, 'process_pull' ) );
+		$process = new Revisr_Process();
+		add_action( 'init', array( $process, 'process_is_repo' ) );
+		add_action( 'admin_post_process_commit', array( $process, 'process_commit' ) );
+		add_action( 'admin_post_process_checkout', array( $process, 'process_checkout' ) );
+		add_action( 'admin_post_process_create_branch', array( $process, 'process_create_branch' ) );
+		add_action( 'admin_post_process_delete_branch', array( $process, 'process_delete_branch' ) );
+		add_action( 'admin_post_process_merge', array( $process, 'process_merge' ) );
+		add_action( 'admin_post_process_import', array( $process, 'process_import' ) );
+		add_action( 'admin_post_init_repo', array( $process, 'process_init' ) );
+		add_action( 'admin_post_process_revert', array( $process, 'process_revert' ) );
+		add_action( 'admin_post_revisr_view_error', array( $process, 'process_view_error' ) );
+		add_action( 'admin_post_process_view_status', array( $process, 'process_view_status' ) );
+		add_action( 'admin_post_process_view_diff', array( $process, 'process_view_diff' ) );
+		add_action( 'wp_ajax_process_view_diff', array( $process, 'process_view_diff' ) );
+		add_action( 'wp_ajax_process_discard', array( $process, 'process_discard' ) );
+		add_action( 'wp_ajax_process_push', array( $process, 'process_push' ) );
+		add_action( 'wp_ajax_process_pull', array( $process, 'process_pull' ) );
 		add_action( 'wp_ajax_backup_db', array( self::$instance->db, 'backup' ) );
+		add_action( 'admin_post_revisr_download_sysinfo', array( $process, 'process_download_sysinfo' ) );
 
 		// Load the settings page.
-		add_action( 'admin_init', array( self::$instance->settings, 'init_settings' ) );
+		$settings = new Revisr_Settings();
+		add_action( 'admin_init', array( $settings, 'init_settings' ) );
 	}
 
 	/**
@@ -401,17 +381,6 @@ final class Revisr {
 	   	dbDelta( $sql );
 
 		update_option( 'revisr_db_version', '2.0' );
-	}
-
-	/**
-	 * Displays the link to the settings on the WordPress plugin page.
-	 * @access public
-	 * @param array $links The links assigned to Revisr.
-	 */
-	public static function settings_link( $links ) {
-		$settings_link = '<a href="admin.php?page=revisr_settings">' . __( 'Settings', 'revisr' ) . '</a>';
-  		array_unshift( $links, $settings_link );
-  		return $links;
 	}
 
 }

@@ -484,6 +484,63 @@ class Revisr_Git {
 		}
 
 		return false;
+
+	}
+
+	/**
+	 * Returns an array of details on the provided commit.
+	 * @access public
+	 * @param  string $hash The SHA1 of the commit to check.
+	 * @return array
+	 */
+	public static function get_commit_details( $hash ) {
+
+		// Build an associative array of details.
+		$commit_details = array(
+			'hash' 				=> $hash,
+			'branch' 			=> '',
+			'author' 			=> '',
+			'subject' 			=> __( 'Commit not found', 'revisr' ),
+			'time' 				=> time(),
+			'files_changed' 	=> 0,
+			'committed_files' 	=> array(),
+			'has_db_backup'		=> false,
+			'tag' 				=> '',
+			'status' 			=> false,
+		);
+
+		// Try to get some basic data about the commit.
+		$commit = revisr()->git->run( 'show', array( '--pretty=format:%s|#|%an|#|%at', '--name-status', '--root', '-r', $hash ) );
+
+		if ( is_array( $commit ) ) {
+
+			$commit_meta = $commit[0];
+			$commit_meta = explode( '|#|', $commit_meta );
+			unset( $commit[0] );
+
+			$commit_details['subject'] 	= $commit_meta[0];
+			$commit_details['author'] 	= $commit_meta[1];
+			$commit_details['time'] 	= $commit_meta[2];
+
+			$commit = array_filter( $commit );
+			$backed_up_tables = preg_grep( '/revisr.*sql/', $commit );
+
+			if ( 0 !== count( $backed_up_tables ) ) {
+				$commit_details['has_db_backup'] = true;
+			}
+
+			$commit_details['files_changed'] 	= count( $commit );
+			$commit_details['committed_files'] 	= $commit;
+
+			$branches = revisr()->git->run( 'branch', array( '--contains', $hash ) );
+			$commit_details['branch'] = is_array( $branches ) ? implode( ', ', $branches ) : __( 'Unknown', 'revisr' );
+			$commit_details['status'] = __( 'Committed', 'revisr' );
+
+		}
+
+		// Return the array.
+		return $commit_details;
+
 	}
 
 	/**

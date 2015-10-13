@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Get details about the commit.
 $commit_hash    = isset( $_GET['commit'] ) ? esc_attr( $_GET['commit'] ) : '';
-$commit         = Revisr_Admin::get_commit_details( $commit_hash );
+$commit         = Revisr_Git::get_commit_details( $commit_hash );
 $subject        = esc_attr( $commit['subject'] );
 ?>
 

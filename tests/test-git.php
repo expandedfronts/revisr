@@ -182,6 +182,22 @@ class RevisrGitTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests the Revisr_Git::get_commit_details() method.
+	 */
+	function test_get_commit_details() {
+		$commit = Revisr_Git::get_commit_details( 'abc1234' );
+		$this->assertArrayHasKey( 'hash', $commit );
+		$this->assertArrayHasKey( 'branch', $commit );
+		$this->assertArrayHasKey( 'author', $commit );
+		$this->assertArrayHasKey( 'subject', $commit );
+		$this->assertArrayHasKey( 'time', $commit );
+		$this->assertArrayHasKey( 'files_changed', $commit );
+		$this->assertArrayHasKey( 'committed_files', $commit );
+		$this->assertArrayHasKey( 'tag', $commit );
+		$this->assertArrayHasKey( 'status', $commit );
+	}
+
+	/**
 	 * Tests the get_status() method.
 	 */
 	function test_get_status() {

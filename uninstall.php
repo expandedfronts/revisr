@@ -46,5 +46,3 @@ if ( revisr()->options['uninstall_on_delete'] ) {
 	$wpdb->query( $sql );
 
 }
-
-

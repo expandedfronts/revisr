@@ -58,7 +58,7 @@ class Revisr_Meta_Boxes {
 	 * @access public
 	 */
 	public function pending_files() {
-		check_ajax_referer( 'pending_nonce', 'security' );
+		check_ajax_referer( 'staging_nonce', 'security' );
 		$output 		= revisr()->git->status();
 		$total_pending 	= count( $output );
 		$text 			= sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit.', 'revisr' ), $total_pending, revisr()->git->branch );
@@ -114,7 +114,7 @@ class Revisr_Meta_Boxes {
 
 		// Get details about the commit.
 		$commit_hash 	= isset( $_GET['commit'] ) ? esc_attr( $_GET['commit'] ) : '';
-		$commit 		= Revisr_Admin::get_commit_details( $commit_hash );
+		$commit 		= Revisr_Git::get_commit_details( $commit_hash );
 
 		// Start outputting the metabox.
 		echo '<div id="message"></div><div id="committed_files_result">';
@@ -219,7 +219,7 @@ class Revisr_Meta_Boxes {
 
 		// Get details about the commit.
 		$commit_hash 		= isset( $_GET['commit'] ) ? esc_attr( $_GET['commit'] ) : '';
-		$commit 			= Revisr_Admin::get_commit_details( $commit_hash );
+		$commit 			= Revisr_Git::get_commit_details( $commit_hash );
 
 		$revert_url 		= get_admin_url() . 'admin-post.php?action=revisr_revert_form&commit=' . $commit_hash . '&TB_iframe=true&width=350&height=200';
 

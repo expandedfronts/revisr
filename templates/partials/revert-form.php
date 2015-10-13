@@ -13,7 +13,7 @@
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$commit 	= Revisr_Admin::get_commit_details( $_GET['commit'] );
+$commit 	= Revisr_Git::get_commit_details( $_GET['commit'] );
 $styles_url = REVISR_URL . 'assets/css/thickbox.css?04162015';
 
 ?>
