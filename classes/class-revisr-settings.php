@@ -222,4 +222,5 @@ class Revisr_Settings {
 		}
 		return $input;
 	}
+
 }
