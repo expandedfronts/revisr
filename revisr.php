@@ -6,7 +6,7 @@
  * Integrates several key git functions into the WordPress admin section.
  *
  * Plugin Name:       Revisr
- * Plugin URI:        http://revisr.io/
+ * Plugin URI:        https://revisr.io/
  * Description:       A plugin that allows users to manage WordPress websites with Git repositories.
  * Version:           1.9.5
  * Author:            Expanded Fronts, LLC
@@ -205,6 +205,7 @@ final class Revisr {
 			require_once REVISR_PATH . 'classes/class-revisr-process.php';
 			require_once REVISR_PATH . 'classes/class-revisr-activity-table.php';
 			require_once REVISR_PATH . 'classes/class-revisr-branch-table.php';
+			require_once REVISR_PATH . 'classes/class-revisr-commits-table.php';
 			require_once REVISR_PATH . 'classes/class-revisr-meta-boxes.php';
 			require_once REVISR_PATH . 'classes/class-revisr-settings.php';
 			require_once REVISR_PATH . 'classes/class-revisr-settings-fields.php';
@@ -305,24 +306,24 @@ final class Revisr {
 
 		// Processes actions taken from within the WordPress dashboard.
 		$process = new Revisr_Process();
-		add_action( 'init', array( $process, 'process_is_repo' ) );
-		add_action( 'admin_post_process_commit', array( $process, 'process_commit' ) );
-		add_action( 'admin_post_process_checkout', array( $process, 'process_checkout' ) );
-		add_action( 'admin_post_process_create_branch', array( $process, 'process_create_branch' ) );
-		add_action( 'admin_post_process_delete_branch', array( $process, 'process_delete_branch' ) );
-		add_action( 'admin_post_process_merge', array( $process, 'process_merge' ) );
-		add_action( 'admin_post_process_import', array( $process, 'process_import' ) );
-		add_action( 'admin_post_init_repo', array( $process, 'process_init' ) );
-		add_action( 'admin_post_process_revert', array( $process, 'process_revert' ) );
-		add_action( 'admin_post_revisr_view_error', array( $process, 'process_view_error' ) );
-		add_action( 'admin_post_process_view_status', array( $process, 'process_view_status' ) );
-		add_action( 'admin_post_process_view_diff', array( $process, 'process_view_diff' ) );
-		add_action( 'wp_ajax_process_view_diff', array( $process, 'process_view_diff' ) );
-		add_action( 'wp_ajax_process_discard', array( $process, 'process_discard' ) );
-		add_action( 'wp_ajax_process_push', array( $process, 'process_push' ) );
-		add_action( 'wp_ajax_process_pull', array( $process, 'process_pull' ) );
+		add_action( 'init', array( $process, 'is_repo' ) );
+		add_action( 'admin_post_process_commit', array( $process, 'commit' ) );
+		add_action( 'admin_post_process_checkout', array( $process, 'checkout' ) );
+		add_action( 'admin_post_process_create_branch', array( $process, 'create_branch' ) );
+		add_action( 'admin_post_process_delete_branch', array( $process, 'delete_branch' ) );
+		add_action( 'admin_post_process_merge', array( $process, 'merge' ) );
+		add_action( 'admin_post_process_import', array( $process, 'import' ) );
+		add_action( 'admin_post_init_repo', array( $process, 'init' ) );
+		add_action( 'admin_post_process_revert', array( $process, 'revert' ) );
+		add_action( 'admin_post_revisr_view_error', array( $process, 'view_error' ) );
+		add_action( 'admin_post_process_view_status', array( $process, 'view_status' ) );
+		add_action( 'admin_post_process_view_diff', array( $process, 'view_diff' ) );
+		add_action( 'wp_ajax_process_view_diff', array( $process, 'view_diff' ) );
+		add_action( 'wp_ajax_process_discard', array( $process, 'discard' ) );
+		add_action( 'wp_ajax_process_push', array( $process, 'push' ) );
+		add_action( 'wp_ajax_process_pull', array( $process, 'pull' ) );
 		add_action( 'wp_ajax_backup_db', array( self::$instance->db, 'backup' ) );
-		add_action( 'admin_post_revisr_download_sysinfo', array( $process, 'process_download_sysinfo' ) );
+		add_action( 'admin_post_revisr_download_sysinfo', array( $process, 'download_sysinfo' ) );
 
 		// Load the settings page.
 		$settings = new Revisr_Settings();

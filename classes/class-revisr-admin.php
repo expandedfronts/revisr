@@ -313,6 +313,20 @@ class Revisr_Admin {
 		}
 		fclose($fd);
 		return true;
+
+	}
+
+	/**
+	 * Wrapper for wp_verify_nonce.
+	 *
+	 * @access public
+	 */
+	public static function verify_nonce( $nonce, $action ) {
+
+		if ( ! wp_verify_nonce( $nonce, $action ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
+
 	}
 
 }

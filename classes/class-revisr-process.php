@@ -21,7 +21,7 @@ class Revisr_Process {
 	 * @access public
 	 * @return boolean
 	 */
-	public function process_is_repo() {
+	public function is_repo() {
 
 		if ( defined( 'REVISR_SKIP_SETUP' ) || get_transient( 'revisr_skip_setup' ) ) {
 			if ( revisr()->git->is_repo ) {
@@ -40,11 +40,9 @@ class Revisr_Process {
 	 * Processes the request to checkout an existing branch.
 	 * @access public
 	 */
-	public function process_checkout( $args = '', $new_branch = false ) {
+	public function checkout( $args = '', $new_branch = false ) {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_checkout_nonce'], 'process_checkout' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_checkout_nonce'], 'process_checkout' );
 
 		if ( revisr()->git->get_config( 'revisr', 'import-checkouts' ) === 'true' ) {
 			revisr()->db->backup();
@@ -80,11 +78,9 @@ class Revisr_Process {
 	 * Processes a new commit from the "New Commit" admin page.
 	 * @access public
 	 */
-	public function process_commit() {
+	public function commit() {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_commit_nonce'], 'process_commit' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_commit_nonce'], 'process_commit' );
 
 		$commit_msg 	= $_REQUEST['post_title'];
 
@@ -109,11 +105,9 @@ class Revisr_Process {
 	 * Processes the request to create a new branch.
 	 * @access public
 	 */
-	public function process_create_branch() {
+	public function create_branch() {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_create_branch_nonce'], 'process_create_branch' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_create_branch_nonce'], 'process_create_branch' );
 
 		// Branches can't have spaces, so we replace them with hyphens.
 		$branch = str_replace( ' ', '-', $_REQUEST['branch_name'] );
@@ -143,11 +137,9 @@ class Revisr_Process {
 	 * Processes the request to delete an existing branch.
 	 * @access public
 	 */
-	public function process_delete_branch() {
+	public function delete_branch() {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_delete_branch_nonce'], 'process_delete_branch' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_delete_branch_nonce'], 'process_delete_branch' );
 
 		$branch = $_REQUEST['branch'];
 
@@ -175,11 +167,9 @@ class Revisr_Process {
 	 * Processes the request to discard all untracked changes.
 	 * @access public
 	 */
-	public function process_discard() {
+	public function discard() {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' );
 
 		// Fires prior to a discard.
 		do_action( 'revisr_pre_discard' );
@@ -202,11 +192,9 @@ class Revisr_Process {
 	 * Processes a Git init.
 	 * @access public
 	 */
-	public function process_init() {
+	public function init() {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_init_nonce'], 'init_repo' ) ) {
-			wp_die( 'Cheatin&#8217; uh?', 'revisr' );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_init_nonce'], 'init_repo' );
 
 		// Fires before a repo is created.
 		do_action( 'revisr_pre_init' );
@@ -219,11 +207,9 @@ class Revisr_Process {
 	 * Processes the import of additional (new) tables.
 	 * @access public
 	 */
-	public function process_import() {
+	public function import() {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_import_nonce'], 'process_import' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_import_nonce'], 'process_import' );
 
 		if ( isset( $_REQUEST['revisr_import_untracked'] ) && is_array( $_REQUEST['revisr_import_untracked'] ) ) {
 			revisr()->db->import( $_REQUEST['revisr_import_untracked'] );
@@ -239,11 +225,9 @@ class Revisr_Process {
 	 * Processes the request to merge a branch into the current branch.
 	 * @access public
 	 */
-	public function process_merge() {
+	public function merge() {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_merge_nonce'], 'process_merge' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_merge_nonce'], 'process_merge' );
 
 		// Fires immediately before a merge.
 		do_action( 'revisr_pre_merge' );
@@ -260,11 +244,9 @@ class Revisr_Process {
 	 * Processes the request to pull changes into the current branch.
 	 * @access public
 	 */
-	public function process_pull() {
+	public function pull() {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' );
 
 		// Fetch the changes so we can compare them.
 		revisr()->git->reset();
@@ -291,11 +273,9 @@ class Revisr_Process {
 	 * Processes the request to push changes to a remote repository.
 	 * @access public
 	 */
-	public function process_push() {
+	public function push() {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' );
 
 		// Fires before a push.
 		do_action( 'revisr_pre_push' );
@@ -310,11 +290,9 @@ class Revisr_Process {
 	 * @param  string $type What to revert
 	 * @return null
 	 */
-	public function process_revert( $type = '' ) {
+	public function revert( $type = '' ) {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' );
 
 		// Determine how to handle the request.
 		if ( isset( $_REQUEST['revert_type'] ) && $_REQUEST['revert_type'] !== '' ) {
@@ -354,11 +332,9 @@ class Revisr_Process {
 	 * Processes the request to revert to an earlier commit.
 	 * @access public
 	 */
-	public function process_revert_files( $redirect = true ) {
+	public function revert_files( $redirect = true ) {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_revert_nonce'], 'revisr_revert_nonce' );
 
 		$commit 	= $_REQUEST['commit_hash'];
 		$commit_msg = sprintf( __( 'Reverted to commit: #%s.', 'revisr' ), $commit );
@@ -388,11 +364,9 @@ class Revisr_Process {
 	 * Processes a diff request.
 	 * @access public
 	 */
-	public function process_view_diff() {
+	public function view_diff() {
 
-		if ( ! wp_verify_nonce( $_GET['security'], 'staging_nonce' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_GET['security'], 'staging_nonce' );
 
 		if ( isset( $_REQUEST['commit'] ) ) {
 			$diff = revisr()->git->run( 'show', array( $_REQUEST['commit'], $_REQUEST['file'] ) );
@@ -430,7 +404,7 @@ class Revisr_Process {
 	 * Processes a view error request.
 	 * @access public
 	 */
-	public function process_view_error() {
+	public function view_error() {
 
 		if ( $revisr_error = get_transient( 'revisr_error_details' ) ) {
 			echo implode( '<br>', $revisr_error );
@@ -444,11 +418,9 @@ class Revisr_Process {
 	 * Processes a view status request.
 	 * @access public
 	 */
-	public function process_view_status() {
+	public function view_status() {
 
-		if ( ! wp_verify_nonce( $_GET['revisr_status_nonce'], 'revisr_view_status' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_GET['revisr_status_nonce'], 'revisr_view_status' );
 
 		$status = revisr()->git->run( 'status', array() );
 
@@ -468,11 +440,9 @@ class Revisr_Process {
 	 * Downloads the system info.
 	 * @access public
 	 */
-	public function process_download_sysinfo() {
+	public function download_sysinfo() {
 
-		if ( ! wp_verify_nonce( $_REQUEST['revisr_info_nonce'], 'process_download_sysinfo' ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
-		}
+		Revisr_Admin::verify_nonce( $_REQUEST['revisr_info_nonce'], 'process_download_sysinfo' );
 
 		if ( ! current_user_can( Revisr::get_capability() ) ) {
 			return;
