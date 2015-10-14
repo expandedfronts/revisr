@@ -60,7 +60,6 @@ class Revisr_Cron {
 
 		}
 
-
 	}
 
 	/**
@@ -68,6 +67,7 @@ class Revisr_Cron {
 	 * @access public
 	 */
 	public function run_autopull() {
+
 		revisr()->git = new Revisr_Git();
 
 		// If auto-pull isn't enabled, we definitely don't want to do this.

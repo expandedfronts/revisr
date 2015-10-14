@@ -8,3 +8,6 @@ tools:
     php_sim: true
     php_analyzer: true
     php_pdepend: true
+checks:
+    code_rating: true
+    duplication: true
