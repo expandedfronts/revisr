@@ -367,7 +367,7 @@ final class Revisr {
 	 * Installs the database table.
 	 * @access public
 	 */
-	public static function revisr_install() {
+	public static function install() {
 		$table_name = Revisr::get_table_name();
 		$sql = "CREATE TABLE {$table_name} (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -400,4 +400,4 @@ function revisr() {
 revisr();
 
 // Register the activation hook.
-register_activation_hook( __FILE__, array( 'Revisr', 'revisr_install' ) );
+register_activation_hook( __FILE__, array( 'Revisr', 'install' ) );

@@ -47,6 +47,7 @@ class RevisrTest extends WP_UnitTestCase {
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-admin.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-admin-pages.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-branch-table.php' );
+		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-commits-table.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-meta-boxes.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-compatibility.php' );
 		$this->assertFileExists( REVISR_PATH . 'classes/class-revisr-cron.php' );
@@ -86,8 +87,8 @@ class RevisrTest extends WP_UnitTestCase {
 	/**
 	 * Tests the database installation.
 	 */
-	function test_revisr_install() {
-		$this->revisr->revisr_install();
+	function test_install() {
+		Revisr::install();
 		global $wpdb;
 		$table_name 	= $wpdb->prefix . 'revisr';
 		$table_check 	= $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" );

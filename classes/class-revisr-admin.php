@@ -252,7 +252,7 @@ class Revisr_Admin {
 		}
 
 		// Update the database schema using dbDelta.
-		Revisr::revisr_install();
+		Revisr::install();
 
 	}
 
