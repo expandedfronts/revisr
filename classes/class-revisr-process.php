@@ -296,13 +296,13 @@ class Revisr_Process {
 		// Run the action.
 		switch ( $revert_type ) {
 			case 'files':
-				$this->process_revert_files( false );
+				$this->revert_files( false );
 				break;
 			case 'db':
 				revisr()->db->restore( false );
 				break;
 			case 'files_and_db':
-				$this->process_revert_files( false );
+				$this->revert_files( false );
 				revisr()->db->restore( false );
 				break;
 			default:
