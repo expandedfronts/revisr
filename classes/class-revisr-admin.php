@@ -2,7 +2,7 @@
 /**
  * class-revisr-admin.php
  *
- * Handles admin-specific functionality.
+ * Common functions used throughout the Revisr admin.
  *
  * @package   	Revisr
  * @license   	GPLv3
@@ -325,6 +325,33 @@ class Revisr_Admin {
 
 		if ( ! wp_verify_nonce( $nonce, $action ) ) {
 			wp_die( __( 'Cheatin&#8217; uh?', 'revisr' ) );
+		}
+
+	}
+
+	/**
+	 * Helper function for processing redirects.
+	 *
+	 * @access public
+	 * @param  string 	$url 	The URL to redirect to.
+	 * @param  bool 	$echo 	Set to true if the redirect should be done in Javascript.
+	 */
+	public static function redirect( $url = '', $echo = false ) {
+
+		if ( '' === $url ) {
+			$url = get_admin_url() . 'admin.php?page=revisr';
+		}
+
+		if ( $echo || isset( $_REQUEST['echo_redirect'] ) ) {
+			_e( 'Processing...', 'revisr' );
+			?>
+			<script>
+				window.top.location.href = "<?php echo $url; ?>";
+			</script>
+			<?php
+		}  else {
+			wp_safe_redirect( $url );
+			exit();
 		}
 
 	}

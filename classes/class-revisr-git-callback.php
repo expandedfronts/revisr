@@ -86,8 +86,7 @@ class Revisr_Git_Callback {
 		revisr()->git->auto_push();
 
 		// View the commit.
-		wp_redirect( $view_link );
-		exit;
+		Revisr_Admin::redirect( $view_link );
 	}
 
 	/**
@@ -101,9 +100,7 @@ class Revisr_Git_Callback {
 
 		Revisr_Admin::alert( $msg, true, $output );
 		Revisr_Admin::log( $msg, 'error' );
-
-		wp_redirect( $url );
-		exit();
+		Revisr_Admin::redirect( $url );
 	}
 
 	/**
@@ -113,13 +110,11 @@ class Revisr_Git_Callback {
 	public function success_delete_branch( $output = array(), $args = '' ) {
 		$branch 	= $args;
 		$msg 		= sprintf( __( 'Deleted branch %s.', 'revisr' ), $branch );
+		$url 		= get_admin_url() . 'admin.php?page=revisr_branches&status=delete_success&branch=' . $branch;
 		$email_msg 	= sprintf( __( 'The branch "%s" on the repository for %s was deleted.', 'revisr' ), $branch, get_bloginfo() );
 		Revisr_Admin::log( $msg, 'branch' );
 		Revisr_Admin::notify( get_bloginfo() . __( ' - Branch Deleted', 'revisr' ), $email_msg );
-		_e( 'Branch deleted successfully. Redirecting...', 'revisr' );
-		echo "<script>
-				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_success&branch={$branch}'
-		</script>";
+		Revisr_Admin::redirect( $url, true );
 	}
 
 	/**
@@ -128,9 +123,8 @@ class Revisr_Git_Callback {
 	 */
 	public function null_delete_branch( $output = array(), $args = '' ) {
 		$branch = $args;
-		echo "<script>
-				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr_branches&status=delete_fail&branch={$branch}'
-		</script>";
+		$url 	= get_admin_url() . 'admin.php?page=revisr_branches&status=delete_fail&branch=' . $branch;
+		Revisr_Admin::redirect( $url, true );
 	}
 
 	/**
@@ -213,8 +207,7 @@ class Revisr_Git_Callback {
 
 		// Redirect if necessary (through skipped/legacy setup).
 		if ( ! defined( 'REVISR_SETUP_INIT' ) ) {
-			wp_redirect( get_admin_url() . 'admin.php?page=revisr_settings&init=success' );
-			exit();
+			Revisr_Admin::redirect( get_admin_url() . 'admin.php?page=revisr_settings&init=success' );
 		}
 
 		// Return true if we haven't exited already.
@@ -230,8 +223,7 @@ class Revisr_Git_Callback {
 		// Redirect if necessary (through skipped/legacy setup).
 		if ( ! defined( 'REVISR_SETUP_INIT' ) ) {
 			Revisr_Admin::log( __( 'Failed to initialize a new repository. Please make sure that Git is installed on the server and that Revisr has write permissons to the WordPress install.', 'revisr' ), 'error' );
-			wp_redirect( get_admin_url() . 'admin.php?page=revisr' );
-			exit();
+			Revisr_Admin::redirect();
 		}
 
 		// Return false if we haven't exited already.
@@ -251,10 +243,7 @@ class Revisr_Git_Callback {
 		// Fires after a successful merge.
 		do_action( 'revisr_post_merge', $output );
 
-		_e( 'Merge completed successfully. Redirecting...', 'revisr' );
-		echo "<script>
-				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
-		</script>";
+		Revisr_Admin::redirect();
 	}
 
 	/**
@@ -266,9 +255,7 @@ class Revisr_Git_Callback {
 		$alert_msg 	= sprintf( __( 'There was an error merging branch %s into your current branch. The merge was aborted to avoid conflicts.', 'revisr' ), $_REQUEST['branch'] );
 		Revisr_Admin::alert( $alert_msg, true, $output );
 		Revisr_Admin::log( $log_msg, 'error' );
-		echo "<script>
-				window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
-		</script>";
+		Revisr_Admin::redirect();
 	}
 
 	/**

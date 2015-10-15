@@ -61,16 +61,7 @@ class Revisr_Process {
 			revisr()->db->import();
 		}
 
-		// Maybe echo the redirect in javascript.
-		if ( isset( $_REQUEST['echo_redirect'] ) ) {
-			_e( 'Processing...', 'revisr' );
-			echo "<script>
-					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
-			</script>";
-		} else {
-			wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr' );
-			exit();
-		}
+		Revisr_Admin::redirect();
 
 	}
 
@@ -114,6 +105,7 @@ class Revisr_Process {
 
 		// Create the branch.
 		$result = revisr()->git->create_branch( $branch );
+		$url 	= get_admin_url() . 'admin.php?page=revisr_branches&branch=' . $branch;
 
 		if ( $result !== false ) {
 			$msg = sprintf( __( 'Created new branch: %s', 'revisr' ), $branch );
@@ -124,12 +116,12 @@ class Revisr_Process {
 				revisr()->git->checkout( $branch );
 			}
 
-			wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_success&branch=' . $branch );
+			$url .= '&status=create_success';
 		} else {
-			wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr_branches&status=create_error&branch=' . $branch );
+			$url .= '&status=create_error';
 		}
 
-		exit();
+		Revisr_Admin::redirect( $url );
 
 	}
 
@@ -213,10 +205,7 @@ class Revisr_Process {
 
 		if ( isset( $_REQUEST['revisr_import_untracked'] ) && is_array( $_REQUEST['revisr_import_untracked'] ) ) {
 			revisr()->db->import( $_REQUEST['revisr_import_untracked'] );
-			_e( 'Importing...', 'revisr' );
-			echo "<script>
-					window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';
-			</script>";
+			Revisr_Admin::redirect();
 		}
 
 	}
@@ -319,12 +308,7 @@ class Revisr_Process {
 			default:
 		}
 
-		if ( isset( $_REQUEST['echo_redirect'] ) ) {
-			_e( 'Revert completed. Redirecting...', 'revisr' );
-			echo "<script>window.top.location.href = '" . get_admin_url() . "admin.php?page=revisr';</script>";
-		} else {
-			wp_safe_redirect( get_admin_url() . 'admin.php?page=revisr' );
-		}
+		Revisr_Admin::redirect();
 
 	}
 
@@ -354,8 +338,7 @@ class Revisr_Process {
 		Revisr_Admin::notify( get_bloginfo() . __( ' - Commit Reverted', 'revisr' ), $email_msg );
 
 		if ( true === $redirect ) {
-			$redirect = get_admin_url() . "admin.php?page=revisr";
-			wp_safe_redirect( $redirect );
+			Revisr_Admin::redirect();
 		}
 
 	}
