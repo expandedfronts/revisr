@@ -17,6 +17,17 @@ input[type="text"] {
 a {
 	color: #0074a2 !important;
 }
+select {
+	border: 1px solid #ddd;
+	padding: 2px;
+	line-height: 28px;
+	height: 28px;
+	vertical-align: middle;
+	font-size: 14px;
+	background: #fff;
+	color: #32373c;
+    outline: 0;
+}
 .revisr-tb-description {
 	padding: 10px 15px 10px 15px;
 }
@@ -35,6 +46,9 @@ a {
 	padding: 0 15px;
 	margin: 0 15px 0 0;
 	border-radius: 4px;
+}
+.revisr-tb-btn:hover {
+	cursor: pointer;
 }
 .revisr-tb-danger {
 	background-color:#e14d43;
