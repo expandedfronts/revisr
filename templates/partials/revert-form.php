@@ -14,7 +14,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $commit 	= Revisr_Git::get_commit_details( $_GET['commit'] );
-$styles_url = REVISR_URL . 'assets/css/thickbox.css?04162015';
+$styles_url = REVISR_URL . 'assets/css/thickbox.css?v=' . REVISR_VERSION;
 
 ?>
 

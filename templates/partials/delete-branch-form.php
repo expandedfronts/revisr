@@ -13,7 +13,7 @@
 // Disallow direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$styles_url 	= REVISR_URL . 'assets/css/thickbox.css?v=02162015';
+$styles_url 	= REVISR_URL . 'assets/css/thickbox.css?v=' . REVISR_VERSION;
 $branch = esc_attr( $_REQUEST['branch'] );
 
 ?>

@@ -13,7 +13,7 @@
  // Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$styles_url = REVISR_URL . 'assets/css/thickbox.css?04162015';
+$styles_url = REVISR_URL . 'assets/css/thickbox.css?v=' . REVISR_VERSION;
 
 // Grab any unpushed commits.
 $unpushed = revisr()->git->run( 'log', array( revisr()->git->branch, '--not', '--remotes', '--oneline' ) );

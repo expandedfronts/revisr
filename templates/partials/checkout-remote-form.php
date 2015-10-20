@@ -13,7 +13,7 @@
 // Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$styles_url = REVISR_URL . 'assets/css/thickbox.css?02162015';
+$styles_url = REVISR_URL . 'assets/css/thickbox.css?v=' . REVISR_VERSION;
 
 $remote = esc_html( $_GET['branch'] );
 $local 	= substr( $remote, strlen( revisr()->git->current_remote() ) + 1 );
