@@ -16,10 +16,21 @@ $discard_url 	= get_admin_url() . 'admin-post.php?action=revisr_discard_form&TB_
 $push_url 		= get_admin_url() . 'admin-post.php?action=revisr_push_form&TB_iframe=true&width=400&height=225';
 $pull_url 		= get_admin_url() . 'admin-post.php?action=revisr_pull_form&TB_iframe=true&width=400&height=225';
 
-// Prepares the Revisr custom list table.
-revisr()->activity_table->prepare_items();
-
 ?>
+
+<?php if ( Revisr_Admin::is_doing_setup() ): ?>
+
+<script>
+	window.location.href = "<?php echo get_admin_url(); ?>admin.php?page=revisr_setup";
+</script>
+
+<?php else: ?>
+
+<?php
+	// Prepare the wp_list_table.
+	revisr()->activity_table->prepare_items();
+?>
+
 <div class="wrap">
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e( 'Revisr - Dashboard', 'revisr' ); ?></h2>
@@ -151,3 +162,5 @@ revisr()->activity_table->prepare_items();
 		<br class="clear">
 	</div> <!-- #poststuff -->
 </div> <!-- .wrap -->
+
+<?php endif; // endif is_doing_setup() ?>
