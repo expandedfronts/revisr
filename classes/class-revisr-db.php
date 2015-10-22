@@ -467,7 +467,7 @@ class Revisr_DB {
 				} else {
 					// Import only tracked tables, but provide a warning and import link.
 					$import = $this->run( 'import', $tracked_tables, $replace_url );
-					$url = wp_nonce_url( get_admin_url() . 'admin-post.php?action=revisr_import_tables_form&TB_iframe=true&width=350&height=200', 'import_table_form', 'import_nonce' );
+					$url = wp_nonce_url( get_admin_url() . 'admin-post.php?action=revisr_import_tables_form&TB_iframe=true&width=400&height=225', 'import_table_form', 'import_nonce' );
 					$msg = sprintf( __( 'New database tables detected. <a class="thickbox" title="Import Tables" href="%s">Click here</a> to view and import.', 'revisr' ), $url );
 					Revisr_Admin::log( $msg, 'db' );
 				}

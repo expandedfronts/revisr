@@ -9,6 +9,7 @@ html {
 }
 body {
 	margin: 0 !important;
+	overflow: hidden;
 }
 input[type="text"] {
 	height: 25px;
@@ -30,6 +31,8 @@ select {
 }
 .revisr-tb-description {
 	padding: 10px 15px 10px 15px;
+	overflow: scroll;
+	height: 155px;
 }
 .revisr-tb-submit {
 	width: 100%;

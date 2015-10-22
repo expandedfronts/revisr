@@ -215,7 +215,7 @@ class Revisr_Commits_Table extends WP_List_Table {
 	 */
 	public function column_title( $item ) {
 		$view_url 			= get_admin_url() . 'admin.php?page=revisr_view_commit&commit=' . $item['hash'];
-		$revert_url 		= get_admin_url() . 'admin-post.php?action=revisr_revert_form&commit=' . $item['hash'] . '&TB_iframe=true&width=350&height=200';
+		$revert_url 		= get_admin_url() . 'admin-post.php?action=revisr_revert_form&commit=' . $item['hash'] . '&TB_iframe=true&width=400&height=225';
 		$title 				= '<strong><a href="' . $view_url . '">' . $item['title'] . '</a></strong>';
 		$actions['view'] 	= '<a href="' . $view_url . '">' . __( 'View', 'revisr' ) . '</a>';
 		$actions['revert'] 	= '<a class="thickbox" title="' . __( 'Revert', 'revisr' ) . '" href="' . $revert_url . '">' . __( 'Revert', 'revisr' ) . '</a>';

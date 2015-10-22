@@ -161,8 +161,8 @@ class Revisr_Branch_Table extends WP_List_Table {
 		$merge_title 	= __( 'Merge Branch', 'revisr' );
 		$delete_title 	= __( 'Delete Branch', 'revisr' );
 		$checkout_url 	= wp_nonce_url( $admin_url . "admin-post.php?action=process_checkout&branch=" . $branch, 'process_checkout', 'revisr_checkout_nonce' );
-		$merge_url 		= $admin_url . "admin-post.php?action=revisr_merge_branch_form&branch=" . $branch . "&TB_iframe=true&width=350&height=200";
-		$delete_url 	= $admin_url . "admin-post.php?action=revisr_delete_branch_form&branch=" . $branch . "&TB_iframe=true&width=350&height=200";
+		$merge_url 		= $admin_url . "admin-post.php?action=revisr_merge_branch_form&branch=" . $branch . "&TB_iframe=true&width=400&height=225";
+		$delete_url 	= $admin_url . "admin-post.php?action=revisr_delete_branch_form&branch=" . $branch . "&TB_iframe=true&width=400&height=225";
 
 		if ( $current ) {
 			return sprintf(
@@ -192,9 +192,9 @@ class Revisr_Branch_Table extends WP_List_Table {
 			);
 
 		} else {
-			$checkout_url 	= esc_url( $admin_url . 'admin-post.php?action=revisr_checkout_remote_form&branch=' . $branch . '&TB_iframe=true&width=380&height=240' );
-			$merge_url 		= esc_url( $admin_url . 'admin-post.php?action=revisr_merge_branch_form&branch=' . $branch . '&TB_iframe=true&width=350&height=200' );
-			$delete_url 	= esc_url( $admin_url . 'admin-post.php?action=revisr_delete_branch_form&branch=' . $branch . '&remote=true&TB_iframe=true&width=350&height=200' );
+			$checkout_url 	= esc_url( $admin_url . 'admin-post.php?action=revisr_checkout_remote_form&branch=' . $branch . '&TB_iframe=true&width=400&height=225' );
+			$merge_url 		= esc_url( $admin_url . 'admin-post.php?action=revisr_merge_branch_form&branch=' . $branch . '&TB_iframe=true&width=400&height=225' );
+			$delete_url 	= esc_url( $admin_url . 'admin-post.php?action=revisr_delete_branch_form&branch=' . $branch . '&remote=true&TB_iframe=true&width=400&height=225' );
 
 			return sprintf(
 				'<a class="button branch-btn thickbox" href="%s" title="%s">%s</a>
