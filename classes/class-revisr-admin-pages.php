@@ -114,9 +114,6 @@ class Revisr_Admin_Pages {
 					wp_enqueue_script( 'revisr_staging' );
 					wp_localize_script( 'revisr_staging', 'staging_vars', array(
 						'ajax_nonce' 		=> wp_create_nonce( 'staging_nonce' ),
-						'empty_title_msg' 	=> __( 'Please enter a message for your commit.', 'revisr' ),
-						'empty_commit_msg' 	=> __( 'Nothing was added to the commit. Please use the section below to add files to use in the commit.', 'revisr' ),
-						'error_commit_msg' 	=> __( 'There was an error committing the files. Make sure that your Git username and email is set, and that Revisr has write permissions to the ".git" directory.', 'revisr' ),
 						'view_diff' 		=> __( 'View Diff', 'revisr' ),
 						)
 					);

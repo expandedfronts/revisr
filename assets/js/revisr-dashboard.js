@@ -213,11 +213,12 @@ var revisr_list = {
 			}, delay);
 		});
 	},
-	/** AJAX call
+	/**
+	 * AJAX call
 	 *
 	 * Send the call and replace table parts with updated version!
 	 *
-	 * @param    object    data The data to pass through AJAX
+	 * @param	object	data The data to pass through AJAX
 	 */
 	update: function( data ) {
 		jQuery.ajax({
