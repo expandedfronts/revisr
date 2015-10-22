@@ -20,7 +20,7 @@ auto_pull = jQuery('#auto_pull');
 remote_field.blur(function() {
 	data = {
 		action: 'verify_remote',
-		remote: remote_field.value;
+		remote: remote_field.value
 	}
 
 	jQuery.post(ajaxurl, data, function(response) {
