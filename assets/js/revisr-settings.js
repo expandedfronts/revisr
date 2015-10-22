@@ -20,17 +20,19 @@ auto_pull = jQuery('#auto_pull');
 remote_field.blur(function() {
 	data = {
 		action: 'verify_remote',
-		remote: remote_field.value
+		remote: remote_field.val()
 	}
 
 	jQuery.post(ajaxurl, data, function(response) {
 		if (response.indexOf('Success') !== -1) {
-			result_span.className = "verify-remote-success";
+			result_span.removeClass();
+			result_span.addClass('verify-remote-success');
 		}
 		else {
-			result_span.className = "verify-remote-error";
+			result_span.removeClass();
+			result_span.addClass('verify-remote-error');
 		}
-		result_span.innerHTML = response;
+		result_span.html( response );
 	});
 
 });
