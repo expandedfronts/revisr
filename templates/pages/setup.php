@@ -41,23 +41,63 @@ delete_transient( 'revisr_skip_setup' );
 
 			<?php elseif ( ! $step || '1' === $step ): ?>
 
-				<p><?php _e( 'Thanks for installing Revisr! No repository was detected.', 'revisr' ); ?></p>
+				<?php $thanks = __( 'Thanks for installing Revisr!', 'revisr' ); ?>
 
-				<p><?php _e( 'Would you like to create a new one?', 'revisr' ); ?></p>
+				<?php
 
-				<select name="action" class="revisr-setup-input">
-					<option value="create"><?php _e( 'Yes, create a new repository.', 'revisr' ); ?></option>
-					<option value="find"><?php _e( 'No, find an existing repository.', 'revisr' ); ?></option>
-					<option value="skip"><?php _e( 'Skip setup...', 'revisr' ); ?></option>
-				</select>
+					if ( isset( $_GET['revisr_git_path'] ) ) {
+						Revisr_Admin::verify_nonce( $_GET['revisr_setup_nonce'], 'revisr_setup_nonce' );
 
-				<br /><br />
+						// Define in the wp-config.
+						$path = filter_input( INPUT_GET, 'revisr_git_path', FILTER_SANITIZE_STRING );
+						$line = "define('REVISR_GIT_PATH', '$path');";
+						Revisr_Admin::replace_config_line( 'define *\( *\'REVISR_GIT_PATH\'', $line );
 
-				<input type="hidden" name="step" value="2" />
-				<button class="button button-primary" type="submit" style="float:right;"><?php _e( 'Next step...', 'revisr' ); ?></button>
+						// Update the instance.
+						revisr()->git->git_path = $path;
+					}
+
+				?>
+
+				<?php if ( revisr()->git->run( 'version', array() ) ): ?>
+
+					<p><?php echo $thanks . ' ' . __( 'No Repository was detected.', 'revisr' ); ?></p>
+
+					<p><?php _e( 'Would you like to create a new one?', 'revisr' ); ?></p>
+
+					<select name="action" class="revisr-setup-input">
+						<option value="create"><?php _e( 'Yes, create a new repository.', 'revisr' ); ?></option>
+						<option value="find"><?php _e( 'No, find an existing repository.', 'revisr' ); ?></option>
+						<option value="skip"><?php _e( 'Skip setup...', 'revisr' ); ?></option>
+					</select>
+
+					<br /><br />
+
+					<input type="hidden" name="step" value="2" />
+					<button class="button button-primary" type="submit" style="float:right;"><?php _e( 'Next step...', 'revisr' ); ?></button>
+
+				<?php else: ?>
+
+					<?php if ( isset( $_GET['revisr_git_path'] ) ): ?>
+						<p><strong><?php _e( 'The install path to Git was not recognized.', 'revisr' ); ?></strong></p>
+					<?php else: ?>
+						<p><?php echo $thanks . ' ' . __( 'Git was not detected on the server.', 'revisr' ); ?></p>
+					<?php endif; ?>
+
+					<p><?php _e( 'Please enter the install path to Git below and click "Continue".', 'revisr' ); ?></p>
+
+					<input name="revisr_git_path" class="regular-text revisr-setup-input" />
+
+					<br><br>
+					<button class="button button-primary" type="submit" name="step" value="1"><?php _e( 'Continue', 'revisr' ); ?></button>
+
+				<?php endif; // git version check ?>
+
 				<br /><br />
 
 			<?php elseif ( '2' === $step ): ?>
+
+				<?php Revisr_Admin::verify_nonce( $_GET['revisr_setup_nonce'], 'revisr_setup_nonce' ); ?>
 
 				<?php if ( 'create' === $action ): ?>
 
@@ -152,15 +192,23 @@ delete_transient( 'revisr_skip_setup' );
 
 						$dir = filter_input( INPUT_GET, 'revisr_manual_git_dir', FILTER_SANITIZE_STRING );
 
+						revisr()->git->work_tree = $dir;
+
+						if ( ! defined( 'REVISR_GIT_DIR' ) ) {
+							revisr()->git->git_dir = $dir . '/.git';
+						}
+
 						if ( revisr()->git->check_work_tree( $dir ) ) {
+
 							// Write it to the wp-config file if necessary.
 							$line = "define('REVISR_WORK_TREE', '$dir');";
-							Revisr_Admin::replace_config_line( 'define *\( *\'REVISR_GIT_DIR\'', $line );
+							Revisr_Admin::replace_config_line( 'define *\( *\'REVISR_WORK_TREE\'', $line );
+
 							Revisr_Admin::clear_transients();
 
 							printf( '<p>%s</p><br><a href="%s">%s</a>',
 								__( 'Repository detected succesfully.', 'revisr' ),
-								get_admin_url( 'admin.php?page=revisr' ),
+								get_admin_url() . 'admin.php?page=revisr',
 								__( 'Continue to dashboard.', 'revisr' )
 							);
 
@@ -186,6 +234,8 @@ delete_transient( 'revisr_skip_setup' );
 				<?php endif; ?>
 
 			<?php elseif( '3' === $step ): ?>
+
+				<?php Revisr_Admin::verify_nonce( $_GET['revisr_setup_nonce'], 'revisr_setup_nonce' ); ?>
 
 				<?php
 
@@ -246,6 +296,8 @@ delete_transient( 'revisr_skip_setup' );
 				?>
 
 			<?php endif; ?>
+
+			<?php wp_nonce_field( 'revisr_setup_nonce', 'revisr_setup_nonce', false ); ?>
 
 		</form><!-- /#revisr-setup-form -->
 
