@@ -106,14 +106,25 @@ class Revisr_Admin {
 	 * @access public
 	 * @param  string $message The message to show in the Recent Activity.
 	 * @param  string $event   Will be used for filtering later.
+	 * @param  string $user    An optional user to associate the record with.
 	 */
-	public static function log( $message, $event ) {
+	public static function log( $message, $event, $user = '' ) {
 
 		global $wpdb;
 
 		$time  	= current_time( 'mysql' );
-		$user 	= wp_get_current_user();
 		$table 	= Revisr::get_table_name();
+
+		if ( '' === $user ) {
+			$user = wp_get_current_user();
+			$username = $user->user_login;
+		} else {
+			$username = $user;
+		}
+
+		if ( ! $username || '' === $username ) {
+			$username = __( 'Revisr Bot', 'revisr' );
+		}
 
 		$wpdb->insert(
 			"$table",
@@ -121,7 +132,7 @@ class Revisr_Admin {
 				'time' 		=> $time,
 				'message'	=> $message,
 				'event' 	=> $event,
-				'user' 		=> $user->user_login,
+				'user' 		=> $username,
 			),
 			array(
 				'%s',
