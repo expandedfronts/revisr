@@ -29,8 +29,9 @@ $merge_text = sprintf( __( 'This will merge changes from branch <strong>%s</stro
 	</div>
 
 	<div class="revisr-tb-submit">
-		<input type="hidden" name="action" value="process_merge">
-		<input type="hidden" name="branch" value="<?php echo esc_html( $_GET['branch'] ); ?>">
+		<input type="hidden" name="action" value="process_merge" />
+		<input type="hidden" name="branch" value="<?php echo esc_html( $_GET['branch'] ); ?>" />
+		<input type="hidden" name="echo_redirect" value="true" />
 		<?php wp_nonce_field( 'process_merge', 'revisr_merge_nonce' ); ?>
 		<button id="merge-btn" class="revisr-tb-btn revisr-tb-danger"><?php _e( 'Merge Branch', 'revisr' ); ?></button><button class="revisr-tb-btn revisr-btn-cancel" onclick="self.parent.tb_remove();return false"><?php _e( 'Cancel', 'revisr' ); ?></button>
 	</div>
