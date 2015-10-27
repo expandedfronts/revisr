@@ -30,7 +30,7 @@ select {
 }
 .revisr-tb-description {
 	padding: 10px 15px 10px 15px;
-	overflow: scroll;
+	overflow-y: scroll;
 	height: 155px;
 }
 .revisr-tb-submit {
