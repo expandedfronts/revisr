@@ -120,15 +120,28 @@ $pull_url 		= get_admin_url() . 'admin-post.php?action=revisr_pull_form&TB_ifram
 								<div id="tags" class="tabs-panel" style="display: none;">
 									<?php
 
-										$tags = revisr()->git->run( 'tag', array() );
+										$refs = revisr()->git->run( 'show-ref', array( '--tags', '-d', '--abbrev=7' ) );
+										$tags = array();
+
+										if ( is_array( $refs ) ) {
+
+											foreach ( $refs as $ref ) {
+												$tmp = explode( ' ', $ref );
+												$tag = explode( '/', $tmp[1] );
+												$tag = end( $tag );
+												$tags[$tag] = $tmp[0];
+											}
+
+										}
 
 										if ( is_array( $tags ) && ! empty( $tags ) ) {
 
 											echo '<ul id="tags-list">';
 
-											foreach ( $tags as $tag ) {
+											foreach ( $tags as $tag => $commit_hash ) {
 												$tag = esc_attr( $tag );
-												echo '<li class="revisr-tag"><a href="' . get_admin_url() . 'edit.php?post_type=revisr_commits&git_tag=' . $tag . '">' . $tag . '</a></li>';
+												$url = esc_url( get_admin_url() . 'admin.php?page=revisr_view_commit&commit=' . $commit_hash );
+												echo '<li class="revisr-tag"><a href="' . $url .'">' . $tag . '</a></li>';
 											}
 
 											echo '</ul>';
@@ -139,11 +152,15 @@ $pull_url 		= get_admin_url() . 'admin-post.php?action=revisr_pull_form&TB_ifram
 
 									?>
 								</div>
+
 								<div id="manage-branches" class="wp-hidden-children">
 									<h4><a id="revisr-manage-branches-link" href="<?php echo get_admin_url() . 'admin.php?page=revisr_branches'; ?>" class="hide-if-no-js"><?php _e( 'Manage Branches', 'revisr' ); ?></a></h4>
 								</div>
+
 							</div>
+
 						</div>
+
 					</div>
 					<!-- END BRANCHES/TAGS WIDGET -->
 
