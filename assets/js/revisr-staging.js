@@ -26,6 +26,9 @@ function commit_files() {
     jQuery('option', ('#staged')).each(function() {
         jQuery(this).attr('selected', 'selected');
     });
+    jQuery('option', ('#unstaged')).each(function() {
+        jQuery(this).attr('selected', 'selected');
+    });
     jQuery('#commit').val('Committing...');
     jQuery('#revisr-spinner').css('visibility', 'visible');
 }
