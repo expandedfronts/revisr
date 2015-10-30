@@ -79,6 +79,9 @@ Care should be taken when dealing with upgrades that depend on the database. Tak
 
 == Changelog ==
 
+= 2.0.1 - October 30, 2015 =
+* Fix: Bug causing all files to be committed in some cases
+
 = 2.0 - October 27, 2015 =
 * New: Commits are no longer stored in the database
 * New: Setup wizard for when no repo is found
