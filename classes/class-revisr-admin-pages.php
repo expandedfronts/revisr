@@ -288,7 +288,7 @@ class Revisr_Admin_Pages {
 	 * @param array $links The links assigned to Revisr.
 	 */
 	public function settings_link( $links ) {
-		$settings_link = '<a href="<?php echo get_admin_url(); ?>admin.php?page=revisr_settings">' . __( 'Settings', 'revisr' ) . '</a>';
+		$settings_link = '<a href="' . get_admin_url() . 'admin.php?page=revisr_settings">' . __( 'Settings', 'revisr' ) . '</a>';
   		array_unshift( $links, $settings_link );
   		return $links;
 	}
