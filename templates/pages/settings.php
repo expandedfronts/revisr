@@ -17,7 +17,7 @@ $active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general_settings';
 ?>
 <div class="wrap">
 	<div id="revisr_settings">
-		<h2><?php _e( 'Revisr - Settings', 'revisr' ); ?></h2>
+		<h1><?php _e( 'Revisr - Settings', 'revisr' ); ?></h1>
 
 		<?php
 
