@@ -1,16 +1,28 @@
-# Copyright (C) 2015 Revisr
-# This file is distributed under the same license as the Revisr package.
+# Copyright (C) 2015 Expanded Fronts, LLC
+# This file is distributed under the GPL-3.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Revisr 2.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/revisr\n"
-"POT-Creation-Date: 2015-10-28 01:16:14+00:00\n"
+"Project-Id-Version: Revisr 2.0.2\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/slim-seo\n"
+"POT-Creation-Date: 2015-12-15 18:26:21+00:00\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: Revisr <support@expandedfronts.com>\n"
+"Language-Team: Revisr <support@expandedfronts.com>\n"
+"X-Generator: grunt-wp-i18n 0.4.9\n"
+"X-Poedit-KeywordsList: "
+"__;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;_nx_noop:1,2,3c;esc_"
+"attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;esc_html_x:1,2c;\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Country: United States\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-Bookmarks: \n"
+"X-Textdomain-Support: yes\n"
 
 #: classes/class-revisr-activity-table.php:57
 msgid "Events per page"
@@ -121,10 +133,7 @@ msgstr ""
 msgid "Dashboard"
 msgstr ""
 
-#. #-#-#-#-#  plugin.pot (Revisr 2.0)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
-#: classes/class-revisr-admin-pages.php:34
-#: classes/class-revisr-admin-pages.php:43
 msgid "Revisr"
 msgstr ""
 
@@ -206,8 +215,8 @@ msgstr ""
 
 #: classes/class-revisr-admin.php:34
 msgid ""
-"<br>Click <a href=\"%s\" class=\"thickbox\" title=\"Error Details\">here</a> "
-"for more details, or try again."
+"<br>Click <a href=\"%s\" class=\"thickbox\" title=\"Error "
+"Details\">here</a> for more details, or try again."
 msgstr ""
 
 #: classes/class-revisr-admin.php:126
@@ -224,8 +233,8 @@ msgstr ""
 
 #: classes/class-revisr-admin.php:184
 msgid ""
-"There are currently %d untracked files on branch %s. <a href=\"%s\">Commit</"
-"a> your changes to save them."
+"There are currently %d untracked files on branch %s. <a "
+"href=\"%s\">Commit</a> your changes to save them."
 msgstr ""
 
 #: classes/class-revisr-admin.php:248 classes/class-revisr-git-callback.php:70
@@ -374,15 +383,15 @@ msgstr ""
 msgid "Error importing the database."
 msgstr ""
 
-#: classes/class-revisr-db-import.php:123
+#: classes/class-revisr-db-import.php:124
 msgid "Undo"
 msgstr ""
 
-#: classes/class-revisr-db-import.php:128
+#: classes/class-revisr-db-import.php:129
 msgid "Successfully imported the database. %s"
 msgstr ""
 
-#: classes/class-revisr-db-import.php:237
+#: classes/class-revisr-db-import.php:238
 msgid "Error updating the table: %s."
 msgstr ""
 
@@ -396,8 +405,8 @@ msgstr ""
 
 #: classes/class-revisr-db.php:410
 msgid ""
-"Successfully reverted the database to a previous commit. <a href=\"%s"
-"\">Undo</a>"
+"Successfully reverted the database to a previous commit. <a "
+"href=\"%s\">Undo</a>"
 msgstr ""
 
 #: classes/class-revisr-db.php:421
@@ -432,8 +441,8 @@ msgstr ""
 
 #: classes/class-revisr-git-callback.php:54
 msgid ""
-"There was an error checking out the branch. Check your configuration and try "
-"again."
+"There was an error checking out the branch. Check your configuration and "
+"try again."
 msgstr ""
 
 #: classes/class-revisr-git-callback.php:74
@@ -485,8 +494,8 @@ msgstr ""
 
 #: classes/class-revisr-git-callback.php:255
 msgid ""
-"There was an error merging branch %s into your current branch. The merge was "
-"aborted to avoid conflicts."
+"There was an error merging branch %s into your current branch. The merge "
+"was aborted to avoid conflicts."
 msgstr ""
 
 #: classes/class-revisr-git-callback.php:270
@@ -708,8 +717,8 @@ msgstr ""
 
 #: classes/class-revisr-process.php:31
 msgid ""
-"Thanks for installing Revisr! No Git repository was detected, <a href=\"%s"
-"\">click here</a> to create one."
+"Thanks for installing Revisr! No Git repository was detected, <a "
+"href=\"%s\">click here</a> to create one."
 msgstr ""
 
 #: classes/class-revisr-process.php:111
@@ -791,8 +800,7 @@ msgid ""
 msgstr ""
 
 #: classes/class-revisr-settings-fields.php:55
-msgid ""
-"These settings configure how Revisr interacts with your database, if at all."
+msgid "These settings configure how Revisr interacts with your database, if at all."
 msgstr ""
 
 #: classes/class-revisr-settings-fields.php:79
@@ -811,8 +819,8 @@ msgstr ""
 
 #: classes/class-revisr-settings-fields.php:156
 msgid ""
-"Add files or directories that you don't want to show up in Git here, one per "
-"line.<br>This will update the \".gitignore\" file for this repository."
+"Add files or directories that you don't want to show up in Git here, one "
+"per line.<br>This will update the \".gitignore\" file for this repository."
 msgstr ""
 
 #: classes/class-revisr-settings-fields.php:193
@@ -826,8 +834,8 @@ msgstr ""
 
 #: classes/class-revisr-settings-fields.php:197
 msgid ""
-"Automatic backups will backup both the files and database at the interval of "
-"your choosing."
+"Automatic backups will backup both the files and database at the interval "
+"of your choosing."
 msgstr ""
 
 #: classes/class-revisr-settings-fields.php:220
@@ -844,9 +852,9 @@ msgstr ""
 
 #: classes/class-revisr-settings-fields.php:265
 msgid ""
-"Git sets this to \"origin\" by default when you clone a repository, and this "
-"should be sufficient in most cases. If you've changed the remote name or "
-"have more than one remote, you can specify that here."
+"Git sets this to \"origin\" by default when you clone a repository, and "
+"this should be sufficient in most cases. If you've changed the remote name "
+"or have more than one remote, you can specify that here."
 msgstr ""
 
 #: classes/class-revisr-settings-fields.php:300
@@ -857,9 +865,9 @@ msgstr ""
 
 #: classes/class-revisr-settings-fields.php:328
 msgid ""
-"If you have Revisr installed on another server using the same repository,"
-"<br> you can add the Revisr Webhook from that server here to trigger an "
-"update when pushing."
+"If you have Revisr installed on another server using the same "
+"repository,<br> you can add the Revisr Webhook from that server here to "
+"trigger an update when pushing."
 msgstr ""
 
 #: classes/class-revisr-settings-fields.php:349
@@ -1101,23 +1109,23 @@ msgstr ""
 msgid "Checked Out"
 msgstr ""
 
-#: templates/pages/dashboard.php:137
+#: templates/pages/dashboard.php:150
 msgid "No tags found."
 msgstr ""
 
-#: templates/pages/dashboard.php:143
+#: templates/pages/dashboard.php:157
 msgid "Manage Branches"
 msgstr ""
 
-#: templates/pages/dashboard.php:151
+#: templates/pages/dashboard.php:168
 msgid "Documentation"
 msgstr ""
 
-#: templates/pages/dashboard.php:153
+#: templates/pages/dashboard.php:170
 msgid "Need help? Check out the improved documentation at %s."
 msgstr ""
 
-#: templates/pages/dashboard.php:155
+#: templates/pages/dashboard.php:172
 msgid "&copy; %d Expanded Fronts, LLC"
 msgstr ""
 
@@ -1127,14 +1135,16 @@ msgstr ""
 
 #: templates/pages/help.php:18
 msgid ""
-"Support is available on the <a href=\"https://wordpress.org/support/plugin/"
-"revisr\" target=\"_blank\">plugin support forums</a>."
+"Support is available on the <a "
+"href=\"https://wordpress.org/support/plugin/revisr\" "
+"target=\"_blank\">plugin support forums</a>."
 msgstr ""
 
 #: templates/pages/help.php:20
 msgid ""
-"Found a bug or have a feature request? Please open an issue on <a href="
-"\"https://github.com/ExpandedFronts/revisr\" target=\"_blank\">GitHub</a>!"
+"Found a bug or have a feature request? Please open an issue on <a "
+"href=\"https://github.com/ExpandedFronts/revisr\" "
+"target=\"_blank\">GitHub</a>!"
 msgstr ""
 
 #: templates/pages/help.php:30
@@ -1191,14 +1201,14 @@ msgstr ""
 
 #: templates/pages/settings.php:25
 msgid ""
-"<div id=\"revisr_alert\" class=\"updated\" style=\"margin-top:20px;"
-"\"><p>Settings updated successfully.</p></div>"
+"<div id=\"revisr_alert\" class=\"updated\" "
+"style=\"margin-top:20px;\"><p>Settings updated successfully.</p></div>"
 msgstr ""
 
 #: templates/pages/settings.php:29
 msgid ""
-"Successfully initialized a new repository. Please confirm the settings below "
-"before creating your first commit."
+"Successfully initialized a new repository. Please confirm the settings "
+"below before creating your first commit."
 msgstr ""
 
 #: templates/pages/settings.php:35
@@ -1316,8 +1326,8 @@ msgstr ""
 
 #: templates/pages/setup.php:157
 msgid ""
-"You can always ignore specific files/directories within the repository later "
-"by going to the Revisr Settings page."
+"You can always ignore specific files/directories within the repository "
+"later by going to the Revisr Settings page."
 msgstr ""
 
 #: templates/pages/setup.php:162
@@ -1387,8 +1397,8 @@ msgstr ""
 
 #: templates/partials/checkout-remote-form.php:24
 msgid ""
-"This will checkout remote branch <strong>%s</strong> into a new local branch "
-"<strong>%s</strong>."
+"This will checkout remote branch <strong>%s</strong> into a new local "
+"branch <strong>%s</strong>."
 msgstr ""
 
 #: templates/partials/checkout-remote-form.php:36
@@ -1432,9 +1442,9 @@ msgstr ""
 
 #: templates/partials/import-tables-form.php:26
 msgid ""
-"The following new tables were added to the repository, but not automatically "
-"imported due to your tracking settings. Check any tables that you'd like to "
-"import and click \"Import\" to continue."
+"The following new tables were added to the repository, but not "
+"automatically imported due to your tracking settings. Check any tables that "
+"you'd like to import and click \"Import\" to continue."
 msgstr ""
 
 #: templates/partials/import-tables-form.php:37
@@ -1453,8 +1463,7 @@ msgid "Are you sure you want to pull the following commits?"
 msgstr ""
 
 #: templates/partials/push-form.php:31
-msgid ""
-"Are you sure you sure you want to push all committed changes to the remote?"
+msgid "Are you sure you sure you want to push all committed changes to the remote?"
 msgstr ""
 
 #: templates/partials/push-form.php:35
@@ -1463,7 +1472,8 @@ msgstr ""
 
 #: templates/partials/push-form.php:58
 msgid ""
-"There are no commits to push to the remote. Would you like to make a new one?"
+"There are no commits to push to the remote. Would you like to make a new "
+"one?"
 msgstr ""
 
 #: templates/partials/revert-form.php:28
