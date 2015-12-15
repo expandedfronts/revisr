@@ -1,0 +1,24 @@
+# Operating Systems
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+*~
+
+# IDEs
+*.sublime-project
+*.sublime-workspace
+.idea
+*.pydevproject
+.project
+.metadata
+build/
+tmp/
+tests/clover.xml
+
+# Grunt
+node_modules
+
+# Vendor
+vendor
