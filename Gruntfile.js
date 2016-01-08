@@ -10,7 +10,7 @@ module.exports = function(grunt) {
 					potFilename: 'revisr.pot',
 					potHeaders: {
 						poedit: true,
-						'report-msgid-bugs-to': 'http://wordpress.org/support/plugin/slim-seo',
+						'report-msgid-bugs-to': 'http://wordpress.org/support/plugin/revisr',
 						'last-translator': 'Revisr <support@expandedfronts.com>',
 						'language-team': 'Revisr <support@expandedfronts.com>'
 					},
