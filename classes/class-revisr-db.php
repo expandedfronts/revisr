@@ -39,8 +39,8 @@ class Revisr_DB {
 		global $wpdb;
 		$this->wpdb = $wpdb;
 
-		if ( defined( 'REVISR_BACKUP_DIR' ) && is_dir( REVISR_BACKUP_DIR ) ) {
-			$upload_dir_path = rtrim( REVISR_BACKUP_DIR, DIRECTORY_SEPARATOR );
+		if ( defined( 'REVISR_BACKUP_DIR' ) && is_dir( ABSPATH . REVISR_BACKUP_DIR ) ) {
+			$upload_dir_path = rtrim( ABSPATH . REVISR_BACKUP_DIR, DIRECTORY_SEPARATOR );
 		} else {
 			$upload_dir = wp_upload_dir();
 			$upload_dir_path = $upload_dir['basedir'];
