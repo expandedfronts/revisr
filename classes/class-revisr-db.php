@@ -39,9 +39,14 @@ class Revisr_DB {
 		global $wpdb;
 		$this->wpdb = $wpdb;
 
-		$upload_dir = wp_upload_dir();
+		if ( defined( 'REVISR_BACKUP_DIR' ) && is_dir( REVISR_BACKUP_DIR ) ) {
+			$upload_dir_path = rtrim( REVISR_BACKUP_DIR, DIRECTORY_SEPARATOR );
+		} else {
+			$upload_dir = wp_upload_dir();
+			$upload_dir_path = $upload_dir['basedir'];
+		}
 
-		$this->backup_dir = $upload_dir['basedir'] . '/revisr-backups/';
+		$this->backup_dir = $upload_dir_path . '/revisr-backups/';
 
 		// Set up the "revisr_backups" directory if necessary.
 		$this->setup_env();
