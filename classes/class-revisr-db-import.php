@@ -46,6 +46,8 @@ class Revisr_DB_Import extends Revisr_DB {
 
 		// Run a search replace if necessary.
 		if ( $replace_url !== '' && $replace_url !== false ) {
+			// Remove trailing slash if present.
+			$replace_url = rtrim($replace_url, '/');
 			$this->revisr_srdb( $table, $replace_url, $live_url );
 		}
 
@@ -87,6 +89,8 @@ class Revisr_DB_Import extends Revisr_DB {
 		fclose( $fh );
 
 		if ( '' !== $replace_url ) {
+			// Remove trailing slash if present.
+			$replace_url = rtrim($replace_url, '/');
 			$this->revisr_srdb( $table, $replace_url, $live_url );
 		}
 
