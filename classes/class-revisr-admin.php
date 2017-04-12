@@ -157,7 +157,7 @@ class Revisr_Admin {
 			$email 		= $options['email'];
 			$message	.= '<br><br>';
 			$message	.= sprintf( __( '<a href="%s">Click here</a> for more details.', 'revisr' ), $url );
-			$headers 	= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+			$headers 	= "Content-Type: text/html; charset=UTF-8\r\n";
 			wp_mail( $email, $subject, $message, $headers );
 		}
 	}
