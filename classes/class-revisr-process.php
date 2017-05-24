@@ -245,11 +245,11 @@ class Revisr_Process {
 		$commits_since = revisr()->git->run( 'log', array( revisr()->git->branch . '..' . revisr()->git->remote . '/' . revisr()->git->branch, '--pretty=oneline' ) );
 
 		// Maybe backup database.
-		if ( revisr()->git->get_config( 'revisr', 'import-pulls' ) === 'true' ) {
-			revisr()->db->backup();
-			$undo_hash = revisr()->git->current_commit();
-			revisr()->git->set_config( 'revisr', 'last-db-backup', $undo_hash );
-		}
+		// if ( revisr()->git->get_config( 'revisr', 'import-pulls' ) === 'true' ) {
+		// 	revisr()->db->backup();
+		// 	$undo_hash = revisr()->git->current_commit();
+		// 	revisr()->git->set_config( 'revisr', 'last-db-backup', $undo_hash );
+		// }
 
 		// Fires before the changes are pulled.
 		do_action( 'revisr_pre_pull', $commits_since );
