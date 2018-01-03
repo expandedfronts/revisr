@@ -69,7 +69,7 @@ class Revisr_Meta_Boxes {
 				<!-- Staging -->
 				<div class="stage-container">
 					<p><strong><?php _e( 'Staged Files', 'revisr' ); ?></strong></p>
-					<select id='staged' multiple="multiple" name="staged_files[]" size="15">
+					<select id='staged' multiple="multiple" name="staged_files[]" size="15" style="resize: vertical;">
 					<?php
 					// Clean up output from git status and echo the results.
 					foreach ( $output as $result ) {
@@ -92,7 +92,7 @@ class Revisr_Meta_Boxes {
 				<!-- Unstaging -->
 				<div class="stage-container">
 					<p><strong><?php _e( 'Unstaged Files', 'revisr' ); ?></strong></p>
-					<select id="unstaged" multiple="multiple" name="unstaged_files[]" size="15">
+					<select id="unstaged" multiple="multiple" name="unstaged_files[]" size="15" style="resize: vertical;">
 					</select>
 					<div class="stage-nav">
 						<input id="stage-file" type="button" class="button button-primary stage-nav-button" value="<?php _e( 'Stage Selected', 'revisr' ); ?>" onclick="stage_file()" />
