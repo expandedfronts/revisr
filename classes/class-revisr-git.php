@@ -622,7 +622,7 @@ class Revisr_Git {
 	 * @param  array $commits The commits we're pulling (used in callback).
 	 */
 	public function pull( $commits = array() ) {
-		$this->reset();
+		//$this->reset();
 		$pull = $this->run( 'pull', array( '-Xtheirs', '--quiet', $this->remote, $this->branch ), __FUNCTION__, $commits );
 		return $pull;
 	}

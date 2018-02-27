@@ -238,9 +238,9 @@ class Revisr_Process {
 		Revisr_Admin::verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' );
 
 		// Fetch the changes so we can compare them.
-		revisr()->git->reset();
+		//revisr()->git->reset();
 		revisr()->git->fetch();
-
+		
 		// Build an array of the commits we don't have locally.
 		$commits_since = revisr()->git->run( 'log', array( revisr()->git->branch . '..' . revisr()->git->remote . '/' . revisr()->git->branch, '--pretty=oneline' ) );
 
