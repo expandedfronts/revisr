@@ -61,7 +61,9 @@ class Revisr_Meta_Boxes {
 		check_ajax_referer( 'staging_nonce', 'security' );
 		$output 		= revisr()->git->status();
 		$total_pending 	= count( $output );
-		$text 			= sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit.', 'revisr' ), $total_pending, revisr()->git->branch );
+    $commit_items = array();
+    $unstaged = array();
+    $text = sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit.', 'revisr' ), $total_pending, revisr()->git->branch );
 		echo "<br>" . $text . "<br><br>";
 		_e( 'Use the boxes below to select the files to include in this commit. Only files in the "Staged Files" section will be included.<br>Double-click files marked as "Modified" to view the changes to the file.<br><br>', 'revisr' );
 		if ( is_array( $output ) ) {
@@ -76,8 +78,20 @@ class Revisr_Meta_Boxes {
 						$result 		= str_replace( '"', '', $result );
 						$short_status 	= substr( $result, 0, 3 );
 						$file 			= substr( $result, 3 );
-						$status 		= Revisr_Git::get_status( $short_status );
-						echo "<option class='pending' value='{$result}'>{$file} [{$status}]</option>";
+            $status 		= Revisr_Git::get_status( $short_status );
+            $item = "<option class='pending' value='{$result}'>{$file} [{$status}]</option>";
+            
+            if ( preg_match('/wp-content\/plugins\/(.*?)\//', $file, $match) ) { // Match plugin name
+              if( !isset($commit_items[$status]) ) {
+                $commit_items[$status][] = $match[1];
+              } else if( !in_array($match[1], $commit_items[$status]) ) {
+                $commit_items[$status][] = $match[1]; 
+              }
+              echo $item;
+            } else { // No plugin matched
+              $unstaged[] = $item;
+            }
+						
 					}
 					?>
 					</select>
@@ -93,6 +107,13 @@ class Revisr_Meta_Boxes {
 				<div class="stage-container">
 					<p><strong><?php _e( 'Unstaged Files', 'revisr' ); ?></strong></p>
 					<select id="unstaged" multiple="multiple" name="unstaged_files[]" size="15" style="resize: vertical;">
+            <?php
+              if( !empty($unstaged) ) {
+                foreach( $unstaged as $option ) {
+                  echo $option;
+                }
+              } 
+            ?>
 					</select>
 					<div class="stage-nav">
 						<input id="stage-file" type="button" class="button button-primary stage-nav-button" value="<?php _e( 'Stage Selected', 'revisr' ); ?>" onclick="stage_file()" />
@@ -100,6 +121,30 @@ class Revisr_Meta_Boxes {
 						<input id="stage-all" type="button" class="button stage-nav-button" value="<?php _e( 'Stage All', 'revisr' ); ?>" onclick="stage_all()" />
 					</div>
 				</div><!-- /Unstaging -->
+
+        <?php 
+          $commit_msg = "";
+          foreach( $commit_items as $status => $plugins ) {
+            switch($status) {
+              case 'Modified':
+                $commit_msg .=" Updated";
+              break;
+              case 'Untracked':
+                $commit_msg .=" Added";
+              break;
+              case 'Deleted':
+                $commit_msg .=" Removed";
+              break;
+              default:
+              $commit_msg .=" " . $status; 
+            }
+            $commit_msg .= " - " . implode(",", $plugins);
+          }
+          $commit_msg = trim($commit_msg);
+        ?>
+
+        <!-- New input for commit msg -->
+        <input type="text" name="post_title" size="30" value="<?php echo $commit_msg; ?>" id="title-tmp" spellcheck="true" autocomplete="off" placeholder="Enter a message for your commit">
 
 			<?php
 		}
