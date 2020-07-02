@@ -127,13 +127,13 @@ class Revisr_Meta_Boxes {
           foreach( $commit_items as $status => $plugins ) {
             switch($status) {
               case 'Modified':
-                $commit_msg .=" Updated";
+                $commit_msg .=" Plugin updates";
               break;
               case 'Untracked':
-                $commit_msg .=" Added";
+                $commit_msg .=" New plugins";
               break;
               case 'Deleted':
-                $commit_msg .=" Removed";
+                $commit_msg .=" Deleted plugins";
               break;
               default:
               $commit_msg .=" " . $status; 
