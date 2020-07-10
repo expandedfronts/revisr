@@ -238,18 +238,18 @@ class Revisr_Process {
 		Revisr_Admin::verify_nonce( $_REQUEST['revisr_dashboard_nonce'], 'revisr_dashboard_nonce' );
 
 		// Fetch the changes so we can compare them.
-		revisr()->git->reset();
+		//revisr()->git->reset();
 		revisr()->git->fetch();
-
+		
 		// Build an array of the commits we don't have locally.
 		$commits_since = revisr()->git->run( 'log', array( revisr()->git->branch . '..' . revisr()->git->remote . '/' . revisr()->git->branch, '--pretty=oneline' ) );
 
 		// Maybe backup database.
-		if ( revisr()->git->get_config( 'revisr', 'import-pulls' ) === 'true' ) {
-			revisr()->db->backup();
-			$undo_hash = revisr()->git->current_commit();
-			revisr()->git->set_config( 'revisr', 'last-db-backup', $undo_hash );
-		}
+		// if ( revisr()->git->get_config( 'revisr', 'import-pulls' ) === 'true' ) {
+		// 	revisr()->db->backup();
+		// 	$undo_hash = revisr()->git->current_commit();
+		// 	revisr()->git->set_config( 'revisr', 'last-db-backup', $undo_hash );
+		// }
 
 		// Fires before the changes are pulled.
 		do_action( 'revisr_pre_pull', $commits_since );
