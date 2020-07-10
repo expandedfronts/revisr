@@ -228,7 +228,7 @@ final class Revisr {
 		define( 'REVISR_URL', plugin_dir_url( REVISR_FILE ) );
 
 		// The current version of the plugin.
-		define( 'REVISR_VERSION', '2.0.2' );
+		define( 'REVISR_VERSION', '2.0.3' );
 	}
 
 	/**

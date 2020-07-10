@@ -81,14 +81,24 @@ class Revisr_Meta_Boxes {
             $status 		= Revisr_Git::get_status( $short_status );
             $item = "<option class='pending' value='{$result}'>{$file} [{$status}]</option>";
             
-            if ( preg_match('/wp-content\/plugins\/(.*?)\//', $file, $match) ) { // Match plugin name
-              if( !isset($commit_items[$status]) ) {
-                $commit_items[$status][] = $match[1];
-              } else if( !in_array($match[1], $commit_items[$status]) ) {
-                $commit_items[$status][] = $match[1]; 
+            if ( preg_match('/wp-content\/plugins\/((.*?)\/|(.*?)\.php)/', $file, $match) ) { // Match plugin name
+              $plugin_matched = !empty($match[2]) ? $match[2] : $match[3];
+              
+              if( $status == 'Untracked' && isset($commit_items['Modified']) ) { // New file or folder created in existing plugin is considered Modified
+                if(in_array($plugin_matched, $commit_items['Modified'])) {
+                  echo $item;
+                  continue;
+                }
               }
+              
+              if( !isset($commit_items[$status]) ) { // No status yet
+                $commit_items[$status][] = $plugin_matched;
+              } else if( !in_array($plugin_matched, $commit_items[$status]) ) { // Prevent duplicates
+                $commit_items[$status][] = $plugin_matched; 
+              }
+              
               echo $item;
-            } else { // No plugin matched
+            } else { // No plugin matched, move to unstaged
               $unstaged[] = $item;
             }
 						
@@ -138,7 +148,7 @@ class Revisr_Meta_Boxes {
               default:
               $commit_msg .=" " . $status; 
             }
-            $commit_msg .= " - " . implode(",", $plugins);
+            $commit_msg .= " - " . implode(", ", $plugins);
           }
           $commit_msg = trim($commit_msg);
         ?>
