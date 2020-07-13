@@ -61,8 +61,8 @@ class Revisr_Meta_Boxes {
 		check_ajax_referer( 'staging_nonce', 'security' );
 		$output 		= revisr()->git->status();
 		$total_pending 	= count( $output );
-    $commit_items = array();
-    $unstaged = array();
+    $commit_items = array(); // Categorize the changed files into categories for automated commit message creation
+    $unstaged = array(); // Store changes that do not match wp-content/plugins/plugin-name/ or wp-content/plugins/plugin-name.php
     $text = sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit.', 'revisr' ), $total_pending, revisr()->git->branch );
 		echo "<br>" . $text . "<br><br>";
 		_e( 'Use the boxes below to select the files to include in this commit. Only files in the "Staged Files" section will be included.<br>Double-click files marked as "Modified" to view the changes to the file.<br><br>', 'revisr' );
@@ -81,14 +81,24 @@ class Revisr_Meta_Boxes {
             $status 		= Revisr_Git::get_status( $short_status );
             $item = "<option class='pending' value='{$result}'>{$file} [{$status}]</option>";
             
-            if ( preg_match('/wp-content\/plugins\/(.*?)\//', $file, $match) ) { // Match plugin name
-              if( !isset($commit_items[$status]) ) {
-                $commit_items[$status][] = $match[1];
-              } else if( !in_array($match[1], $commit_items[$status]) ) {
-                $commit_items[$status][] = $match[1]; 
+            if ( preg_match('/wp-content\/plugins\/((.*?)\/|(.*?)\.php)/', $file, $match) ) { // Match plugin name, example : wp-content/plugins/plugin-name/ or wp-content/plugins/plugin-name.php
+              $plugin_matched = !empty($match[2]) ? $match[2] : $match[3];
+              
+              if( $status == 'Untracked' && isset($commit_items['Modified']) ) { // New file or folder created in existing plugin is not added to commit_items if plugin name is in modified
+                if(in_array($plugin_matched, $commit_items['Modified'])) {
+                  echo $item;
+                  continue;
+                }
               }
+              
+              if( !isset($commit_items[$status]) ) { // No status yet
+                $commit_items[$status][] = $plugin_matched;
+              } else if( !in_array($plugin_matched, $commit_items[$status]) ) { // Prevent duplicates
+                $commit_items[$status][] = $plugin_matched; 
+              }
+              
               echo $item;
-            } else { // No plugin matched
+            } else { // No plugin matched, move to unstaged
               $unstaged[] = $item;
             }
 						
@@ -108,7 +118,8 @@ class Revisr_Meta_Boxes {
 					<p><strong><?php _e( 'Unstaged Files', 'revisr' ); ?></strong></p>
 					<select id="unstaged" multiple="multiple" name="unstaged_files[]" size="15" style="resize: vertical;">
             <?php
-              if( !empty($unstaged) ) {
+            // Echo all files that are in unstaged array
+              if( !empty($unstaged) ) { 
                 foreach( $unstaged as $option ) {
                   echo $option;
                 }
@@ -122,7 +133,8 @@ class Revisr_Meta_Boxes {
 					</div>
 				</div><!-- /Unstaging -->
 
-        <?php 
+        <?php
+        // Improve commit message
           $commit_msg = "";
           foreach( $commit_items as $status => $plugins ) {
             switch($status) {
@@ -138,7 +150,7 @@ class Revisr_Meta_Boxes {
               default:
               $commit_msg .=" " . $status; 
             }
-            $commit_msg .= " - " . implode(", ", $plugins);
+            $commit_msg .= " - " . implode(", ", $plugins); // Build commit message from plugin names and statuses
           }
           $commit_msg = trim($commit_msg);
         ?>
