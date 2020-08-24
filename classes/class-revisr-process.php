@@ -352,9 +352,9 @@ class Revisr_Process {
 		Revisr_Admin::verify_nonce( $_GET['security'], 'staging_nonce' );
 
 		if ( isset( $_REQUEST['commit'] ) ) {
-			$diff = revisr()->git->run( 'show', array( $_REQUEST['commit'], $_REQUEST['file'] ) );
+			$diff = revisr()->git->run( 'show', array( $_REQUEST['commit'], '--ignore-all-space', $_REQUEST['file'] ) );
 		} else {
-			$diff = revisr()->git->run( 'diff', array( $_REQUEST['file'] ) );
+			$diff = revisr()->git->run( 'diff', array( '--ignore-all-space', $_REQUEST['file'] ) );
 		}
 
 		if ( is_array( $diff ) ) {
