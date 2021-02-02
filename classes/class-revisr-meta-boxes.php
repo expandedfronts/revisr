@@ -61,7 +61,9 @@ class Revisr_Meta_Boxes {
 		check_ajax_referer( 'staging_nonce', 'security' );
 		$output 		= revisr()->git->status();
 		$total_pending 	= count( $output );
-		$text 			= sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit.', 'revisr' ), $total_pending, revisr()->git->branch );
+    $commit_items = array(); // Categorize the changed files into categories for automated commit message creation
+    $unstaged = array(); // Store changes that do not match wp-content/plugins/plugin-name/ or wp-content/plugins/plugin-name.php
+    $text = sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit.', 'revisr' ), $total_pending, revisr()->git->branch );
 		echo "<br>" . $text . "<br><br>";
 		_e( 'Use the boxes below to select the files to include in this commit. Only files in the "Staged Files" section will be included.<br>Double-click files marked as "Modified" to view the changes to the file.<br><br>', 'revisr' );
 		if ( is_array( $output ) ) {
@@ -69,15 +71,37 @@ class Revisr_Meta_Boxes {
 				<!-- Staging -->
 				<div class="stage-container">
 					<p><strong><?php _e( 'Staged Files', 'revisr' ); ?></strong></p>
-					<select id='staged' multiple="multiple" name="staged_files[]" size="6">
+					<select id='staged' multiple="multiple" name="staged_files[]" size="15" style="resize: vertical;">
 					<?php
 					// Clean up output from git status and echo the results.
 					foreach ( $output as $result ) {
 						$result 		= str_replace( '"', '', $result );
 						$short_status 	= substr( $result, 0, 3 );
 						$file 			= substr( $result, 3 );
-						$status 		= Revisr_Git::get_status( $short_status );
-						echo "<option class='pending' value='{$result}'>{$file} [{$status}]</option>";
+            $status 		= Revisr_Git::get_status( $short_status );
+            $item = "<option class='pending' value='{$result}'>{$file} [{$status}]</option>";
+            
+            if ( preg_match('/wp-content\/plugins\/((.*?)\/|(.*?)\.php)/', $file, $match) ) { // Match plugin name, example : wp-content/plugins/plugin-name/ or wp-content/plugins/plugin-name.php
+              $plugin_matched = !empty($match[2]) ? $match[2] : $match[3];
+              
+              if( $status == 'Untracked' && isset($commit_items['Modified']) ) { // New file or folder created in existing plugin is not added to commit_items if plugin name is in modified
+                if(in_array($plugin_matched, $commit_items['Modified'])) {
+                  echo $item;
+                  continue;
+                }
+              }
+              
+              if( !isset($commit_items[$status]) ) { // No status yet
+                $commit_items[$status][] = $plugin_matched;
+              } else if( !in_array($plugin_matched, $commit_items[$status]) ) { // Prevent duplicates
+                $commit_items[$status][] = $plugin_matched; 
+              }
+              
+              echo $item;
+            } else { // No plugin matched, move to unstaged
+              $unstaged[] = $item;
+            }
+						
 					}
 					?>
 					</select>
@@ -92,7 +116,15 @@ class Revisr_Meta_Boxes {
 				<!-- Unstaging -->
 				<div class="stage-container">
 					<p><strong><?php _e( 'Unstaged Files', 'revisr' ); ?></strong></p>
-					<select id="unstaged" multiple="multiple" name="unstaged_files[]" size="6">
+					<select id="unstaged" multiple="multiple" name="unstaged_files[]" size="15" style="resize: vertical;">
+            <?php
+            // Echo all files that are in unstaged array
+              if( !empty($unstaged) ) { 
+                foreach( $unstaged as $option ) {
+                  echo $option;
+                }
+              } 
+            ?>
 					</select>
 					<div class="stage-nav">
 						<input id="stage-file" type="button" class="button button-primary stage-nav-button" value="<?php _e( 'Stage Selected', 'revisr' ); ?>" onclick="stage_file()" />
@@ -100,6 +132,31 @@ class Revisr_Meta_Boxes {
 						<input id="stage-all" type="button" class="button stage-nav-button" value="<?php _e( 'Stage All', 'revisr' ); ?>" onclick="stage_all()" />
 					</div>
 				</div><!-- /Unstaging -->
+
+        <?php
+        // Improve commit message
+          $commit_msg = "";
+          foreach( $commit_items as $status => $plugins ) {
+            switch($status) {
+              case 'Modified':
+                $commit_msg .=" Plugin updates";
+              break;
+              case 'Untracked':
+                $commit_msg .=" New plugins";
+              break;
+              case 'Deleted':
+                $commit_msg .=" Deleted plugins";
+              break;
+              default:
+              $commit_msg .=" " . $status; 
+            }
+            $commit_msg .= " - " . implode(", ", $plugins); // Build commit message from plugin names and statuses
+          }
+          $commit_msg = trim($commit_msg);
+        ?>
+
+        <!-- New input for commit msg -->
+        <input type="text" name="post_title" size="30" value="<?php echo $commit_msg; ?>" id="title-tmp" spellcheck="true" autocomplete="off" placeholder="Enter a message for your commit">
 
 			<?php
 		}

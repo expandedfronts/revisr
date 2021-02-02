@@ -277,6 +277,19 @@ class Revisr_Admin_Pages {
 				<?php _e( 'Sponsored by', 'revisr' ); ?>
 				<a href="http://www.site5.com/" target="_blank"><img id="site5_logo" src="<?php echo REVISR_URL . 'assets/img/site5.png'; ?>" width="80" /></a>
 			</div>
+			
+			<style>
+			#TB_window {
+				width: 95% !important;
+				left: 0px !important;
+				margin-left: 52px !important;
+			}
+			#TB_ajaxContent {
+		    width: 98% !important;
+		    height: 95% !important;
+		    font-family: monospace;
+			}			
+			</style>
 			<?php
 		}
 

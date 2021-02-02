@@ -45,6 +45,10 @@ jQuery(document).ready(function($) {
 
         $.post(ajaxurl, data, function(response) {
             document.getElementById('pending_files_result').innerHTML = response;
+            old_title = document.getElementById('title');
+            new_title = document.getElementById('title-tmp');
+            document.getElementById('titlewrap').replaceChild(new_title, old_title);
+            new_title.id = 'title';
         });
 
     }
