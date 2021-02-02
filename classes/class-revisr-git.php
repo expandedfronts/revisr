@@ -108,9 +108,13 @@ class Revisr_Git {
 		$git_dir 	= Revisr_Admin::escapeshellarg( "--git-dir=$this->git_dir" );
 		$work_tree 	= Revisr_Admin::escapeshellarg( "--work-tree=$this->work_tree" );
 
+		// Check for the special SSH key
+		exec( "stat ~/.ssh/id_github", $stat_output, $stat_return_code );
+		$ssh_key = $stat_return_code === 0 ? "GIT_SSH_COMMAND='ssh -i ~/.ssh/id_github' " : "";
+		
 		// Run the command.
 		chdir( $this->work_tree );
-		exec( "$safe_path $git_dir $work_tree $safe_cmd $safe_args 2>&1", $output, $return_code );
+		exec( "$ssh_key$safe_path $git_dir $work_tree $safe_cmd $safe_args 2>&1", $output, $return_code );
 		chdir( $this->current_dir );
 
 		// Process the response.

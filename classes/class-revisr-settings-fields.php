@@ -299,6 +299,15 @@ class Revisr_Settings_Fields {
 			$remote,
 			__( 'Useful if you need to authenticate over "https://" instead of SSH, or if the remote has not already been set through Git.', 'revisr' )
 		);
+		
+		if( stripos($remote,'git@') === 0 ) {
+			exec( "stat ~/.ssh/id_github", $stat_output, $stat_return_code );
+			if( $stat_return_code === 0 ) {
+				echo 'Found the SSH key in ~/.ssh/id_github';
+			} else {
+				echo '<div class="error">Error: SSH key for Github in ~/.ssh/id_github not found!</a>';
+			}
+		}
 	}
 
 	/**
