@@ -110,7 +110,7 @@ final class Revisr {
 	 * Prevent direct unserialization by making the method private.
 	 * @access private
 	 */
-	private function __wakeup() {
+	public function __wakeup() {
 		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'revisr' ), '1.8' );
 	}
 
