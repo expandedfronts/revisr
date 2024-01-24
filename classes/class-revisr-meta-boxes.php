@@ -63,6 +63,7 @@ class Revisr_Meta_Boxes {
 		$total_pending 	= count( $output );
     $commit_items = array(); // Categorize the changed files into categories for automated commit message creation
     $unstaged = array(); // Store changes that do not match wp-content/plugins/plugin-name/ or wp-content/plugins/plugin-name.php
+		$warnings = array();
     $text = sprintf( __( 'There are <strong>%s</strong> untracked files that can be added to this commit.', 'revisr' ), $total_pending, revisr()->git->branch );
 		echo "<br>" . $text . "<br><br>";
 		_e( 'Use the boxes below to select the files to include in this commit. Only files in the "Staged Files" section will be included.<br>Double-click files marked as "Modified" to view the changes to the file.<br><br>', 'revisr' );
@@ -75,6 +76,12 @@ class Revisr_Meta_Boxes {
 					<?php
 					// Clean up output from git status and echo the results.
 					foreach ( $output as $result ) {
+
+						if ( stripos( $result, 'warning: ' ) !== false ) {
+							$warnings[] = $result;
+							continue;
+						}
+
 						$result 		= str_replace( '"', '', $result );
 						$short_status 	= substr( $result, 0, 3 );
 						$file 			= substr( $result, 3 );
@@ -157,6 +164,11 @@ class Revisr_Meta_Boxes {
 
         <!-- New input for commit msg -->
         <input type="text" name="post_title" size="30" value="<?php echo $commit_msg; ?>" id="title-tmp" spellcheck="true" autocomplete="off" placeholder="Enter a message for your commit">
+
+				<?php if ( ! empty( $warnings ) ) : ?>
+					<p><strong><?php _e( 'Warnings:', 'revisr' ); ?></strong></p>
+					<?php echo implode( '<br />', $warnings ); ?>
+				<?php endif; ?>
 
 			<?php
 		}

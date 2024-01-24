@@ -359,6 +359,13 @@ class Revisr_Git {
 	 */
 	public function count_untracked() {
 		$untracked = $this->run( 'status', array( '--short', '--untracked-files=all' ) );
+
+		foreach ( $untracked as $k => $v ) {
+			if ( stripos( $v, 'warning: ' ) === 0 ) {
+				unset( $untracked[$k] );
+			}
+		}
+
 		return count( $untracked );
 	}
 
